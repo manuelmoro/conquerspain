@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 8 de T-015)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 9 de T-015)
 **Fase actual:** Fase 1 · El mundo
 
 ---
@@ -11,9 +11,9 @@
 ## Tarea en curso
 
 **[T-015 · Catálogo · regiones 2 a 10](docs/plan/T-015-catalogo-resto-de-regiones.md)** · hechas
-las entregas 2 a 8; toca la **entrega 9: Andalucía** (`09-andalucia.jsonc`), con la campiña del
-Guadalquivir, el Aljarafe y Sevilla, las salinas de Cádiz, Sierra Morena y Riotinto, Macael y la
-vega de Granada.
+las entregas 2 a 9; queda la **entrega 10: centro y sur de Portugal** (`10-portugal-sur.jsonc`),
+con las Beiras, la Serra da Estrela, Rio Maior, la Lezíria do Tejo, el Alentejo y el Algarve. Con
+ella se cierra T-015 y la fase 1.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -52,8 +52,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
 | Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
-| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **ocho regiones escritas**: 01 Sistema Ibérico (35), 02 Meseta norte (36), 03 cornisa cantábrica (35), 04 Galicia y Minho (38), 05 Sistema Central y Extremadura (37), 06 Meseta sur (35), 07 Ebro y Pirineo (42) y 08 Levante y Murcia (31) |
-| Mapa generado | `npm run atlas` produce `mundo.v1.json` (398 comarcas —289 reales y 109 provisionales—, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
+| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **nueve regiones escritas**: 01 Sistema Ibérico (35), 02 Meseta norte (36), 03 cornisa cantábrica (35), 04 Galicia y Minho (38), 05 Sistema Central y Extremadura (37), 06 Meseta sur (35), 07 Ebro y Pirineo (42), 08 Levante y Murcia (31) y 09 Andalucía (43) |
+| Mapa generado | `npm run atlas` produce `mundo.v1.json` (398 comarcas —332 reales y 66 provisionales—, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -77,6 +77,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-015, entrega 9 hecha**: Andalucía, 43 comarcas. Cinco con `labor 5` en el valle del Guadalquivir, la sal de la bahía de Cádiz con `sal 5`, el cobre y el hierro de Riotinto y el mármol de Macael (`piedra 5`, único del mapa). 332 comarcas reales de 398. 211 tests en verde |
 | 18-09-2026 | **T-015, entrega 8 hecha**: Levante y Murcia, 31 comarcas. Las cuatro huertas de `labor 5` (València, la Ribera, la Vega Baja y Murcia), diez puertos de mar y la sal de La Mata y San Pedro del Pinatar. 289 comarcas reales de 398. 202 tests en verde |
 | 18-09-2026 | **T-015, entrega 7 hecha**: Ebro, Pirineo y Cataluña, 42 comarcas. La montaña de sal de Cardona (`sal 5`), el hierro de la farga en el Ripollès, las vegas de Tudela y Lleida con `labor 5` y las Bardenas y los Monegros como pasto de invierno. 258 comarcas reales de 386. 195 tests en verde |
 | 18-09-2026 | **T-015, entrega 6 hecha**: Meseta sur, 35 comarcas. Dieciocho labran a 4 o más y once tienen viñedo; Toledo y Madrid entran en el mapa. 216 comarcas reales de 377. 188 tests en verde |

@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (7 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (8 de 9 entregas)
 
 ## 1. Contexto
 
@@ -29,7 +29,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 | 6 | Meseta sur | `06-meseta-sur.jsonc` | **hecha** (35) | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
 | 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | **hecha** (42) | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
 | 8 | Levante y Murcia | `08-levante.jsonc` | **hecha** (31) | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
-| 9 | Andalucía | `09-andalucia.jsonc` | pendiente | 42 | Campiña del Guadalquivir (`labor 5`); Aljarafe y Sevilla (feria grande); **salinas de Cádiz** y almadrabas (`sal 5`, `pesca 5`); Sierra Morena y Riotinto (`hierro 3`); Macael (`cantera-noble`, mármol); Alpujarras y Vega de Granada; Subbética |
+| 9 | Andalucía | `09-andalucia.jsonc` | **hecha** (43) | 42 | Campiña del Guadalquivir (`labor 5`); Aljarafe y Sevilla (feria grande); **salinas de Cádiz** y almadrabas (`sal 5`, `pesca 5`); Sierra Morena y Riotinto (`hierro 3`); Macael (`cantera-noble`, mármol); Alpujarras y Vega de Granada; Subbética |
 | 10 | Centro y sur de Portugal | `10-portugal-sur.jsonc` | pendiente | 32 | Beira Alta y Serra da Estrela (`pasto-de-verano`, `monte`); Rio Maior (**sal**); Lezíria do Tejo (`labor 5`); Alentejo (`montado`, `dehesa`); Algarve (`pesca 5`, `sal 4`); puertos de Lisboa, Setúbal y Porto |
 
 Las cifras de comarcas son orientativas (±20 %); manda el mapa generado.
@@ -259,3 +259,23 @@ Decisiones de la entrega:
   se movió su centro tierra adentro hasta que el grafo volvió a conectarla.
 - Esta región **sí cumple la proporción de pan de §4.6**: siete comarcas con `labor >= 4` de 31,
   justo en el límite.
+
+### Entrega 9 · Andalucía (18-09-2026)
+
+`09-andalucia.jsonc`: **43 comarcas**, de Aracena a Vera y de los Pedroches al Estrecho. El mundo
+va por 398 comarcas, 332 reales y 66 provisionales.
+
+Lo que define a la región: el valle. Cinco comarcas con `labor 5` (Sevilla y su Aljarafe, Écija,
+Carmona, Córdoba y la vega de Granada), doce con `labor >= 4`, diez que pescan y la sal de la
+bahía de Cádiz con `sal 5`. El hierro y el cobre están donde estuvieron desde Tartessos, en
+Riotinto, y el mármol de Macael es la única comarca del mapa con `piedra 5`.
+
+Decisiones de la entrega:
+
+- **Los Alcornocales se añadió al cerrar**, como Alfoz de Clunia y Berguedà: quedaba un hueco entre
+  Ronda, la sierra de Cádiz y el Estrecho, y el mayor alcornocal de la península merecía comarca.
+- **Almería y Granada quedan en esta región** y no en una «Levante» extendida: el reino nazarí es
+  Andalucía, y sus serranías (Alpujarras, Gádor, Almanzora) forman un bloque con la vega.
+- **Veintitrés localidades se cambiaron** por otras de su misma comarca. Es la región con más
+  ajustes, porque las campiñas del Guadalquivir son enormes y las sierras del sur, muy troceadas.
+- Esta región **cumple la proporción de pan de §4.6** con holgura: es la cuarta `REGION_DE_LLANO`.

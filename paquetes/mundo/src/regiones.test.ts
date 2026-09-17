@@ -23,6 +23,7 @@ const REGIONES = [
   '06-meseta-sur',
   '07-ebro-pirineo',
   '08-levante',
+  '09-andalucia',
 ] as const;
 
 /**
@@ -30,7 +31,12 @@ const REGIONES = [
  * por cada cinco). La 01 es el Sistema Iberico: sierra y paramo alto, donde esa proporcion seria
  * falsear la geografia. Para ella manda la regla de T-012: nadie a mas de tres jornadas del pan.
  */
-const REGIONES_DE_LLANO = ['02-meseta-norte', '06-meseta-sur', '08-levante'] as const;
+const REGIONES_DE_LLANO = [
+  '02-meseta-norte',
+  '06-meseta-sur',
+  '08-levante',
+  '09-andalucia',
+] as const;
 
 function catalogo(): ComarcaCatalogo[] {
   const resultado = cargarCatalogo(CATALOGO);
@@ -150,6 +156,22 @@ describe('recursos estrategicos region a region', () => {
         .map((c) => c.id)
         .sort(),
     ).toEqual(['jiloca', 'senyorio-de-molina']);
+  });
+
+  it('pone en Andalucia la campinya, la sal de Cadiz, Riotinto y el marmol de Macael', () => {
+    const sur = catalogo().filter((c) => c.region === '09-andalucia');
+    expect(sur).toHaveLength(43);
+    // El valle del Guadalquivir: cinco comarcas de labor 5, mas que ninguna otra region.
+    expect(sur.filter((c) => c.potenciales.labor === 5).length).toBeGreaterThanOrEqual(5);
+    expect(sur.filter((c) => c.potenciales.sal >= 3).map((c) => c.id)).toEqual(['bahia-de-cadiz']);
+    expect(sur.filter((c) => c.potenciales.hierro >= 3).map((c) => c.id)).toEqual([
+      'andevalo-y-riotinto',
+    ]);
+    // Macael es la unica comarca del mapa con piedra 5.
+    expect(sur.filter((c) => c.potenciales.piedra === 5).map((c) => c.id)).toEqual([
+      'valle-del-almanzora',
+    ]);
+    expect(sur.filter((c) => c.potenciales.pesca >= 4).length).toBeGreaterThanOrEqual(8);
   });
 
   it('da a Levante las huertas de regadio, la sal del sur y los puertos', () => {
