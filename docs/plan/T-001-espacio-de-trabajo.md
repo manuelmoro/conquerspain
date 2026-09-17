@@ -1,6 +1,6 @@
 # T-001 · Espacio de trabajo, TypeScript y verificación
 
-**Fase:** 0 · Cimientos · **Depende de:** nada · **Estado:** pendiente
+**Fase:** 0 · Cimientos · **Depende de:** nada · **Estado:** **hecha** (17-09-2026)
 
 ## 1. Contexto
 
