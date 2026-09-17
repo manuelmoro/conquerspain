@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (5 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (6 de 9 entregas)
 
 ## 1. Contexto
 
@@ -27,7 +27,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 | 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | **hecha** (38) | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
 | 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | **hecha** (37) | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
 | 6 | Meseta sur | `06-meseta-sur.jsonc` | **hecha** (35) | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
-| 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | pendiente | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
+| 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | **hecha** (42) | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
 | 8 | Levante y Murcia | `08-levante.jsonc` | pendiente | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
 | 9 | Andalucía | `09-andalucia.jsonc` | pendiente | 42 | Campiña del Guadalquivir (`labor 5`); Aljarafe y Sevilla (feria grande); **salinas de Cádiz** y almadrabas (`sal 5`, `pesca 5`); Sierra Morena y Riotinto (`hierro 3`); Macael (`cantera-noble`, mármol); Alpujarras y Vega de Granada; Subbética |
 | 10 | Centro y sur de Portugal | `10-portugal-sur.jsonc` | pendiente | 32 | Beira Alta y Serra da Estrela (`pasto-de-verano`, `monte`); Rio Maior (**sal**); Lezíria do Tejo (`labor 5`); Alentejo (`montado`, `dehesa`); Algarve (`pesca 5`, `sal 4`); puertos de Lisboa, Setúbal y Porto |
@@ -213,3 +213,25 @@ Decisiones de la entrega:
   diferencia entre el azafrán de Consuegra y el vino de Valdepeñas.
 - Esta región **sí cumple la proporción de pan de §4.6**, como la 02: es la segunda `REGION_DE_LLANO`
   del test.
+
+### Entrega 7 · Valle del Ebro, Pirineo y Cataluña (18-09-2026)
+
+`07-ebro-pirineo.jsonc`: **42 comarcas**, del Baztán al Empordà y de Jaca al delta del Ebro. El
+mundo va por 386 comarcas, 258 reales y 128 provisionales.
+
+Lo que define a la región: tres paisajes de golpe. El Pirineo (once comarcas con `pasto-de-verano`
+y el hierro del Ripollès, el de la farga catalana, `hierro 3`), el valle del Ebro con sus vegas de
+regadío andalusí —Tudela y Lleida son las únicas comarcas con `labor 5` fuera de Castilla— y su
+revés seco, las Bardenas y los Monegros, que son `pasto-de-invierno` puro. Y **Cardona**, con
+`sal 5`: una montaña de sal gema a cielo abierto.
+
+Decisiones de la entrega:
+
+- **Las Bardenas llevan `labor 1` en terreno llano**, fuera de la horquilla, con su nota: es el
+  primer caso del catálogo donde la regla del validador obliga a justificar un desierto.
+- **Berguedà se añadió al cerrar**, igual que Alfoz de Clunia en T-012: quedaba un hueco
+  provisional rodeado de comarcas de la región, entre el Cadí, Cardona, Osona y el Ripollès.
+- **Llívia se quedó fuera**: es un exclave dentro de Francia y el polígono de Natural Earth no lo
+  recoge. Su comarca, la Cerdaña, se queda con Ger, Bellver y Alp.
+- **La proporción de pan de §4.6 no se le exige**: siete comarcas con `labor >= 4` de 42, porque
+  media región es alta montaña y estepa. Nadie queda a más de tres jornadas del pan.

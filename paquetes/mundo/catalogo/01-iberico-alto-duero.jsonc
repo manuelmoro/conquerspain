@@ -585,7 +585,7 @@
     "localidades": [
       { "nombre": "Calahorra", "coord": [-1966, 42305], "cabecera": true },
       { "nombre": "Arnedo", "coord": [-2103, 42229], "cabecera": null },
-      { "nombre": "Alfaro", "coord": [-1750, 42180], "cabecera": null },
+      { "nombre": "Rincon de Soto", "coord": [-1848, 42245], "cabecera": null },
       { "nombre": "Autol", "coord": [-2013, 42219], "cabecera": null },
     ],
     "rasgos": ["vega-fluvial", "ciudad-episcopal", "calzada-romana"],

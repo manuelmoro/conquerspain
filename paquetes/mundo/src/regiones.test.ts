@@ -21,6 +21,7 @@ const REGIONES = [
   '04-galicia-minho',
   '05-central-extremadura',
   '06-meseta-sur',
+  '07-ebro-pirineo',
 ] as const;
 
 /**
@@ -148,6 +149,32 @@ describe('recursos estrategicos region a region', () => {
         .map((c) => c.id)
         .sort(),
     ).toEqual(['jiloca', 'senyorio-de-molina']);
+  });
+
+  it('reparte en el Ebro la sal de Cardona, el hierro del Ripolles y los puertos', () => {
+    const ebro = catalogo().filter((c) => c.region === '07-ebro-pirineo');
+    expect(ebro).toHaveLength(42);
+    expect(ebro.filter((c) => c.potenciales.sal >= 3).map((c) => c.id)).toEqual([
+      'cardona-y-el-solsones',
+    ]);
+    expect(ebro.filter((c) => c.potenciales.hierro >= 3).map((c) => c.id)).toEqual(['ripolles']);
+    // El Pirineo entero es pasto de verano; las Bardenas y los Monegros, de invierno.
+    expect(ebro.filter((c) => c.rasgos.includes('pasto-de-verano')).length).toBeGreaterThanOrEqual(
+      9,
+    );
+    expect(
+      ebro
+        .filter((c) => c.rasgos.includes('pasto-de-invierno'))
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(['bardenas', 'monegros']);
+    // Las vegas de regadio del Ebro y el Segre son las unicas que llegan a labor 5.
+    expect(
+      ebro
+        .filter((c) => c.potenciales.labor === 5)
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(['ribera-de-tudela', 'segria']);
   });
 
   it('hace de la Meseta sur tierra de vinya y de ordenes militares', () => {
