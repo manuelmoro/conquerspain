@@ -2,9 +2,9 @@
 
 Generado por `npm run atlas`. No se edita a mano.
 
-- Comarcas: **339**, de las cuales **304** son provisionales (sin catálogo).
-- Tramos de camino: 974 · vecinos por comarca: 5.7 · jornadas medias: 3.1
-- Tramos marcados como candidatos a puerto de montaña: 9
+- Comarcas: **349**, de las cuales **278** son provisionales (sin catálogo).
+- Tramos de camino: 1004 · vecinos por comarca: 5.8 · jornadas medias: 3.1
+- Tramos marcados como candidatos a puerto de montaña: 10
 - Superficie del mapa: 997 × 800 unidades (1 unidad ≈ 1.11 km)
 
 ## Comarcas por región
@@ -12,21 +12,23 @@ Generado por `npm run atlas`. No se edita a mano.
 | Región | Comarcas |
 |---|---|
 | 01-iberico-alto-duero | 35 |
-| 99-provisional | 304 |
+| 02-meseta-norte | 36 |
+| 99-provisional | 278 |
 
 ## Vecindades extremas
 
-- Más conectadas: sin-nombre-098 (10), sin-nombre-249 (8), albarracin (7), alfoz-de-clunia (7), arlanza (7)
-- Menos conectadas: sin-nombre-001 (3), sin-nombre-279 (3), sin-nombre-300 (3), sin-nombre-303 (3), sin-nombre-304 (3)
+- Más conectadas: sin-nombre-080 (10), alfoz-de-palencia (8), benavente (8), tierra-de-penyaranda (8), tierra-de-pinares (8)
+- Menos conectadas: sin-nombre-001 (3), sin-nombre-253 (3), sin-nombre-274 (3), sin-nombre-277 (3), sin-nombre-278 (3)
 
 ## Candidatos a puerto de montaña
 
 - Piqueras: cameros ↔ najerilla
 - Piqueras: cameros ↔ pinares
 - Piqueras: cameros ↔ tierras-altas
-- Somosierra: pedraza ↔ sin-nombre-127
+- Somosierra: pedraza ↔ sin-nombre-101
 - Pajares: sin-nombre-013 ↔ sin-nombre-028
-- Guadarrama: sin-nombre-125 ↔ sin-nombre-126
-- Puerto del Pico: sin-nombre-139 ↔ sin-nombre-140
-- Despenyaperros: sin-nombre-227 ↔ sin-nombre-243
-- Ragua: sin-nombre-289 ↔ sin-nombre-297
+- Puerto del Pico: sin-nombre-113 ↔ sin-nombre-114
+- Guadarrama: sin-nombre-115 ↔ tierra-de-segovia
+- Guadarrama: sin-nombre-116 ↔ tierra-de-segovia
+- Despenyaperros: sin-nombre-201 ↔ sin-nombre-217
+- Ragua: sin-nombre-263 ↔ sin-nombre-271

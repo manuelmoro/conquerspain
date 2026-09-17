@@ -3,22 +3,26 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-012)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 2 de T-015)
 **Fase actual:** Fase 1 · El mundo
 
 ---
 
 ## Tarea en curso
 
-Ninguna.
+**[T-015 · Catálogo · regiones 2 a 10](docs/plan/T-015-catalogo-resto-de-regiones.md)** · hecha la
+entrega 2 (Meseta norte); toca la **entrega 3: Cornisa cantábrica y País Vasco**
+(`03-cantabrico.jsonc`), con las ferrerías, las salinas de Añana y los puertos de mar.
+
+> **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
+> T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
+> Despeñaperros, Medina del Campo, Sevilla— que caen en comarcas todavía sin escribir, y los
+> identificadores provisionales del atlas se renumeran cada vez que el catálogo crece. Escribir esa
+> capa ahora sería trabajo para rehacer.
 
 ## Siguiente tarea
 
-**[T-013 · Caminos, puertos, vados y cañadas reales](docs/plan/T-013-caminos-y-canyadas.md)**
-
-Sobre el grafo que ya genera el atlas: confirmar los puertos de montaña (Piqueras ya sale marcado
-como candidato), marcar vados y calzadas romanas, y trazar las nueve cañadas reales como caminos
-especiales.
+Las entregas 3 a 10 de T-015, en orden, y después T-013 y T-014.
 
 ## Cómo continuar (resumen)
 
@@ -47,8 +51,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
 | Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
-| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y la **región 01 escrita** (35 comarcas reales del Sistema Ibérico y el Alto Duero) |
-| Mapa generado | `npm run atlas` produce `mundo.v1.json` (339 comarcas —35 reales y 304 provisionales—, 974 tramos, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
+| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **dos regiones escritas**: 01 Sistema Ibérico y Alto Duero (35) y 02 Meseta norte (36) |
+| Mapa generado | `npm run atlas` produce `mundo.v1.json` (349 comarcas —71 reales y 278 provisionales—, 1004 tramos, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -72,6 +76,8 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-015, entrega 2 hecha**: Meseta norte, 36 comarcas (Tierra de Campos, Cerrato, Torozos, Medina, Segovia, la Armuña…). El granero: 17 comarcas con `labor >= 4` y la sal de Villafáfila como único recurso estratégico. 159 tests en verde |
+| 18-09-2026 | **Orden de la fase 1 corregido**: T-013 (caminos y cañadas) y T-014 (ferias) pasan a depender de T-015, porque sus datos viven en comarcas que aún no existen |
 | 18-09-2026 | **T-012 hecha**: región 01 escrita, **35 comarcas reales** (las 34 de la ficha más `alfoz-de-clunia`, que tapaba el único hueco provisional interior) y 304 provisionales. Sal en Poza y en Imón, hierro en Sierra Menera y Ojos Negros, seis orígenes de oficio distinto. La revisión de la región vive como test. 151 tests en verde |
 | 18-09-2026 | **T-011 hecha**: herramienta `atlas` en TypeScript (descarga verificada, proyección, Voronoi recortado a la costa con geometría real, grafo filtrado por tierra, seis comprobaciones, informe y modo `--comprobar`). 334 comarcas provisionales a la espera del catálogo. 144 tests en verde |
 | 18-09-2026 | **T-010 hecha**: esquema del catálogo geográfico (`.jsonc` comentado), validador con sus nueve reglas —incluida la nota obligatoria cuando un potencial se aparta del terreno—, informe de cobertura y cargador. 127 tests en verde |

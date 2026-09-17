@@ -1,6 +1,10 @@
 # T-013 · Caminos, puertos, vados y cañadas reales
 
-**Fase:** 1 · El mundo · **Depende de:** T-011 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-015 · **Estado:** pendiente
+
+> **Dependencia corregida el 18-09-2026.** Las nueve cañadas y los veintiún puertos de §4.3 unen
+> comarcas de toda la península: hasta que T-015 no las escriba, solo se podrían nombrar contra los
+> identificadores provisionales del atlas, que se renumeran en cuanto el catálogo crece.
 
 ## 1. Contexto
 

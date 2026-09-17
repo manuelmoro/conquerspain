@@ -1,6 +1,10 @@
 # T-014 · Ferias, patrimonio y rasgos de comarca
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-015 · **Estado:** pendiente
+
+> **Dependencia corregida el 18-09-2026.** De las diez ferias de `docs/05` §5.6, nueve están en
+> comarcas que escribe T-015 (Medina, Villalón, Sevilla, Zafra, Verín, Lleida, Valencia, Santiago).
+> Se hace después del catálogo completo.
 
 ## 1. Contexto
 

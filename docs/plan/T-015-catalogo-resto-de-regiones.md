@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** pendiente (0 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (1 de 9 entregas)
 
 ## 1. Contexto
 
@@ -22,7 +22,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 
 | # | Región | Archivo | Estado | Comarcas aprox. | Lo que no puede faltar |
 |---|---|---|---|---|---|
-| 2 | Meseta norte | `02-meseta-norte.jsonc` | pendiente | 38 | Tierra de Campos (`labor 5`), Tierra de Medina (feria grande, mayo y octubre), Villalón (feria), Cerrato, Páramos, Tierra de Pinares de Valladolid, Tierra de Segovia (`pasto`, lana fina) |
+| 2 | Meseta norte | `02-meseta-norte.jsonc` | **hecha** (36) | 38 | Tierra de Campos (`labor 5`), Tierra de Medina (feria grande, mayo y octubre), Villalón (feria), Cerrato, Páramos, Tierra de Pinares de Valladolid, Tierra de Segovia (`pasto`, lana fina) |
 | 3 | Cornisa cantábrica y País Vasco | `03-cantabrico.jsonc` | pendiente | 30 | **Ferrerías**: Encartaciones, Somorrostro, Oiartzun, Mena (`hierro 4-5`, `ferreria-de-agua`); **salinas de Añana** (`sal 5`); puertos de mar (Bilbao, Santander, San Sebastián, Castro); `monte 5` en los valles; pasos de la Cantábrica |
 | 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | pendiente | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
 | 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | pendiente | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
@@ -43,9 +43,12 @@ Las cifras de comarcas son orientativas (±20 %); manda el mapa generado.
 3. Potenciales según §4.2 de [T-012](T-012-catalogo-region-01.md), con nota donde haga falta.
 4. Rasgos del catálogo cerrado; ferias si corresponde.
 5. `npm run atlas` y revisión del informe.
-6. Comprobaciones de la región:
-   - cero comarcas provisionales dentro de su recuadro;
-   - al menos una comarca con `labor >= 4` por cada cinco comarcas;
+6. Comprobaciones de la región (escritas como test en `paquetes/mundo/src/regiones.test.ts`):
+   - ninguna comarca provisional rodeada solo por comarcas de la región, es decir, sin huecos
+     dentro (el recuadro de una región siempre pisa las vecinas, por eso se mide así);
+   - al menos una comarca con `labor >= 4` por cada cinco comarcas, **en las regiones donde la
+     geografía lo permita**: en la cornisa, Galicia o el Pirineo manda la regla de T-012 (nadie
+     a más de tres jornadas de una comarca con `labor >= 3`), y se anota en la entrega;
    - los recursos estratégicos aparecen solo donde hubo explotación histórica;
    - entre 3 y 8 orígenes por región, de perfiles distintos;
    - ninguna comarca aislada ni con menos de dos vecinos.
@@ -91,3 +94,29 @@ npx vitest run paquetes/mundo
 
 > Mientras esta tarea esté en curso, `ESTADO.md` debe indicar **qué región toca**, para que
 > cualquiera pueda continuar por la siguiente sin releer todo el catálogo.
+
+---
+
+## 9. Bitácora de entregas
+
+### Entrega 2 · Meseta norte (18-09-2026)
+
+`02-meseta-norte.jsonc`: **36 comarcas**, de León a Segovia y de la Maragatería a los arribes de
+Salamanca. El mundo pasa a 349 comarcas, 71 reales y 278 provisionales.
+
+Lo que define a la región: es el granero. Diecisiete comarcas con `labor >= 4` y dos con `labor 5`
+(Tierra de Campos palentina y Campos de Rioseco), medias de `labor 3,3` frente a `monte 1,5` y
+`hierro 0`. Quien empiece aquí tendrá pan de sobra y tendrá que comprar todo lo demás, que es
+justo la tensión comercial que el diseño busca.
+
+Decisiones de la entrega:
+
+- **Las salinas de Villafáfila** son la única sal de la meseta (`sal 3` en `campos-de-villalpando`,
+  con el rasgo `salinas-historicas`). Las lagunas salobres se explotaron por evaporación durante
+  toda la Edad Media, y ponen un recurso estratégico en mitad del mar de trigo.
+- **Ocho orígenes**: León, Campos de Villalpando, Campos palentinos, Valladolid, Medina del Campo,
+  Segovia, Sayago y la Armuña. Zamora quedaba de noveno y se dejó fuera por no pasar del máximo.
+- **La proporción de pan de §4.6 se acota**: se exige donde la geografía la permite. La región 01
+  (sierra y páramo alto) cumple la regla de T-012, no esta, y se anotó así en el test.
+- **Ocho localidades se cambiaron por vecinas** porque caían en el polígono de al lado; es el mismo
+  ajuste que en T-012 y lo detecta el atlas solo.
