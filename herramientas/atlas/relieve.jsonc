@@ -1,0 +1,32 @@
+// Relieve de referencia para el generador del atlas: zonas que empujan el terreno de una comarca
+// y sierras que marcan los tramos candidatos a puerto de montanya (los confirma T-013).
+// Coordenadas en grados decimales: [lonMin, lonMax, latMin, latMax].
+{
+  "zonas": [
+    { "terreno": "sierra", "nombre": "Pirineo", "caja": [-1.6, 3.4, 42.35, 43.4] },
+    { "terreno": "sierra", "nombre": "Cordillera Cantabrica", "caja": [-7.2, -3.6, 42.75, 43.4] },
+    { "terreno": "sierra", "nombre": "Sistema Central", "caja": [-6.6, -3.3, 40.15, 40.85] },
+    { "terreno": "sierra", "nombre": "Sistema Iberico", "caja": [-3.2, -0.7, 40.2, 42.3] },
+    { "terreno": "sierra", "nombre": "Beticas", "caja": [-5.4, -2.2, 36.8, 37.5] },
+    { "terreno": "sierra", "nombre": "Sierra Morena", "caja": [-6.4, -3.2, 37.9, 38.5] },
+    { "terreno": "sierra", "nombre": "Serra da Estrela", "caja": [-8.0, -7.2, 40.1, 40.6] },
+    { "terreno": "ondulado", "nombre": "Galicia interior", "caja": [-8.4, -6.8, 41.6, 43.2] },
+    { "terreno": "ondulado", "nombre": "Tras-os-Montes", "caja": [-7.6, -6.2, 41.2, 41.9] },
+    { "terreno": "vega", "nombre": "Valle del Ebro", "caja": [-1.8, 0.9, 41.2, 42.2] },
+    { "terreno": "vega", "nombre": "Valle del Guadalquivir", "caja": [-6.4, -3.6, 37.1, 38.0] },
+    { "terreno": "vega", "nombre": "Levante", "caja": [-1.2, 0.6, 37.6, 39.8] },
+    { "terreno": "vega", "nombre": "Lezirias do Tejo", "caja": [-9.0, -8.2, 38.5, 39.5] },
+  ],
+  "puertos": [
+    { "nombre": "Somosierra", "caja": [-3.8, -3.4, 40.9, 41.2] },
+    { "nombre": "Guadarrama", "caja": [-4.3, -3.9, 40.6, 40.9] },
+    { "nombre": "Pajares", "caja": [-5.9, -5.6, 42.9, 43.1] },
+    { "nombre": "Piqueras", "caja": [-2.9, -2.4, 42.0, 42.3] },
+    { "nombre": "Despenyaperros", "caja": [-3.7, -3.3, 38.3, 38.5] },
+    { "nombre": "Padornelo", "caja": [-6.9, -6.5, 41.9, 42.2] },
+    { "nombre": "Puerto del Pico", "caja": [-5.2, -4.8, 40.2, 40.5] },
+    { "nombre": "Velate", "caja": [-1.7, -1.4, 43.0, 43.2] },
+    { "nombre": "Ragua", "caja": [-3.2, -2.9, 37.0, 37.2] },
+    { "nombre": "Portela do Homem", "caja": [-8.3, -7.9, 41.7, 41.9] },
+  ],
+}

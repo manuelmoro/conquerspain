@@ -19,8 +19,10 @@
     "formato:escribir": "prettier --write .",
     "test": "vitest run",
     "cobertura": "vitest run --coverage",
-    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test",
-    "partidas": "tsx herramientas/banco/src/regenerar-partidas.ts"
+    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test && npm run atlas:comprobar",
+    "partidas": "tsx herramientas/banco/src/regenerar-partidas.ts",
+    "atlas": "tsx herramientas/atlas/src/atlas.ts",
+    "atlas:comprobar": "tsx herramientas/atlas/src/atlas.ts --comprobar"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

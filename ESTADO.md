@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-010)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-011)
 **Fase actual:** Fase 1 · El mundo
 
 ---
@@ -14,11 +14,14 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-011 · Herramienta `atlas`: generación reproducible del mapa](docs/plan/T-011-herramienta-atlas.md)**
+**[T-012 · Catálogo · región 1: Sistema Ibérico y Alto Duero](docs/plan/T-012-catalogo-region-01.md)**
 
-Portar a TypeScript el proceso que ya se probó en la maqueta: descarga verificada de Natural Earth,
-proyección, semillas de comarca, Voronoi recortado a la costa, grafo de vecindad, validaciones y
-`mundo.v1.json` generado byte a byte igual en cada ejecución.
+Escribir las 34 comarcas reales de la primera región (Pinares, Tierra de Soria, Demanda, Cameros,
+Bureba con las salinas de Poza, Sigüenza con las de Imón, Molina y Jiloca con el hierro…), con sus
+potenciales justificados, y regenerar el atlas hasta que no quede ninguna comarca provisional dentro
+de su recuadro.
+
+> La sesión `conquerspain-45` avisó de que tomaría T-012 en cuanto se cerrara T-011.
 
 ## Cómo continuar (resumen)
 
@@ -48,6 +51,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y región de ejemplo |
+| Mapa generado | `npm run atlas` produce `mundo.v1.json` (334 comarcas, 959 tramos, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -71,6 +75,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-011 hecha**: herramienta `atlas` en TypeScript (descarga verificada, proyección, Voronoi recortado a la costa con geometría real, grafo filtrado por tierra, seis comprobaciones, informe y modo `--comprobar`). 334 comarcas provisionales a la espera del catálogo. 144 tests en verde |
 | 18-09-2026 | **T-010 hecha**: esquema del catálogo geográfico (`.jsonc` comentado), validador con sus nueve reglas —incluida la nota obligatoria cuando un potencial se aparta del terreno—, informe de cobertura y cargador. 127 tests en verde |
 | 17-09-2026 | **T-004 hecha**: armazón del resolutor (doce fases, contexto con borrador mutable, cambios con invariantes, sucesos, huella encadenada) y arnés de partidas de reproducción. **Fase 0 completa.** 111 tests en verde |
 | 17-09-2026 | **T-003 hecha**: tipos del dominio (siete módulos, sin lógica) y capa de validación con combinadores propios. Las órdenes pasan a vivir en el estado; `docs/02` §2.8 actualizado. 90 tests en verde |

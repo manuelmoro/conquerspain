@@ -1,0 +1,19 @@
+{
+  "descripcion": "Fuentes abiertas del mapa. Natural Earth es de dominio publico (naturalearthdata.com).",
+  "fuentes": [
+    {
+      "id": "countries",
+      "archivo": "countries.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson",
+      "sha256": "239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255",
+      "uso": "Costa de Espanya, Portugal, Andorra y Gibraltar, mas la tierra vecina de Francia y Marruecos"
+    },
+    {
+      "id": "rivers",
+      "archivo": "rivers.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
+      "sha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+      "uso": "Rios principales de la peninsula, para el dibujo del atlas"
+    }
+  ]
+}

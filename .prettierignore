@@ -8,3 +8,6 @@ maqueta/
 # Documentacion de diseno: se escribe a mano, con sus tablas alineadas a criterio.
 docs/
 *.md
+# El mundo se genera en forma canonica (una sola linea, claves ordenadas): darle formato
+# romperia la comprobacion de que nadie lo edita a mano.
+paquetes/mundo/datos/

@@ -1,6 +1,6 @@
 # T-011 · Herramienta `atlas`: generación reproducible del mapa
 
-**Fase:** 1 · El mundo · **Depende de:** T-010 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-010 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -135,3 +135,47 @@ npm run verificar
 1. Índice: T-011 `hecha`; `ESTADO.md`: siguiente T-012.
 2. Anota en la bitácora el número de comarcas generadas y cuántas son provisionales.
 3. Commit: `T-011: herramienta atlas y mundo v1 generado`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 144 tests en verde; la generación completa tarda **1,6 segundos** y produce
+**334 comarcas** y 959 tramos de camino, con el grafo conexo.
+
+Entregado en `herramientas/atlas/`:
+
+- `descargar.ts`: caché verificada por SHA-256 (`fuentes.json`). Si el fichero de Natural Earth
+  cambia río arriba, el proceso se detiene en vez de generar otro mapa sin avisar. Con la caché
+  presente no toca la red.
+- `proyeccion.ts`: la proyección que validó la maqueta, con las coordenadas redondeadas a enteros
+  una sola vez, al final.
+- `geometria.ts`: Douglas-Peucker, área, centroide, punto en polígono, recorte de celdas a tierra
+  (con `polygon-clipping`) y medida de qué parte de un tramo va por tierra.
+- `terreno.ts` y `relieve.jsonc`: zonas de relieve y puertos de referencia para las comarcas de
+  relleno, que son las que el catálogo todavía no ha escrito.
+- `generar.ts`: el proceso completo, con las seis comprobaciones que detienen la generación, el
+  informe legible y el modo `--comprobar`.
+
+Decisiones tomadas al implementar:
+
+- **Recorte geométrico de verdad**, no recorte al dibujar: cada comarca guarda su polígono ya
+  cortado por la costa, así se pueden medir áreas y detectar celdas que no tocan tierra. Cuando el
+  recorte parte una celda en varios trozos, se conserva el mayor.
+- **Vecindad filtrada por tierra**: dos comarcas son vecinas si al menos el 60 % de la recta que une
+  sus centros va por tierra. Sin eso, las dos orillas de una ría salían conectadas.
+- Las comarcas de relleno se llaman `sin-nombre-###`, viven en la región `99-provisional` y no son
+  origen: existen para que el mapa sea jugable mientras T-012 y T-015 escriben el catálogo real.
+- `npm run atlas -- --comprobar` entra en `npm run verificar`, y `paquetes/mundo/datos/` queda fuera
+  de Prettier: el mundo se guarda en forma canónica (una línea, claves ordenadas) y darle formato
+  rompería la comprobación.
+
+Comprobación del criterio 3, hecha a mano: al cambiar `"version":"v1"` por `"v1-tocado-a-mano"` en
+el JSON, `npm run atlas:comprobar` respondió «El mapa no se edita a mano: vuelve a generarlo con
+"npm run atlas"». Restaurado y de nuevo en verde.
+
+**Un fallo que merece la pena recordar:** la primera generación dio cero comarcas. La causa era
+Douglas-Peucker: un anillo cerrado empieza y acaba en el mismo punto, el primer segmento era
+degenerado y la fórmula de distancia a la recta daba cero para todos los puntos, así que la costa
+entera se simplificaba a dos puntos. Ahora, cuando el segmento es degenerado, se mide la distancia
+al punto. Hay test que lo cubre.
