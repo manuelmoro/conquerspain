@@ -19,6 +19,7 @@ const REGIONES = [
   '02-meseta-norte',
   '03-cantabrico',
   '04-galicia-minho',
+  '05-central-extremadura',
 ] as const;
 
 /**
@@ -146,6 +147,23 @@ describe('recursos estrategicos region a region', () => {
         .map((c) => c.id)
         .sort(),
     ).toEqual(['jiloca', 'senyorio-de-molina']);
+  });
+
+  it('pone en el Sistema Central el pasto de verano y en Extremadura el de invierno', () => {
+    const sur = catalogo().filter((c) => c.region === '05-central-extremadura');
+    expect(sur).toHaveLength(37);
+    const verano = sur.filter((c) => c.rasgos.includes('pasto-de-verano'));
+    const invierno = sur.filter(
+      (c) => c.rasgos.includes('pasto-de-invierno') || c.rasgos.includes('dehesa'),
+    );
+    // Las dos mitades de la trashumancia tienen que estar las dos, y bien servidas.
+    expect(verano.length).toBeGreaterThanOrEqual(8);
+    expect(invierno.length).toBeGreaterThanOrEqual(10);
+    // La dehesa no es tierra de pan: solo las vegas del Guadiana, el Alagon y el Tajo pasan de 3.
+    expect(sur.filter((c) => c.potenciales.labor >= 4).length).toBeLessThanOrEqual(8);
+    expect(sur.filter((c) => c.potenciales.labor === 5).map((c) => c.id)).toEqual([
+      'vegas-del-guadiana',
+    ]);
   });
 
   it('deja Galicia y el Minho sin sal ni hierro y con la mar por despensa', () => {

@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (3 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (4 de 9 entregas)
 
 ## 1. Contexto
 
@@ -25,7 +25,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 | 2 | Meseta norte | `02-meseta-norte.jsonc` | **hecha** (36) | 38 | Tierra de Campos (`labor 5`), Tierra de Medina (feria grande, mayo y octubre), Villalón (feria), Cerrato, Páramos, Tierra de Pinares de Valladolid, Tierra de Segovia (`pasto`, lana fina) |
 | 3 | Cornisa cantábrica y País Vasco | `03-cantabrico.jsonc` | **hecha** (35) | 30 | **Ferrerías**: Encartaciones, Somorrostro, Oiartzun, Mena (`hierro 4-5`, `ferreria-de-agua`); **salinas de Añana** (`sal 5`); puertos de mar (Bilbao, Santander, San Sebastián, Castro); `monte 5` en los valles; pasos de la Cantábrica |
 | 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | **hecha** (38) | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
-| 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | pendiente | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
+| 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | **hecha** (37) | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
 | 6 | Meseta sur | `06-meseta-sur.jsonc` | pendiente | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
 | 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | pendiente | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
 | 8 | Levante y Murcia | `08-levante.jsonc` | pendiente | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
@@ -167,3 +167,26 @@ Decisiones de la entrega:
   a medias el mapa llegó a 375 y la barrera de 380 iba a saltar en la entrega siguiente. Mientras
   queden comarcas provisionales se admiten 300–430; cuando no quede ninguna, vuelve a exigirse la
   horquilla de diseño, 320–380. `docs/05` §5.2 dice ahora lo mismo.
+
+### Entrega 5 · Sistema Central y Extremadura (18-09-2026)
+
+`05-central-extremadura.jsonc`: **37 comarcas**, de la sierra del Lozoya a Tentudía y de Ciudad
+Rodrigo a La Siberia. El mundo va por 377 comarcas, 181 reales y 196 provisionales.
+
+Lo que define a la región: es **las dos mitades de la trashumancia en el mismo archivo**. Arriba,
+nueve comarcas con `pasto-de-verano` (Gredos, Guadarrama, Lozoya, Béjar, Francia, Gata, Jerte,
+Villuercas, Ávila); abajo, catorce con `dehesa` o `pasto-de-invierno` (Cáceres, Trujillo, La
+Serena, Llerena, Azuaga, Jerez de los Caballeros, La Siberia…). Cuando T-013 trace las cañadas,
+las Soriana Occidental, Segoviana y Leonesas terminan aquí.
+
+Decisiones de la entrega:
+
+- **La proporción de pan de §4.6 tampoco se le exige**: seis comarcas con `labor >= 4` de 37. No es
+  sierra, es dehesa: tierra de encina y ganado, con el pan en las vegas del Guadiana, el Alagón y
+  el Tajo. Cumple de sobra la regla de T-012 (nadie a más de tres jornadas).
+- **Solo Vegas del Guadiana llega a `labor 5`**, junto con la Tierra de Campos y Campos de Rioseco
+  de la región 02. Son los tres graneros del mapa hasta ahora.
+- **La sierra de Madrid entra aquí** y no en la Meseta sur: el Guadarrama y el Lozoya son Sistema
+  Central. Madrid y el Jarama los escribirá la entrega 6.
+- El validador **rechazó un rasgo inventado** (`castanyar-de-hervas`) en cuanto se generó el atlas:
+  el catálogo cerrado de rasgos hizo exactamente su trabajo.
