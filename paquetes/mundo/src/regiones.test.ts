@@ -22,6 +22,7 @@ const REGIONES = [
   '05-central-extremadura',
   '06-meseta-sur',
   '07-ebro-pirineo',
+  '08-levante',
 ] as const;
 
 /**
@@ -29,7 +30,7 @@ const REGIONES = [
  * por cada cinco). La 01 es el Sistema Iberico: sierra y paramo alto, donde esa proporcion seria
  * falsear la geografia. Para ella manda la regla de T-012: nadie a mas de tres jornadas del pan.
  */
-const REGIONES_DE_LLANO = ['02-meseta-norte', '06-meseta-sur'] as const;
+const REGIONES_DE_LLANO = ['02-meseta-norte', '06-meseta-sur', '08-levante'] as const;
 
 function catalogo(): ComarcaCatalogo[] {
   const resultado = cargarCatalogo(CATALOGO);
@@ -149,6 +150,29 @@ describe('recursos estrategicos region a region', () => {
         .map((c) => c.id)
         .sort(),
     ).toEqual(['jiloca', 'senyorio-de-molina']);
+  });
+
+  it('da a Levante las huertas de regadio, la sal del sur y los puertos', () => {
+    const levante = catalogo().filter((c) => c.region === '08-levante');
+    expect(levante).toHaveLength(31);
+    // Las cuatro huertas mayores son las unicas con labor 5, y todas van como vega.
+    const huertas = levante.filter((c) => c.potenciales.labor === 5);
+    expect(huertas.map((c) => c.id).sort()).toEqual([
+      'horta-de-valencia',
+      'huerta-de-murcia',
+      'la-ribera',
+      'vega-baixa',
+    ]);
+    expect(huertas.every((c) => c.terreno === 'vega')).toBe(true);
+    expect(
+      levante
+        .filter((c) => c.potenciales.sal >= 3)
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(['campo-de-cartagena', 'vega-baixa']);
+    expect(levante.filter((c) => c.rasgos.includes('puerto-de-mar')).length).toBeGreaterThanOrEqual(
+      10,
+    );
   });
 
   it('reparte en el Ebro la sal de Cardona, el hierro del Ripolles y los puertos', () => {

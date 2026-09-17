@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (6 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (7 de 9 entregas)
 
 ## 1. Contexto
 
@@ -28,7 +28,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 | 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | **hecha** (37) | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
 | 6 | Meseta sur | `06-meseta-sur.jsonc` | **hecha** (35) | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
 | 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | **hecha** (42) | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
-| 8 | Levante y Murcia | `08-levante.jsonc` | pendiente | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
+| 8 | Levante y Murcia | `08-levante.jsonc` | **hecha** (31) | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
 | 9 | Andalucía | `09-andalucia.jsonc` | pendiente | 42 | Campiña del Guadalquivir (`labor 5`); Aljarafe y Sevilla (feria grande); **salinas de Cádiz** y almadrabas (`sal 5`, `pesca 5`); Sierra Morena y Riotinto (`hierro 3`); Macael (`cantera-noble`, mármol); Alpujarras y Vega de Granada; Subbética |
 | 10 | Centro y sur de Portugal | `10-portugal-sur.jsonc` | pendiente | 32 | Beira Alta y Serra da Estrela (`pasto-de-verano`, `monte`); Rio Maior (**sal**); Lezíria do Tejo (`labor 5`); Alentejo (`montado`, `dehesa`); Algarve (`pesca 5`, `sal 4`); puertos de Lisboa, Setúbal y Porto |
 
@@ -235,3 +235,27 @@ Decisiones de la entrega:
   recoge. Su comarca, la Cerdaña, se queda con Ger, Bellver y Alp.
 - **La proporción de pan de §4.6 no se le exige**: siete comarcas con `labor >= 4` de 42, porque
   media región es alta montaña y estepa. Nadie queda a más de tres jornadas del pan.
+
+### Entrega 8 · Levante y Murcia (18-09-2026)
+
+`08-levante.jsonc`: **31 comarcas**, de Morella a Águilas. El mundo va por 398 comarcas, 289 reales
+y 109 provisionales.
+
+Lo que define a la región: las huertas de regadío andalusí. Cuatro comarcas llegan a `labor 5`
+—l'Horta de València, la Ribera, la Vega Baja y la huerta de Murcia— y las cuatro van como `vega`.
+Diez tienen `puerto-de-mar` y nueve pescan. La sal está donde estuvo: La Mata y Torrevieja en la
+Vega Baja (`sal 4`) y San Pedro del Pinatar en el Campo de Cartagena (`sal 3`).
+
+Decisiones de la entrega:
+
+- **La regla de `labor >= 4` solo en llano o vega mordió tres veces** (Plana de Castelló, Plana
+  Baixa y la Safor, todas huertas litorales). Se resolvió bajando a `labor 3` las dos primeras, que
+  conservan `pesca`, y pasando la Safor a `vega` sin pesca, con su puerto marcado como rasgo. Es la
+  misma solución que ya se le dio a València: en el catálogo, una comarca es huerta **o** pesquera,
+  y el puerto es un rasgo.
+- **Alicante, Villajoyosa y Águilas llevan el punto tierra adentro**, como los puertos cantábricos:
+  la costa simplificada se come los cabos.
+- **La Marina Alta se quedó sin vecinos** en la primera generación, aislada en el cabo de la Nao;
+  se movió su centro tierra adentro hasta que el grafo volvió a conectarla.
+- Esta región **sí cumple la proporción de pan de §4.6**: siete comarcas con `labor >= 4` de 31,
+  justo en el límite.

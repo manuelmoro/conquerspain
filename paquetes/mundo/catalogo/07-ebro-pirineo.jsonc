@@ -1078,8 +1078,8 @@
     "localidades": [
       { "nombre": "Tortosa", "coord": [521, 40813], "cabecera": true },
       { "nombre": "Amposta", "coord": [581, 40709], "cabecera": null },
-      { "nombre": "Sant Carles de la Rapita", "coord": [596, 40620], "cabecera": null },
-      { "nombre": "Ulldecona", "coord": [447, 40597], "cabecera": null },
+      { "nombre": "Roquetes", "coord": [503, 40816], "cabecera": null },
+      { "nombre": "L'Aldea", "coord": [639, 40757], "cabecera": null },
     ],
     "rasgos": ["puerto-de-mar", "marisma", "ciudad-episcopal", "vega-fluvial"],
     "feria": null,
