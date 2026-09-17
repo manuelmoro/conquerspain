@@ -1,6 +1,6 @@
 # T-004 · Armazón del resolutor: fases, contexto y sucesos
 
-**Fase:** 0 · Cimientos · **Depende de:** T-002, T-003 · **Estado:** pendiente
+**Fase:** 0 · Cimientos · **Depende de:** T-002, T-003 · **Estado:** **hecha** (17-09-2026)
 
 ## 1. Contexto
 
@@ -189,3 +189,37 @@ npx vitest run paquetes/nucleo/pruebas
 1. Índice: T-004 `hecha`. Fase 0 completa.
 2. `ESTADO.md`: fase actual → «Fase 1 · El mundo»; siguiente tarea T-010.
 3. Commit: `T-004: armazon del resolutor y partidas de reproduccion`.
+
+---
+
+## 9. Resultado (17-09-2026)
+
+Tarea cerrada y **fase 0 completa**. 111 tests en verde (17 archivos).
+
+Entregado:
+
+- `contexto.ts`, `cambios.ts`, `sucesos.ts`, `errores.ts`, `resolver.ts` y las doce fases vacías,
+  cada una citando la tarea que la implementará.
+- `pruebas/mundo-mini.ts`: siete comarcas de prueba (vega, llano, monte, sierra, mina, río y costa)
+  con potenciales pensados para que luego haya algo que decidir, validadas al construirlas.
+- `pruebas/partidas/humo-01.json` y `pruebas/reproduccion.test.ts`, más
+  `herramientas/banco/src/regenerar-partidas.ts` (`npm run partidas`), que enseña qué huellas
+  cambian y solo escribe con `--confirmo`.
+
+Decisiones tomadas al implementar:
+
+- **Borrador mutable con tipos.** Las fases trabajan sobre `EstadoBorrador`, una versión mutable del
+  estado generada con un tipo `Mutable<T>` que **para la recursión en los primitivos**: los
+  identificadores del dominio son cadenas con marca de tipo y recorrerlos como objetos la destruía.
+- **La huella se encadena.** `huellaTurnoAnterior` se calcula sobre el estado completo, que ya
+  incluye la huella del turno anterior: cada turno firma toda la historia de la partida.
+- **Sin borrar claves dinámicas.** Cuando un edificio baja a nivel cero se rehace el registro sin esa
+  clave, para que la forma canónica no dependa del orden de inserción.
+- `aplicar` cubre ya once clases de cambio (recursos, reserva, prestigio, escasez, población,
+  lealtad, edificios, influencia, dueño y las tres de órdenes), cada una con sus invariantes.
+- Se añadió `tsx` como dependencia de desarrollo para poder ejecutar los scripts del banco.
+
+Comprobación del criterio 5, hecha a mano: al hacer que la fase de producción repartiera un pan, la
+reproducción de `humo-01` falló en el turno 1 señalando la huella esperada y la obtenida, y
+recordando que se regenera con `npm run partidas -- --confirmo`. Después se restauró la fase y todo
+volvió a verde.

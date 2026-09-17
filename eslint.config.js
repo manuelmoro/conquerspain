@@ -33,6 +33,12 @@ export default tseslint.config(
       'prefer-const': 'error',
       'no-console': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
+      // Un parametro que empieza por guion bajo es "lo recibo pero todavia no lo uso":
+      // asi las fases del armazon declaran su firma definitiva antes de implementarse.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
     },

@@ -19,7 +19,8 @@
     "formato:escribir": "prettier --write .",
     "test": "vitest run",
     "cobertura": "vitest run --coverage",
-    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test"
+    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test",
+    "partidas": "tsx herramientas/banco/src/regenerar-partidas.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -28,6 +29,7 @@
     "eslint": "^10.10.0",
     "globals": "^17.12.0",
     "prettier": "^3.9.7",
+    "tsx": "^4.23.13",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.0",
     "vitest": "^5.0.1"

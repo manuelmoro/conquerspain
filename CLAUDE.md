@@ -97,6 +97,7 @@ npm run lint           # ESLint, incluida la guarda de pureza del nucleo
 npm run formato        # Prettier en modo comprobacion (formato:escribir para arreglar)
 npm test               # Vitest sobre paquetes/ y herramientas/
 npm run cobertura      # Vitest con cobertura (umbral informativo)
+npm run partidas       # Recalcula las huellas de las partidas de reproduccion (escribe con --confirmo)
 ```
 
 Pendientes de crear en sus tareas: `npm run atlas` (T-011) y `npm run dev` (T-080).

@@ -12,6 +12,9 @@
     },
     {
       "path": "../../paquetes/mundo"
+    },
+    {
+      "path": "../../paquetes/nucleo/tsconfig.pruebas.json"
     }
   ]
 }

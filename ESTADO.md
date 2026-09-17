@@ -3,8 +3,8 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 17 de septiembre de 2026 (tras cerrar T-003)
-**Fase actual:** Fase 0 · Cimientos del repositorio
+**Última actualización:** 17 de septiembre de 2026 (tras cerrar T-004; fase 0 completa)
+**Fase actual:** Fase 1 · El mundo
 
 ---
 
@@ -14,11 +14,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-004 · Armazón del resolutor: fases, contexto y sucesos](docs/plan/T-004-armazon-del-resolutor.md)**
+**[T-010 · Esquema del catálogo y cargador validado](docs/plan/T-010-esquema-del-catalogo.md)**
 
-Montar la tubería de las doce fases, el registro de sucesos, la huella por turno y el arnés de
-partidas de reproducción. Sin reglas de juego todavía: cada fase queda como función identidad
-documentada. Con esto se cierra la fase 0.
+Empieza la fase 1. Hay que fijar el formato del catálogo geográfico (`.jsonc` por regiones, con
+comentarios que justifiquen cada criterio), su validador y el cargador del paquete `@conquer/mundo`,
+con un informe de cobertura por región.
 
 ## Cómo continuar (resumen)
 
@@ -45,6 +45,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
+| Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
+| Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -68,6 +70,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 17-09-2026 | **T-004 hecha**: armazón del resolutor (doce fases, contexto con borrador mutable, cambios con invariantes, sucesos, huella encadenada) y arnés de partidas de reproducción. **Fase 0 completa.** 111 tests en verde |
 | 17-09-2026 | **T-003 hecha**: tipos del dominio (siete módulos, sin lógica) y capa de validación con combinadores propios. Las órdenes pasan a vivir en el estado; `docs/02` §2.8 actualizado. 90 tests en verde |
 | 17-09-2026 | **T-002 hecha**: útiles deterministas (enteros en milésimas con BigInt, orden por punto de código, xoshiro128** con semilla, forma canónica y SHA-256 propio contrastado con `node:crypto`). 58 tests en verde |
 | 17-09-2026 | **T-001 hecha**: monorepo con seis paquetes, TypeScript estricto, Vitest, ESLint, Prettier, integración continua y las dos guardas de pureza del núcleo. `npm run verificar` pasa: 7 archivos de test, 10 tests, 0 vulnerabilidades |

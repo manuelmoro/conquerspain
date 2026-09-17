@@ -14,3 +14,5 @@ export type { Azar } from './azar.ts';
 export { comparar, enOrden, idsEnOrden, ordenarPor } from './orden.ts';
 export { canonico } from './serializacion.ts';
 export { aBytesUtf8, hash32, huella, sha256Hex } from './huella.ts';
+export { clonar } from './clonar.ts';
+export type { Mutable } from './clonar.ts';
