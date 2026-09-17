@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 17 de septiembre de 2026 (tras cerrar T-001)
+**Última actualización:** 17 de septiembre de 2026 (tras cerrar T-002)
 **Fase actual:** Fase 0 · Cimientos del repositorio
 
 ---
@@ -14,10 +14,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-002 · Útiles deterministas: enteros, orden, azar y huella](docs/plan/T-002-utiles-deterministas.md)**
+**[T-003 · Tipos del estado, las órdenes y el mundo](docs/plan/T-003-tipos-del-dominio.md)**
 
-Aritmética en milésimas, recorrido en orden estable, generador con semilla y huella canónica del
-estado. Es la base del determinismo de todo el motor, así que va con sus vectores de prueba.
+Fijar la forma de los datos antes de escribir ninguna regla: partida, jugador, comarca, recua,
+orden, mundo y tablas de reglas, con validadores en tiempo de ejecución para todo lo que entra de
+fuera. Sin lógica de juego dentro.
 
 ## Cómo continuar (resumen)
 
@@ -41,6 +42,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | `herramientas/` | `atlas` y `banco` creados, vacíos; su contenido llega en T-011 y T-046 |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Guardas de pureza del núcleo | Dos capas activas: reglas de ESLint y `paquetes/nucleo/pruebas/pureza.test.ts` |
+| Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -64,6 +66,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 17-09-2026 | **T-002 hecha**: útiles deterministas (enteros en milésimas con BigInt, orden por punto de código, xoshiro128** con semilla, forma canónica y SHA-256 propio contrastado con `node:crypto`). 58 tests en verde |
 | 17-09-2026 | **T-001 hecha**: monorepo con seis paquetes, TypeScript estricto, Vitest, ESLint, Prettier, integración continua y las dos guardas de pureza del núcleo. `npm run verificar` pasa: 7 archivos de test, 10 tests, 0 vulnerabilidades |
 
 ## Riesgos abiertos

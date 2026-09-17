@@ -1,6 +1,6 @@
 # T-002 · Útiles deterministas: enteros, orden, azar y huella
 
-**Fase:** 0 · Cimientos · **Depende de:** T-001 · **Estado:** pendiente
+**Fase:** 0 · Cimientos · **Depende de:** T-001 · **Estado:** **hecha** (17-09-2026)
 
 ## 1. Contexto
 
@@ -163,3 +163,32 @@ npx vitest run paquetes/nucleo/src/utiles
 1. Marca T-002 como `hecha` en el índice.
 2. `ESTADO.md`: siguiente tarea T-003, bitácora.
 3. Commit: `T-002: utiles deterministas (enteros, orden, azar, huella)`.
+
+---
+
+## 9. Resultado (17-09-2026)
+
+Tarea cerrada. Los nueve criterios de aceptación se cumplen; 53 tests en el núcleo, 58 en total.
+
+Añadidos respecto a la lista de archivos de §5, ambos en `paquetes/nucleo/pruebas/`:
+
+- `utiles-aislados.test.ts`, que comprueba el criterio 9 leyendo los imports de cada archivo de
+  `utiles/` (solo rutas propias, y `vitest` en los tests).
+- `huella-contra-node.test.ts`, que contrasta nuestro SHA-256 con el de `node:crypto` en 300 textos
+  generados con semilla fija, en los límites de bloque (54–65, 119–128 bytes) y con acentos, eñes,
+  símbolos y emojis. El núcleo no puede usar la criptografía de la plataforma, pero las pruebas sí:
+  es la única forma de saber que la implementación es correcta y no solo consistente consigo misma.
+
+Decisiones tomadas al implementar:
+
+- **BigInt para las cadenas de factores.** Seis factores en milésimas superan 2^53 si se multiplican
+  sin cuidado, así que `multiplicarFactores` acumula en `bigint` y trunca una sola vez al final, con
+  división hacia abajo también para negativos. Los valores de entrada y salida siguen siendo enteros
+  seguros de JavaScript, y se comprueba.
+- **`azarDeTexto`** se exporta además de `azarDe`: las pruebas y el banco necesitan un generador con
+  semilla libre, sin partida ni turno.
+- **Muestreo por rechazo** en `Azar.entero` para que el reparto sea uniforme y no se sesgue por el
+  resto de la división.
+- `paquetes/nucleo/tsconfig.pruebas.json` referencia ahora al proyecto de las fuentes. Sin esa
+  referencia, TypeScript metía los archivos de `src` en el programa de las pruebas y emitía
+  declaraciones sueltas dentro de `src/`.
