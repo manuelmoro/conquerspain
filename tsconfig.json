@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./paquetes/nucleo" },
+    { "path": "./paquetes/nucleo/tsconfig.pruebas.json" },
+    { "path": "./paquetes/mundo" },
+    { "path": "./paquetes/servidor" },
+    { "path": "./paquetes/cliente" },
+    { "path": "./herramientas/atlas" },
+    { "path": "./herramientas/banco" }
+  ]
+}

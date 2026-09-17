@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-pruebas/
+cobertura/
+package-lock.json
+# La maqueta v0.1 esta congelada tal y como se publico.
+maqueta/
+# Documentacion de diseno: se escribe a mano, con sus tablas alineadas a criterio.
+docs/
+*.md

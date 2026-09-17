@@ -87,15 +87,28 @@ conserva como referencia. La interfaz definitiva se construye en `paquetes/clien
 
 ## 5. Comandos
 
-Se rellenan al completar T-001. Referencia prevista:
+Node 22 (ver `.nvmrc`) y npm. Espacio de trabajo con npm workspaces.
 
 ```bash
-npm install            # instala el espacio de trabajo
-npm test               # tests de todos los paquetes
-npm run verificar      # tipos + lint + tests (lo que debe pasar antes de cerrar una tarea)
-npm run atlas          # regenera los datos del mundo
-npm run dev            # cliente en local
+npm install            # instala el espacio de trabajo entero
+npm run verificar      # tipos + lint + formato + tests: lo que debe pasar para cerrar una tarea
+npm run tipos          # tsc --build (solo declaraciones; el codigo se ejecuta desde las fuentes)
+npm run lint           # ESLint, incluida la guarda de pureza del nucleo
+npm run formato        # Prettier en modo comprobacion (formato:escribir para arreglar)
+npm test               # Vitest sobre paquetes/ y herramientas/
+npm run cobertura      # Vitest con cobertura (umbral informativo)
 ```
+
+Pendientes de crear en sus tareas: `npm run atlas` (T-011) y `npm run dev` (T-080).
+
+Notas del montaje:
+
+- Se emiten **solo declaraciones** (`emitDeclarationOnly`): el código se ejecuta siempre desde las
+  fuentes, con Vitest, `tsx` o Vite. Por eso los imports relativos llevan su extensión real `.ts`.
+- TypeScript 6 deprecó `baseUrl`; los alias `@conquer/*` se resuelven con `paths` relativos a
+  `tsconfig.base.json`.
+- `paquetes/nucleo/tsconfig.json` declara `"types": []`: si alguien escribe `process` en el núcleo,
+  no compila. Sus pruebas viven aparte, en `tsconfig.pruebas.json`, y esas sí ven Node.
 
 ## 6. Estilo de código
 

@@ -15,7 +15,7 @@ mapa completo; ESTADO.md es la aguja.
 
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
-| [T-001](T-001-espacio-de-trabajo.md) | Espacio de trabajo, TypeScript y verificación | pendiente | — |
+| [T-001](T-001-espacio-de-trabajo.md) | Espacio de trabajo, TypeScript y verificación | **hecha** | — |
 | [T-002](T-002-utiles-deterministas.md) | Útiles deterministas: enteros, orden, azar y huella | pendiente | T-001 |
 | [T-003](T-003-tipos-del-dominio.md) | Tipos del estado, las órdenes y el mundo | pendiente | T-001 |
 | [T-004](T-004-armazon-del-resolutor.md) | Armazón del resolutor: fases, contexto y sucesos | pendiente | T-002, T-003 |

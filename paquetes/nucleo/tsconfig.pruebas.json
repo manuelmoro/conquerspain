@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "pruebas",
+    "outDir": "dist-pruebas",
+    "types": ["node"]
+  },
+  "include": ["pruebas/**/*.ts"]
+}

@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 17 de septiembre de 2026
+**Última actualización:** 17 de septiembre de 2026 (tras cerrar T-001)
 **Fase actual:** Fase 0 · Cimientos del repositorio
 
 ---
@@ -14,10 +14,10 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-001 · Espacio de trabajo, TypeScript y verificación](docs/plan/T-001-espacio-de-trabajo.md)**
+**[T-002 · Útiles deterministas: enteros, orden, azar y huella](docs/plan/T-002-utiles-deterministas.md)**
 
-Es la primera tarea del plan y no depende de nada. Al terminarla, `npm run verificar` tiene que
-funcionar en limpio.
+Aritmética en milésimas, recorrido en orden estable, generador con semilla y huella canónica del
+estado. Es la base del determinismo de todo el motor, así que va con sus vectores de prueba.
 
 ## Cómo continuar (resumen)
 
@@ -37,8 +37,10 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | No existe todavía: lo crea T-001 |
-| `herramientas/` | No existe todavía: lo crea T-011 |
+| `paquetes/` | Espacio de trabajo montado: `nucleo`, `mundo`, `servidor` y `cliente`, vacíos salvo su versión |
+| `herramientas/` | `atlas` y `banco` creados, vacíos; su contenido llega en T-011 y T-046 |
+| Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
+| Guardas de pureza del núcleo | Dos capas activas: reglas de ESLint y `paquetes/nucleo/pruebas/pureza.test.ts` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -53,6 +55,8 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Se trabaja **por capas técnicas**, priorizando la calidad sobre ver algo jugable pronto | 17-09-2026 |
 | Turno = quincena; 24 turnos por año; el intervalo real lo fija cada partida | 17-09-2026 |
 | Siete recursos: pan, madera, piedra, maravedís, sal, hierro, lana | 17-09-2026 |
+| Node 22, npm workspaces, TypeScript 6 estricto, Vitest, ESLint 10 y Prettier | 17-09-2026 |
+| Solo se emiten declaraciones; el código se ejecuta desde las fuentes y los imports llevan `.ts` | 17-09-2026 |
 
 ## Bitácora
 
@@ -60,6 +64,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 17-09-2026 | **T-001 hecha**: monorepo con seis paquetes, TypeScript estricto, Vitest, ESLint, Prettier, integración continua y las dos guardas de pureza del núcleo. `npm run verificar` pasa: 7 archivos de test, 10 tests, 0 vulnerabilidades |
 
 ## Riesgos abiertos
 

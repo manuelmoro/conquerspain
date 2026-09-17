@@ -1,0 +1,14 @@
+{
+  "name": "@conquer/cliente",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Interfaz de juego: atlas, ordenes y cronica",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@conquer/nucleo": "*",
+    "@conquer/mundo": "*"
+  }
+}

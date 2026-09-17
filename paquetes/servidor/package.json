@@ -1,0 +1,14 @@
+{
+  "name": "@conquer/servidor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Autoridad de la partida: persistencia, reloj de turnos y API",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@conquer/nucleo": "*",
+    "@conquer/mundo": "*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@conquer/atlas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Generacion reproducible del mapa desde fuentes abiertas",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@conquer/mundo": "*",
+    "@conquer/nucleo": "*"
+  }
+}

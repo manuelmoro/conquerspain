@@ -1,0 +1,14 @@
+{
+  "name": "@conquer/banco",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Banco de pruebas: partidas automaticas y medicion de equilibrio",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@conquer/nucleo": "*",
+    "@conquer/mundo": "*"
+  }
+}

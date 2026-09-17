@@ -1,0 +1,10 @@
+{
+  "name": "@conquer/nucleo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Motor de reglas: puro, determinista, sin E/S",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

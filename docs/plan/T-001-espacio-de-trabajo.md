@@ -183,3 +183,22 @@ git status --short        # sin archivos sueltos inesperados
 2. Marca T-001 como `hecha` en `docs/plan/00-indice.md`.
 3. Actualiza `ESTADO.md`: siguiente tarea T-002, bitácora y «Qué existe hoy».
 4. Commit: `T-001: espacio de trabajo, TypeScript estricto y verificación`.
+
+---
+
+## 9. Resultado (17-09-2026)
+
+Tarea cerrada. Diferencias respecto a lo previsto, todas anotadas también en `CLAUDE.md` §5:
+
+- **TypeScript 6.0.3** (la 7 todavía no la admite `typescript-eslint`). La 6 deprecó `baseUrl`, así
+  que los alias `@conquer/*` se resuelven con `paths` relativos a `tsconfig.base.json`.
+- **`emitDeclarationOnly`**: `tsc --build` solo emite declaraciones; el código se ejecuta siempre
+  desde las fuentes (Vitest, `tsx`, Vite). Por eso `allowImportingTsExtensions` y los imports
+  relativos con extensión `.ts`, y por eso se quitó `sourceMap`.
+- Versiones finales: Node 22, ESLint 10, `typescript-eslint` 8, Vitest 5, Prettier 3. Instalación
+  limpia sin vulnerabilidades.
+- Las pruebas del núcleo viven en `paquetes/nucleo/tsconfig.pruebas.json`, un proyecto aparte que sí
+  ve los tipos de Node (la guarda de pureza necesita leer archivos).
+- Comprobación del criterio 3 hecha a mano: al añadir `new Date()`, `Math.random()` y `1.25` a
+  `paquetes/nucleo/src/index.ts`, ESLint dio 5 errores y la prueba de pureza señaló las tres líneas
+  con su motivo. Después se restauró el archivo y `npm run verificar` volvió a pasar.

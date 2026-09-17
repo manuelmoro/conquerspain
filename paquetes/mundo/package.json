@@ -1,0 +1,13 @@
+{
+  "name": "@conquer/mundo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Datos del mundo y su cargador validado",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@conquer/nucleo": "*"
+  }
+}

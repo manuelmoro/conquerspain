@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@conquer/nucleo": ["./paquetes/nucleo/src/index.ts"],
+      "@conquer/mundo": ["./paquetes/mundo/src/index.ts"],
+      "@conquer/servidor": ["./paquetes/servidor/src/index.ts"],
+      "@conquer/cliente": ["./paquetes/cliente/src/index.ts"]
+    },
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true
+  }
+}
