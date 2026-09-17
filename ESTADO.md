@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 5 de T-015)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 6 de T-015)
 **Fase actual:** Fase 1 · El mundo
 
 ---
@@ -11,8 +11,9 @@
 ## Tarea en curso
 
 **[T-015 · Catálogo · regiones 2 a 10](docs/plan/T-015-catalogo-resto-de-regiones.md)** · hechas
-las entregas 2 a 5; toca la **entrega 6: Meseta sur** (`06-meseta-sur.jsonc`), con La Mancha, la
-Alcarria, los Montes de Toledo, el Campo de Calatrava y la serranía de Cuenca.
+las entregas 2 a 6; toca la **entrega 7: Ebro, Pirineo y Cataluña** (`07-ebro-pirineo.jsonc`), con
+las Bardenas y los Monegros, la ribera navarra, el Pirineo, Cardona y los puertos de Barcelona y
+Tarragona.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -51,8 +52,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
 | Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
-| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **cinco regiones escritas**: 01 Sistema Ibérico (35), 02 Meseta norte (36), 03 cornisa cantábrica (35), 04 Galicia y Minho (38) y 05 Sistema Central y Extremadura (37) |
-| Mapa generado | `npm run atlas` produce `mundo.v1.json` (377 comarcas —181 reales y 196 provisionales—, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
+| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **seis regiones escritas**: 01 Sistema Ibérico (35), 02 Meseta norte (36), 03 cornisa cantábrica (35), 04 Galicia y Minho (38), 05 Sistema Central y Extremadura (37) y 06 Meseta sur (35) |
+| Mapa generado | `npm run atlas` produce `mundo.v1.json` (377 comarcas —216 reales y 161 provisionales—, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -76,6 +77,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-015, entrega 6 hecha**: Meseta sur, 35 comarcas. Dieciocho labran a 4 o más y once tienen viñedo; Toledo y Madrid entran en el mapa. 216 comarcas reales de 377. 188 tests en verde |
 | 18-09-2026 | **T-015, entrega 5 hecha**: Sistema Central y Extremadura, 37 comarcas. Las dos mitades de la trashumancia en el mismo archivo: nueve comarcas de pasto de verano arriba y catorce de dehesa o pasto de invierno abajo. 181 comarcas reales de 377. 180 tests en verde |
 | 18-09-2026 | **T-015, entrega 4 hecha**: Galicia y norte de Portugal, 38 comarcas. Trece pescan y once tienen viñedo; ni sal, ni hierro, ni una sola comarca con `labor >= 4`. La horquilla de comarcas del atlas pasa a ser adaptativa mientras quede relleno. 173 tests en verde |
 | 18-09-2026 | **T-015, entrega 3 hecha**: cornisa cantábrica y País Vasco, 35 comarcas. El reverso de la Meseta: una sola comarca con `labor 4`, quince que pescan, el hierro en cinco (Somorrostro, Bilbao, Durango, Oiartzun y Mena) y la sal de Añana con `sal 5`. 166 tests en verde |

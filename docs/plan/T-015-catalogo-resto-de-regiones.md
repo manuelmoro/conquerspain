@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (4 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (5 de 9 entregas)
 
 ## 1. Contexto
 
@@ -26,7 +26,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 | 3 | Cornisa cantábrica y País Vasco | `03-cantabrico.jsonc` | **hecha** (35) | 30 | **Ferrerías**: Encartaciones, Somorrostro, Oiartzun, Mena (`hierro 4-5`, `ferreria-de-agua`); **salinas de Añana** (`sal 5`); puertos de mar (Bilbao, Santander, San Sebastián, Castro); `monte 5` en los valles; pasos de la Cantábrica |
 | 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | **hecha** (38) | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
 | 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | **hecha** (37) | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
-| 6 | Meseta sur | `06-meseta-sur.jsonc` | pendiente | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
+| 6 | Meseta sur | `06-meseta-sur.jsonc` | **hecha** (35) | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
 | 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | pendiente | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
 | 8 | Levante y Murcia | `08-levante.jsonc` | pendiente | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
 | 9 | Andalucía | `09-andalucia.jsonc` | pendiente | 42 | Campiña del Guadalquivir (`labor 5`); Aljarafe y Sevilla (feria grande); **salinas de Cádiz** y almadrabas (`sal 5`, `pesca 5`); Sierra Morena y Riotinto (`hierro 3`); Macael (`cantera-noble`, mármol); Alpujarras y Vega de Granada; Subbética |
@@ -190,3 +190,26 @@ Decisiones de la entrega:
   Central. Madrid y el Jarama los escribirá la entrega 6.
 - El validador **rechazó un rasgo inventado** (`castanyar-de-hervas`) en cuanto se generó el atlas:
   el catálogo cerrado de rasgos hizo exactamente su trabajo.
+
+### Entrega 6 · Meseta sur (18-09-2026)
+
+`06-meseta-sur.jsonc`: **35 comarcas**, de la serranía de Guadalajara a la sierra del Segura y de
+la Jara a la Manchuela. El mundo va por 377 comarcas, 216 reales y 161 provisionales.
+
+Lo que define a la región: el llano y la viña. Dieciocho comarcas labran a 4 o más y once tienen
+`vinyedo`; no hay sal, ni pesca, ni una sola vena de hierro (el Campo de Calatrava y el valle de
+Alcudia se quedan en `hierro 2`, la mena pobre que trabajaban las herrerías de la orden). Las dos
+capitales del mapa, Toledo y Madrid, están aquí.
+
+Decisiones de la entrega:
+
+- **Almadén no tiene recurso propio.** Las minas de azogue mayores del mundo no se pueden jugar
+  porque el mercurio no es uno de los siete recursos; queda contado en su `nota` y con `piedra 3`.
+  Si algún día hay bienes de lujo, esa comarca es la primera candidata.
+- **Madrid y el Jarama entran en la Meseta sur** y la sierra de Guadarrama en la región 05: la
+  divisoria del plan es geográfica, no administrativa.
+- **La Mancha se reparte en seis comarcas** (Quintanar, Alcázar, Consuegra, Belmonte, La Roda y
+  Daimiel) en vez de una sola grande: son seis encomiendas distintas, y el jugador nota la
+  diferencia entre el azafrán de Consuegra y el vino de Valdepeñas.
+- Esta región **sí cumple la proporción de pan de §4.6**, como la 02: es la segunda `REGION_DE_LLANO`
+  del test.

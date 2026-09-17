@@ -20,6 +20,7 @@ const REGIONES = [
   '03-cantabrico',
   '04-galicia-minho',
   '05-central-extremadura',
+  '06-meseta-sur',
 ] as const;
 
 /**
@@ -27,7 +28,7 @@ const REGIONES = [
  * por cada cinco). La 01 es el Sistema Iberico: sierra y paramo alto, donde esa proporcion seria
  * falsear la geografia. Para ella manda la regla de T-012: nadie a mas de tres jornadas del pan.
  */
-const REGIONES_DE_LLANO = ['02-meseta-norte'] as const;
+const REGIONES_DE_LLANO = ['02-meseta-norte', '06-meseta-sur'] as const;
 
 function catalogo(): ComarcaCatalogo[] {
   const resultado = cargarCatalogo(CATALOGO);
@@ -147,6 +148,24 @@ describe('recursos estrategicos region a region', () => {
         .map((c) => c.id)
         .sort(),
     ).toEqual(['jiloca', 'senyorio-de-molina']);
+  });
+
+  it('hace de la Meseta sur tierra de vinya y de ordenes militares', () => {
+    const sur = catalogo().filter((c) => c.region === '06-meseta-sur');
+    expect(sur).toHaveLength(35);
+    // La Mancha: mas de la mitad labra a 4, y el vinyedo es su cultivo de renta.
+    expect(sur.filter((c) => c.potenciales.labor >= 4).length).toBeGreaterThanOrEqual(15);
+    expect(sur.filter((c) => c.rasgos.includes('vinyedo')).length).toBeGreaterThanOrEqual(8);
+    // Ni sal ni pesca; el unico hierro es la mena pobre de Calatrava y Alcudia, que no llega a vena.
+    expect(sur.filter((c) => c.potenciales.sal >= 1)).toEqual([]);
+    expect(sur.filter((c) => c.potenciales.pesca >= 1)).toEqual([]);
+    expect(sur.filter((c) => c.potenciales.hierro >= 3)).toEqual([]);
+    expect(
+      sur
+        .filter((c) => c.potenciales.hierro > 0)
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(['campo-de-calatrava', 'valle-de-alcudia']);
   });
 
   it('pone en el Sistema Central el pasto de verano y en Extremadura el de invierno', () => {

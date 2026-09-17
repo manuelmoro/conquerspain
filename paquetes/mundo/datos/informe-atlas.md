@@ -2,9 +2,9 @@
 
 Generado por `npm run atlas`. No se edita a mano.
 
-- Comarcas: **377**, de las cuales **196** son provisionales (sin catálogo).
-- Tramos de camino: 1077 · vecinos por comarca: 5.7 · jornadas medias: 3.2
-- Tramos marcados como candidatos a puerto de montaña: 15
+- Comarcas: **377**, de las cuales **161** son provisionales (sin catálogo).
+- Tramos de camino: 1077 · vecinos por comarca: 5.7 · jornadas medias: 3.3
+- Tramos marcados como candidatos a puerto de montaña: 13
 - Superficie del mapa: 997 × 800 unidades (1 unidad ≈ 1.11 km)
 
 ## Comarcas por región
@@ -16,17 +16,17 @@ Generado por `npm run atlas`. No se edita a mano.
 | 03-cantabrico | 35 |
 | 04-galicia-minho | 38 |
 | 05-central-extremadura | 37 |
-| 99-provisional | 196 |
+| 06-meseta-sur | 35 |
+| 99-provisional | 161 |
 
 ## Vecindades extremas
 
-- Más conectadas: sin-nombre-036 (10), ayllon (9), odra-pisuerga (9), terra-de-barroso (9), alfoz-de-palencia (8)
+- Más conectadas: sin-nombre-036 (10), mancha-alta-conquense (9), odra-pisuerga (9), terra-de-barroso (9), tierra-de-cebreros (9)
 - Menos conectadas: a-corunya (2), donostialdea (3), ferrol (3), santander (3), sin-nombre-010 (3)
 
 ## Candidatos a puerto de montaña
 
 - Somosierra: ayllon ↔ sierra-norte-de-madrid
-- Somosierra: ayllon ↔ sin-nombre-050
 - Piqueras: cameros ↔ najerilla
 - Piqueras: cameros ↔ pinares
 - Piqueras: cameros ↔ tierras-altas
@@ -37,6 +37,5 @@ Generado por `npm run atlas`. No se edita a mano.
 - Puerto del Pico: sierra-de-gredos ↔ tierra-de-cebreros
 - Puerto del Pico: sierra-de-gredos ↔ valle-del-tietar
 - Guadarrama: sierra-de-guadarrama ↔ tierra-de-segovia
-- Despenyaperros: sin-nombre-123 ↔ sin-nombre-135
-- Ragua: sin-nombre-181 ↔ sin-nombre-189
+- Ragua: sin-nombre-146 ↔ sin-nombre-154
 - Portela do Homem: terra-de-barroso ↔ vale-do-lima
