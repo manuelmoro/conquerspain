@@ -66,10 +66,13 @@ describe('lectura de .jsonc', () => {
 });
 
 describe('validacion de una region del catalogo', () => {
-  it('acepta la region de ejemplo del repositorio', () => {
+  it('acepta el catalogo del repositorio', () => {
     const resultado = cargarCatalogo(CATALOGO);
     expect(explicar(errores(resultado))).toBe('');
-    expect(resultado.ok && resultado.valor.length).toBe(3);
+    const ejemplo = resultado.ok
+      ? resultado.valor.filter((comarca) => comarca.region === '00-ejemplo')
+      : [];
+    expect(ejemplo).toHaveLength(3);
   });
 
   it('exige una sola cabecera, y que coincida con el campo cabecera', () => {
@@ -261,9 +264,8 @@ describe('informe de cobertura', () => {
     const resultado = cargarCatalogo(CATALOGO);
     if (!resultado.ok) throw new Error(explicar(resultado.errores));
     const informe = informeCobertura(resultado.valor);
-    expect(informe.total).toBe(3);
-    expect(informe.regiones).toHaveLength(1);
-    const region = informe.regiones[0];
+    expect(informe.total).toBe(resultado.valor.length);
+    const region = informe.regiones.find((candidata) => candidata.region === '00-ejemplo');
     expect(region?.comarcas).toBe(3);
     expect(region?.origenes).toBe(2);
     expect(region?.ferias).toBe(1);

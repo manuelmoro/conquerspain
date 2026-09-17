@@ -1,6 +1,6 @@
 # T-012 · Catálogo · región 1: Sistema Ibérico y Alto Duero
 
-**Fase:** 1 · El mundo · **Depende de:** T-011 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-011 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -15,6 +15,9 @@ Lee antes: [docs/05-geografia.md](../05-geografia.md), la ficha [T-010](T-010-es
 
 `paquetes/mundo/catalogo/01-iberico-alto-duero.jsonc` completo, validado y revisado, con unas 34
 comarcas reales que sustituyen a las provisionales generadas por el atlas en esa zona.
+
+> Al generar el atlas quedó un hueco provisional rodeado por completo de comarcas de la región, y
+> se escribió una comarca más para taparlo: **35 en total** (§4.1).
 
 ## 3. Alcance
 
@@ -39,6 +42,7 @@ solares, población inicial, localidades, rasgos y notas justificativas.
 | `moncayo` | Moncayo | Ágreda | `pasto 3`, `piedra 3`, puerto hacia el Ebro |
 | `ribera-del-duero` | Ribera del Duero | Aranda de Duero | Vega y viñedo: `labor 4` |
 | `arlanza` | Arlanza | Lerma | `monte 3`, `labor 3` |
+| `alfoz-de-clunia` | Alfoz de Clunia | Huerta de Rey | Añadida al cerrar la tarea: tapaba el hueco entre la Demanda y la Ribera. `monte 4`, sabinares y la Clunia romana |
 | `alfoz-de-burgos` | Alfoz de Burgos | Burgos | Gran plaza mercantil; `labor 3`, feria (T-014) |
 | `bureba` | La Bureba | Briviesca | **Salinas de Poza de la Sal**: `sal 3` + rasgo `salinas-historicas` |
 | `montes-de-oca` | Montes de Oca | Belorado | Camino de Santiago; `monte 3` |
@@ -105,8 +109,11 @@ paquetes/mundo/datos/informe-atlas.md                   (regenerado)
 
 1. Las 34 comarcas están escritas, validan sin errores y todas tienen `nota` donde el criterio lo
    exige.
-2. `npm run atlas` regenera el mundo y **ninguna** comarca provisional queda dentro del recuadro de
-   la región (lon −4,2..−1,0; lat 40,5..42,8).
+2. `npm run atlas` regenera el mundo y **ninguna** comarca provisional queda rodeada solo por
+   comarcas de la región: dentro de la región no quedan huecos. (La primera redacción hablaba del
+   recuadro lon −4,2..−1,0; lat 40,5..42,8, pero ese rectángulo abarca también Navarra, la
+   Alcarria, la sierra de Madrid y las Merindades, que son de otras regiones. Lo exigible es que
+   no haya huecos, no que el recuadro esté lleno.)
 3. Todas las localidades caen dentro del polígono de su comarca.
 4. El informe de cobertura de la región cumple las cuatro comprobaciones de §4.4.
 5. El grafo sigue conexo y ninguna comarca de la región queda con menos de dos vecinos.
@@ -129,3 +136,43 @@ un dato.
 1. Índice: T-012 `hecha`; `ESTADO.md`: siguiente T-013.
 2. Anota en la bitácora cuántas comarcas reales lleva el catálogo y cuántas quedan provisionales.
 3. Commit: `T-012: catalogo region 1, Sistema Iberico y Alto Duero`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 151 tests en verde; el mundo pasa de 334 a **339 comarcas**, de las cuales **35 son
+reales** (las 34 de la tabla más `alfoz-de-clunia`) y 304 siguen provisionales.
+
+Entregado:
+
+- `paquetes/mundo/catalogo/01-iberico-alto-duero.jsonc`: las 35 fichas, cada una con su `nota`
+  explicando de dónde sale su potencial (Poza de la Sal, Imón, Sierra Menera, Ojos Negros, la
+  caliza de Lara, la merina de Pedraza, el pinar de Urbión…). Ninguna comarca es un paraíso: las
+  sumas de potencial van de 8 a 12.
+- `paquetes/mundo/src/region-01.test.ts`: la revisión de §4.4 escrita como test, para que siga
+  haciéndose sola cuando lleguen las regiones 2 a 10. Comprueba sal y hierro, orígenes, sumas de
+  potencial, vecindades mínimas, ausencia de huecos provisionales y que nadie quede a más de tres
+  jornadas de una comarca con pan.
+- `paquetes/mundo/datos/mundo.v1.json` e `informe-atlas.md` regenerados.
+
+Decisiones tomadas al escribir la región:
+
+- **Una comarca más que la tabla**: `alfoz-de-clunia` (Huerta de Rey, Coruña del Conde, Caleruega,
+  Hontoria del Pinar). Sin ella quedaba una comarca provisional rodeada por completo de comarcas
+  reales, que es exactamente lo que la tarea quería evitar.
+- **Seis orígenes con oficio distinto**: Alfoz de Burgos (plaza mercantil), La Bureba (sal),
+  Señorío de Molina (hierro), Cameros (lana), Calatayud (huerta de regadío) y Tierra de Soria
+  (mixta). Rioja Media y Sigüenza se dejaron fuera por repetir perfil con Calatayud y con la
+  Bureba.
+- **Seis localidades se cambiaron por otras vecinas** (Quintanar de la Sierra, Barbadillo,
+  Anguiano, Peñaranda de Duero, Prádena, Magaña y Oyón) porque caían en el polígono de la comarca
+  de al lado. El atlas lo detecta y lo dice con nombre y apellidos, que era justo para lo que se
+  escribió esa comprobación en T-011.
+- **`labor 4` solo en vega o llano**, que obliga a declarar como vega Ribera del Duero, Rioja Media,
+  Rioja Baja y Calatayud, y como llano Rioja Alavesa y Campo de Borja. Es la regla del validador y
+  coincide con la realidad: el pan bueno está en las vegas del Duero, el Ebro y el Jalón.
+
+Lo que queda para las tareas siguientes: las ferias (Burgos) y el patrimonio son T-014; los caminos,
+los puertos (Piqueras ya sale marcado como candidato) y las cañadas Soriana Occidental y Oriental
+son T-013.
