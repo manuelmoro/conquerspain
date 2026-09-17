@@ -1,0 +1,93 @@
+# T-015 · Catálogo · regiones 2 a 10
+
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** pendiente (0 de 9 entregas)
+
+## 1. Contexto
+
+Con el método validado en la región 1, queda cubrir el resto de la península. Es la tarea más larga
+del plan y la que más beneficia al juego: cada comarca bien puesta es una decisión más.
+
+**Esta tarea son nueve entregas independientes.** Cada región se hace entera, se valida y se cierra
+por separado; se puede parar entre regiones sin dejar nada a medias.
+
+Lee antes: [T-012](T-012-catalogo-region-01.md) (método completo y criterio de potenciales) y
+[T-014](T-014-ferias-y-patrimonio.md) (rasgos y ferias).
+
+## 2. Objetivo
+
+Sustituir todas las comarcas provisionales del mundo por comarcas reales, con nombre tradicional,
+cabecera, potenciales justificados, rasgos y ferias.
+
+## 3. Entregas
+
+| # | Región | Archivo | Estado | Comarcas aprox. | Lo que no puede faltar |
+|---|---|---|---|---|---|
+| 2 | Meseta norte | `02-meseta-norte.jsonc` | pendiente | 38 | Tierra de Campos (`labor 5`), Tierra de Medina (feria grande, mayo y octubre), Villalón (feria), Cerrato, Páramos, Tierra de Pinares de Valladolid, Tierra de Segovia (`pasto`, lana fina) |
+| 3 | Cornisa cantábrica y País Vasco | `03-cantabrico.jsonc` | pendiente | 30 | **Ferrerías**: Encartaciones, Somorrostro, Oiartzun, Mena (`hierro 4-5`, `ferreria-de-agua`); **salinas de Añana** (`sal 5`); puertos de mar (Bilbao, Santander, San Sebastián, Castro); `monte 5` en los valles; pasos de la Cantábrica |
+| 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | pendiente | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
+| 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | pendiente | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
+| 6 | Meseta sur | `06-meseta-sur.jsonc` | pendiente | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
+| 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | pendiente | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
+| 8 | Levante y Murcia | `08-levante.jsonc` | pendiente | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
+| 9 | Andalucía | `09-andalucia.jsonc` | pendiente | 42 | Campiña del Guadalquivir (`labor 5`); Aljarafe y Sevilla (feria grande); **salinas de Cádiz** y almadrabas (`sal 5`, `pesca 5`); Sierra Morena y Riotinto (`hierro 3`); Macael (`cantera-noble`, mármol); Alpujarras y Vega de Granada; Subbética |
+| 10 | Centro y sur de Portugal | `10-portugal-sur.jsonc` | pendiente | 32 | Beira Alta y Serra da Estrela (`pasto-de-verano`, `monte`); Rio Maior (**sal**); Lezíria do Tejo (`labor 5`); Alentejo (`montado`, `dehesa`); Algarve (`pesca 5`, `sal 4`); puertos de Lisboa, Setúbal y Porto |
+
+Las cifras de comarcas son orientativas (±20 %); manda el mapa generado.
+
+## 4. Procedimiento por región (repetir para cada una)
+
+1. Listar las comarcas de la región con nombre tradicional y cabecera. Fuentes: comarcalización
+   tradicional, mancomunidades históricas, denominaciones de origen, nombres de partidos judiciales
+   antiguos. Ante duda entre dos nombres, el más reconocible para un lector actual.
+2. Coordenadas de la cabecera en milésimas de grado.
+3. Potenciales según §4.2 de [T-012](T-012-catalogo-region-01.md), con nota donde haga falta.
+4. Rasgos del catálogo cerrado; ferias si corresponde.
+5. `npm run atlas` y revisión del informe.
+6. Comprobaciones de la región:
+   - cero comarcas provisionales dentro de su recuadro;
+   - al menos una comarca con `labor >= 4` por cada cinco comarcas;
+   - los recursos estratégicos aparecen solo donde hubo explotación histórica;
+   - entre 3 y 8 orígenes por región, de perfiles distintos;
+   - ninguna comarca aislada ni con menos de dos vecinos.
+7. Actualizar la tabla de §3 con el estado de la entrega y cerrar con commit propio.
+
+## 5. Equilibrio del mapa completo (al terminar las nueve)
+
+Comprobaciones globales, con test automático:
+
+| Comprobación | Objetivo |
+|---|---|
+| Comarcas con `sal >= 3` | entre 10 y 16, repartidas por interior y costa |
+| Comarcas con `hierro >= 3` | entre 8 y 14, agrupadas en 4 o 5 focos |
+| Comarcas con `pasto-de-verano` | ≥ 30, y cada una con al menos una cañada a un pasto de invierno |
+| Comarcas con `labor >= 4` | entre 45 y 70 |
+| Ferias grandes | exactamente 3 |
+| Comarcas de origen | ≥ 60, con al menos 4 por región |
+| Distancia media entre comarcas vecinas | 3 a 4 jornadas |
+
+Si alguna se sale, se ajusta el catálogo, no el motor.
+
+## 6. Criterios de aceptación (de la tarea completa)
+
+1. Las nueve regiones están escritas, validadas y con su commit.
+2. El mundo generado no tiene ninguna comarca provisional.
+3. Las siete comprobaciones globales de §5 pasan como test automático.
+4. `informe-atlas.md` refleja el mapa completo y se lee sin sorpresas.
+5. `npm run verificar` pasa.
+
+## 7. Verificación
+
+```bash
+npm run atlas
+npm run verificar
+npx vitest run paquetes/mundo
+```
+
+## 8. Al terminar
+
+1. Índice: T-015 `hecha`; `ESTADO.md`: fase actual → «Fase 2 · Motor de reglas», siguiente T-030.
+2. Bitácora: número final de comarcas, orígenes y recursos estratégicos.
+3. Commit final: `T-015: catalogo geografico completo de la peninsula`.
+
+> Mientras esta tarea esté en curso, `ESTADO.md` debe indicar **qué región toca**, para que
+> cualquiera pueda continuar por la siguiente sin releer todo el catálogo.
