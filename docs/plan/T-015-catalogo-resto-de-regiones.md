@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (1 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (2 de 9 entregas)
 
 ## 1. Contexto
 
@@ -23,7 +23,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 | # | Región | Archivo | Estado | Comarcas aprox. | Lo que no puede faltar |
 |---|---|---|---|---|---|
 | 2 | Meseta norte | `02-meseta-norte.jsonc` | **hecha** (36) | 38 | Tierra de Campos (`labor 5`), Tierra de Medina (feria grande, mayo y octubre), Villalón (feria), Cerrato, Páramos, Tierra de Pinares de Valladolid, Tierra de Segovia (`pasto`, lana fina) |
-| 3 | Cornisa cantábrica y País Vasco | `03-cantabrico.jsonc` | pendiente | 30 | **Ferrerías**: Encartaciones, Somorrostro, Oiartzun, Mena (`hierro 4-5`, `ferreria-de-agua`); **salinas de Añana** (`sal 5`); puertos de mar (Bilbao, Santander, San Sebastián, Castro); `monte 5` en los valles; pasos de la Cantábrica |
+| 3 | Cornisa cantábrica y País Vasco | `03-cantabrico.jsonc` | **hecha** (35) | 30 | **Ferrerías**: Encartaciones, Somorrostro, Oiartzun, Mena (`hierro 4-5`, `ferreria-de-agua`); **salinas de Añana** (`sal 5`); puertos de mar (Bilbao, Santander, San Sebastián, Castro); `monte 5` en los valles; pasos de la Cantábrica |
 | 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | pendiente | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
 | 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | pendiente | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
 | 6 | Meseta sur | `06-meseta-sur.jsonc` | pendiente | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
@@ -120,3 +120,28 @@ Decisiones de la entrega:
   (sierra y páramo alto) cumple la regla de T-012, no esta, y se anotó así en el test.
 - **Ocho localidades se cambiaron por vecinas** porque caían en el polígono de al lado; es el mismo
   ajuste que en T-012 y lo detecta el atlas solo.
+
+### Entrega 3 · Cornisa cantábrica y País Vasco (18-09-2026)
+
+`03-cantabrico.jsonc`: **35 comarcas**, de Luarca a Hondarribia y de los Picos de Europa a la
+Llanada alavesa. El mundo va por 367 comarcas, 106 reales y 261 provisionales.
+
+Lo que define a la región: es la contraria de la Meseta. Una sola comarca llega a `labor 4` (la
+Llanada alavesa) y quince pescan; el hierro se concentra en cinco comarcas —Encartaciones con la
+vena de Somorrostro, la ría de Bilbao, el Duranguesado, Oiartzun con las minas de Arditurri y el
+valle de Mena— y la sal es una sola, la de Añana, con `sal 5`, la más alta escrita hasta ahora.
+Quien empiece aquí vende hierro, sal y pescado, y compra pan todos los turnos.
+
+Decisiones de la entrega:
+
+- **La proporción de pan de §4.6 no se le exige**: es el caso que la regla ya preveía. Cumple la de
+  T-012 (ninguna comarca a más de tres jornadas de una con `labor >= 3`) gracias a la Llanada, la
+  tierra de Grado y el Duero de la región 02.
+- **Ocho localidades costeras se movieron tierra adentro** entre uno y tres kilómetros (Santander,
+  Santoña, Noja, San Vicente, Mundaka…, esta última sustituida por Muxika): la costa de Natural
+  Earth está simplificada a 0,7 unidades y deja fuera penínsulas y rías enteras. Es una decisión
+  consciente: preferimos mover el punto a falsear la línea de costa, y se nota solo en el atlas.
+- **Diecisiete localidades más se cambiaron por otras de la misma tierra** porque caían en el
+  polígono vecino. Con comarcas tan pequeñas y juntas, el Voronoi es implacable.
+- **Somorrostro se queda en las Encartaciones** aunque su celda toque la de Castro Urdiales: la
+  merindad histórica incluía el valle, y el hierro es de la comarca, no del punto.

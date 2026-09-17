@@ -20,6 +20,12 @@ Lee antes: [docs/05-geografia.md](../05-geografia.md) §5.5 y §5.6,
 Cerrar el catálogo de rasgos, asignarlos a las comarcas ya escritas y definir las ferias con su
 calendario, su volumen y sus recursos de referencia.
 
+> **Pendiente heredado del catálogo (18-09-2026).** Los nombres del catálogo se escriben en ASCII
+> (`Logronyo`, `Penyafiel`, `Corunya del Conde`), igual que el resto del código del repositorio,
+> pero son **texto visible** y la interfaz tiene que enseñarlos con tildes y eñes. Esta tarea, que
+> ya recorre comarca por comarca, hace esa pasada de ortografía sobre `nombre`, `cabecera`,
+> `localidades[].nombre` y `nota`, y deja los `id` como están.
+
 ## 3. Alcance
 
 **Entra:** catálogo cerrado de rasgos con su efecto, ferias del mapa con su calendario, validación y

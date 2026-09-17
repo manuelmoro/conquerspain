@@ -3,16 +3,16 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 2 de T-015)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 3 de T-015)
 **Fase actual:** Fase 1 · El mundo
 
 ---
 
 ## Tarea en curso
 
-**[T-015 · Catálogo · regiones 2 a 10](docs/plan/T-015-catalogo-resto-de-regiones.md)** · hecha la
-entrega 2 (Meseta norte); toca la **entrega 3: Cornisa cantábrica y País Vasco**
-(`03-cantabrico.jsonc`), con las ferrerías, las salinas de Añana y los puertos de mar.
+**[T-015 · Catálogo · regiones 2 a 10](docs/plan/T-015-catalogo-resto-de-regiones.md)** · hechas
+las entregas 2 y 3; toca la **entrega 4: Galicia y norte de Portugal** (`04-galicia-minho.jsonc`),
+con las rías, la Terra de Santiago, la Ribeira Sacra y Trás-os-Montes.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -51,8 +51,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
 | Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
-| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **dos regiones escritas**: 01 Sistema Ibérico y Alto Duero (35) y 02 Meseta norte (36) |
-| Mapa generado | `npm run atlas` produce `mundo.v1.json` (349 comarcas —71 reales y 278 provisionales—, 1004 tramos, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
+| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **tres regiones escritas**: 01 Sistema Ibérico (35), 02 Meseta norte (36) y 03 cornisa cantábrica (35) |
+| Mapa generado | `npm run atlas` produce `mundo.v1.json` (367 comarcas —106 reales y 261 provisionales—, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -76,6 +76,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-015, entrega 3 hecha**: cornisa cantábrica y País Vasco, 35 comarcas. El reverso de la Meseta: una sola comarca con `labor 4`, quince que pescan, el hierro en cinco (Somorrostro, Bilbao, Durango, Oiartzun y Mena) y la sal de Añana con `sal 5`. 166 tests en verde |
 | 18-09-2026 | **T-015, entrega 2 hecha**: Meseta norte, 36 comarcas (Tierra de Campos, Cerrato, Torozos, Medina, Segovia, la Armuña…). El granero: 17 comarcas con `labor >= 4` y la sal de Villafáfila como único recurso estratégico. 159 tests en verde |
 | 18-09-2026 | **Orden de la fase 1 corregido**: T-013 (caminos y cañadas) y T-014 (ferias) pasan a depender de T-015, porque sus datos viven en comarcas que aún no existen |
 | 18-09-2026 | **T-012 hecha**: región 01 escrita, **35 comarcas reales** (las 34 de la ficha más `alfoz-de-clunia`, que tapaba el único hueco provisional interior) y 304 provisionales. Sal en Poza y en Imón, hierro en Sierra Menera y Ojos Negros, seis orígenes de oficio distinto. La revisión de la región vive como test. 151 tests en verde |
@@ -94,3 +95,5 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | El equilibrio entre ocho casas puede irse de las manos | Banco de pruebas con robots por casa desde la fase 2 (T-046) y criterios numéricos en `docs/04` §4.4 |
 | La complejidad puede crecer por encima de lo divertido | Cada mecánica nueva debe justificar qué decisión añade; si no añade decisión, se descarta |
 | Determinismo roto sin darse cuenta | Tests de reproducción con huella de estado desde T-002 |
+| El atlas se planta si el mapa pasa de 380 comarcas, y el catálogo real es más denso que el relleno (367 con tres regiones escritas) | Al llegar a la cuarta o quinta entrega, ajustar la separación de las semillas de relleno en `generar.ts` (hoy 40,5 unidades) y revisar la horquilla de `docs/05` §5.2 (320–360) |
+| Los nombres del catálogo se escriben en ASCII (`Logronyo`, `Penyafiel`), como el resto del código, pero la interfaz tendrá que enseñarlos con tildes y eñes | Una pasada de ortografía sobre los nombres visibles antes de T-081, anotada como pendiente en T-014 |

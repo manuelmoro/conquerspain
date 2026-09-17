@@ -266,7 +266,7 @@
     "rasgos": ["ciudad-episcopal", "calzada-romana"],
     "feria": null,
     "esOrigen": false,
-    "nota": "Plaza fuerte sobre el Duero y paso de la Via de la Plata: la tierra da pan justo, pero el puente y las aceñas la hicieron rica.",
+    "nota": "Plaza fuerte sobre el Duero y paso de la Via de la Plata: la tierra da pan justo, pero el puente y las acenyas la hicieron rica.",
   },
   {
     "id": "tierra-del-vino",
@@ -810,7 +810,7 @@
     "rasgos": ["vinyedo"],
     "feria": null,
     "esOrigen": false,
-    "nota": "Castillo-proa sobre el Duratón y el Duero, senyorio de don Juan Manuel: vinyedo en las laderas y bodegas bajo el cerro.",
+    "nota": "Castillo-proa sobre el Duraton y el Duero, senyorio de don Juan Manuel: vinyedo en las laderas y bodegas bajo el cerro.",
   },
   // --- Segovia, La Moranya y Salamanca -----------------------------------------------------------
   {

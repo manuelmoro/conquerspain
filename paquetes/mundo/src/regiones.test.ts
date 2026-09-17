@@ -14,7 +14,7 @@ const CATALOGO = fileURLToPath(new URL('../catalogo', import.meta.url));
 const MUNDO = fileURLToPath(new URL('../datos/mundo.v1.json', import.meta.url));
 
 /** Las regiones reales escritas hasta ahora. La 00 es el ejemplo del formato y no entra. */
-const REGIONES = ['01-iberico-alto-duero', '02-meseta-norte'] as const;
+const REGIONES = ['01-iberico-alto-duero', '02-meseta-norte', '03-cantabrico'] as const;
 
 /**
  * Regiones a las que se les exige la proporcion de pan de T-015 §4.6 (una comarca de `labor 4`
@@ -141,6 +141,28 @@ describe('recursos estrategicos region a region', () => {
         .map((c) => c.id)
         .sort(),
     ).toEqual(['jiloca', 'senyorio-de-molina']);
+  });
+
+  it('junta en la cornisa el hierro, la sal de Anyana y la pesca', () => {
+    const cornisa = catalogo().filter((c) => c.region === '03-cantabrico');
+    expect(cornisa).toHaveLength(35);
+    expect(cornisa.filter((c) => c.potenciales.sal >= 3).map((c) => c.id)).toEqual([
+      'valles-alaveses',
+    ]);
+    expect(
+      cornisa
+        .filter((c) => c.potenciales.hierro >= 3)
+        .map((c) => c.id)
+        .sort(),
+    ).toEqual(['bilbao', 'durangaldea', 'encartaciones', 'oiartzun-bidasoa', 'valle-de-mena']);
+    // La mar es su despensa, y solo se pesca desde la costa.
+    const conPesca = cornisa.filter((c) => c.potenciales.pesca >= 1);
+    expect(conPesca.length).toBeGreaterThanOrEqual(12);
+    expect(conPesca.every((c) => c.terreno === 'costa')).toBe(true);
+    // Y no tiene pan: una sola comarca llega a labor 4, la Llanada alavesa.
+    expect(cornisa.filter((c) => c.potenciales.labor >= 4).map((c) => c.id)).toEqual([
+      'llanada-alavesa',
+    ]);
   });
 
   it('en la Meseta norte la unica sal es la de las lagunas de Villafafila', () => {
