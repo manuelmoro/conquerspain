@@ -1,6 +1,6 @@
 # T-010 · Esquema del catálogo y cargador validado
 
-**Fase:** 1 · El mundo · **Depende de:** T-003 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-003 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -133,3 +133,38 @@ npx vitest run paquetes/mundo
 1. Índice: T-010 `hecha`; `ESTADO.md`: siguiente T-011.
 2. Si has cambiado el formato respecto a `docs/05-geografia.md` §5.2.1, actualiza ese documento.
 3. Commit: `T-010: esquema del catalogo y cargador validado`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 127 tests en verde en total, 17 de ellos del paquete `@conquer/mundo`.
+
+Entregado en `paquetes/mundo/`:
+
+- `src/jsonc.ts`: lector de JSON con comentarios escrito a mano (respeta las barras dentro de
+  cadenas y admite comas sobrantes), para que el catálogo pueda llevar su criterio geográfico
+  comentado al lado del dato.
+- `src/tipos.ts`, `src/rasgos.ts` (catálogo cerrado de 17 rasgos con su efecto),
+  `src/validarCatalogo.ts`, `src/cobertura.ts` y `src/cargador.ts`.
+- `catalogo/00-ejemplo.jsonc`: tres comarcas ficticias que ejercitan el formato, incluida una con
+  salinas y feria.
+
+Las nueve reglas del esquema están implementadas y cada una tiene su test, incluida la más
+interesante: **si un potencial se aparta de lo que sugiere el terreno, hace falta una `nota` que lo
+justifique**. Las horquillas por terreno viven en `HORQUILLAS`, dentro del validador, y son las que
+convierten el criterio geográfico en algo que se puede discutir con datos.
+
+Decisiones tomadas al implementar:
+
+- Los **combinadores de validación del núcleo se exportan** ahora en su barril: el mundo, y después
+  el servidor, validan sus datos con el mismo estilo de errores (ruta del campo y mensaje en
+  español) en vez de inventarse otro.
+- El validador del catálogo trabaja con **grados en milésimas** y comprueba la distancia de cada
+  localidad a su centro en kilómetros (60 km de tope), que es el error típico de un centro mal
+  puesto.
+- La comprobación de identificadores y ferias repetidas se hace **con el catálogo entero delante**,
+  en `validarCatalogoCompleto`, porque no se puede saber leyendo una región suelta.
+
+Un test destapó que el «paraíso» de ejemplo sumaba justo 18 puntos de potencial, que está
+permitido: el caso de prueba se corrigió para pasarse de verdad del límite.

@@ -24,7 +24,7 @@ mapa completo; ESTADO.md es la aguja.
 
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
-| [T-010](T-010-esquema-del-catalogo.md) | Esquema del catálogo y cargador validado | pendiente | T-003 |
+| [T-010](T-010-esquema-del-catalogo.md) | Esquema del catálogo y cargador validado | **hecha** | T-003 |
 | [T-011](T-011-herramienta-atlas.md) | Herramienta `atlas`: generación reproducible del mapa | pendiente | T-010 |
 | [T-012](T-012-catalogo-region-01.md) | Catálogo · región 1: Sistema Ibérico y Alto Duero | pendiente | T-011 |
 | [T-013](T-013-caminos-y-canyadas.md) | Caminos, puertos, vados y cañadas reales | pendiente | T-011 |
