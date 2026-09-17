@@ -332,9 +332,14 @@ export function comprobar(mundo: Mundo, poligonos: Map<string, Punto[]>): string
   const problemas: string[] = [];
   const ids = Object.keys(mundo.comarcas).sort(comparar);
 
-  if (ids.length < 300 || ids.length > 380) {
+  // Mientras queden comarcas de relleno, el mapa esta en transito: el catalogo real es mas denso
+  // que la malla de relleno, asi que el total sube segun entran regiones y baja cuando el relleno
+  // desaparece. Cuando ya no quede ni una provisional, vale la horquilla de docs/05 §5.2.
+  const provisionales = ids.filter((id) => mundo.comarcas[id]?.region === '99-provisional').length;
+  const horquilla = provisionales > 0 ? ([300, 430] as const) : ([320, 380] as const);
+  if (ids.length < horquilla[0] || ids.length > horquilla[1]) {
     problemas.push(
-      `el mapa tiene ${String(ids.length)} comarcas y lo esperable son entre 300 y 380`,
+      `el mapa tiene ${String(ids.length)} comarcas y lo esperable son entre ${String(horquilla[0])} y ${String(horquilla[1])}${provisionales > 0 ? ' mientras queden comarcas provisionales' : ''}`,
     );
   }
 

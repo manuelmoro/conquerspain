@@ -14,7 +14,12 @@ const CATALOGO = fileURLToPath(new URL('../catalogo', import.meta.url));
 const MUNDO = fileURLToPath(new URL('../datos/mundo.v1.json', import.meta.url));
 
 /** Las regiones reales escritas hasta ahora. La 00 es el ejemplo del formato y no entra. */
-const REGIONES = ['01-iberico-alto-duero', '02-meseta-norte', '03-cantabrico'] as const;
+const REGIONES = [
+  '01-iberico-alto-duero',
+  '02-meseta-norte',
+  '03-cantabrico',
+  '04-galicia-minho',
+] as const;
 
 /**
  * Regiones a las que se les exige la proporcion de pan de T-015 §4.6 (una comarca de `labor 4`
@@ -141,6 +146,17 @@ describe('recursos estrategicos region a region', () => {
         .map((c) => c.id)
         .sort(),
     ).toEqual(['jiloca', 'senyorio-de-molina']);
+  });
+
+  it('deja Galicia y el Minho sin sal ni hierro y con la mar por despensa', () => {
+    const noroeste = catalogo().filter((c) => c.region === '04-galicia-minho');
+    expect(noroeste).toHaveLength(38);
+    expect(noroeste.filter((c) => c.potenciales.sal >= 3)).toEqual([]);
+    expect(noroeste.filter((c) => c.potenciales.hierro >= 3)).toEqual([]);
+    expect(noroeste.filter((c) => c.potenciales.pesca >= 4).length).toBeGreaterThanOrEqual(10);
+    expect(noroeste.filter((c) => c.potenciales.labor >= 4)).toEqual([]);
+    // El vinyedo es su cultivo de renta: Ribeiro, Ribeira Sacra, Douro, Baixo Minyo, Bierzo...
+    expect(noroeste.filter((c) => c.rasgos.includes('vinyedo')).length).toBeGreaterThanOrEqual(8);
   });
 
   it('junta en la cornisa el hierro, la sal de Anyana y la pesca', () => {

@@ -2,9 +2,9 @@
 
 Generado por `npm run atlas`. No se edita a mano.
 
-- Comarcas: **367**, de las cuales **261** son provisionales (sin catálogo).
-- Tramos de camino: 1049 · vecinos por comarca: 5.7 · jornadas medias: 3.1
-- Tramos marcados como candidatos a puerto de montaña: 11
+- Comarcas: **375**, de las cuales **231** son provisionales (sin catálogo).
+- Tramos de camino: 1071 · vecinos por comarca: 5.7 · jornadas medias: 3.2
+- Tramos marcados como candidatos a puerto de montaña: 12
 - Superficie del mapa: 997 × 800 unidades (1 unidad ≈ 1.11 km)
 
 ## Comarcas por región
@@ -14,23 +14,25 @@ Generado por `npm run atlas`. No se edita a mano.
 | 01-iberico-alto-duero | 35 |
 | 02-meseta-norte | 36 |
 | 03-cantabrico | 35 |
-| 99-provisional | 261 |
+| 04-galicia-minho | 38 |
+| 99-provisional | 231 |
 
 ## Vecindades extremas
 
-- Más conectadas: sin-nombre-063 (10), odra-pisuerga (9), alfoz-de-palencia (8), benavente (8), campoo (8)
-- Menos conectadas: donostialdea (3), santander (3), sin-nombre-001 (3), sin-nombre-020 (3), sin-nombre-236 (3)
+- Más conectadas: sin-nombre-036 (10), odra-pisuerga (9), terra-de-barroso (9), alfoz-de-palencia (8), campoo (8)
+- Menos conectadas: a-corunya (2), donostialdea (3), ferrol (3), santander (3), sin-nombre-010 (3)
 
 ## Candidatos a puerto de montaña
 
 - Piqueras: cameros ↔ najerilla
 - Piqueras: cameros ↔ pinares
 - Piqueras: cameros ↔ tierras-altas
-- Pajares: montanya-central-asturiana ↔ sin-nombre-014
-- Velate: oiartzun-bidasoa ↔ sin-nombre-018
-- Somosierra: pedraza ↔ sin-nombre-084
-- Puerto del Pico: sin-nombre-096 ↔ sin-nombre-097
-- Guadarrama: sin-nombre-098 ↔ tierra-de-segovia
-- Guadarrama: sin-nombre-099 ↔ tierra-de-segovia
-- Despenyaperros: sin-nombre-184 ↔ sin-nombre-200
-- Ragua: sin-nombre-246 ↔ sin-nombre-254
+- Pajares: montanya-central-asturiana ↔ sin-nombre-004
+- Velate: oiartzun-bidasoa ↔ sin-nombre-008
+- Somosierra: pedraza ↔ sin-nombre-054
+- Puerto del Pico: sin-nombre-066 ↔ sin-nombre-067
+- Guadarrama: sin-nombre-068 ↔ tierra-de-segovia
+- Guadarrama: sin-nombre-069 ↔ tierra-de-segovia
+- Despenyaperros: sin-nombre-154 ↔ sin-nombre-170
+- Ragua: sin-nombre-216 ↔ sin-nombre-224
+- Portela do Homem: terra-de-barroso ↔ vale-do-lima

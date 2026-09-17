@@ -80,7 +80,10 @@ LON0 = −9,6   LAT1 = 43,85
    cuál y a qué comarca ha ido a parar: casi siempre significa que el centro está mal puesto).
 4. Grafo conexo: se puede ir andando de cualquier comarca peninsular a cualquier otra.
 5. Sin identificadores duplicados.
-6. El número total de comarcas está entre 300 y 380.
+6. El número total de comarcas está entre 320 y 380 cuando el catálogo cubre la península.
+   Mientras queden comarcas provisionales la horquilla se abre a 300–430, porque el catálogo
+   real es más denso que la malla de relleno y el total sube antes de volver a bajar
+   (corregido el 18-09-2026, durante T-015: con cuatro regiones escritas el mapa llegó a 375).
 
 ### 4.5 Informe
 

@@ -15,7 +15,9 @@ datos reales, con un proceso reproducible, y se revisa a mano comarca por comarc
 
 ## 5.2 Comarcas de juego
 
-- El tablero son **comarcas de juego**: unas 320–360 celdas que cubren la península.
+- El tablero son **comarcas de juego**: unas 320–380 celdas que cubren la península. Mientras el
+  catálogo se escribe región a región conviven comarcas reales y de relleno, y el total puede
+  subir hasta 430 antes de volver a bajar.
 - Cada comarca agrupa una superficie de entre 1 000 y 3 000 km² y contiene entre una y seis
   localidades reales, situadas en sus coordenadas.
 - Los límites son simplificados (polígonos generados a partir de puntos de referencia y recortados a

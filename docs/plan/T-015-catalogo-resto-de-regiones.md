@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (2 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (3 de 9 entregas)
 
 ## 1. Contexto
 
@@ -24,7 +24,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 |---|---|---|---|---|---|
 | 2 | Meseta norte | `02-meseta-norte.jsonc` | **hecha** (36) | 38 | Tierra de Campos (`labor 5`), Tierra de Medina (feria grande, mayo y octubre), Villalón (feria), Cerrato, Páramos, Tierra de Pinares de Valladolid, Tierra de Segovia (`pasto`, lana fina) |
 | 3 | Cornisa cantábrica y País Vasco | `03-cantabrico.jsonc` | **hecha** (35) | 30 | **Ferrerías**: Encartaciones, Somorrostro, Oiartzun, Mena (`hierro 4-5`, `ferreria-de-agua`); **salinas de Añana** (`sal 5`); puertos de mar (Bilbao, Santander, San Sebastián, Castro); `monte 5` en los valles; pasos de la Cantábrica |
-| 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | pendiente | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
+| 4 | Galicia y norte de Portugal | `04-galicia-minho.jsonc` | **hecha** (38) | 34 | Rías con `pesca 5`; Terra de Santiago (feria, `camino-de-santiago`); Ribeira Sacra (`vinyedo`); Baixo Minho y Douro Litoral; Trás-os-Montes (`pasto`, `monte`) |
 | 5 | Sistema Central y Extremadura | `05-central-extremadura.jsonc` | pendiente | 36 | Dehesas de Badajoz y Cáceres (`dehesa`, `pasto-de-invierno`); Vera y Jerte (`vega-fluvial`); Sierra de Gata, Béjar, Gredos (`pasto-de-verano`); Zafra (feria); Mérida y la Vía de la Plata |
 | 6 | Meseta sur | `06-meseta-sur.jsonc` | pendiente | 34 | La Mancha (`labor 4`, `vinyedo`); Campo de Calatrava y Valle de Alcudia (`pasto-de-invierno`, `hierro 2`); La Alcarria (miel, `monte`); Montes de Toledo; Serranía de Cuenca (`monte 5`, madera de los ríos) |
 | 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | pendiente | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
@@ -145,3 +145,25 @@ Decisiones de la entrega:
   polígono vecino. Con comarcas tan pequeñas y juntas, el Voronoi es implacable.
 - **Somorrostro se queda en las Encartaciones** aunque su celda toque la de Castro Urdiales: la
   merindad histórica incluía el valle, y el hierro es de la comarca, no del punto.
+
+### Entrega 4 · Galicia y norte de Portugal (18-09-2026)
+
+`04-galicia-minho.jsonc`: **38 comarcas**, de la Costa da Morte a Miranda do Douro y de Ribadeo a
+Porto. El mundo va por 375 comarcas, 144 reales y 231 provisionales.
+
+Lo que define a la región: la mar y la viña. Trece comarcas pescan, diez de ellas a 4 o más, y
+once tienen `vinyedo` (Ribeiro, Ribeira Sacra, Douro, Baixo Miño, Valdeorras, Bierzo…). No hay una
+sola comarca con `labor >= 4` ni un gramo de sal o de hierro: el noroeste vende pescado, vino y
+madera, y compra pan y hierro. Siete orígenes, todos de ciudad o de puerto.
+
+Decisiones de la entrega:
+
+- **Veintisiete localidades se movieron o se cambiaron**, la mayoría en las rías: la costa de
+  Natural Earth simplificada a 0,7 unidades se come las bocas de las rías enteras, así que Vigo,
+  Ferrol, Viana do Castelo o Corcubión llevan su punto uno o tres kilómetros tierra adentro.
+- **El Bierzo entra en esta región**, no en la 02: hoya cerrada entre montañas, con clima, vino y
+  camino gallegos. Nadie más lo iba a escribir.
+- **La horquilla de comarcas del atlas se hizo adaptativa** (T-011 §4.4, regla 6): con el catálogo
+  a medias el mapa llegó a 375 y la barrera de 380 iba a saltar en la entrega siguiente. Mientras
+  queden comarcas provisionales se admiten 300–430; cuando no quede ninguna, vuelve a exigirse la
+  horquilla de diseño, 320–380. `docs/05` §5.2 dice ahora lo mismo.
