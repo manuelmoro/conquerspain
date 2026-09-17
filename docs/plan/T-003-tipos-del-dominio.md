@@ -1,6 +1,6 @@
 # T-003 · Tipos del estado, las órdenes y el mundo
 
-**Fase:** 0 · Cimientos · **Depende de:** T-001 · **Estado:** pendiente
+**Fase:** 0 · Cimientos · **Depende de:** T-001 · **Estado:** **hecha** (17-09-2026)
 
 ## 1. Contexto
 
@@ -246,3 +246,38 @@ npx vitest run paquetes/nucleo/src/validacion
 2. `ESTADO.md`: siguiente T-004; anota en la bitácora cualquier tipo que hayas añadido y no estuviera
    previsto en el diseño, y actualiza `docs/03-economia.md` si has ajustado alguna estructura.
 3. Commit: `T-003: tipos del dominio y validacion`.
+
+---
+
+## 9. Resultado (17-09-2026)
+
+Tarea cerrada. 90 tests en verde (32 nuevos, solo de validación).
+
+Entregado en `paquetes/nucleo/src/`:
+
+- `tipos/`: `ids` (identificadores con marca de tipo), `recursos`, `mundo`, `estado`, `ordenes`
+  (unión discriminada de las 15 órdenes de la v1), `reglas` (tablas de equilibrio) y `cronica`.
+  Ni una línea de lógica: solo interfaces, tipos y listas cerradas de valores.
+- `validacion/`: un pequeño juego de combinadores (`validador.ts`) y los cuatro validadores
+  (`validarMundo`, `validarEstado`, `validarOrdenEntrante`, `validarTablas`), que acumulan todos los
+  errores con la ruta del campo y el mensaje en español.
+
+Decisiones tomadas al implementar:
+
+- **Las órdenes viven en el estado.** Una obra de tres turnos tiene que sobrevivir a la resolución,
+  así que `EstadoPartida.ordenes` guarda las vivas y `resolverTurno` recibirá aparte las nuevas.
+  `docs/02-diseno-nucleo.md` §2.8 queda actualizado con esta forma.
+- **Dos validaciones, no una.** `validarOrdenEntrante` comprueba la forma (y rechaza cualquier campo
+  de más) y `validarOrdenEnMundo` comprueba que las referencias existen. `validarEstado` acepta el
+  mundo como segundo argumento opcional para hacer lo mismo con las comarcas.
+- **Los errores de forma y los de coherencia van en pasadas distintas**: si la forma falla, no se
+  intenta la coherencia, porque los datos ya no son de fiar. Está probado.
+- El validador genérico de objetos acepta interfaces (`F extends object`), y toda la conversión de
+  tipos queda encerrada en una función de tres líneas dentro de `validador.ts`.
+
+Conceptos del glosario que todavía **no** tienen tipo, porque no tienen mecánica: `portazgo`
+(llega en T-103) y `puebla` (llega con el cometido de poblar, T-034). El resto está representado y
+se llama igual que en el glosario.
+
+Un test destapó un rango mal puesto en las tablas (`mercado.sueloMil` tenía un techo de 1000 que
+impedía llegar a la comprobación real contra el techo de precios). Corregido.

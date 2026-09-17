@@ -260,18 +260,27 @@ día de San Andrés.»
 
 ```ts
 interface EstadoPartida {
+  version: number;              // versión de reglas con la que se creó
   id: IdPartida;
   semilla: string;              // fija el mundo y el azar de toda la partida
   turno: number;                // 1.. ; el calendario se deriva de aquí
-  configuracion: ConfiguracionPartida;   // intervalo, número de plazas, modo (abierta o temporada)
+  configuracion: ConfiguracionPartida;   // intervalo, modo (abierta o temporada), ritmo de prueba
   jugadores: Record<IdJugador, EstadoJugador>;
   comarcas: Record<IdComarca, EstadoComarca>;
   recuas: Record<IdRecua, Recua>;
-  mercados: Record<IdMercado, EstadoMercado>;
+  rebanyos: Record<IdRebanyo, Rebanyo>;
   obras: Record<IdObra, Obra>;
+  mercados: Record<IdMercado, EstadoMercado>;
   acontecimientos: Acontecimiento[];     // anunciados y activos
+  ordenes: Orden[];             // las que siguen vivas: pendientes, en curso o en espera
+  siguienteId: number;          // contador para crear identificadores sin azar
+  huellaTurnoAnterior: string | null;
 }
 ```
+
+Las órdenes **viven en el estado**: una obra de tres turnos o una expedición de seis tienen que
+sobrevivir a la resolución. `resolverTurno` recibe aparte las órdenes **nuevas** de ese turno, las
+valida y las incorpora; las que ya estaban siguen su curso.
 
 El estado es **serializable, comparable y versionado**: dos ejecuciones del mismo turno deben
 producir estados idénticos al compararlos campo a campo. De ahí salen los tests de regresión de

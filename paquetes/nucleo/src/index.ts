@@ -2,3 +2,5 @@
 export const VERSION_NUCLEO = '0.1.0';
 
 export * from './utiles/index.ts';
+export * from './tipos/index.ts';
+export * from './validacion/index.ts';

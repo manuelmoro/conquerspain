@@ -1,0 +1,402 @@
+// Validacion del estado de una partida: forma, coherencia interna y version de reglas.
+import type {
+  Acontecimiento,
+  ConfiguracionPartida,
+  Conocimiento,
+  DatosConocidos,
+  EfectoAcontecimiento,
+  EstadoComarca,
+  EstadoJugador,
+  EstadoMercado,
+  EstadoPartida,
+  Obra,
+  Rebanyo,
+  Recua,
+  SituacionMovil,
+} from '../tipos/estado.ts';
+import {
+  CARGAS_FISCALES,
+  COMETIDOS,
+  FUEROS,
+  MODOS_DE_PARTIDA,
+  NIVELES_DE_CONOCIMIENTO,
+  RECURSOS_AGOTABLES,
+  TIPOS_DE_OBRA,
+} from '../tipos/estado.ts';
+import type {
+  IdAcontecimiento,
+  IdComarca,
+  IdJugador,
+  IdMercado,
+  IdObra,
+  IdPartida,
+  IdRebanyo,
+  IdRecua,
+} from '../tipos/ids.ts';
+import type { Mundo } from '../tipos/mundo.ts';
+import type { Orden } from '../tipos/ordenes.ts';
+import { POTENCIALES, VOLUMENES_FERIA } from '../tipos/mundo.ts';
+import { RECURSOS } from '../tipos/recursos.ts';
+import { CASAS, VERSION_REGLAS } from '../tipos/reglas.ts';
+import { milesimas, nivelPotencial, recursos } from './comunes.ts';
+import { validarOrdenEntrante } from './validarOrden.ts';
+import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
+import {
+  booleano,
+  entero,
+  enteroNoNegativo,
+  identificador,
+  invalido,
+  invalidos,
+  lista,
+  oNulo,
+  objeto,
+  registro,
+  registroCompleto,
+  texto,
+  unoDe,
+  valido,
+} from './validador.ts';
+
+const validarConfiguracion: Validador<ConfiguracionPartida> = objeto<ConfiguracionPartida>({
+  nombre: texto({ minimo: 1, maximo: 80 }),
+  intervaloMinutos: entero({ minimo: 1, maximo: 10080 }),
+  modo: unoDe(MODOS_DE_PARTIDA),
+  turnosDeTemporada: oNulo(entero({ minimo: 1, maximo: 10000 })),
+  reservaMinimaDePan: enteroNoNegativo(),
+  esDePrueba: booleano(),
+});
+
+const validarDatosConocidos: Validador<DatosConocidos> = objeto<DatosConocidos>({
+  duenyo: oNulo(identificador<IdJugador>()),
+  poblacion: enteroNoNegativo(),
+  terreno: texto({ minimo: 1, maximo: 20 }),
+  potenciales: registroCompleto(POTENCIALES, nivelPotencial()),
+  edificios: registro(enteroNoNegativo(20)),
+  preciosMil: oNulo(registroCompleto(RECURSOS, enteroNoNegativo())),
+});
+
+const validarConocimiento: Validador<Conocimiento> = objeto<Conocimiento>({
+  nivel: unoDe(NIVELES_DE_CONOCIMIENTO),
+  turnoUltimaNoticia: enteroNoNegativo(),
+  datos: oNulo(validarDatosConocidos),
+});
+
+const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
+  id: identificador<IdJugador>(),
+  nombre: texto({ minimo: 1, maximo: 60 }),
+  casa: unoDe(CASAS),
+  tradiciones: lista(texto({ minimo: 1, maximo: 60 }), { maximo: 3 }),
+  capital: identificador<IdComarca>(),
+  almacen: recursos(),
+  reservado: recursos(),
+  prestigio: entero(),
+  credito: entero({ minimo: 0, maximo: 100 }),
+  hitos: registro(entero({ minimo: 1 })),
+  conocimiento: registro(validarConocimiento, identificador()),
+  escasez: booleano(),
+  escasezSeguidas: enteroNoNegativo(),
+  turnosSinOrdenes: enteroNoNegativo(),
+});
+
+const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
+  id: identificador<IdComarca>(),
+  duenyo: oNulo(identificador<IdJugador>()),
+  poblacion: enteroNoNegativo(100000),
+  lealtad: entero({ minimo: 0, maximo: 100 }),
+  edificios: registro(enteroNoNegativo(20)),
+  aperos: entero({ minimo: 0, maximo: 4 }),
+  fuero: unoDe(FUEROS),
+  cargaFiscal: unoDe(CARGAS_FISCALES),
+  dehesa: booleano(),
+  potenciales: registroCompleto(POTENCIALES, nivelPotencial()),
+  agotamiento: registroCompleto(RECURSOS_AGOTABLES, entero({ minimo: 0, maximo: 100 })),
+  influencias: registro(entero({ minimo: 0, maximo: 100 }), identificador()),
+  turnosDesleal: enteroNoNegativo(),
+  produccionUltimoTurno: recursos(),
+});
+
+const validarSituacion: Validador<SituacionMovil> = (dato, ruta) => {
+  if (typeof dato !== 'object' || dato === null || Array.isArray(dato)) {
+    return invalido(ruta, 'se esperaba la situacion de una unidad movil');
+  }
+  const donde = (dato as Record<string, unknown>)['donde'];
+  if (donde === 'comarca') {
+    return objeto<{ donde: 'comarca'; comarca: IdComarca }>({
+      donde: unoDe(['comarca'] as const),
+      comarca: identificador<IdComarca>(),
+    })(dato, ruta);
+  }
+  if (donde === 'camino') {
+    return objeto<{
+      donde: 'camino';
+      desde: IdComarca;
+      hasta: IdComarca;
+      jornadasHechasMil: number;
+    }>({
+      donde: unoDe(['camino'] as const),
+      desde: identificador<IdComarca>(),
+      hasta: identificador<IdComarca>(),
+      jornadasHechasMil: enteroNoNegativo(),
+    })(dato, ruta);
+  }
+  return invalido(`${ruta}.donde`, 'una unidad movil esta en una comarca o en un camino');
+};
+
+const validarRecua: Validador<Recua> = objeto<Recua>({
+  id: identificador<IdRecua>(),
+  jugador: identificador<IdJugador>(),
+  nombre: texto({ minimo: 1, maximo: 60 }),
+  situacion: validarSituacion,
+  ruta: lista(identificador<IdComarca>(), { maximo: 60 }),
+  rutaCircular: booleano(),
+  acemilas: enteroNoNegativo(1000),
+  porte: enteroNoNegativo(1000),
+  carga: recursos(),
+  vecinos: enteroNoNegativo(1000),
+  cometido: oNulo(unoDe(COMETIDOS)),
+  turnosDeCometido: enteroNoNegativo(),
+  avisadaSinBastimento: booleano(),
+});
+
+const validarRebanyo: Validador<Rebanyo> = objeto<Rebanyo>({
+  id: identificador<IdRebanyo>(),
+  jugador: identificador<IdJugador>(),
+  nombre: texto({ minimo: 1, maximo: 60 }),
+  situacion: validarSituacion,
+  ruta: lista(identificador<IdComarca>(), { maximo: 60 }),
+  rutaCircular: booleano(),
+  cabezas: enteroNoNegativo(100000),
+  turnosEnPastoCorrecto: enteroNoNegativo(),
+  turnosDelAnyo: enteroNoNegativo(),
+  turnosSinPasto: enteroNoNegativo(),
+});
+
+const validarObra: Validador<Obra> = objeto<Obra>({
+  id: identificador<IdObra>(),
+  jugador: identificador<IdJugador>(),
+  comarca: identificador<IdComarca>(),
+  tipo: unoDe(TIPOS_DE_OBRA),
+  que: texto({ minimo: 1, maximo: 40 }),
+  avanceMil: enteroNoNegativo(),
+  avanceNecesarioMil: entero({ minimo: 1 }),
+  entregado: recursos(),
+  costeTotal: recursos(),
+  abandonada: booleano(),
+});
+
+const validarMercado: Validador<EstadoMercado> = objeto<EstadoMercado>({
+  id: identificador<IdMercado>(),
+  comarca: identificador<IdComarca>(),
+  tipo: unoDe(['local', 'feria'] as const),
+  volumen: unoDe(VOLUMENES_FERIA),
+  preciosMil: registroCompleto(RECURSOS, entero({ minimo: 1 })),
+  ultimoVolumen: registroCompleto(RECURSOS, enteroNoNegativo()),
+});
+
+const validarEfecto: Validador<EfectoAcontecimiento> = objeto<EfectoAcontecimiento>({
+  que: unoDe(['pan', 'lana', 'labor', 'precio', 'camino', 'obra'] as const),
+  recurso: oNulo(unoDe(RECURSOS)),
+  factorMil: milesimas(0, 5000),
+});
+
+const validarAcontecimiento: Validador<Acontecimiento> = objeto<Acontecimiento>({
+  id: identificador<IdAcontecimiento>(),
+  tipo: texto({ minimo: 1, maximo: 60 }),
+  region: texto({ minimo: 1, maximo: 60 }),
+  turnoAnuncio: entero({ minimo: 1 }),
+  turnoInicio: entero({ minimo: 1 }),
+  turnosDuracion: entero({ minimo: 1, maximo: 48 }),
+  efectos: lista(validarEfecto, { minimo: 1, maximo: 6 }),
+});
+
+/** Una orden guardada en el estado se valida igual que una que llega de fuera. */
+const validarOrdenGuardada: Validador<Orden> = (dato, ruta) => {
+  const resultado = validarOrdenEntrante(dato);
+  if (resultado.ok) return resultado;
+  return invalidos(
+    resultado.errores.map((error) => ({
+      ruta: error.ruta === '(raiz)' ? ruta : `${ruta}.${error.ruta}`,
+      mensaje: error.mensaje,
+    })),
+  );
+};
+
+const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
+  version: entero({ minimo: 1 }),
+  id: identificador<IdPartida>(),
+  semilla: texto({ minimo: 1, maximo: 120 }),
+  turno: entero({ minimo: 1 }),
+  configuracion: validarConfiguracion,
+  jugadores: registro(validarJugador, identificador()),
+  comarcas: registro(validarComarca, identificador()),
+  recuas: registro(validarRecua, identificador()),
+  rebanyos: registro(validarRebanyo, identificador()),
+  obras: registro(validarObra, identificador()),
+  mercados: registro(validarMercado, identificador()),
+  acontecimientos: lista(validarAcontecimiento, { maximo: 40 }),
+  ordenes: lista(validarOrdenGuardada, { maximo: 2000 }),
+  siguienteId: enteroNoNegativo(),
+  huellaTurnoAnterior: oNulo(texto({ minimo: 64, maximo: 64 })),
+});
+
+/**
+ * Valida un estado de partida.
+ *
+ * Con `mundo`, comprueba ademas que todas las comarcas citadas existen en ese mundo.
+ * Un estado de otra version de reglas se rechaza: hace falta una migracion explicita.
+ */
+export function validarEstado(dato: unknown, mundo?: Mundo): Resultado<EstadoPartida> {
+  const forma = validarForma(dato, '');
+  if (!forma.ok) return forma;
+  const estado = forma.valor;
+  const errores: ErrorValidacion[] = [];
+
+  if (estado.version !== VERSION_REGLAS) {
+    errores.push({
+      ruta: 'version',
+      mensaje: `la partida es de la version de reglas ${String(estado.version)} y el motor es la ${String(VERSION_REGLAS)}: hace falta migrarla antes de resolver`,
+    });
+  }
+
+  const hayJugador = (id: string): boolean => Object.hasOwn(estado.jugadores, id);
+  const hayComarca = (id: string): boolean => Object.hasOwn(estado.comarcas, id);
+
+  for (const [clave, jugador] of Object.entries(estado.jugadores)) {
+    if (jugador.id !== clave) {
+      errores.push({
+        ruta: `jugadores.${clave}.id`,
+        mensaje: `no coincide con su clave "${clave}"`,
+      });
+    }
+    if (!hayComarca(jugador.capital)) {
+      errores.push({
+        ruta: `jugadores.${clave}.capital`,
+        mensaje: `la comarca "${jugador.capital}" no existe en la partida`,
+      });
+    }
+    for (const recurso of RECURSOS) {
+      if (jugador.reservado[recurso] > jugador.almacen[recurso]) {
+        errores.push({
+          ruta: `jugadores.${clave}.reservado.${recurso}`,
+          mensaje: `hay ${String(jugador.reservado[recurso])} reservados y solo ${String(jugador.almacen[recurso])} en el almacen`,
+        });
+      }
+    }
+    for (const comarca of Object.keys(jugador.conocimiento)) {
+      if (!hayComarca(comarca)) {
+        errores.push({
+          ruta: `jugadores.${clave}.conocimiento.${comarca}`,
+          mensaje: `la comarca "${comarca}" no existe en la partida`,
+        });
+      }
+    }
+  }
+
+  for (const [clave, comarca] of Object.entries(estado.comarcas)) {
+    if (comarca.id !== clave) {
+      errores.push({
+        ruta: `comarcas.${clave}.id`,
+        mensaje: `no coincide con su clave "${clave}"`,
+      });
+    }
+    if (comarca.duenyo !== null && !hayJugador(comarca.duenyo)) {
+      errores.push({
+        ruta: `comarcas.${clave}.duenyo`,
+        mensaje: `el jugador "${comarca.duenyo}" no existe en la partida`,
+      });
+    }
+    if (comarca.duenyo !== null && Object.keys(comarca.influencias).length > 0) {
+      errores.push({
+        ruta: `comarcas.${clave}.influencias`,
+        mensaje: 'una comarca con duenyo no acumula influencias: solo las neutrales',
+      });
+    }
+    for (const jugador of Object.keys(comarca.influencias)) {
+      if (!hayJugador(jugador)) {
+        errores.push({
+          ruta: `comarcas.${clave}.influencias.${jugador}`,
+          mensaje: `el jugador "${jugador}" no existe en la partida`,
+        });
+      }
+    }
+    if (mundo !== undefined && !Object.hasOwn(mundo.comarcas, clave)) {
+      errores.push({
+        ruta: `comarcas.${clave}`,
+        mensaje: 'esta comarca no existe en el mundo de la partida',
+      });
+    }
+  }
+
+  const comprobarUnidad = (
+    ruta: string,
+    jugador: string,
+    situacion: SituacionMovil,
+    rutaPendiente: readonly string[],
+  ): void => {
+    if (!hayJugador(jugador)) {
+      errores.push({
+        ruta: `${ruta}.jugador`,
+        mensaje: `el jugador "${jugador}" no existe en la partida`,
+      });
+    }
+    const citadas =
+      situacion.donde === 'comarca' ? [situacion.comarca] : [situacion.desde, situacion.hasta];
+    for (const comarca of [...citadas, ...rutaPendiente]) {
+      if (!hayComarca(comarca)) {
+        errores.push({
+          ruta: `${ruta}.situacion`,
+          mensaje: `la comarca "${comarca}" no existe en la partida`,
+        });
+      }
+    }
+  };
+
+  for (const [clave, recua] of Object.entries(estado.recuas)) {
+    comprobarUnidad(`recuas.${clave}`, recua.jugador, recua.situacion, recua.ruta);
+  }
+  for (const [clave, rebanyo] of Object.entries(estado.rebanyos)) {
+    comprobarUnidad(`rebanyos.${clave}`, rebanyo.jugador, rebanyo.situacion, rebanyo.ruta);
+  }
+
+  for (const [clave, obra] of Object.entries(estado.obras)) {
+    if (!hayJugador(obra.jugador)) {
+      errores.push({
+        ruta: `obras.${clave}.jugador`,
+        mensaje: `el jugador "${obra.jugador}" no existe`,
+      });
+    }
+    if (!hayComarca(obra.comarca)) {
+      errores.push({
+        ruta: `obras.${clave}.comarca`,
+        mensaje: `la comarca "${obra.comarca}" no existe`,
+      });
+    }
+  }
+
+  for (const [clave, mercado] of Object.entries(estado.mercados)) {
+    if (!hayComarca(mercado.comarca)) {
+      errores.push({
+        ruta: `mercados.${clave}.comarca`,
+        mensaje: `la comarca "${mercado.comarca}" no existe`,
+      });
+    }
+  }
+
+  estado.ordenes.forEach((orden, indice) => {
+    if (!hayJugador(orden.jugador)) {
+      errores.push({
+        ruta: `ordenes.${String(indice)}.jugador`,
+        mensaje: `el jugador "${orden.jugador}" no existe en la partida`,
+      });
+    }
+    if (orden.turnoAlta > estado.turno) {
+      errores.push({
+        ruta: `ordenes.${String(indice)}.turnoAlta`,
+        mensaje: `la orden se dio en el turno ${String(orden.turnoAlta)} y la partida va por el ${String(estado.turno)}`,
+      });
+    }
+  });
+
+  return errores.length > 0 ? invalidos(errores) : valido(estado);
+}

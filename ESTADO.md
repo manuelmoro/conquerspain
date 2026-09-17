@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 17 de septiembre de 2026 (tras cerrar T-002)
+**Última actualización:** 17 de septiembre de 2026 (tras cerrar T-003)
 **Fase actual:** Fase 0 · Cimientos del repositorio
 
 ---
@@ -14,11 +14,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-003 · Tipos del estado, las órdenes y el mundo](docs/plan/T-003-tipos-del-dominio.md)**
+**[T-004 · Armazón del resolutor: fases, contexto y sucesos](docs/plan/T-004-armazon-del-resolutor.md)**
 
-Fijar la forma de los datos antes de escribir ninguna regla: partida, jugador, comarca, recua,
-orden, mundo y tablas de reglas, con validadores en tiempo de ejecución para todo lo que entra de
-fuera. Sin lógica de juego dentro.
+Montar la tubería de las doce fases, el registro de sucesos, la huella por turno y el arnés de
+partidas de reproducción. Sin reglas de juego todavía: cada fase queda como función identidad
+documentada. Con esto se cierra la fase 0.
 
 ## Cómo continuar (resumen)
 
@@ -43,6 +43,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Guardas de pureza del núcleo | Dos capas activas: reglas de ESLint y `paquetes/nucleo/pruebas/pureza.test.ts` |
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
+| Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
+| Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -66,6 +68,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 17-09-2026 | **T-003 hecha**: tipos del dominio (siete módulos, sin lógica) y capa de validación con combinadores propios. Las órdenes pasan a vivir en el estado; `docs/02` §2.8 actualizado. 90 tests en verde |
 | 17-09-2026 | **T-002 hecha**: útiles deterministas (enteros en milésimas con BigInt, orden por punto de código, xoshiro128** con semilla, forma canónica y SHA-256 propio contrastado con `node:crypto`). 58 tests en verde |
 | 17-09-2026 | **T-001 hecha**: monorepo con seis paquetes, TypeScript estricto, Vitest, ESLint, Prettier, integración continua y las dos guardas de pureza del núcleo. `npm run verificar` pasa: 7 archivos de test, 10 tests, 0 vulnerabilidades |
 
