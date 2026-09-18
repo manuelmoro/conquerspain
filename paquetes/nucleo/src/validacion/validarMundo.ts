@@ -58,6 +58,7 @@ const validarCamino: Validador<Camino> = objeto<Camino>({
   jornadasBase: entero({ minimo: 1, maximo: 30 }),
   vado: booleano(),
   puertoDeMontanya: oNulo(texto({ minimo: 1, maximo: 80 })),
+  cierraEnInvierno: booleano(),
   canyada: oNulo(texto({ minimo: 1, maximo: 80 })),
   calzadaRomana: booleano(),
 });

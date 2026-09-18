@@ -18,7 +18,13 @@ import type {
   Prohibiciones,
   TablasDeReglas,
 } from '../tipos/reglas.ts';
-import { CASAS, ESTACIONES, TIPOS_DE_EDIFICIO, VERSION_REGLAS } from '../tipos/reglas.ts';
+import {
+  CALIDADES_CAMINO,
+  CASAS,
+  ESTACIONES,
+  TIPOS_DE_EDIFICIO,
+  VERSION_REGLAS,
+} from '../tipos/reglas.ts';
 import { milesimas, recursos, recursosParciales } from './comunes.ts';
 import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
@@ -128,7 +134,7 @@ const validarEstacionesDatos: Validador<DatosEstaciones> = objeto<DatosEstacione
 
 const validarMovimiento: Validador<DatosMovimiento> = objeto<DatosMovimiento>({
   jornadasPorTerreno: registro(entero({ minimo: 1, maximo: 30 })),
-  factorCaminoMil: registro(milesimas(100, 3000)),
+  factorCaminoMil: registroCompleto(CALIDADES_CAMINO, milesimas(100, 3000)),
   jornadasDeVado: enteroNoNegativo(10),
   pasoBaseMil: milesimas(500, 10000),
   bastimentoPorJornada: enteroNoNegativo(20),

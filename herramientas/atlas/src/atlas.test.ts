@@ -7,6 +7,7 @@ import type { Mundo } from '@conquer/nucleo';
 import { explicar } from '@conquer/nucleo';
 import { cargarMundo } from '@conquer/mundo';
 
+import { comarcasAisladasEnInvierno, comarcasIncomunicadas } from './caminos.ts';
 import { CACHE, fuentes } from './descargar.ts';
 import { RUTA_INFORME, RUTA_MUNDO, comprobar, generarMundo, textoDelMundo } from './generar.ts';
 import type { Punto } from './geometria.ts';
@@ -142,6 +143,38 @@ describe('comprobaciones del mapa', () => {
     });
     const problemas = comprobar(roto, new Map()).join('\n');
     expect(problemas).toMatch(new RegExp(`${primera}: se ha quedado sin vecinos`));
+  });
+});
+
+describe('la capa historica de caminos (T-013 §4.6)', () => {
+  it('no deja ninguna comarca sin un tramo de cuatro jornadas o menos', () => {
+    const mundo = cargarMundo(RUTA_MUNDO);
+    if (!mundo.ok) throw new Error(explicar(mundo.errores));
+    expect(comarcasIncomunicadas(mundo.valor)).toEqual([]);
+  });
+
+  it('deja el grafo conexo en invierno usando solo los tramos abiertos', () => {
+    const mundo = cargarMundo(RUTA_MUNDO);
+    if (!mundo.ok) throw new Error(explicar(mundo.errores));
+    expect(comarcasAisladasEnInvierno(mundo.valor)).toEqual([]);
+  });
+
+  it('detecta una comarca aislada cuando se cierran sus puertos', () => {
+    const mundo = cargarMundo(RUTA_MUNDO);
+    if (!mundo.ok) throw new Error(explicar(mundo.errores));
+    const victima = 'val-d-aran';
+    const caminos = mundo.valor.caminos.map((camino) =>
+      camino.desde === victima || camino.hasta === victima
+        ? {
+            ...camino,
+            puertoDeMontanya: 'Paso de prueba',
+            cierraEnInvierno: true,
+            calzadaRomana: false,
+          }
+        : camino,
+    );
+    const aisladas = comarcasAisladasEnInvierno({ ...mundo.valor, caminos });
+    expect(aisladas).toContain(victima);
   });
 });
 

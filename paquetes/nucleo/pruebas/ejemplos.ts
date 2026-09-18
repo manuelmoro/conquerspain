@@ -78,6 +78,7 @@ export function mundoDeEjemplo(): Registro {
         jornadasBase: 2,
         vado: false,
         puertoDeMontanya: null,
+        cierraEnInvierno: false,
         canyada: null,
         calzadaRomana: false,
       },

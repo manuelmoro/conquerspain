@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-015: el catálogo geográfico está completo)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-013)
 **Fase actual:** Fase 1 · El mundo
 
 ---
@@ -20,15 +20,12 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-013 · Caminos, puertos, vados y cañadas reales](docs/plan/T-013-caminos-y-canyadas.md)**
+**[T-014 · Ferias, patrimonio y rasgos de comarca](docs/plan/T-014-ferias-y-patrimonio.md)**
 
-Ya se puede: el catálogo cubre la península con 403 comarcas reales y nombres estables. Toca
-enriquecer el grafo con los puertos de montaña (Piqueras, Pajares, Somosierra, Despeñaperros…),
-los vados, las calzadas romanas y las nueve cañadas reales, y añadir `jornadasDeTramo` al núcleo.
-Hereda además una comprobación global de T-015: cada comarca con `pasto-de-verano` tiene que
-quedar unida por cañada a un pasto de invierno.
-
-Después, T-014 (ferias y patrimonio) y con ella se cierra la fase 1.
+La última de la fase 1. Cierra el catálogo de rasgos con su efecto, escribe las diez ferias del
+mapa con su calendario y su volumen, y hace la pasada de ortografía de los nombres visibles del
+catálogo (hoy en ASCII: `Logronyo`, `Penyafiel`). Hereda de T-015 una comprobación global:
+exactamente tres ferias grandes.
 
 ## Cómo continuar (resumen)
 
@@ -58,7 +55,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
-| Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
+| Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -82,6 +79,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-013 hecha**: capa histórica de caminos. 24 puertos de montaña (19 se cierran en invierno), 14 vados, 4 calzadas romanas y las 9 cañadas reales sobre el grafo; `jornadasDeTramo` en el núcleo con su tabla de 17 casos; `Camino` gana `cierraEnInvierno`. 251 tests en verde |
 | 18-09-2026 | **T-015 hecha: el catálogo geográfico está completo.** Entrega 10 (centro y sur de Portugal, 41 comarcas) y pasada de remates (36 comarcas repartidas por ocho regiones): **403 comarcas reales, cero provisionales**. Las comprobaciones globales del mapa pasan como test: 12 comarcas con sal, 9 con hierro en cuatro focos, 78 con `labor >= 4`, 69 orígenes y 3,5 jornadas de distancia media. 222 tests en verde |
 | 18-09-2026 | **T-015, entrega 9 hecha**: Andalucía, 43 comarcas. Cinco con `labor 5` en el valle del Guadalquivir, la sal de la bahía de Cádiz con `sal 5`, el cobre y el hierro de Riotinto y el mármol de Macael (`piedra 5`, único del mapa). 332 comarcas reales de 398. 211 tests en verde |
 | 18-09-2026 | **T-015, entrega 8 hecha**: Levante y Murcia, 31 comarcas. Las cuatro huertas de `labor 5` (València, la Ribera, la Vega Baja y Murcia), diez puertos de mar y la sal de La Mata y San Pedro del Pinatar. 289 comarcas reales de 398. 202 tests en verde |

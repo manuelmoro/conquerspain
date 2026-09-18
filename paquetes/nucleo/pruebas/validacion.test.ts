@@ -55,6 +55,7 @@ describe('validacion del mundo', () => {
             jornadasBase: 2,
             vado: false,
             puertoDeMontanya: null,
+            cierraEnInvierno: false,
             canyada: null,
             calzadaRomana: false,
           },

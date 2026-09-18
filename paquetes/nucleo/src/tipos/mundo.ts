@@ -81,6 +81,8 @@ export interface Camino {
   readonly vado: boolean;
   /** Nombre historico del puerto de montanya, o null si el tramo no lo cruza. */
   readonly puertoDeMontanya: string | null;
+  /** El puerto se cierra por nieve en invierno y solo se cruza si el tramo tiene calzada. */
+  readonly cierraEnInvierno: boolean;
   /** Nombre de la canyada real que usa este tramo, o null. */
   readonly canyada: string | null;
   readonly calzadaRomana: boolean;

@@ -176,6 +176,7 @@ export function mundoMini(): Mundo {
           jornadasBase: plantilla.terreno === 'sierra' ? 5 : 2,
           vado: false,
           puertoDeMontanya: plantilla.terreno === 'sierra' ? 'Puerto de Prueba' : null,
+          cierraEnInvierno: plantilla.terreno === 'sierra',
           canyada: null,
           calzadaRomana: false,
         });

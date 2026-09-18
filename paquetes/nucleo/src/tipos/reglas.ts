@@ -43,6 +43,10 @@ export type TipoEdificio = (typeof TIPOS_DE_EDIFICIO)[number];
 export const ESTACIONES = ['primavera', 'verano', 'otonyo', 'invierno'] as const;
 export type Estacion = (typeof ESTACIONES)[number];
 
+/** Calidad de un tramo de camino (docs/03-economia.md §3.7.2). La calzada nunca se cierra. */
+export const CALIDADES_CAMINO = ['vereda', 'herradura', 'carretero', 'calzada'] as const;
+export type CalidadCamino = (typeof CALIDADES_CAMINO)[number];
+
 export interface DatosRecurso {
   readonly precioBaseMil: number;
   readonly elasticidadMil: number;
@@ -140,7 +144,7 @@ export interface DatosEstaciones {
 
 export interface DatosMovimiento {
   readonly jornadasPorTerreno: Readonly<Record<string, number>>;
-  readonly factorCaminoMil: Readonly<Record<string, number>>;
+  readonly factorCaminoMil: Readonly<Record<CalidadCamino, number>>;
   readonly jornadasDeVado: number;
   readonly pasoBaseMil: number;
   readonly bastimentoPorJornada: number;

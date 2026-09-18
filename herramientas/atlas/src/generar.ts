@@ -11,7 +11,8 @@ import { Delaunay } from 'd3-delaunay';
 import type { Camino, ComarcaMundo, IdComarca, Mundo, Terreno } from '@conquer/nucleo';
 import { azarDeTexto, canonico, comparar, explicar, validarMundo } from '@conquer/nucleo';
 import type { ComarcaCatalogo } from '@conquer/mundo';
-import { cargarCatalogoOFallar, esRasgo } from '@conquer/mundo';
+import { cargarCaminos, cargarCatalogoOFallar, comprobarCaminos, esRasgo } from '@conquer/mundo';
+import { aplicarCaminos, comarcasAisladasEnInvierno, comarcasIncomunicadas } from './caminos.ts';
 import { obtener, fuentes } from './descargar.ts';
 import { idComarca, idFeria } from './identificadores.ts';
 import type { Punto } from './geometria.ts';
@@ -289,12 +290,21 @@ export async function generarMundo(): Promise<ResultadoGeneracion> {
     vecinos[semilla.id] = suyos.sort(comparar);
   }
 
-  const mundo: Mundo = {
-    version: 'v1',
-    comarcas,
-    caminos: caminos.sort((a, b) => comparar(`${a.desde}|${a.hasta}`, `${b.desde}|${b.hasta}`)),
-    vecinos,
-  };
+  const ordenados = caminos.sort((a, b) =>
+    comparar(`${a.desde}|${a.hasta}`, `${b.desde}|${b.hasta}`),
+  );
+  const sinCapa: Mundo = { version: 'v1', comarcas, caminos: ordenados, vecinos };
+
+  // Capa historica de T-013: puertos, vados, calzadas y canyadas sobre el grafo ya construido.
+  const capa = cargarCaminos(CATALOGO);
+  if (!capa.ok) {
+    throw new Error(`El catalogo de caminos no valida:\n${explicar(capa.errores)}`);
+  }
+  const problemasDeCapa = comprobarCaminos(capa.valor, sinCapa);
+  if (problemasDeCapa.length > 0) {
+    throw new Error(`La capa de caminos no cuadra con el mapa:\n${explicar(problemasDeCapa)}`);
+  }
+  const mundo: Mundo = { ...sinCapa, caminos: aplicarCaminos(ordenados, capa.valor) };
 
   avisos.push(...comprobar(mundo, poligonos));
   return { mundo, informe: informeDe(mundo, avisos), avisos };
@@ -322,6 +332,7 @@ function tramoEntre(
     vado: false,
     // Candidato a puerto de montanya: T-013 confirma el nombre y su comportamiento estacional.
     puertoDeMontanya: puerto !== undefined && terreno === 'sierra' ? puerto.nombre : null,
+    cierraEnInvierno: false,
     canyada: null,
     calzadaRomana: false,
   };
@@ -372,6 +383,22 @@ export function comprobar(mundo: Mundo, poligonos: Map<string, Punto[]>): string
     const sueltas = ids.filter((id) => !vistos.has(id));
     problemas.push(
       `el grafo no es conexo: ${String(sueltas.length)} comarcas quedan aisladas (${sueltas.slice(0, 5).join(', ')}…)`,
+    );
+  }
+
+  const incomunicadas = comarcasIncomunicadas(mundo);
+  if (incomunicadas.length > 0) {
+    problemas.push(
+      `sin ningun tramo de cuatro jornadas o menos: ${incomunicadas.slice(0, 5).join(', ')}` +
+        (incomunicadas.length > 5 ? ` y ${String(incomunicadas.length - 5)} mas` : ''),
+    );
+  }
+
+  const aisladas = comarcasAisladasEnInvierno(mundo);
+  if (aisladas.length > 0) {
+    problemas.push(
+      `en invierno quedan ${String(aisladas.length)} comarcas incomunicadas por los puertos ` +
+        `cerrados: ${aisladas.slice(0, 5).join(', ')}`,
     );
   }
 
@@ -429,11 +456,44 @@ function informeDe(mundo: Mundo, avisos: readonly string[]): string {
   );
 
   if (puertos.length > 0) {
-    lineas.push('', '## Candidatos a puerto de montaña', '');
-    for (const camino of puertos.slice(0, 20)) {
-      lineas.push(`- ${camino.puertoDeMontanya ?? ''}: ${camino.desde} ↔ ${camino.hasta}`);
+    const cerrados = puertos.filter((camino) => camino.cierraEnInvierno);
+    lineas.push(
+      '',
+      '## Puertos de montaña',
+      '',
+      `${String(puertos.length)} puertos, de los cuales ${String(cerrados.length)} se cierran en invierno.`,
+      '',
+    );
+    for (const camino of puertos) {
+      const cierre = camino.cierraEnInvierno ? 'cerrado en invierno' : 'abierto todo el año';
+      lineas.push(
+        `- ${camino.puertoDeMontanya ?? ''}: ${camino.desde} ↔ ${camino.hasta} · ${cierre}`,
+      );
     }
   }
+
+  const canyadas = new Map<string, number>();
+  for (const camino of mundo.caminos) {
+    if (camino.canyada === null) continue;
+    canyadas.set(camino.canyada, (canyadas.get(camino.canyada) ?? 0) + 1);
+  }
+  if (canyadas.size > 0) {
+    lineas.push('', '## Cañadas reales', '');
+    for (const nombre of [...canyadas.keys()].sort(comparar)) {
+      lineas.push(`- ${nombre}: ${String(canyadas.get(nombre) ?? 0)} tramos`);
+    }
+  }
+
+  const vados = mundo.caminos.filter((camino) => camino.vado).length;
+  const calzadas = mundo.caminos.filter((camino) => camino.calzadaRomana).length;
+  lineas.push(
+    '',
+    '## Capa histórica',
+    '',
+    `- Vados: ${String(vados)} · tramos de calzada romana: ${String(calzadas)} · tramos de cañada: ${String(
+      mundo.caminos.filter((camino) => camino.canyada !== null).length,
+    )}`,
+  );
 
   if (avisos.length > 0) {
     lineas.push('', '## Avisos', '');

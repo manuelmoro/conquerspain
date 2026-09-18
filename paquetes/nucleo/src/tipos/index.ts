@@ -85,7 +85,13 @@ export type {
   ReglaDeMayordomo,
   TipoDeOrden,
 } from './ordenes.ts';
-export { CASAS, ESTACIONES, TIPOS_DE_EDIFICIO, VERSION_REGLAS } from './reglas.ts';
+export {
+  CALIDADES_CAMINO,
+  CASAS,
+  ESTACIONES,
+  TIPOS_DE_EDIFICIO,
+  VERSION_REGLAS,
+} from './reglas.ts';
 export type {
   Casa,
   DatosCasa,
@@ -98,6 +104,7 @@ export type {
   DatosPrestigio,
   DatosRecurso,
   DatosTradicion,
+  CalidadCamino,
   Estacion,
   Modificadores,
   Permisos,

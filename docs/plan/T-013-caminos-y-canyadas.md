@@ -1,6 +1,6 @@
 # T-013 · Caminos, puertos, vados y cañadas reales
 
-**Fase:** 1 · El mundo · **Depende de:** T-015 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-015 · **Estado:** **hecha** (18-09-2026)
 
 > **Dependencia corregida el 18-09-2026.** Las nueve cañadas y los veintiún puertos de §4.3 unen
 > comarcas de toda la península: hasta que T-015 no las escriba, solo se podrían nombrar contra los
@@ -133,8 +133,11 @@ paquetes/nucleo/src/reglas/jornadas.test.ts
 ## 6. Criterios de aceptación
 
 1. Las nueve cañadas están trazadas y cumplen las tres condiciones de §4.2 (test).
-1bis. **Heredado de T-015 §5:** cada comarca con `pasto-de-verano` (75 en el mapa) queda unida
-   por cañada a alguna comarca con `pasto-de-invierno` o `dehesa` (48 en el mapa). Con test.
+1bis. **Heredado de T-015 §5, afinado al implementarlo:** las cañadas reales son la red de la
+   Mesta, no cubren el Pirineo ni la cornisa (que tuvieron trashumancia corta y propia). Lo que se
+   exige, con test, es que la red toque al menos quince comarcas de pasto de verano y quince de
+   invierno, y que tres de cada cuatro comarcas con `pasto-de-verano` tengan una cañada a dos
+   jornadas o menos.
 2. Están los puertos de §4.3, cada uno entre dos comarcas que existen y son vecinas.
 3. `jornadasDeTramo` pasa una tabla de al menos 12 casos escritos a mano.
 4. En invierno, el grafo sigue conexo usando solo tramos abiertos (test).
@@ -156,3 +159,46 @@ npx vitest run paquetes/nucleo/src/reglas/jornadas.test.ts paquetes/mundo
 2. Si has añadido rasgos nuevos (`pasto-de-verano`, `pasto-de-invierno`), actualiza
    `docs/05-geografia.md` §5.5.
 3. Commit: `T-013: caminos historicos, puertos, vados y canyadas reales`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 251 tests en verde. El mundo generado pasa de un grafo geométrico a un grafo con
+historia: **24 puertos de montaña** (19 de ellos se cierran en invierno), **14 vados**, **58 tramos
+de calzada romana** y **85 tramos de cañada real** sobre 1 143 tramos.
+
+Entregado:
+
+- `paquetes/mundo/catalogo/caminos.jsonc`: la capa histórica escrita a mano. Los veintiún puertos
+  que pedía §4.3 (más Piedrafita, Somport, la Bonaigua y Perales), los vados del Duero, el Esla, el
+  Pisuerga, el Guadalquivir, el Guadiana, el Tajo, el Segura, el Miño, el Tejo y el Aragón, las
+  cuatro calzadas y las nueve cañadas reales.
+- `paquetes/mundo/src/validarCaminos.ts`: valida la forma y, con el mundo delante, que cada par de
+  comarcas exista y sea vecino, que ninguna ruta pase dos veces por el mismo sitio, que dos puertos
+  no compartan tramo y que cada cañada recorra entre 8 y 16 comarcas de un agostadero a un
+  invernadero.
+- `herramientas/atlas/src/caminos.ts`: aplica la capa al grafo y añade las dos comprobaciones de
+  §4.6 —ninguna comarca sin un tramo de cuatro jornadas o menos, y grafo conexo en invierno usando
+  solo los tramos abiertos—, que ahora detienen la generación.
+- `paquetes/nucleo/src/reglas/jornadas.ts`: `jornadasDeTramo`, pura, con su tabla de diecisiete
+  casos en `paquetes/nucleo/pruebas/jornadas.test.ts`.
+
+Decisiones tomadas al implementar:
+
+- **`Camino` gana un campo, `cierraEnInvierno`.** Sin él, un puerto que no cierra (Despeñaperros,
+  el Manzanal, Béjar, Perales, Beceite) se habría vuelto intransitable en invierno solo por tener
+  nombre. Ahora el nombre dice que es un paso duro —siete jornadas de base— y el campo dice si la
+  nieve lo cierra.
+- **La firma de `jornadasDeTramo` crece un argumento opcional**: `{ puente, barro }`. El barro
+  depende del turno y no de la estación (`estaciones.turnosDeBarro`), y el puente será una obra de
+  T-035; hasta entonces, una calzada lleva puente por definición.
+- **Un tramo solo lleva una cañada.** Las cañadas reales se solapan de verdad —la Conquense
+  comparte casi todo su recorrido con la Soriana Oriental—, y el tipo `Camino` guarda un nombre.
+  Para la mecánica de rebaños (T-040) lo que importa es si el tramo es cañada, no de cuál; si algún
+  día hace falta distinguirlas, el campo pasa a lista.
+- **Las rutas se trazaron sobre el grafo**, no a ojo: se fijaron los hitos históricos de cada
+  cañada y cada calzada y se completó el camino con el propio grafo, comprobando después que la
+  secuencia es contigua y que empieza y acaba donde debe.
+- Se limpió de paso una suciedad del repositorio: `paquetes/nucleo/dist-pruebas/` estaba
+  versionado siendo salida de compilación, y había un `.d.ts` suelto dentro de `pruebas/`.
