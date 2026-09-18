@@ -22,6 +22,13 @@ más las de las otras dos rondas definidas en datos.
 **No entra:** equilibrio fino (T-047), tradiciones que dependan del conflicto (se definen pero quedan
 desactivadas).
 
+**Heredado de T-041.** Una tradición es un `Modificadores` parcial (`DatosTradicion.modificadores`)
+que se compone con el de su casa: hoy `modificadoresDe` (`reglas/casas/index.ts`) devuelve el de la
+casa y hay que hacer que devuelva el compuesto con las tradiciones elegidas (`EstadoJugador.tradiciones`).
+Los puntos de extensión son genéricos (producción por edificio, coste de obra mayor por tipo, gente
+para fundar puebla…), y las prohibiciones y los permisos se comprueban en un solo sitio, así que una
+tradición que quite una prohibición o dé un permiso no necesita tocar las fases.
+
 ## 4. Diseño detallado
 
 ### 4.1 Rondas

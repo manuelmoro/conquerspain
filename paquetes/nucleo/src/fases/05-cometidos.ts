@@ -6,6 +6,7 @@
 // resuelven al final, todas a la vez, por la regla de influencia y nunca por quien se proceso antes.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
+import { modificadoresDe } from '../reglas/casas/index.ts';
 import { cargarDelAlmacen, descargarEnAlmacen, todaLaCarga } from '../porteo.ts';
 import { datosConocidosDe, hallazgoDe, vecinasPorOir } from '../reglas/explorar.ts';
 import type { CandidatoAPuebla } from '../reglas/poblar.ts';
@@ -202,7 +203,12 @@ function poblar(
     // Se mide contra la comarca de ahora: si dos recuas pueblan la misma, la segunda ve lo que dejo
     // la primera y nunca se pasa de la capacidad.
     const ahora = ctx.estado.comarcas[donde] ?? comarca;
-    const seQuedan = vecinosQueSeQuedan(ahora, recua, ctx.reglas);
+    const seQuedan = vecinosQueSeQuedan(
+      ahora,
+      recua,
+      ctx.reglas,
+      modificadoresDe(ctx.estado, recua.jugador, ctx.reglas).capacidadPorCasasExtra,
+    );
     if (seQuedan > 0) {
       aplicar(ctx, { tipo: 'recua-vecinos', recua: recua.id, delta: -seQuedan, motivo: 'poblar' });
       aplicar(ctx, {
@@ -223,7 +229,12 @@ function poblar(
     return;
   }
 
-  const impedimento = impedimentoDePuebla(comarca, recua, ctx.reglas);
+  const impedimento = impedimentoDePuebla(
+    comarca,
+    recua,
+    ctx.reglas,
+    modificadoresDe(ctx.estado, recua.jugador, ctx.reglas).vecinosParaPueblaMil,
+  );
   if (impedimento !== null) {
     if (recua.turnosDeCometido > 0) {
       aplicar(ctx, { tipo: 'recua-turnos-cometido', recua: recua.id, turnos: 0 });

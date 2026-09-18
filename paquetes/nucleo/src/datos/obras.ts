@@ -14,6 +14,8 @@ export const OBRAS: DatosObras = {
   cuadrillasPorFuero: 1,
   cuadrillasPorMonasterio: 1,
   turnosDerribo: 1,
+  // Los aperos se instalan de golpe: ocho de hierro por nivel (docs/03 §3.3.1).
+  costeAperos: { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 8, lana: 0 },
   devolucionDerriboMil: 500,
   turnosRoturar: 3,
   costeRoturar: coste({ pan: 10, maravedis: 20 }),

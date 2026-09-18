@@ -225,6 +225,13 @@ export function tablasDeEjemplo(): Registro {
     lealtadMinima: 0,
     agotamientoMonteMil: 1000,
     crecimientoMil: 1000,
+    produccionEdificioMil: {},
+    produccionEdificioEnVegaMil: {},
+    laborFueraDeVegaMil: 1000,
+    edificiosPorRequisito: {},
+    costeObraMayorMil: {},
+    capacidadPorCasasExtra: 0,
+    vecinosParaPueblaMil: 1000,
   };
 
   const casas: Registro = {};
@@ -250,7 +257,7 @@ export function tablasDeEjemplo(): Registro {
         catedral: false,
         cobrarPortazgo: false,
       },
-      potencialesDeOrigen: {},
+      origenes: [],
     };
   }
 

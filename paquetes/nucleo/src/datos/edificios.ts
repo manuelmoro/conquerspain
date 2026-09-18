@@ -1,4 +1,4 @@
-// Los quince edificios del juego (docs/03-economia.md §3.3). Una fila por edificio: coste, turnos
+// Los dieciseis edificios del juego (docs/03-economia.md §3.3). Una fila por edificio: coste, turnos
 // de obra, lo que produce y consume por nivel, y la gente que necesita para trabajarlo.
 import type { Recursos } from '../tipos/recursos.ts';
 import type { DatosEdificio, TipoEdificio } from '../tipos/reglas.ts';
@@ -23,6 +23,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   huerta: {
     nombre: 'Huerta',
@@ -36,6 +37,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   molino: {
     nombre: 'Molino',
@@ -49,6 +51,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: 'granja',
     esDePiedra: true,
+    exigePermiso: null,
   },
   granero: {
     nombre: 'Granero',
@@ -62,6 +65,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: 0,
     requiereEdificio: null,
     esDePiedra: true,
+    exigePermiso: null,
   },
   aserradero: {
     nombre: 'Aserradero',
@@ -75,6 +79,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   carbonera: {
     nombre: 'Carbonera',
@@ -88,6 +93,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   cantera: {
     nombre: 'Cantera',
@@ -101,11 +107,12 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   ferreria: {
     nombre: 'Ferreria',
     potencial: 'hierro',
-    potencialMinimo: 1,
+    potencialMinimo: 2,
     coste: coste({ madera: 25, piedra: 20, maravedis: 30 }),
     turnos: 4,
     nivelMaximo: 3,
@@ -114,6 +121,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: 'carbonera',
     esDePiedra: true,
+    exigePermiso: null,
   },
   salina: {
     nombre: 'Salina',
@@ -127,6 +135,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   majada: {
     nombre: 'Majada',
@@ -140,6 +149,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   lonja: {
     nombre: 'Lonja de pescado',
@@ -153,6 +163,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: TRABAJO,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   mercado: {
     nombre: 'Mercado',
@@ -166,6 +177,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: 0,
     requiereEdificio: null,
     esDePiedra: true,
+    exigePermiso: null,
   },
   venta: {
     nombre: 'Venta',
@@ -179,6 +191,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: 0,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   casas: {
     nombre: 'Casas',
@@ -192,6 +205,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: 0,
     requiereEdificio: null,
     esDePiedra: false,
+    exigePermiso: null,
   },
   cerca: {
     nombre: 'Cerca',
@@ -205,5 +219,22 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     vecinosPorNivel: 0,
     requiereEdificio: null,
     esDePiedra: true,
+    exigePermiso: null,
+  },
+  // La acequia menor de los hortelanos: una obra corta que riega la comarca y le quita a su pan el
+  // factor de la estacion. Sin permiso de casa no se puede levantar (docs/04 §4.1.8).
+  acequia: {
+    nombre: 'Acequia menor',
+    potencial: 'labor',
+    potencialMinimo: 1,
+    coste: coste({ madera: 10, piedra: 15, maravedis: 10 }),
+    turnos: 2,
+    nivelMaximo: 1,
+    produccion: {},
+    consumo: {},
+    vecinosPorNivel: 0,
+    requiereEdificio: null,
+    esDePiedra: true,
+    exigePermiso: 'acequiaMenor',
   },
 };

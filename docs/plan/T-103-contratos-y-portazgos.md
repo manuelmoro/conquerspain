@@ -23,6 +23,12 @@ Contratos verificables, portazgos sobre caminos propios y una reputación mecán
 
 **No entra:** diplomacia formal (T-123).
 
+**Heredado de T-041.** Tres mecánicas de casa esperan a esta tarea y tienen ya su permiso en
+`datos/casas.ts` (que ninguna fase lee todavía; un test lo vigila): **vender aperos instalados** de
+los ferrones (`venderAperos`), el **contrato de obra** de los canteros en comarca ajena
+(`obraEnComarcaAjena`; si permite obras en comarca ajena hay que guardar el autor de la obra, ver T-038)
+y el **portazgo** de los arrieros (`cobrarPortazgo`, prohibido a los monjes).
+
 **Heredado de T-040.** Hoy un rebaño entra en tierra ajena solo por cañada y solo con el paso franco de
 la Mesta (`puedeEntrar`, `reglas/rebanyos.ts`), porque no hay portazgos ni acuerdos. Esta tarea
 debe sustituir esa prohibición por el pago o el acuerdo, sin quitarle a la Mesta su privilegio.

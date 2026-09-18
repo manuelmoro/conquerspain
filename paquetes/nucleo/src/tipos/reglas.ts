@@ -7,7 +7,7 @@ import type {
   QueDeEfecto,
   RecursoAgotable,
 } from './estado.ts';
-import type { Potencial } from './mundo.ts';
+import type { Potencial, Rasgo, Terreno } from './mundo.ts';
 import type { Recurso, Recursos } from './recursos.ts';
 
 /** Version de las reglas. Sube con cada cambio que altere resultados. */
@@ -44,6 +44,7 @@ export const TIPOS_DE_EDIFICIO = [
   'venta',
   'casas',
   'cerca',
+  'acequia',
 ] as const;
 export type TipoEdificio = (typeof TIPOS_DE_EDIFICIO)[number];
 
@@ -79,7 +80,20 @@ export interface DatosEdificio {
   readonly vecinosPorNivel: number;
   readonly requiereEdificio: TipoEdificio | null;
   readonly esDePiedra: boolean;
+  /** Permiso de casa sin el cual no se puede levantar (la acequia menor); null: cualquiera. */
+  readonly exigePermiso: keyof Permisos | null;
 }
+
+/** Los permisos de casa, en el orden de `Permisos`: para validar y para enumerar. */
+export const NOMBRES_DE_PERMISO = [
+  'pasoFrancoPorCanyada',
+  'obraEnComarcaAjena',
+  'letraDeCambio',
+  'cobrarPortazgo',
+  'venderAperos',
+  'acequiaMenor',
+  'cartaPuebla',
+] as const;
 
 export interface Permisos {
   readonly pasoFrancoPorCanyada: boolean;
@@ -120,6 +134,32 @@ export interface Modificadores {
   readonly lealtadMinima: number;
   readonly agotamientoMonteMil: number;
   readonly crecimientoMil: number;
+  /** Produccion de un edificio concreto (la lonja de quien la trabaja mejor): 1000 si nada. */
+  readonly produccionEdificioMil: Readonly<Partial<Record<TipoEdificio, number>>>;
+  /** Lo que rinde un edificio en una comarca de vega o con rio: 1000 si nada. */
+  readonly produccionEdificioEnVegaMil: Readonly<Partial<Record<TipoEdificio, number>>>;
+  /** Lo que rinde el pan de la labor fuera de una vega o un rio: 1000 si nada. */
+  readonly laborFueraDeVegaMil: number;
+  /** Niveles de un edificio que sostiene cada nivel del que depende (la ferreria de la carbonera). */
+  readonly edificiosPorRequisito: Readonly<Partial<Record<TipoEdificio, number>>>;
+  /** Coste de una obra mayor concreta (el monasterio de quien mejor lo levanta): 1000 si nada. */
+  readonly costeObraMayorMil: Readonly<Partial<Record<TipoObraMayor, number>>>;
+  /** Vecinos que suma (o resta) cada nivel de casas a la capacidad de la comarca. */
+  readonly capacidadPorCasasExtra: number;
+  /** Gente que hace falta para fundar puebla, sobre la de la tabla: 1000 si nada. */
+  readonly vecinosParaPueblaMil: number;
+}
+
+/**
+ * Una manera de ser buen origen para una casa: cumple todo lo que pida. Los potenciales son
+ * minimos; `rasgos` y `terrenos` piden alguno de la lista; `vecinaConPotencial`, que una vecina
+ * lo tenga.
+ */
+export interface CriterioDeOrigen {
+  readonly potenciales: Readonly<Partial<Record<Potencial, number>>>;
+  readonly rasgos: readonly Rasgo[];
+  readonly terrenos: readonly Terreno[];
+  readonly vecinaConPotencial: { readonly potencial: Potencial; readonly nivel: number } | null;
 }
 
 export interface DatosCasa {
@@ -130,8 +170,8 @@ export interface DatosCasa {
   readonly modificadores: Modificadores;
   readonly permisos: Permisos;
   readonly prohibiciones: Prohibiciones;
-  /** Potenciales que el sorteo de origen le exige a su comarca de partida. */
-  readonly potencialesDeOrigen: Readonly<Partial<Record<Potencial, number>>>;
+  /** Comarcas que puede ofrecerle el sorteo de origen: basta con cumplir un criterio. */
+  readonly origenes: readonly CriterioDeOrigen[];
 }
 
 export interface DatosTradicion {
@@ -284,6 +324,8 @@ export interface DatosObras {
   readonly cuadrillasPorFuero: number;
   readonly cuadrillasPorMonasterio: number;
   readonly turnosDerribo: number;
+  /** Lo que cuesta instalar un nivel de aperos (docs/03 §3.3.1). */
+  readonly costeAperos: Recursos;
   /** Parte del material de un edificio que se recupera al derribarlo. */
   readonly devolucionDerriboMil: number;
   readonly turnosRoturar: number;
@@ -355,6 +397,8 @@ export interface DatosFuero {
 /** Los rebanyos, sus pastos y el esquileo (docs/03-economia.md §3.8; ficha T-040). */
 export interface DatosGanaderia {
   readonly cabezasPorRebanyo: number;
+  /** Lo que cuesta formar un rebanyo antes de lo que cambie la casa. */
+  readonly costeFormarRebanyo: Recursos;
   /** Vecinos que se van con el ganado al formar un rebanyo. */
   readonly vecinosPorRebanyo: number;
   /** Jornadas por turno, en milesimas, y lo que suma ir por una canyada. */
@@ -382,6 +426,8 @@ export interface DatosGanaderia {
 export interface DatosMercado {
   /** Tope de la comision en feria; en el mercado local manda la de cada casa. */
   readonly comisionFeriaMil: number;
+  /** Comision de una letra de cambio (los mercaderes): 30 es un 3 %. */
+  readonly comisionLetraMil: number;
   readonly movimientoMaximoPorTurnoMil: number;
   readonly regresionAlBaseMil: number;
   readonly sueloMil: number;

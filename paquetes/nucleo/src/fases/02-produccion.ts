@@ -16,6 +16,7 @@ import {
   vecinosNecesarios,
 } from '../reglas/produccion.ts';
 import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
+import { modificadoresDe } from '../reglas/casas/index.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import { produccionDeRebanyos } from './02-rebanyos.ts';
 import type { Fuero } from '../tipos/estado.ts';
@@ -48,7 +49,12 @@ function pagarInsumos(ctx: Contexto): Map<string, NivelesActivos> {
     )) {
       const comarca = ctx.estado.comarcas[id];
       if (comarca === undefined) continue;
-      const insumos = insumosDe(comarca, disponible, ctx.reglas);
+      const insumos = insumosDe(
+        comarca,
+        disponible,
+        ctx.reglas,
+        ctx.reglas.casas[jugador.casa].modificadores.edificiosPorRequisito,
+      );
       activos.set(id, insumos.nivelesActivos);
       for (const recurso of RECURSOS) {
         const cantidad = insumos.gasto[recurso] ?? 0;
@@ -110,6 +116,8 @@ export function faseProduccion(ctx: Contexto): void {
           turno: ctx.turno,
           terreno: ctx.mundo.comarcas[id]?.terreno,
           casaMil,
+          casa: jugador === undefined ? undefined : ctx.reglas.casas[jugador.casa].modificadores,
+          enVega: esVega(ctx, id),
           nivelesActivos: nivelesActivos.get(id) ?? {},
         },
         ctx.reglas,
@@ -177,8 +185,18 @@ export function faseProduccion(ctx: Contexto): void {
     aplicar(ctx, {
       tipo: 'agotamiento',
       comarca: id as IdComarca,
-      valores: siguienteAgotamiento(comarca, ctx.reglas),
+      valores: siguienteAgotamiento(
+        comarca,
+        ctx.reglas,
+        modificadoresDe(ctx.estado, duenyo, ctx.reglas).agotamientoMonteMil,
+      ),
     });
   }
   produccionDeRebanyos(ctx);
+}
+
+/** La comarca es de vega o tiene rio: lo que cuenta para quien rinde mas (o menos) con el agua. */
+function esVega(ctx: Contexto, id: string): boolean {
+  const geografia = ctx.mundo.comarcas[id];
+  return geografia?.terreno === 'vega' || (geografia?.rasgos.includes('vega-fluvial') ?? false);
 }

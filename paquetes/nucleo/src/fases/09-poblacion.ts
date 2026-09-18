@@ -28,7 +28,8 @@ function crecer(ctx: Contexto, jugador: EstadoJugador): void {
   const producido = comarcas.reduce((total, c) => total + c.produccionUltimoTurno.pan, 0);
   const cuadrillas = panDeLasCuadrillas(ctx.estado, jugador.id, ctx.reglas);
   const reserva = jugador.almacen.pan - jugador.reservado.pan;
-  const casaMil = ctx.reglas.casas[jugador.casa].modificadores.crecimientoMil;
+  const casa = ctx.reglas.casas[jugador.casa].modificadores;
+  const casaMil = casa.crecimientoMil;
 
   for (const comarca of comarcas) {
     const crecimiento = crecimientoPosible(
@@ -39,10 +40,12 @@ function crecer(ctx: Contexto, jugador: EstadoJugador): void {
         casaMil,
       ],
       ctx.reglas,
+      casa.capacidadPorCasasExtra,
     );
     let motivo: MotivoSinCrecer | null = null;
     if (!permiteCrecer(jugador)) motivo = 'escasez';
-    else if (comarca.poblacion >= capacidadDe(comarca, ctx.reglas)) motivo = 'sin-capacidad';
+    else if (comarca.poblacion >= capacidadDe(comarca, ctx.reglas, casa.capacidadPorCasasExtra))
+      motivo = 'sin-capacidad';
     else if (reserva < ctx.estado.configuracion.reservaMinimaDePan) motivo = 'reserva-baja';
     else {
       // Las comarcas son objetos vivos del estado: las ya atendidas cuentan con su gente nueva.

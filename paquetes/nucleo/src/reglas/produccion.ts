@@ -6,7 +6,7 @@ import type { ClimaAnual } from './calendario.ts';
 import type { Acontecimiento, CargaFiscal, EstadoComarca, Fuero } from '../tipos/estado.ts';
 import type { NivelPotencial, Terreno } from '../tipos/mundo.ts';
 import type { Recurso } from '../tipos/recursos.ts';
-import type { Estacion, TablasDeReglas, TipoEdificio } from '../tipos/reglas.ts';
+import type { Estacion, Modificadores, TablasDeReglas, TipoEdificio } from '../tipos/reglas.ts';
 import { TIPOS_DE_EDIFICIO } from '../tipos/reglas.ts';
 import { RECURSOS_AGOTABLES } from '../tipos/estado.ts';
 import type { RecursoAgotable } from '../tipos/estado.ts';
@@ -56,6 +56,9 @@ export interface DatosDeComarcaParaProducir {
   readonly acontecimientos?: readonly Acontecimiento[];
   readonly turno?: number;
   readonly terreno?: Terreno | undefined;
+  /** Lo que cambia la casa del duenyo (docs/04) y si la comarca es de vega o tiene rio (T-041). */
+  readonly casa?: Modificadores | undefined;
+  readonly enVega?: boolean;
 }
 
 export function multiplicadorPotencial(nivel: NivelPotencial, reglas: TablasDeReglas): Milesimas {
@@ -139,6 +142,8 @@ export function explotacionesDe(
       const regada =
         edificio.potencial === 'labor' && comarca.obrasMayores.includes('acequia-mayor');
       if (regada) factores.push({ nombre: 'acequia', mil: reglas.obras.laborPorAcequiaMil });
+      // La acequia menor riega sin dar mas: solo le quita al pan el factor de la estacion.
+      const sinEstacion = regada || (comarca.edificios['acequia'] ?? 0) > 0;
       // Un acontecimiento activo en la region (sequia, buenas lluvias) o sobre la labor de un terreno
       // (la riada en las vegas) entra como un factor mas, para que se vea en el desglose.
       const lugar = { region: datos.region, comarca: comarca.id, terreno: datos.terreno ?? null };
@@ -161,7 +166,7 @@ export function explotacionesDe(
         });
       }
       if (recurso === 'pan' && produccion.edificiosEstacionales.includes(tipo)) {
-        if (!regada) {
+        if (!sinEstacion) {
           factores.push({
             nombre: 'estacion',
             mil: reglas.estaciones.factorPanMil[datos.estacion],
@@ -189,8 +194,18 @@ export function explotacionesDe(
       if (agotable === 'monte' && comarca.dehesa) {
         factores.push({ nombre: 'dehesa', mil: produccion.dehesa.maderaMil });
       }
-      const casa = datos.casaMil[recurso];
-      if (casa !== undefined && casa !== MIL) factores.push({ nombre: 'casa', mil: casa });
+      // Lo de la casa: su modificador por recurso, el de este edificio y, para la labor, si la
+      // comarca tiene vega o rio (los hortelanos rinden mas en ella y menos fuera).
+      const enVega = datos.enVega ?? false;
+      const casaMil = multiplicarFactores(MIL, [
+        datos.casaMil[recurso] ?? MIL,
+        datos.casa?.produccionEdificioMil[tipo] ?? MIL,
+        enVega ? (datos.casa?.produccionEdificioEnVegaMil[tipo] ?? MIL) : MIL,
+        recurso === 'pan' && edificio.potencial === 'labor' && !enVega
+          ? (datos.casa?.laborFueraDeVegaMil ?? MIL)
+          : MIL,
+      ]);
+      if (casaMil !== MIL) factores.push({ nombre: 'casa', mil: casaMil });
       resultado.push({
         edificio: tipo,
         nivel,
@@ -239,6 +254,8 @@ export function maravedisDe(
 export function siguienteAgotamiento(
   comarca: EstadoComarca,
   reglas: TablasDeReglas,
+  /** Lo deprisa que se le agota el monte a la casa del duenyo: 1000 si nada. */
+  agotamientoMonteMil: Milesimas = MIL,
 ): Record<RecursoAgotable, number> {
   const datos = reglas.produccion.agotamiento;
   const niveles: Record<RecursoAgotable, number> = { monte: 0, piedra: 0, hierro: 0, sal: 0 };
@@ -252,8 +269,9 @@ export function siguienteAgotamiento(
   const siguiente: Record<RecursoAgotable, number> = { monte: 0, piedra: 0, hierro: 0, sal: 0 };
   for (const recurso of RECURSOS_AGOTABLES) {
     let sube = datos.porNivel * niveles[recurso];
-    if (recurso === 'monte' && comarca.dehesa) {
-      sube = multiplicarFactores(sube, [reglas.produccion.dehesa.agotamientoMonteMil]);
+    if (recurso === 'monte') {
+      const dehesaMil = comarca.dehesa ? reglas.produccion.dehesa.agotamientoMonteMil : MIL;
+      sube = multiplicarFactores(sube, [dehesaMil, agotamientoMonteMil]);
     }
     siguiente[recurso] = limitar(
       comarca.agotamiento[recurso] + sube - datos.regeneracion[recurso],

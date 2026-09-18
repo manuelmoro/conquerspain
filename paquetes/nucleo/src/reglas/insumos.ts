@@ -27,6 +27,8 @@ export function insumosDe(
   comarca: EstadoComarca,
   disponible: Partial<Record<Recurso, number>>,
   reglas: TablasDeReglas,
+  /** Niveles que sostiene cada nivel del edificio del que depende uno, segun la casa. */
+  porRequisito: Readonly<Partial<Record<TipoEdificio, number>>> = {},
 ): Insumos {
   const gasto: Partial<Record<Recurso, number>> = {};
   const nivelesActivos: Partial<Record<TipoEdificio, number>> = {};
@@ -40,7 +42,9 @@ export function insumosDe(
       .filter((par): par is [Recurso, number] => par[1] > 0)
       .sort((a, b) => comparar(a[0], b[0]));
     const requerido = datos.requiereEdificio;
-    const limitePorRequisito = requerido === null ? undefined : nivelesActivos[requerido];
+    const sostenidos = requerido === null ? undefined : nivelesActivos[requerido];
+    const limitePorRequisito =
+      sostenidos === undefined ? undefined : sostenidos * (porRequisito[tipo] ?? 1);
     if (consumo.length === 0 && limitePorRequisito === undefined) continue;
 
     let activos = Math.min(nivel, limitePorRequisito ?? nivel);

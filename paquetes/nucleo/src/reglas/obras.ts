@@ -9,6 +9,7 @@ import type { Recursos } from '../tipos/recursos.ts';
 import { recursosSegun } from '../tipos/recursos.ts';
 import type {
   Modificadores,
+  Permisos,
   TablasDeReglas,
   TipoEdificio,
   TipoObraMayor,
@@ -44,7 +45,11 @@ export function solaresOcupados(comarca: EstadoComarca, obras: readonly Obra[]):
 }
 
 export type MotivoSinConstruir =
-  'nivel-maximo' | 'sin-solar' | 'potencial-insuficiente' | 'falta-edificio-requerido';
+  | 'nivel-maximo'
+  | 'sin-solar'
+  | 'potencial-insuficiente'
+  | 'falta-edificio-requerido'
+  | 'sin-permiso';
 
 /** Por que no se puede empezar este edificio en esta comarca, o null si se puede. */
 export function impedimentoDeConstruir(
@@ -54,8 +59,11 @@ export function impedimentoDeConstruir(
   solaresDelMapa: number,
   casa: Modificadores,
   reglas: TablasDeReglas,
+  /** Permisos de la casa: algunos edificios (la acequia menor) los exigen. */
+  permisos: Permisos,
 ): MotivoSinConstruir | null {
   const datos = reglas.edificios[edificio];
+  if (datos.exigePermiso !== null && !permisos[datos.exigePermiso]) return 'sin-permiso';
   const enObra = obras.filter(
     (o) => o.comarca === comarca.id && o.tipo === 'edificio' && o.que === edificio,
   ).length;
@@ -161,7 +169,8 @@ export function costeDeObraMayor(
   reglas: TablasDeReglas,
 ): Recursos {
   const base = reglas.obrasMayores[tipo].coste;
-  return recursosSegun((r) => multiplicarFactores(base[r], [casa.obraMayorCosteMil]));
+  const propia = casa.costeObraMayorMil[tipo] ?? MIL;
+  return recursosSegun((r) => multiplicarFactores(base[r], [casa.obraMayorCosteMil, propia]));
 }
 
 /**

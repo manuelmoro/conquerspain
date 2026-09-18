@@ -9,6 +9,7 @@ import type { Contexto } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { comarcasPorCercania } from '../reglas/administracion.ts';
+import { PROHIBIDO_POR_LA_CASA, prohibicionesDe } from '../reglas/casas/index.ts';
 import { impedimentoDeTraslado } from '../reglas/capital.ts';
 import { comarcasDe } from '../reglas/consumo.ts';
 import { datosConocidosDe } from '../reglas/explorar.ts';
@@ -40,6 +41,13 @@ function politica(ctx: Contexto, orden: OrdenDe<'politica'>): void {
   const comarca = ctx.estado.comarcas[orden.comarca];
   if (comarca === undefined || comarca.duenyo !== orden.jugador) {
     cancelarOrden(ctx, orden, 'comarca-ajena');
+    return;
+  }
+  if (
+    orden.cargaFiscal === 'dura' &&
+    prohibicionesDe(ctx.estado, orden.jugador, ctx.reglas).cargaFiscalDura
+  ) {
+    cancelarOrden(ctx, orden, PROHIBIDO_POR_LA_CASA);
     return;
   }
   const t = ctx.reglas.territorio;

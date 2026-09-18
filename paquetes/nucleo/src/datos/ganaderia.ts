@@ -3,6 +3,7 @@ import type { DatosGanaderia } from '../tipos/reglas.ts';
 
 export const GANADERIA: DatosGanaderia = {
   cabezasPorRebanyo: 1000,
+  costeFormarRebanyo: { pan: 0, madera: 0, piedra: 0, maravedis: 60, sal: 0, hierro: 0, lana: 0 },
   vecinosPorRebanyo: 2,
   // El ganado va despacio: dos jornadas por turno, y una mas si va por una canyada.
   pasoBaseMil: 2000,

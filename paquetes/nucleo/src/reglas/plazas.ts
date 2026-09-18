@@ -29,6 +29,14 @@ export interface CatalogoDePlazas {
 
 const PREFIJO_LOCAL = 'local-';
 
+/** La comarca tiene una plaza, abierta o no: un mercado local o una feria en algun turno del anyo. */
+export function hayPlazaEn(estado: EstadoPartida, mundo: Mundo, comarca: IdComarca): boolean {
+  return (
+    (estado.comarcas[comarca]?.edificios['mercado'] ?? 0) > 0 ||
+    (mundo.comarcas[comarca]?.ferias.length ?? 0) > 0
+  );
+}
+
 /** Lo que hay abierto este turno y lo que el mundo permite que exista. */
 export function catalogoDePlazas(
   estado: EstadoPartida,

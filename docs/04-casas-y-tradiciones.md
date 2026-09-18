@@ -29,7 +29,7 @@ cambia las reglas, una **herramienta propia**, un **límite real** y una **forma
 > *Ferrerías de agua en los valles: Mena, Somorrostro, Oiartzun.*
 
 - **Privilegio — Ferrería de monte:** puede construir ferrerías con `hierro ≥ 1` (los demás
-  necesitan 2) y sus ferrerías consumen un carbón menos.
+  necesitan 2) y cada carbonera sostiene **dos** niveles de sus ferrerías (a los demás, uno).
 - **Herramienta — Aperos de cuarta:** alcanza aperos nivel 4 (los demás, 3) y puede **vender aperos
   instalados** a otros jugadores: un contrato que sube la producción del comprador y le paga renta.
 - **Límite — Monte devorado:** el agotamiento del monte le sube un 50 % más rápido.
@@ -107,6 +107,27 @@ cambia las reglas, una **herramienta propia**, un **límite real** y una **forma
 - **Límite — Sed:** fuera de comarcas con río o vega, su labor rinde un 25 % menos.
 - **Cómo gana:** densidad. Pocas comarcas con muchísima población, que alimentan a todos los demás.
 - **Se le nota:** es el granero de la partida, y todos dependen de que le vaya bien.
+
+## 4.1.9 Qué hace hoy el motor
+
+Todas las casas viven en una tabla (`nucleo/src/datos/casas.ts`) sobre puntos de extensión
+genéricos; el motor no nombra a ninguna. ✔ funciona; ⏸ está desactivado hasta que exista lo que
+necesita.
+
+| Casa | Funciona | Desactivado |
+|---|---|---|
+| Mesta | paso franco en tierra ajena por cañada, rebaño a mitad de precio, +25 % de lana, sin roturar, pan −30 % | — |
+| Ferrones | ferrería con hierro 1, una carbonera por dos niveles, aperos de nivel 4, monte +50 % de agotamiento | **vender aperos instalados** a otro jugador (T-103) |
+| Canteros | obras mayores −25 % de coste, +30 % de avance y sin frenazo de invierno, un solar menos | **contrato de obra** en comarca ajena (T-103) |
+| Mercaderes | letra de cambio (3 % y un turno), un solar menos, pan −25 % | **corresponsales** y rumores dobles (T-044) |
+| Monjes | puebla con la mitad de gente, lealtad mínima 50, monasterio −30 %, sin carga fiscal dura | **portazgos** (T-103); **carta puebla gratis**, que hoy no cuesta nada (T-047) |
+| Salineros | salinas +50 %, pan sin merma, lonja +50 % y nivel 3, explotaciones de tierra un nivel por debajo | transporte sin bastimento extra (no se modela) |
+| Arrieros | recua −40 %, +1 jornada, +5 de porte, −1 vecino por nivel de casas, sin catedral | **portazgo propio** (T-103) |
+| Hortelanos | acequia menor (el pan sin factor de estación), huerta de nivel 4 y +50 % en vega, labor −25 % fuera de vega o río | — |
+
+Lo desactivado tiene su permiso en la tabla, pero ninguna fase lo lee: hay un test que lo comprueba,
+y quien lo active tiene que actualizar esta tabla. Todas las prohibiciones se comprueban al empezar
+la orden y la cancelan con el motivo `prohibido-por-la-casa`.
 
 ## 4.2 Elegir casa y origen
 

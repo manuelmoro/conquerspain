@@ -5,6 +5,8 @@ import type { DatosMercado } from '../tipos/reglas.ts';
 export const MERCADO: DatosMercado = {
   // En feria se paga la menor entre la comision de la casa (2 % de partida) y esta (1 %).
   comisionFeriaMil: 10,
+  // La letra de cambio cuesta un 3 % y tarda un turno.
+  comisionLetraMil: 30,
   // Un precio nunca se mueve mas de un 15 % por turno y vuelve al base un 10 % de la distancia.
   movimientoMaximoPorTurnoMil: 150,
   regresionAlBaseMil: 100,

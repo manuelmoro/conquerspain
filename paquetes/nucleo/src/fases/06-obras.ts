@@ -10,6 +10,7 @@ import type { OrdenDe } from '../ordenes.ts';
 import { cuadrillasLibres, turnosHastaCuadrillaLibre } from '../reglas/cuadrillas.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
 import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
+import { PROHIBIDO_POR_LA_CASA, prohibicionesDe } from '../reglas/casas/index.ts';
 import {
   avanceDelTurnoMil,
   avanceTrasDeterioro,
@@ -34,7 +35,11 @@ import { MIL, multiplicarFactores } from '../utiles/enteros.ts';
 import { comparar, idsEnOrden } from '../utiles/orden.ts';
 
 type OrdenDeObra =
-  OrdenDe<'construir'> | OrdenDe<'derribar'> | OrdenDe<'roturar'> | OrdenDe<'obra-mayor'>;
+  | OrdenDe<'construir'>
+  | OrdenDe<'derribar'>
+  | OrdenDe<'roturar'>
+  | OrdenDe<'obra-mayor'>
+  | OrdenDe<'aperos'>;
 
 export function faseObras(ctx: Contexto): void {
   const ordenes: OrdenDeObra[] = [
@@ -42,6 +47,7 @@ export function faseObras(ctx: Contexto): void {
     ...ordenesVivas(ctx, 'derribar'),
     ...ordenesVivas(ctx, 'roturar'),
     ...ordenesVivas(ctx, 'obra-mayor'),
+    ...ordenesVivas(ctx, 'aperos'),
   ].sort((a, b) => comparar(a.id, b.id));
   for (const orden of ordenes) atenderOrden(ctx, orden);
 
@@ -58,7 +64,18 @@ function atenderOrden(ctx: Contexto, orden: OrdenDeObra): void {
     cancelarOrden(ctx, orden, 'comarca-ajena');
     return;
   }
+  // Lo que la casa del jugador tiene prohibido no empieza nunca.
+  const prohibido = prohibicionesDe(ctx.estado, orden.jugador, ctx.reglas);
+  const esCatedral =
+    orden.tipo === 'obra-mayor' && orden.continuar === null && orden.obra === 'catedral';
+  if ((orden.tipo === 'roturar' && prohibido.roturar) || (esCatedral && prohibido.catedral)) {
+    cancelarOrden(ctx, orden, PROHIBIDO_POR_LA_CASA);
+    return;
+  }
   switch (orden.tipo) {
+    case 'aperos':
+      instalarAperos(ctx, orden, comarca, jugador);
+      return;
     case 'construir':
       construir(ctx, orden, comarca, jugador);
       return;
@@ -150,7 +167,12 @@ function construir(
     solares,
     casa,
     ctx.reglas,
+    ctx.reglas.casas[jugador.casa].permisos,
   );
+  if (impedimento === 'sin-permiso') {
+    cancelarOrden(ctx, orden, PROHIBIDO_POR_LA_CASA);
+    return;
+  }
   if (impedimento !== null) {
     dejarEnEspera(ctx, orden, impedimento);
     return;
@@ -188,6 +210,21 @@ function derribar(ctx: Contexto, orden: OrdenDe<'derribar'>, comarca: EstadoComa
     costeTotal: orden.coste,
     entregado: orden.coste,
   });
+}
+
+/** Un nivel de aperos en una comarca propia, hasta lo que deje la casa; se paga de lo reservado. */
+function instalarAperos(
+  ctx: Contexto,
+  orden: OrdenDe<'aperos'>,
+  comarca: EstadoComarca,
+  jugador: EstadoJugador,
+): void {
+  if (comarca.aperos >= ctx.reglas.casas[jugador.casa].modificadores.aperosMaximo) {
+    cancelarOrden(ctx, orden, 'nivel-maximo');
+    return;
+  }
+  empezarOrden(ctx, orden, 'terminada');
+  aplicar(ctx, { tipo: 'aperos', comarca: comarca.id, delta: 1, motivo: 'se instalan' });
 }
 
 function roturar(ctx: Contexto, orden: OrdenDe<'roturar'>, comarca: EstadoComarca): void {

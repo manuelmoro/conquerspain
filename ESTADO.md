@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-040)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-041)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,11 +20,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-041 · Casas: privilegios y herramientas](docs/plan/T-041-casas.md)**
+**[T-042 · Tradiciones y ramas de desarrollo](docs/plan/T-042-tradiciones.md)**
 
-Un sistema de modificadores de casa limpio, con las ocho casas implementadas y probadas una a una.
-Lee los apartados «Heredado» de la ficha: la fundación de pueblas de los monjes (T-034), el monasterio
-en comarca ajena (T-038) y la Mesta, cuyo paso franco y merino ya tienen efecto en los rebaños (T-040).
+Las tres rondas de elección (Renombre, Fama, Linaje) con tres tradiciones por casa y ronda, sobre el
+sistema de modificadores de T-041. Lee el apartado «Heredado» de la ficha: hay que hacer que
+`modificadoresDe` compone la casa con las tradiciones elegidas.
 
 ## Cómo continuar (resumen)
 
@@ -47,6 +47,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | `paquetes/` | Espacio de trabajo montado: `nucleo`, `mundo`, `servidor` y `cliente`, vacíos salvo su versión |
 | `herramientas/` | `atlas` y `banco` creados, vacíos; su contenido llega en T-011 y T-046 |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
+| Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
 | Guardas de pureza del núcleo | Dos capas activas: reglas de ESLint y `paquetes/nucleo/pruebas/pureza.test.ts` |
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
@@ -76,6 +77,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 19-09-2026 | **T-041 hecha**: las ocho casas de oficio. Cada una es una fila de datos con su privilegio, su herramienta y su límite, sobre puntos de extensión genéricos (producción por edificio y por vega, sostén de la ferrería, coste de obra mayor por tipo, capacidad por casas, gente para fundar puebla, suelo de lealtad, permisos y prohibiciones). Nuevas órdenes `aperos` (que nadie instalaba) y `letra-de-cambio`, edificio `acequia`, y sorteo de tres orígenes de perfiles distintos filtrado por casa, probado con el mundo real. Los tests destaparon tres defectos: el monte de los ferrones no se agotaba más deprisa, la ferrería costaba hierro 1 a todos y nadie instalaba aperos. Vender aperos, el contrato de obra y el portazgo quedan desactivados hasta T-103. 706 tests en verde |
 | 19-09-2026 | **T-040 hecha**: la trashumancia funciona. Rebaños que se forman, andan (dos jornadas por turno, una más por cañada) y pastan según la estación y la capacidad de la comarca (reparto proporcional), esquilan en el turno 10 con calidad medida sobre el año entero, pierden ganado a partir del segundo turno sin pasto, abonan la labor de la comarca donde invernan, avisan de los puertos dos turnos antes y solo cruzan tierra ajena por cañada con el paso franco de la Mesta. Año entero de un rebaño: 12 sacas por mil cabezas dando el ciclo completo y menos de 7 quieto en la sierra. `EstadoComarca` gana `turnosDeAbono` y `estiercol` (huellas de `humo-01` y `humo-02` cambiadas a propósito, comprobado con el commit anterior). 644 tests en verde |
 | 18-09-2026 | **T-039 hecha**: pasan cosas, pero avisadas. Diez acontecimientos (lluvias, sequía, nieves tempranas, riada, peste de ganado, buen año de feria, carestía de sal, romería, incendio y maestros) sorteados de la semilla con las reglas de la ficha (2 a 4 al año, uno bueno como mínimo, uno malo por región como mucho), calendario del año publicado el primer turno y anuncio exacto a dos turnos; solo lo anunciado ocurre. Los efectos son modificadores que ya consultan producción, obras, mercado, calendario y movimiento (nieves tempranas, riadas). 599 tests en verde |
 | 18-09-2026 | **T-038 hecha**: la tierra se gana. Influencia en cada comarca neutral con sus siete fuentes (presencia, vecinas, mercado, comercio, monasterio, camino y regalo) y su desgaste, desglosada en un suceso; orden `regalo` con enfriamiento de cuatro turnos; orden `incorporar` con los cuatro requisitos y motivo, tres turnos, devolución del coste y disputa por influencia, presencia seguida y huella; `previsionIncorporar` que coincide con la fase real. `EstadoComarca` gana `presenciaSeguida`, `ultimoRegalo` y `exDuenyo` (las huellas de `humo-01` y `humo-02` cambian a propósito; comprobado con el commit anterior que solo cambian esos campos). 557 tests en verde |

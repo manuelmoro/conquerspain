@@ -8,9 +8,10 @@ import {
   RECURSOS_AGOTABLES,
 } from '../tipos/estado.ts';
 import type { Potencial } from '../tipos/mundo.ts';
-import { POTENCIALES } from '../tipos/mundo.ts';
+import { POTENCIALES, RASGOS, TERRENOS } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import type {
+  CriterioDeOrigen,
   DatosAcontecimiento,
   DatosAcontecimientos,
   DatosSorteoDeAcontecimientos,
@@ -41,6 +42,7 @@ import type {
 } from '../tipos/reglas.ts';
 import {
   CALIDADES_CAMINO,
+  NOMBRES_DE_PERMISO,
   CASAS,
   ESTACIONES,
   TIPOS_DE_ACONTECIMIENTO,
@@ -85,6 +87,7 @@ const validarEdificio: Validador<DatosEdificio> = objeto<DatosEdificio>({
   vecinosPorNivel: enteroNoNegativo(100),
   requiereEdificio: oNulo(unoDe(TIPOS_DE_EDIFICIO)),
   esDePiedra: booleano(),
+  exigePermiso: oNulo(unoDe(NOMBRES_DE_PERMISO)),
 });
 
 const validarModificadores: Validador<Modificadores> = objeto<Modificadores>({
@@ -107,6 +110,13 @@ const validarModificadores: Validador<Modificadores> = objeto<Modificadores>({
   lealtadMinima: entero({ minimo: 0, maximo: 100 }),
   agotamientoMonteMil: milesimas(0, 5000),
   crecimientoMil: milesimas(0, 5000),
+  produccionEdificioMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_EDIFICIO)),
+  produccionEdificioEnVegaMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_EDIFICIO)),
+  laborFueraDeVegaMil: milesimas(0, 5000),
+  edificiosPorRequisito: registro(entero({ minimo: 1, maximo: 10 }), unoDe(TIPOS_DE_EDIFICIO)),
+  costeObraMayorMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_OBRA_MAYOR)),
+  capacidadPorCasasExtra: entero({ minimo: -30, maximo: 30 }),
+  vecinosParaPueblaMil: milesimas(0, 5000),
 });
 
 const validarPermisos: Validador<Permisos> = objeto<Permisos>({
@@ -126,6 +136,18 @@ const validarProhibiciones: Validador<Prohibiciones> = objeto<Prohibiciones>({
   cobrarPortazgo: booleano(),
 });
 
+const validarCriterioDeOrigen: Validador<CriterioDeOrigen> = objeto<CriterioDeOrigen>({
+  potenciales: registro(entero({ minimo: 1, maximo: 5 }), unoDe(POTENCIALES)),
+  rasgos: lista(unoDe(RASGOS), { maximo: 8 }),
+  terrenos: lista(unoDe(TERRENOS), { maximo: 5 }),
+  vecinaConPotencial: oNulo(
+    objeto<{ readonly potencial: Potencial; readonly nivel: number }>({
+      potencial: unoDe(POTENCIALES),
+      nivel: entero({ minimo: 1, maximo: 5 }),
+    }),
+  ),
+});
+
 const validarCasa: Validador<DatosCasa> = objeto<DatosCasa>({
   nombre: texto({ minimo: 1, maximo: 60 }),
   privilegio: texto({ minimo: 1, maximo: 200 }),
@@ -134,7 +156,7 @@ const validarCasa: Validador<DatosCasa> = objeto<DatosCasa>({
   modificadores: validarModificadores,
   permisos: validarPermisos,
   prohibiciones: validarProhibiciones,
-  potencialesDeOrigen: registro(entero({ minimo: 0, maximo: 5 }), unoDe(POTENCIALES)),
+  origenes: lista(validarCriterioDeOrigen, { maximo: 8 }),
 });
 
 const validarTradicion: Validador<DatosTradicion> = objeto<DatosTradicion>({
@@ -194,6 +216,7 @@ const validarObras: Validador<DatosObras> = objeto<DatosObras>({
   cuadrillasPorFuero: enteroNoNegativo(4),
   cuadrillasPorMonasterio: enteroNoNegativo(4),
   turnosDerribo: entero({ minimo: 1, maximo: 10 }),
+  costeAperos: recursos(),
   devolucionDerriboMil: milesimas(0, 1000),
   turnosRoturar: entero({ minimo: 1, maximo: 20 }),
   costeRoturar: recursos(),
@@ -259,6 +282,7 @@ const validarTerritorio: Validador<DatosTerritorio> = objeto<DatosTerritorio>({
 
 const validarGanaderia: Validador<DatosGanaderia> = objeto<DatosGanaderia>({
   cabezasPorRebanyo: entero({ minimo: 1, maximo: 100000 }),
+  costeFormarRebanyo: recursos(),
   vecinosPorRebanyo: entero({ minimo: 0, maximo: 50 }),
   pasoBaseMil: entero({ minimo: 1, maximo: 20000 }),
   pasoCanyadaMil: enteroNoNegativo(20000),
@@ -277,6 +301,7 @@ const validarGanaderia: Validador<DatosGanaderia> = objeto<DatosGanaderia>({
 
 const validarMercado: Validador<DatosMercado> = objeto<DatosMercado>({
   comisionFeriaMil: milesimas(0, 500),
+  comisionLetraMil: milesimas(0, 500),
   movimientoMaximoPorTurnoMil: milesimas(0, 1000),
   regresionAlBaseMil: milesimas(0, 1000),
   sueloMil: milesimas(100, 10000),

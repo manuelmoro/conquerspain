@@ -50,6 +50,12 @@ no de los sucesos: la crónica las pone.
 `rebanyo.desaparece`, `rebanyo.esquileo` (con `lana`, `calidadMil` y el factor de acontecimientos) y
 `comarca.estiercol`.
 
+**Heredado de T-041.** Las órdenes que una casa tiene prohibida se cancelan con el motivo
+`prohibido-por-la-casa`; la crónica lo explica con la casa concreta («la Mesta no rotura: su
+privilegio de paso va con esa obligación»). Los corresponsales de los mercaderes (ver los precios de
+las ferias visitadas y rumores más rápidos) quedan desactivados hasta esta tarea. La letra de cambio
+deja `letra.emitida` y `letra.cobrada` (con la comisión).
+
 ## 4. Diseño detallado
 
 ### 4.1 Vista de jugador

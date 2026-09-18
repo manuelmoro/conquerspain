@@ -17,6 +17,7 @@ import { nuevoPrecioMil, topeDeVolumen } from '../reglas/precios.ts';
 import type { Solicitud, SolicitudConLinea } from '../reglas/solicitudes.ts';
 import { lineasDeSolicitudes } from '../reglas/solicitudes.ts';
 import { registrarSuceso } from '../sucesos.ts';
+import { letrasDeCambio } from './07-letras.ts';
 import type { EstadoMercado } from '../tipos/estado.ts';
 import type { IdComarca, IdJugador } from '../tipos/ids.ts';
 import type { DatosRecurso } from '../tipos/reglas.ts';
@@ -29,6 +30,7 @@ import { idsEnOrden } from '../utiles/orden.ts';
 type Solicitudes = Map<string, Solicitud[]>;
 
 export function faseMercado(ctx: Contexto): void {
+  letrasDeCambio(ctx);
   const catalogo = catalogoDePlazas(ctx.estado, ctx.mundo, ctx.calendario.feriasActivas);
   for (const plaza of catalogo.abiertas) {
     if (ctx.estado.mercados[plaza.id] === undefined) abrirMercado(ctx, plaza);

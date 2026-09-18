@@ -17,12 +17,13 @@ export function crecimientoPosible(
   comarca: EstadoComarca,
   factoresMil: readonly Milesimas[],
   reglas: TablasDeReglas,
+  extraPorCasas = 0,
 ): number {
   const p = reglas.poblacion;
   const bruto = multiplicarFactores(p.crecimientoBase + Math.floor(comarca.lealtad / 25), [
     ...factoresMil,
   ]);
   const tope = Math.max(1, porcentaje(comarca.poblacion, p.crecimientoMaximoMil));
-  const hueco = Math.max(0, capacidadDe(comarca, reglas) - comarca.poblacion);
+  const hueco = Math.max(0, capacidadDe(comarca, reglas, extraPorCasas) - comarca.poblacion);
   return Math.min(bruto, tope, hueco);
 }

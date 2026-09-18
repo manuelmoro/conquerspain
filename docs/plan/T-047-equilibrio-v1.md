@@ -24,6 +24,12 @@ movimiento, prestigio), y la documentación de cada cambio con su porqué.
 **No entra:** tocar la lógica del motor. Si un ajuste **exige** cambiar lógica, se abre tarea aparte
 (T-048, T-049…) y se anota en el índice.
 
+**Heredado de T-041.** Los números de las ocho casas (`datos/casas.ts`) son de partida, con una
+sola regla de diseño: cada casa cambia reglas y no solo multiplica. Hay que mirar en especial el pan
+de la Mesta y los mercaderes (−30 % y −25 %), el coste del monasterio de los monjes, la carta puebla
+gratis (hoy un fuero no cuesta nada, así que ese privilegio no tiene efecto) y si los salineros
+tierra adentro quedan de verdad «en el montón».
+
 ## 4. Procedimiento
 
 Ciclo, repetido hasta cumplir los criterios:

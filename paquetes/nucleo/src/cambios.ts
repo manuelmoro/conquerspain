@@ -37,6 +37,7 @@ import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
 import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
+import { modificadoresDe } from './reglas/casas/index.ts';
 import { limitar, multiplicarFactores } from './utiles/enteros.ts';
 
 export type Cambio =
@@ -594,7 +595,12 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'lealtad': {
       const comarca = comarcaDe(ctx, cambio.comarca);
-      const despues = limitar(comarca.lealtad + cambio.delta, 0, 100);
+      // Una casa puede tener un suelo de lealtad (los monjes): nunca baja de ahi.
+      const suelo =
+        comarca.duenyo === null
+          ? 0
+          : modificadoresDe(ctx.estado, comarca.duenyo, ctx.reglas).lealtadMinima;
+      const despues = limitar(comarca.lealtad + cambio.delta, Math.min(suelo, 100), 100);
       if (despues === comarca.lealtad) return;
       comarca.lealtad = despues;
       registrarSuceso(

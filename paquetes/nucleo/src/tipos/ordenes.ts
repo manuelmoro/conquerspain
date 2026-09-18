@@ -35,6 +35,8 @@ export const TIPOS_DE_ORDEN = [
   'formar-rebanyo',
   'incorporar',
   'regalo',
+  'aperos',
+  'letra-de-cambio',
   'mercado',
   'obra-mayor',
   'tradicion',
@@ -136,6 +138,19 @@ export interface OrdenIncorporar extends OrdenBase {
   readonly comarca: IdComarca;
 }
 
+/** Instala un nivel de aperos en una comarca propia (docs/03-economia.md §3.3.1). */
+export interface OrdenAperos extends OrdenBase {
+  readonly tipo: 'aperos';
+  readonly comarca: IdComarca;
+}
+
+/** Pasa maravedis del almacen a una recua que esta en una plaza, con demora y comision. */
+export interface OrdenLetraDeCambio extends OrdenBase {
+  readonly tipo: 'letra-de-cambio';
+  readonly recua: IdRecua;
+  readonly cantidad: number;
+}
+
 export interface OrdenRegalo extends OrdenBase {
   readonly tipo: 'regalo';
   readonly comarca: IdComarca;
@@ -199,6 +214,8 @@ export type Orden =
   | OrdenCometido
   | OrdenIncorporar
   | OrdenRegalo
+  | OrdenAperos
+  | OrdenLetraDeCambio
   | OrdenMercado
   | OrdenObraMayor
   | OrdenTradicion

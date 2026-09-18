@@ -1,6 +1,6 @@
 # T-041 · Casas: privilegios y herramientas
 
-**Fase:** 2 · Motor · **Depende de:** T-035, T-037 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-035, T-037 · **Estado:** hecha
 
 ## 1. Contexto
 
@@ -44,109 +44,160 @@ ya aplica `solaresExtra`, `nivelMaximoEdificio`, `potencialMinimoEdificio`,
 
 ### 4.1 Cómo se modelan
 
-Nada de `if (casa === 'mesta')` esparcidos por el motor. Se define un conjunto cerrado de **puntos de
-extensión**, y cada casa aporta valores o funciones puras en esos puntos:
+Nada de `if (casa === …)` en el motor. Cada casa es **una fila de una tabla** (`src/datos/casas.ts`)
+sobre puntos de extensión genéricos —números, permisos y prohibiciones— que las fases ya consultan a
+través de `ctx.reglas.casas[casa]`. Los nombres de las casas solo aparecen en esa tabla y en la
+enumeración de `tipos/reglas.ts`; lo que no es un número vive en `src/reglas/casas/`
+(`origenes.ts`, `costes.ts`, `letra.ts`). La tabla de ejemplo de las pruebas (`tablasDeEjemplo`)
+sigue con las ocho casas neutrales, para que los tests de cada fase no dependan del equilibrio real.
 
-```ts
-export interface ModificadoresCasa {
-  produccionMil?: Partial<Record<Recurso, Milesimas>>;
-  costeEdificioMil?: Partial<Record<TipoEdificio, Milesimas>>;
-  nivelMaximoEdificio?: Partial<Record<TipoEdificio, number>>;
-  potencialMinimoEdificio?: Partial<Record<TipoEdificio, number>>;
-  solaresExtra?: number;
-  capacidadPorCasasMil?: Milesimas;
-  pasoRecuaMil?: Milesimas;
-  costeRecuaMil?: Milesimas;
-  porteExtra?: number;
-  obraMayorCosteMil?: Milesimas;
-  obraMayorAvanceMil?: Milesimas;
-  obraEnInvierno?: boolean;               // canteros: no sufren el frenazo
-  mermaPanMil?: Milesimas;
-  comisionMercadoMil?: Milesimas;
-  lanaEsquileoMil?: Milesimas;
-  costeRebanyoMil?: Milesimas;
-  lealtadMinima?: number;
-  agotamientoMonteMil?: Milesimas;
-  permisos?: {
-    pasoFrancoPorCanyada?: boolean;       // Mesta
-    obraEnComarcaAjena?: boolean;         // canteros
-    letraDeCambio?: boolean;              // mercaderes
-    cobrarPortazgo?: boolean;             // arrieros
-    venderAperos?: boolean;               // ferrones
-    acequiaMenor?: boolean;               // hortelanos
-    cartaPueblaGratis?: boolean;          // monjes
-  };
-  prohibiciones?: {
-    roturar?: boolean;                    // Mesta
-    cargaFiscalDura?: boolean;            // monjes
-    catedral?: boolean;                   // arrieros
-    cobrarPortazgo?: boolean;             // monjes
-  };
-}
-```
+`Modificadores` (ya en `tipos/reglas.ts`) gana siete puntos de extensión:
 
-Las tablas viven en `nucleo/datos/casas.json`; las funciones (las pocas que hagan falta, como el
-contrato de obra ajena) en `nucleo/src/reglas/casas/`.
+| Campo | Qué cambia | Neutro |
+|---|---|---|
+| `produccionEdificioMil` | producción de un edificio concreto (la lonja) | 1000 |
+| `produccionEdificioEnVegaMil` | producción de un edificio en comarca de vega | 1000 |
+| `laborFueraDeVegaMil` | pan de la labor en comarcas sin vega ni río | 1000 |
+| `edificiosPorRequisito` | niveles de un edificio que sostiene cada nivel de su requisito (la ferrería de la carbonera) | 1 |
+| `costeObraMayorMil` | coste de una obra mayor concreta | 1000 |
+| `capacidadPorCasasExtra` | vecinos que suma cada nivel de casas, además de los de la tabla | 0 |
+| `vecinosParaPueblaMil` | gente que hace falta para fundar puebla | 1000 |
 
-### 4.2 Reglas transversales
+### 4.2 Las ocho casas
 
-- Un modificador **nunca** puede saltarse un invariante del motor (no hay casa que produzca recursos
-  negativos ni que ignore la escasez).
-- Los permisos habilitan órdenes: si una casa no tiene `venderAperos`, esa orden no existe para ella y
-  la interfaz no la muestra.
-- Las prohibiciones se comprueban en la validación de la orden, con mensaje explicativo («la Mesta no
-  rotura: su privilegio de paso va con esa obligación»).
+Privilegio (P), herramienta (H) y límite (L). ✔ = funciona hoy; ⏸ = desactivado y documentado.
 
-### 4.3 Mecánicas propias que hay que implementar
+| Casa | Qué hace | Estado |
+|---|---|---|
+| **Mesta** | P: paso franco por cañada en tierra ajena. H: rebaño a mitad de precio y +25 % de lana. L: no rotura y su pan es un 30 % menor | ✔ |
+| **Ferrones** | P: ferrería con hierro ≥ 1 y una carbonera sostiene dos niveles. H: aperos de nivel 4. L: el monte se agota un 50 % más rápido. Vender aperos a otro jugador | ✔ · venta ⏸ (T-103) |
+| **Canteros** | H: obras mayores −25 % de coste, +30 % de avance y sin frenazo de invierno. L: un solar menos. Contrato de obra en comarca ajena | ✔ · contrato ⏸ (T-103) |
+| **Mercaderes** | P: letra de cambio (3 % y un turno). L: un solar menos y el pan un 25 % menor. Corresponsales y rumores | ✔ · corresponsales ⏸ (T-044) |
+| **Monjes** | P: puebla con la mitad de gente y lealtad mínima 50. H: monasterio un 30 % más barato. L: sin carga fiscal dura ni portazgos. Carta puebla gratis | ✔ · portazgo ⏸ (T-103) · carta gratis ⏸ (T-047, hoy no cuesta nada) |
+| **Salineros** | P: salinas +50 % y pan sin merma. H: lonja +50 %. L: sus explotaciones de tierra rinden poco (niveles máximos menores) | ✔ |
+| **Arrieros** | H: recua −40 % de coste, +1 jornada y +5 de porte. L: −1 vecino por nivel de casas y sin catedral. Portazgo propio | ✔ · portazgo ⏸ (T-103) |
+| **Hortelanos** | P: acequia menor (el pan sin factor de estación). H: huerta de nivel 4 y +50 % en vega. L: labor −25 % fuera de vega o río | ✔ |
 
-| Casa | Mecánica propia |
-|---|---|
-| Mesta | Paso franco por cañada (ignora portazgo y permiso) |
-| Ferrones | Contrato de aperos: instalar aperos en comarca de otro jugador a cambio de renta por turno |
-| Canteros | Contrato de obra: una cuadrilla propia trabaja una obra mayor en comarca ajena, cobrando |
-| Mercaderes | Letra de cambio: mover maravedís entre plazas conocidas, 3 % y un turno |
-| Monjes | Carta puebla gratuita y suelo de lealtad 50 |
-| Salineros | Pan sin merma y salazón (lonja que produce pan inmune a la estación) |
-| Arrieros | Portazgo propio y recuas mejores |
-| Hortelanos | Acequia menor (obra corta que anula la estación del pan en la comarca) |
+Lo que exige a otro jugador (contratos de aperos y de obra, portazgo) queda **desactivado hasta
+T-103**, cuando exista el contrato entre jugadores; los permisos que lo habilitan ya están en la
+tabla (`venderAperos`, `obraEnComarcaAjena`, `cobrarPortazgo`) pero ninguna fase los lee.
 
-Las que implican a otro jugador (contratos, portazgo) se implementan como **contratos internos** ya
-en esta tarea, aunque hasta T-103 solo puedan firmarse con los mercaderes menores o consigo mismo.
+### 4.3 Lo que faltaba en el motor
 
-### 4.4 Elección de casa
+1. **Aperos.** Nadie los instalaba (solo se pagaba su mantenimiento). Orden nueva `aperos`: sube un
+   nivel de aperos en una comarca propia, hasta `aperosMaximo` de la casa (3 de partida, 4 los
+   ferrones); cuesta lo que reserva la orden (8 de hierro) y es inmediata.
+2. **Edificio `acequia`** (la acequia menor): obra corta de un nivel, que solo pueden levantar las
+   casas con `acequiaMenor` (`DatosEdificio.exigePermiso`). En una comarca con acequia, el pan de las
+   explotaciones estacionales no sufre el factor de estación (sin el +50 % de la acequia mayor).
+3. **Letra de cambio.** Orden `letra-de-cambio { recua, cantidad }`, solo con `letraDeCambio`: pasa
+   maravedís del almacén a la carga de una recua que esté en una comarca con plaza, con un 3 % de
+   comisión y **un turno de demora**; si la recua ya no existe o no está en una plaza, se devuelve
+   entera.
+4. **Prohibiciones** que se comprueban al empezar la orden, con motivo `prohibido-por-la-casa`:
+   `roturar`, `cargaFiscalDura` (la política) y `catedral` (la obra mayor).
+5. **`lealtadMinima`** como suelo de la lealtad de sus comarcas (el cambio `lealtad` no baja de ahí).
+6. **Costes.** `costeDeEdificio`, `costeDeObraMayor`, `costeDeRecua` y `costeDeRebanyo` (funciones
+   puras en `reglas/casas/costes.ts`) dicen lo que cuesta cada cosa a cada casa: es lo que reservará
+   el servidor al dar la orden (T-062) y lo que muestra la interfaz.
 
-La casa se fija al crear la partida y **no se puede cambiar**. Afecta al filtrado del sorteo de
-orígenes ([docs/04](../04-casas-y-tradiciones.md) §4.2), que también se implementa aquí.
+### 4.4 Elección de casa y sorteo de orígenes
+
+La casa se fija al crear la partida. `DatosCasa.potencialesDeOrigen` se sustituye por
+`origenes: readonly CriterioDeOrigen[]` (basta con cumplir uno): potenciales mínimos, un rasgo de
+una lista, un terreno o un potencial en una vecina. `sortearOrigenes(mundo, casa, semilla, reglas)`
+filtra las comarcas `esOrigen` por esos criterios y elige **tres de perfiles distintos** (el
+potencial que más destaca; si no bastan, otra región; y si tampoco, las que haya), con azar de
+ámbito `'origen'`, sin depender del orden de las claves.
+
+### 4.5 Reglas transversales
+
+- Un modificador **nunca** salta un invariante: producción ×0, coste ×0 o merma 0 no dejan
+  almacenes negativos ni estados inválidos (hay test con una casa que lo pone todo a cero).
+- Ningún archivo de `src/` fuera de `datos/casas.ts`, `tipos/reglas.ts` y `reglas/casas/` nombra una
+  casa en el código (test que lo busca, sin contar comentarios).
 
 ## 5. Archivos
 
 ```
-paquetes/nucleo/src/reglas/casas/{index,mesta,ferrones,canteros,mercaderes,monjes,salineros,arrieros,hortelanos}.ts
-paquetes/nucleo/src/reglas/casas/*.test.ts
-paquetes/nucleo/datos/casas.json
-paquetes/nucleo/src/reglas/modificadores.ts       (resolución de modificadores en un punto único)
+paquetes/nucleo/src/datos/casas.ts
+paquetes/nucleo/src/reglas/casas/{origenes,costes,letra}.ts
+paquetes/nucleo/src/fases/{02-produccion,03-consumo,05-cometidos,06-obras,07-mercado,08-territorio}.ts
+paquetes/nucleo/src/reglas/{produccion,insumos,obras,poblar,roturar}.ts
+paquetes/nucleo/src/{cambios,ordenes}.ts   src/tipos/{ordenes,reglas}.ts   src/datos/edificios.ts
+paquetes/nucleo/src/validacion/{validarOrden,validarTablas}.ts
+paquetes/nucleo/pruebas/{casas,origenes}.test.ts   pruebas/ejemplos.ts
 ```
 
 ## 6. Criterios de aceptación
 
-1. Las ocho casas están implementadas con su privilegio, su herramienta y su límite.
-2. Cada casa tiene un test de escenario que demuestra que su mecánica propia funciona y que su
-   límite duele (por ejemplo: la Mesta no puede roturar y su pan propio es insuficiente).
-3. Ningún archivo del motor fuera de `reglas/casas/` menciona una casa concreta (test de código:
-   búsqueda de los nombres de casa fuera de esa carpeta).
-4. Un modificador mal puesto (por ejemplo, producción ×0) no rompe invariantes: hay test.
-5. El sorteo de orígenes filtra por casa y ofrece tres perfiles distintos.
-6. Las mecánicas que dependen del conflicto quedan documentadas como desactivadas.
+1. Las ocho casas están en la tabla real con su privilegio, su herramienta y su límite, y la tabla
+   valida.
+2. Cada casa tiene un test de escenario que demuestra que su mecánica funciona y que su límite duele.
+3. Ningún archivo del motor fuera de `datos/casas.ts`, `tipos/reglas.ts` y `reglas/casas/` nombra una
+   casa (test de código).
+4. Un modificador mal puesto (producción ×0, costes ×0) no rompe invariantes.
+5. El sorteo de orígenes filtra por casa, ofrece tres perfiles distintos y es reproducible; se prueba
+   con el mundo real.
+6. Lo que depende de otro jugador queda documentado como desactivado, con el permiso en la tabla.
 7. `npm run verificar` pasa.
 
 ## 7. Verificación
 
 ```bash
 npm run verificar
-npx vitest run paquetes/nucleo/src/reglas/casas
+npx vitest run paquetes/nucleo/pruebas/casas.test.ts paquetes/nucleo/pruebas/origenes.test.ts
+npm run partidas
 ```
 
 ## 8. Al terminar
 
 Índice y `ESTADO.md` (siguiente T-042). Si alguna casa ha cambiado respecto al diseño, actualiza
 `docs/04-casas-y-tradiciones.md`. Commit: `T-041: casas de oficio con sus privilegios`.
+
+## 9. Resultado (19-09-2026)
+
+Tarea cerrada. 706 tests en verde (62 nuevos); las partidas de reproducción no cambian de huella.
+
+- `datos/casas.ts`: las ocho casas con su privilegio, su herramienta y su límite sobre una base
+  neutra; `reglas/casas/index.ts` (`modificadoresDe`, `permisosDe`, `prohibicionesDe`),
+  `costes.ts` (lo que reserva el servidor) y `origenes.ts` (el sorteo de origen).
+- `Modificadores` gana siete puntos de extensión genéricos; `DatosCasa.potencialesDeOrigen` se
+  sustituye por `origenes` (criterios alternativos); `DatosEdificio` gana `exigePermiso`.
+- Mecánicas nuevas en el motor: orden `aperos` (que nadie instalaba), edificio `acequia`, orden
+  `letra-de-cambio` (fase 7, con un turno de demora) y las prohibiciones de roturar, de carga fiscal
+  dura y de catedral.
+- Enganches genéricos: producción (por edificio, por vega y sed de la labor, acequia menor), insumos
+  (`edificiosPorRequisito`), suelo de lealtad, capacidad por casas, gente para fundar puebla, coste
+  de obra mayor por tipo y agotamiento del monte.
+- Pruebas en `pruebas/casas.test.ts` (una por privilegio, herramienta y límite de cada casa, más la
+  tabla, los invariantes, el test de código y el de lo desactivado) y `pruebas/origenes.test.ts`
+  (con el mundo real). Seis mutaciones del código —nombrar una casa en una fase, leer un permiso
+  desactivado, quitar el suelo de lealtad, quitar la prohibición de roturar, ignorar el perfil o el
+  filtro del sorteo— hacen fallar los tests.
+
+Defectos que los tests destaparon y se corrigieron aquí:
+
+- **El límite de los ferrones no existía**: el modificador `agotamientoMonteMil` de la casa no lo
+  leía nadie (solo el de la dehesa). Ahora lo lee `siguienteAgotamiento`.
+- **Nadie instalaba aperos**: solo se pagaba su mantenimiento. Nace la orden `aperos`.
+- **La ferrería costaba hierro 1 a todas las casas**, con lo que el privilegio de los ferrones no
+  existía: la tabla pasa a hierro 2, como dice el diseño.
+
+Decisiones tomadas al implementar (escritas en docs/04 §4.1.9):
+
+- **Las casas son datos, no código**: el motor solo consulta números, permisos y prohibiciones, y un
+  test impide nombrar una casa fuera de `datos/casas.ts`, `tipos/reglas.ts` y `reglas/casas/`.
+- **Lo que necesita a otro jugador queda desactivado hasta T-103** (vender aperos, contrato de obra,
+  portazgo), con el permiso en la tabla y un test que garantiza que ninguna fase lo lee. La ficha
+  pedía «contratos internos» ya aquí; sin contrato entre jugadores no había nada verificable.
+- **La carta puebla gratis no tiene efecto**: en el motor un fuero no cuesta nada. Se queda anotado
+  para el equilibrio (T-047).
+- **La tabla de las pruebas sigue con casas neutrales** (`tablasDeEjemplo`): los tests de cada fase no
+  dependen del equilibrio real, y las casas de verdad se prueban con `{ ...reglas, casas: CASAS_DE_OFICIO }`.
+- **Salineros**: «atado al agua» se traduce en niveles máximos menores de las explotaciones de
+  tierra; el transporte sin bastimento extra no se modela.
+- **Orígenes**: cada casa pide una o varias condiciones alternativas sobre potenciales, rasgos,
+  terreno o una vecina (los ferrones, hierro aquí o cerca). Hay entre 6 y 26 orígenes posibles por
+  casa en el mundo real.
+

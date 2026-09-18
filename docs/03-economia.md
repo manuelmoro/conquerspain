@@ -108,7 +108,8 @@ Reglas comunes:
 
 `aperos` es un nivel de comarca, de 0 a 3. Cada nivel:
 
-- cuesta 8 hierro al instalarse y **1 hierro por turno** de mantenimiento;
+- cuesta 8 hierro al instalarse (con la orden `aperos`, de golpe) y **1 hierro por turno** de
+  mantenimiento; el máximo es 3, o 4 para los ferrones;
 - sube un 10 % la producción de **todas** las explotaciones de la comarca;
 - si falta hierro para el mantenimiento, el nivel baja en 1 al cabo de dos turnos, con aviso.
 
