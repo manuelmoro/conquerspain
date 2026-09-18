@@ -19,6 +19,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-costa",
         "influencias": {},
         "lealtad": 50,
@@ -60,6 +61,7 @@
           "granja": 1
         },
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-llano",
         "influencias": {},
         "lealtad": 100,
@@ -99,6 +101,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-mina",
         "influencias": {},
         "lealtad": 50,
@@ -138,6 +141,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-monte",
         "influencias": {},
         "lealtad": 50,
@@ -177,6 +181,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-rio",
         "influencias": {},
         "lealtad": 50,
@@ -216,6 +221,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-sierra",
         "influencias": {},
         "lealtad": 50,
@@ -255,6 +261,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-vega",
         "influencias": {},
         "lealtad": 50,
@@ -321,6 +328,8 @@
         "escasez": false,
         "escasezSeguidas": 0,
         "conservarConSal": true,
+        "deudaAdministracion": 0,
+        "traslado": null,
         "hitos": {},
         "id": "casa-uno",
         "nombre": "Casa Uno",
@@ -353,17 +362,17 @@
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "48aa35edd314c55a2289bdcf4fa1f37154ef91f045419574e67cf49311524197"
+      "huellaEsperada": "7e33954f1891aaaef4e76f72051e1dc4c0b23a21e459954b1b7e83bd3ecd5bb5"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "42b00f3e09139e334ec09014bbb65b9b88f787f859e55f1390f78a83b523c5c9"
+      "huellaEsperada": "0f9587cb7d14d7e063613d52b901e3ebd23fa9bebb00139d5029160844472aca"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "c515335046d27019a1d87477fdb9ad8e2b192b50a4fa9fdaf929214416637939"
+      "huellaEsperada": "165773764299ec7d91c0e9d1f11ee19e9036953fcbd4c3eb93ea7cff2901e22b"
     }
   ]
 }

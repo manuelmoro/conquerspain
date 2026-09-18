@@ -1,6 +1,6 @@
 # T-036 · Fases 8–9: población, lealtad, fueros y administración
 
-**Fase:** 2 · Motor · **Depende de:** T-032 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-032 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -124,3 +124,50 @@ npx vitest run paquetes/nucleo/src/reglas/poblacion.test.ts paquetes/nucleo/src/
 ## 8. Al terminar
 
 Índice y `ESTADO.md` (siguiente T-037). Commit: `T-036: poblacion, lealtad, fueros y administracion`.
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 428 tests en verde; `humo-01` y `humo-02` regeneradas a propósito.
+
+- `paquetes/nucleo/src/fases/08-territorio.ts`: órdenes `politica` y `trasladar-corte`, avance del
+  traslado, lealtad con todas sus fuentes, cuenta atrás de la comarca desleal y vuelta a neutral.
+- `paquetes/nucleo/src/fases/09-poblacion.ts`: crecimiento con sus cuatro condiciones y el motivo
+  cuando no se crece (`poblacion.no-crece`).
+- `paquetes/nucleo/src/reglas/administracion.ts` (nuevo: distancias en verano por lo conocido,
+  costes, orden de cercanía), `lealtad.ts`, `poblacion.ts` y `capital.ts`; `capacidadDe` suma la
+  muralla. La fase 3 acumula la deuda de administración y aplica el recargo del traslado; la fase 4
+  no forma recuas en comarcas desleales.
+- Tablas `territorio` (`src/datos/territorio.ts`) y `poblacion` (`src/datos/poblacion.ts`, antes
+  solo en los ejemplos de prueba). Estado nuevo: `EstadoComarca.turnoFuero`,
+  `EstadoJugador.deudaAdministracion` y `EstadoJugador.traslado`.
+- Pruebas en `pruebas/territorio.test.ts` (17 casos) y administración en `pruebas/consumo.test.ts`.
+
+Cifras del escenario de cien turnos (criterio 7), ocho comarcas en fila de llano, 60 vecinos y
+cuatro granjas cada una, sin mercados:
+
+| | Turnos con deuda | Deuda máxima | Comarcas al final |
+|---|---|---|---|
+| Sin fueros ni caminos | 98 | 899 mrs | 2 |
+| Con fuero pleno y calzadas | 0 | 0 | 8 |
+
+Decisiones tomadas al implementar:
+
+- **Distancia administrativa en milésimas**, por la ruta más corta conocida en verano y con las
+  mejoras de los caminos; un tramo nunca cuesta menos de una jornada. Cambia las cifras de T-032
+  (la costa del mundo de prueba pasa de 12 a 11 maravedís).
+- **Deuda acumulada**: primero se paga lo del turno de cerca a lejos; lo que no llega pierde lealtad
+  y pasa a la deuda; lo que sobra la salda; mientras quede, la comarca más lejana sigue perdiendo.
+- **Tope de crecimiento de al menos un vecino**: con el 5 % a secas, una puebla de 10 no crecería.
+- **El fuero sube la lealtad hasta 90**; la carta puebla da +20 % de crecimiento (campo
+  `crecimientoMil` de cada fuero).
+- **La comarca de la corte no se va nunca**, aunque sea desleal.
+- **Vuelta a neutral**: el antiguo dueño conserva influencia igual a la lealtad que quedaba (una
+  comarca con dueño no guarda influencias, así que «quien la cuidó» solo puede ser él), sabe cómo
+  quedó la comarca y pierde sus obras allí.
+- **La orden de política no se aplica a medias**: si el fuero aún no puede cambiar, espera entera.
+- **Traslado**: la orden paga su coste (lo calcula el servidor con `territorio.costeTraslado`) y
+  cuenta diez fases de territorio; si el destino se pierde, el traslado se deshace.
+- Las «migraciones internas» de la tabla de fases no tienen regla escrita: no se implementan. La
+  emigración por hambre ya la hace la fase 3.
+- La producción mantiene sus tramos de lealtad de T-031 (< 60 rinde el 90 %), aunque esta ficha
+  diga «< 60 sin efecto negativo»: se revisará en el equilibrio (T-047).

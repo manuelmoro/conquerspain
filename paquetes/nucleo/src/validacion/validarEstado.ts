@@ -14,6 +14,7 @@ import type {
   Recua,
   SituacionMovil,
   EstadoTramo,
+  TrasladoDeCorte,
 } from '../tipos/estado.ts';
 import {
   CARGAS_FISCALES,
@@ -99,6 +100,13 @@ const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
   escasez: booleano(),
   escasezSeguidas: enteroNoNegativo(),
   conservarConSal: booleano(),
+  deudaAdministracion: enteroNoNegativo(),
+  traslado: oNulo(
+    objeto<TrasladoDeCorte>({
+      destino: identificador<IdComarca>(),
+      turnosRestantes: entero({ minimo: 1, maximo: 100 }),
+    }),
+  ),
   turnosSinOrdenes: enteroNoNegativo(),
 });
 
@@ -110,6 +118,7 @@ const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
   edificios: registro(enteroNoNegativo(20)),
   aperos: entero({ minimo: 0, maximo: 4 }),
   fuero: unoDe(FUEROS),
+  turnoFuero: enteroNoNegativo(),
   cargaFiscal: unoDe(CARGAS_FISCALES),
   dehesa: booleano(),
   potenciales: registroCompleto(POTENCIALES, nivelPotencial()),

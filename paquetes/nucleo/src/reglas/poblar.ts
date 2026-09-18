@@ -5,10 +5,12 @@ import type { TablasDeReglas } from '../tipos/reglas.ts';
 import { hash32 } from '../utiles/huella.ts';
 import { comparar } from '../utiles/orden.ts';
 
-/** Vecinos que caben en una comarca: la base mas lo que dan las casas construidas. */
+/** Vecinos que caben en una comarca: la base, lo que dan las casas y la muralla. */
 export function capacidadDe(comarca: EstadoComarca, reglas: TablasDeReglas): number {
+  const p = reglas.poblacion;
   const casas = comarca.edificios['casas'] ?? 0;
-  return reglas.poblacion.capacidadBase + casas * reglas.poblacion.capacidadPorCasas;
+  const muralla = comarca.obrasMayores.includes('muralla') ? p.capacidadPorMuralla : 0;
+  return p.capacidadBase + casas * p.capacidadPorCasas + muralla;
 }
 
 /** Vecinos de la recua que se pueden quedar: nunca se pasa de la capacidad. */

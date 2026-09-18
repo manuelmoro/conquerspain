@@ -6,7 +6,8 @@
 // produccion del turno para la cronica, y al final se agota y se regenera lo explotado.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
-import { comarcasDe, comarcasPorCercania } from '../reglas/consumo.ts';
+import { comarcasPorCercania } from '../reglas/administracion.ts';
+import { comarcasDe } from '../reglas/consumo.ts';
 import { insumosDe } from '../reglas/insumos.ts';
 import {
   explotacionesDe,
@@ -36,7 +37,13 @@ function pagarInsumos(ctx: Contexto): Map<string, NivelesActivos> {
       disponible[recurso] = jugador.almacen[recurso] - jugador.reservado[recurso];
     }
     const comarcas = comarcasDe(ctx.estado, idJugador);
-    for (const { comarca: id } of comarcasPorCercania(comarcas, jugador, ctx.mundo)) {
+    for (const { comarca: id } of comarcasPorCercania(
+      comarcas,
+      jugador,
+      ctx.mundo,
+      ctx.reglas,
+      ctx.estado.caminos,
+    )) {
       const comarca = ctx.estado.comarcas[id];
       if (comarca === undefined) continue;
       const insumos = insumosDe(comarca, disponible, ctx.reglas);

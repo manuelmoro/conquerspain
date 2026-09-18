@@ -5,7 +5,12 @@ import { describe, expect, it } from 'vitest';
 import { crearContexto } from '../src/contexto.ts';
 import { ARRANQUE } from '../src/datos/arranque.ts';
 import { faseConsumo } from '../src/fases/03-consumo.ts';
-import { costesDeAdministracion, jornadasDesde, turnosDeReserva } from '../src/reglas/consumo.ts';
+import {
+  costesDeAdministracion,
+  jornadasAdministrativasMil,
+  jornadasDesde,
+} from '../src/reglas/administracion.ts';
+import { turnosDeReserva } from '../src/reglas/consumo.ts';
 import { emigrantes, permiteCrecer, permiteIniciar } from '../src/reglas/escasez.ts';
 import { insumosDe } from '../src/reglas/insumos.ts';
 import { mermaDelPan } from '../src/reglas/merma.ts';
@@ -15,6 +20,7 @@ import { resolverTurno } from '../src/resolver.ts';
 import type { Suceso } from '../src/tipos/cronica.ts';
 import type { EstadoComarca, EstadoJugador, EstadoPartida, Obra } from '../src/tipos/estado.ts';
 import type { IdComarca, IdJugador, IdObra } from '../src/tipos/ids.ts';
+import type { Camino } from '../src/tipos/mundo.ts';
 import type { Recursos } from '../src/tipos/recursos.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
 import { azarDeTexto } from '../src/utiles/azar.ts';
@@ -257,39 +263,78 @@ describe('los aperos', () => {
 });
 
 describe('la administracion', () => {
-  it('cuesta la base mas dos por jornada a la capital, por el camino conocido', () => {
-    expect(jornadasDesde('prueba-llano', mundo).get('prueba-mina')).toBe(9);
+  const coste = (camino: Camino) => jornadasAdministrativasMil(camino, reglas, {});
+
+  it('cuesta la base mas dos por jornada a la capital, medidas en verano', () => {
+    // Llano-monte 2 × 90 %, monte-sierra 3 × 90 % y el puerto 7 × 90 %.
+    expect(jornadasDesde('prueba-llano', mundo, coste).get('prueba-mina')).toBe(10800);
     const base = escenario();
     const comarcas = ['prueba-llano', 'prueba-vega', 'prueba-costa'].map((id) => {
-      const c = base.comarcas[id];
-      if (c === undefined) throw new Error(`falta ${id}`);
-      return c;
+      const comarca = base.comarcas[id];
+      if (comarca === undefined) throw new Error(`falta ${id}`);
+      return comarca;
     });
-    const costes = costesDeAdministracion(comarcas, jugador(base), mundo, reglas);
-    expect(costes.map((c) => [c.comarca, c.jornadas, c.coste])).toEqual([
+    const costes = costesDeAdministracion(comarcas, jugador(base), mundo, reglas, {});
+    expect(costes.map((c) => [c.comarca, c.jornadasMil, c.coste])).toEqual([
       ['prueba-llano', 0, 4],
-      ['prueba-vega', 2, 8],
-      ['prueba-costa', 4, 12],
+      ['prueba-vega', 1800, 7],
+      ['prueba-costa', 3600, 11],
     ]);
   });
 
-  it('el fuero rebaja lo que cuesta', () => {
-    const base = escenario({ llano: { fuero: 'fuero' } });
-    const [coste] = costesDeAdministracion([llano(base)], jugador(base), mundo, reglas);
-    expect(coste?.coste).toBe(2);
+  it('el fuero rebaja lo que cuesta y el traslado de la corte lo encarece', () => {
+    const conFuero = escenario({ llano: { fuero: 'fuero' } });
+    const [rebajado] = costesDeAdministracion(
+      [llano(conFuero)],
+      jugador(conFuero),
+      mundo,
+      reglas,
+      {},
+    );
+    expect(rebajado?.coste).toBe(2);
+    const trasladando = escenario({
+      jugador: { traslado: { destino: 'prueba-vega' as IdComarca, turnosRestantes: 5 } },
+    });
+    const [caro] = costesDeAdministracion(
+      [llano(trasladando)],
+      jugador(trasladando),
+      mundo,
+      reglas,
+      {},
+    );
+    expect(caro?.coste).toBe(5);
   });
 
-  it('sin maravedis, las comarcas sin pagar pierden lealtad', () => {
+  it('sin maravedis, las comarcas sin pagar pierden lealtad y lo debido se acumula', () => {
     const { estado, sucesos } = consumir(
       escenario({ almacen: { pan: 50, maravedis: 3 }, llano: { lealtad: 80 } }),
     );
     expect(llano(estado).lealtad).toBe(78);
+    expect(jugador(estado)).toMatchObject({ deudaAdministracion: 4 });
     expect(jugador(estado).almacen.maravedis).toBe(3);
     expect(sucesos.find((s) => s.tipo === 'consumo.administracion')?.datos).toMatchObject({
       total: 4,
       pagado: 0,
-      comarcasEnDeuda: 1,
+      deuda: 4,
+      comarcasSinPagar: 1,
     });
+  });
+
+  it('la deuda se salda con lo que sobra, y mientras quede, sufre la comarca mas lejana', () => {
+    const debe = escenario({
+      almacen: { pan: 50, maravedis: 10 },
+      jugador: { deudaAdministracion: 20 },
+      llano: { lealtad: 80 },
+    });
+    const { estado } = consumir(debe);
+    // Paga los 4 de este turno y 6 de la deuda: quedan 14, y el llano (la unica) pierde 2.
+    expect(jugador(estado)).toMatchObject({ deudaAdministracion: 14 });
+    expect(llano(estado).lealtad).toBe(78);
+    const saldada = consumir(
+      escenario({ almacen: { pan: 50, maravedis: 30 }, jugador: { deudaAdministracion: 20 } }),
+    );
+    expect(jugador(saldada.estado).deudaAdministracion).toBe(0);
+    expect(llano(saldada.estado).lealtad).toBe(100);
   });
 });
 

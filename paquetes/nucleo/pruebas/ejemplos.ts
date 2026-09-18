@@ -9,7 +9,9 @@ import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
 import { OBRAS, OBRAS_MAYORES } from '../src/datos/obras.ts';
+import { POBLACION } from '../src/datos/poblacion.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
+import { TERRITORIO } from '../src/datos/territorio.ts';
 import { CASAS, VERSION_REGLAS } from '../src/tipos/reglas.ts';
 
 /** Los ejemplos son datos sueltos: los validadores reciben "unknown" y ellos dicen si valen. */
@@ -123,6 +125,7 @@ export function estadoDeEjemplo(): Registro {
     edificios: { granja: 1 },
     aperos: 0,
     fuero: 'ninguno',
+    turnoFuero: 0,
     cargaFiscal: 'normal',
     dehesa: false,
     potenciales: potencialesLlanos(),
@@ -165,6 +168,8 @@ export function estadoDeEjemplo(): Registro {
         escasez: false,
         escasezSeguidas: 0,
         conservarConSal: true,
+        deudaAdministracion: 0,
+        traslado: null,
         turnosSinOrdenes: 0,
       },
     },
@@ -291,23 +296,8 @@ export function tablasDeEjemplo(): Registro {
     cometidos: JSON.parse(JSON.stringify(COMETIDOS_DE_RECUA)) as Registro,
     obras: JSON.parse(JSON.stringify(OBRAS)) as Registro,
     obrasMayores: JSON.parse(JSON.stringify(OBRAS_MAYORES)) as Registro,
-    poblacion: {
-      consumoPorVecinoMil: 250,
-      vecinosPorCuadrilla: 40,
-      cuadrillasMaximas: 4,
-      capacidadBase: 60,
-      capacidadPorCasas: 30,
-      crecimientoBase: 2,
-      crecimientoMaximoMil: 50,
-      emigracionPorHambreMil: 30,
-      lealtadInicialIncorporada: 60,
-      turnosDeslealParaPerderla: 6,
-      fueros: {
-        ninguno: { administracionMil: 1000, impuestosMil: 1000, lealtadPorTurno: 0 },
-        'carta puebla': { administracionMil: 750, impuestosMil: 700, lealtadPorTurno: 2 },
-        fuero: { administracionMil: 500, impuestosMil: 500, lealtadPorTurno: 3 },
-      },
-    },
+    poblacion: JSON.parse(JSON.stringify(POBLACION)) as Registro,
+    territorio: JSON.parse(JSON.stringify(TERRITORIO)) as Registro,
     mercado: {
       comisionMil: 20,
       comisionFeriaMil: 10,

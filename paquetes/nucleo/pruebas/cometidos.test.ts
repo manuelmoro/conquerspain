@@ -229,7 +229,8 @@ describe('poblar', () => {
     expect(vega).toMatchObject({
       duenyo: UNO,
       poblacion: 12,
-      lealtad: 50,
+      // 50 de la puebla y +2 de la carta puebla en la fase de territorio del mismo turno.
+      lealtad: 52,
       fuero: 'carta puebla',
       influencias: {},
     });

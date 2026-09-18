@@ -12,6 +12,7 @@ import { cargarDelAlmacen, descargarEnAlmacen } from '../porteo.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { bastimentoDe } from '../reglas/bastimento.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
+import { esDesleal } from '../reglas/lealtad.ts';
 import { avanzar, pasoDeRecua, porteDe } from '../reglas/movimiento.ts';
 import {
   comarcaConocida,
@@ -86,6 +87,11 @@ function formarRecua(ctx: Contexto, orden: OrdenDe<'formar-recua'>): void {
   }
   if (orden.vecinos > m.vecinosMaximosPorRecua) {
     cancelarOrden(ctx, orden, 'demasiada-gente');
+    return;
+  }
+  // Una comarca desleal no da gente para recuas (docs/03 §3.6).
+  if (esDesleal(comarca, ctx.reglas)) {
+    dejarEnEspera(ctx, orden, 'comarca-desleal');
     return;
   }
   // La comarca no se queda nunca vacia por formar una recua.

@@ -169,7 +169,9 @@ Monte, piedra, hierro y sal se agotan si se explotan a tope:
   2. hay capacidad libre;
   3. la reserva de pan del jugador supera el mínimo configurado (30 por defecto);
   4. el balance de pan previsto sigue siendo ≥ 0 con la población nueva.
-  Entonces crece `2 + floor(lealtad / 25)` vecinos, con un máximo del 5 % de la población.
+  Entonces crece `2 + floor(lealtad / 25)` vecinos (+20 % con carta puebla o monasterio cerca),
+  con un máximo del 5 % de la población —al menos uno— y sin pasar de la capacidad
+  (`60 + 30 × casas + 20 con muralla`). Si no crece, la crónica dice por qué.
 - **Escasez**: si el pan disponible no cubre el consumo, el disponible queda a cero (nunca hay deuda
   negativa), se marca escasez y: se detiene el crecimiento, no se pueden iniciar expediciones ni
   obras nuevas, y la lealtad baja 5 puntos. Las órdenes ya empezadas continúan.
@@ -187,9 +189,17 @@ Monte, piedra, hierro y sal se agotan si se explotan a tope:
 | Obra mayor en la comarca o vecina | +2 | Distancia > 4 jornadas de la capital | −1 |
 | Carga fiscal ligera | +2 | Comarca sin edificios ni atención | −1 |
 
+El fuero sube la lealtad solo hasta 90. «Sin atención» es sin edificios, sin obras y sin recuas
+propias en la comarca.
+
 Efectos: con lealtad < 40, la producción cae un 25 %; con < 20, la comarca no acepta órdenes de
-formar recuas ni de leva, y tras seis turnos así **vuelve a ser neutral**, con dos turnos de aviso
-en la crónica. Exprimir territorio tiene precio.
+formar recuas ni de leva, y tras seis turnos así **vuelve a ser neutral**, avisada en la crónica
+cada turno con los que quedan. Quien la tenía conserva tanta influencia como lealtad le quedaba, y
+pierde sus obras allí. La comarca de la corte no se va nunca. Exprimir territorio tiene precio.
+
+**Política de la comarca.** El fuero se cambia como mucho una vez cada 10 turnos; el fuero pleno no
+se puede quitar en 20, y quitarlo después cuesta 20 de lealtad. La carga fiscal y la dehesa se
+cambian cuando se quiera.
 
 ## 3.7 Recuas, caminos y porte
 
@@ -291,11 +301,23 @@ administracion = Σ por comarca:  4 + 2 × jornadas_a_la_capital  (por el mejor 
 | Carta puebla | 75 % | 70 % | +2/turno, +20 % de crecimiento |
 | Fuero | 50 % | 50 % | +3/turno, +1 cuadrilla |
 
-Si no puedes pagar la administración, las comarcas más lejanas pierden lealtad rápido. No hay
-castigo repentino: hay una cuesta abajo visible y evitable.
+Las jornadas a la capital se miden por el mejor camino **conocido** y **en verano** (para que el
+coste no oscile con la estación), con los puentes y calzadas construidos: un buen camino abarata
+gobernar lo lejano.
 
-**Traslado de la corte.** Puedes mover la capital a otra comarca propia (10 turnos, coste alto).
-Es la respuesta histórica —la corte itinerante— al problema de un dominio alargado.
+Si no puedes pagar la administración, las comarcas que quedan sin pagar —las más lejanas— pierden
+2 de lealtad y lo debido se **acumula como deuda**, que se salda con lo que sobre los turnos
+siguientes; mientras quede deuda, la comarca más lejana sigue perdiendo lealtad. No hay castigo
+repentino: hay una cuesta abajo visible y evitable.
+
+El fuero rebaja a la vez la administración y los impuestos, así que por sí solo no arregla las
+cuentas: lo que hace sostenible un dominio largo son los caminos. En un escenario de prueba de
+ocho comarcas en fila, sin fueros ni caminos el jugador pasa 98 de 100 turnos en deuda y el dominio
+se deshace hasta quedarse en dos comarcas; con fueros y calzadas, no se endeuda nunca.
+
+**Traslado de la corte.** Puedes mover la capital a otra comarca propia: 10 turnos, 200 mrs y
+50 de piedra, y mientras dura la administración cuesta un 25 % más. Es la respuesta histórica —la
+corte itinerante— al problema de un dominio alargado.
 
 ## 3.10 Mercado y precios
 

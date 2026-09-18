@@ -20,6 +20,7 @@ import type {
   DatosPrestigio,
   DatosProduccion,
   DatosRecurso,
+  DatosTerritorio,
   DatosTradicion,
   Modificadores,
   Permisos,
@@ -212,14 +213,34 @@ const validarPoblacion: Validador<DatosPoblacion> = objeto<DatosPoblacion>({
   emigracionPorHambreMil: milesimas(0, 1000),
   lealtadInicialIncorporada: entero({ minimo: 0, maximo: 100 }),
   turnosDeslealParaPerderla: entero({ minimo: 1, maximo: 50 }),
+  capacidadPorMuralla: enteroNoNegativo(1000),
   fueros: registroCompleto(
     FUEROS,
     objeto<DatosFuero>({
       administracionMil: milesimas(0, 3000),
       impuestosMil: milesimas(0, 3000),
       lealtadPorTurno: entero({ minimo: -10, maximo: 10 }),
+      crecimientoMil: milesimas(0, 3000),
     }),
   ),
+});
+
+const validarTerritorio: Validador<DatosTerritorio> = objeto<DatosTerritorio>({
+  lealtadMaximaPorFuero: entero({ minimo: 0, maximo: 100 }),
+  lealtadPorMercado: enteroNoNegativo(20),
+  lealtadPorObraMayorCerca: enteroNoNegativo(20),
+  lealtadPorCargaLigera: enteroNoNegativo(20),
+  lealtadPorCargaDura: enteroNoNegativo(20),
+  jornadasDeLejania: enteroNoNegativo(50),
+  lealtadPorLejania: enteroNoNegativo(20),
+  lealtadPorAbandono: enteroNoNegativo(20),
+  lealtadDesleal: entero({ minimo: 0, maximo: 100 }),
+  turnosEntreCambiosDeFuero: enteroNoNegativo(100),
+  turnosFueroIrreversible: enteroNoNegativo(100),
+  lealtadPorQuitarFuero: enteroNoNegativo(100),
+  turnosTraslado: entero({ minimo: 1, maximo: 100 }),
+  costeTraslado: recursos(),
+  recargoAdministracionTrasladoMil: milesimas(0, 2000),
 });
 
 const validarMercado: Validador<DatosMercado> = objeto<DatosMercado>({
@@ -334,6 +355,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   obras: validarObras,
   obrasMayores: registroCompleto(TIPOS_DE_OBRA_MAYOR, validarObraMayor),
   poblacion: validarPoblacion,
+  territorio: validarTerritorio,
   mercado: validarMercado,
   influencia: validarInfluencia,
   prestigio: validarPrestigio,

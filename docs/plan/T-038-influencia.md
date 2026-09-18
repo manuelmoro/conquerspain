@@ -21,6 +21,10 @@ disputas, y el regreso a neutral de comarcas desleales (enganchado con T-036).
 
 **No entra:** fundación de puebla (T-034), amparo del novato (T-105).
 
+**Heredado de T-036.** La vuelta a neutral de la comarca desleal ya está hecha en la fase 8
+(`volverANeutral` en `fases/08-territorio.ts`): el antiguo dueño se queda con influencia igual a la
+lealtad que le quedaba. La influencia se añade a esa misma fase, después de la lealtad.
+
 **Heredado de T-034.** Una recua cuenta como presente si `estaPresente(recua, comarca)`
 (`reglas/presencia.ts`): quieta en una comarca neutral con cometido `presencia` y que ha podido
 pagar su bastimento este turno. Esa es la condición de los +2 de influencia por presencia.

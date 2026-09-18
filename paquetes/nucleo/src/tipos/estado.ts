@@ -53,6 +53,11 @@ export interface Conocimiento {
   readonly datos: DatosConocidos | null;
 }
 
+export interface TrasladoDeCorte {
+  readonly destino: IdComarca;
+  readonly turnosRestantes: number;
+}
+
 export interface EstadoJugador {
   readonly id: IdJugador;
   readonly nombre: string;
@@ -73,6 +78,10 @@ export interface EstadoJugador {
   readonly escasezSeguidas: number;
   /** Gastar sal en conservar el pan del almacen; se cambia con una orden de politica. */
   readonly conservarConSal: boolean;
+  /** Maravedis de administracion que no se pudieron pagar y siguen debiendose. */
+  readonly deudaAdministracion: number;
+  /** Traslado de la corte en marcha, o null. */
+  readonly traslado: TrasladoDeCorte | null;
   readonly turnosSinOrdenes: number;
 }
 
@@ -95,6 +104,8 @@ export interface EstadoComarca {
   readonly edificios: Readonly<Record<string, number>>;
   readonly aperos: number;
   readonly fuero: Fuero;
+  /** Turno en que se concedio el fuero actual (0 si lo tiene desde el principio). */
+  readonly turnoFuero: number;
   readonly cargaFiscal: CargaFiscal;
   readonly dehesa: boolean;
   /** Potenciales efectivos: cambian al roturar, los del mundo no se tocan. */

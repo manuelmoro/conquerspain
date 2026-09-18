@@ -206,6 +206,7 @@ function comarcaDeEstado(plantilla: Plantilla, duenyo: string | null): Registro 
     edificios: duenyo === null ? {} : { granja: 1 },
     aperos: 0,
     fuero: 'ninguno',
+    turnoFuero: 0,
     cargaFiscal: 'normal',
     dehesa: false,
     potenciales: {
@@ -268,6 +269,8 @@ export function estadoMini(): EstadoPartida {
         escasez: false,
         escasezSeguidas: 0,
         conservarConSal: true,
+        deudaAdministracion: 0,
+        traslado: null,
         turnosSinOrdenes: 0,
       },
     },

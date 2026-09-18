@@ -269,7 +269,8 @@ describe('las ordenes de recua', () => {
       vecinos: 3,
     });
     expect(despues.siguienteId).toBe(101);
-    expect(despues.comarcas['prueba-llano']?.poblacion).toBe(40 - 7);
+    // Salen 7 (4 arrieros y 3 vecinos) y, al final del turno, el llano crece uno.
+    expect(despues.comarcas['prueba-llano']?.poblacion).toBe(40 - 7 + 1);
     expect(despues.ordenes).toEqual([]);
     const pagado = sucesos.filter(
       (s) => s.tipo === 'almacen.cambio' && s.datos['motivo'] === `orden ${orden.id}`,

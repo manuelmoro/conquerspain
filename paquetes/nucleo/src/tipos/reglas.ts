@@ -311,13 +311,38 @@ export interface DatosPoblacion {
   readonly emigracionPorHambreMil: number;
   readonly lealtadInicialIncorporada: number;
   readonly turnosDeslealParaPerderla: number;
+  readonly capacidadPorMuralla: number;
   readonly fueros: Readonly<Record<Fuero, DatosFuero>>;
+}
+
+/** Lealtad, fueros, administracion y traslado de la corte (docs/03 §3.6 y §3.9; ficha T-036). */
+export interface DatosTerritorio {
+  /** El fuero sube la lealtad hasta aqui, no mas. */
+  readonly lealtadMaximaPorFuero: number;
+  readonly lealtadPorMercado: number;
+  readonly lealtadPorObraMayorCerca: number;
+  readonly lealtadPorCargaLigera: number;
+  readonly lealtadPorCargaDura: number;
+  /** Mas alla de estas jornadas de la capital, la comarca se siente lejos. */
+  readonly jornadasDeLejania: number;
+  readonly lealtadPorLejania: number;
+  readonly lealtadPorAbandono: number;
+  /** Por debajo, la comarca es desleal: no forma recuas y empieza la cuenta atras. */
+  readonly lealtadDesleal: number;
+  readonly turnosEntreCambiosDeFuero: number;
+  readonly turnosFueroIrreversible: number;
+  readonly lealtadPorQuitarFuero: number;
+  readonly turnosTraslado: number;
+  /** Coste de la orden de traslado (lo calcula el servidor al darla). */
+  readonly costeTraslado: Recursos;
+  readonly recargoAdministracionTrasladoMil: number;
 }
 
 export interface DatosFuero {
   readonly administracionMil: number;
   readonly impuestosMil: number;
   readonly lealtadPorTurno: number;
+  readonly crecimientoMil: number;
 }
 
 export interface DatosMercado {
@@ -387,6 +412,7 @@ export interface TablasDeReglas {
   readonly obras: DatosObras;
   readonly obrasMayores: Readonly<Record<TipoObraMayor, DatosObraMayor>>;
   readonly poblacion: DatosPoblacion;
+  readonly territorio: DatosTerritorio;
   readonly mercado: DatosMercado;
   readonly influencia: DatosInfluencia;
   readonly prestigio: DatosPrestigio;

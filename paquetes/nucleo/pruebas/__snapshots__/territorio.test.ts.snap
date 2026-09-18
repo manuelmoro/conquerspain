@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`escenario de cien turnos > ocho comarcas sin fueros ni caminos se endeudan; con fueros y calzadas, no > con fueros y calzadas 1`] = `
+{
+  "deudaMaxima": 0,
+  "propias": 8,
+  "turnosConDeuda": 0,
+}
+`;
+
+exports[`escenario de cien turnos > ocho comarcas sin fueros ni caminos se endeudan; con fueros y calzadas, no > sin fueros ni caminos 1`] = `
+{
+  "deudaMaxima": 899,
+  "propias": 2,
+  "turnosConDeuda": 98,
+}
+`;

@@ -7,10 +7,10 @@
 // Cada jugador solo toca su almacen y sus comarcas, asi que el orden entre jugadores no importa.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
-import type { CosteDeAdministracion } from '../reglas/consumo.ts';
+import type { CosteDeAdministracion } from '../reglas/administracion.ts';
+import { costesDeAdministracion } from '../reglas/administracion.ts';
 import {
   comarcasDe,
-  costesDeAdministracion,
   panDeLaPoblacion,
   panDeLasCuadrillas,
   turnosDeReserva,
@@ -53,7 +53,13 @@ function gastar(
 function consumoDeJugador(ctx: Contexto, jugador: EstadoJugador): void {
   const id = jugador.id;
   const comarcas = comarcasDe(ctx.estado, id);
-  const administracion = costesDeAdministracion(comarcas, jugador, ctx.mundo, ctx.reglas);
+  const administracion = costesDeAdministracion(
+    comarcas,
+    jugador,
+    ctx.mundo,
+    ctx.reglas,
+    ctx.estado.caminos,
+  );
 
   const panDeGente = panDeLaPoblacion(comarcas, ctx.reglas);
   const panDeCuadrillas = panDeLasCuadrillas(ctx.estado, id, ctx.reglas);
@@ -145,38 +151,48 @@ function pagarAperos(
 }
 
 /**
- * Administracion en maravedis, de la comarca mas cercana a la mas lejana. En cuanto una no se
- * puede pagar, esa y todas las que estan mas lejos quedan en deuda y pierden lealtad.
+ * Administracion en maravedis (fichas T-032 y T-036). Primero se paga lo de este turno, de la
+ * comarca mas cercana a la mas lejana: en cuanto una no llega, esa y las mas lejanas quedan sin
+ * pagar, pierden lealtad y lo suyo pasa a la deuda. Lo que sobre salda la deuda vieja; mientras
+ * quede deuda, la comarca mas lejana sigue perdiendo lealtad aunque este turno se haya pagado.
  */
 function pagarAdministracion(
   ctx: Contexto,
   jugador: IdJugador,
   orden: readonly CosteDeAdministracion[],
 ): void {
+  const perdida = ctx.reglas.consumo.lealtadPorDeudaDeAdministracion;
+  const deudaVieja = ctx.estado.jugadores[jugador]?.deudaAdministracion ?? 0;
   const total = orden.reduce((suma, c) => suma + c.coste, 0);
   let pagado = 0;
-  let enDeuda: CosteDeAdministracion[] = [];
+  let sinPagar: CosteDeAdministracion[] = [];
   for (const [indice, coste] of orden.entries()) {
     if (disponible(ctx, jugador, 'maravedis') < coste.coste) {
-      enDeuda = orden.slice(indice);
+      sinPagar = orden.slice(indice);
       break;
     }
     gastar(ctx, jugador, 'maravedis', coste.coste, `administracion de ${coste.comarca}`);
     pagado += coste.coste;
   }
+  const saldado = Math.min(deudaVieja, disponible(ctx, jugador, 'maravedis'));
+  gastar(ctx, jugador, 'maravedis', saldado, 'deuda de administracion');
+  const deuda = deudaVieja - saldado + (total - pagado);
+  if (deuda !== deudaVieja) aplicar(ctx, { tipo: 'deuda', jugador, deuda });
+
   registrarSuceso(
     ctx.sucesos,
     ctx.fase,
     'consumo.administracion',
-    { total, pagado, deuda: total - pagado, comarcasEnDeuda: enDeuda.length },
+    { total, pagado, saldado, deuda, comarcasSinPagar: sinPagar.length },
     { jugador },
   );
-  for (const coste of enDeuda) {
+  const castigadas = sinPagar.length > 0 || deuda === 0 ? sinPagar : orden.slice(-1);
+  for (const coste of castigadas) {
     aplicar(ctx, {
       tipo: 'lealtad',
       comarca: coste.comarca,
-      delta: -ctx.reglas.consumo.lealtadPorDeudaDeAdministracion,
-      motivo: 'administracion sin pagar',
+      delta: -perdida,
+      motivo: sinPagar.length > 0 ? 'administracion sin pagar' : 'deuda de administracion',
     });
   }
 }

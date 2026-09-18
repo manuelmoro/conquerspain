@@ -12,10 +12,12 @@ import type {
   Conocimiento,
   EstadoTramo,
   Fuero,
+  CargaFiscal,
   Obra,
   Recua,
   RecursoAgotable,
   SituacionMovil,
+  TrasladoDeCorte,
 } from './tipos/estado.ts';
 import type { NivelPotencial, Potencial } from './tipos/mundo.ts';
 import type { TipoObraMayor } from './tipos/reglas.ts';
@@ -44,6 +46,11 @@ export type Cambio =
       readonly jugador: IdJugador;
       readonly delta: number;
       readonly motivo: string;
+    }
+  | {
+      readonly tipo: 'deuda';
+      readonly jugador: IdJugador;
+      readonly deuda: number;
     }
   | {
       readonly tipo: 'escasez';
@@ -191,9 +198,40 @@ export type Cambio =
       readonly conocimiento: Conocimiento;
     }
   | {
+      /** Cambia el fuero y apunta el turno, que cuenta para los plazos (ficha T-036 §4.4). */
       readonly tipo: 'fuero';
       readonly comarca: IdComarca;
       readonly fuero: Fuero;
+    }
+  | {
+      readonly tipo: 'carga-fiscal';
+      readonly comarca: IdComarca;
+      readonly carga: CargaFiscal;
+    }
+  | {
+      readonly tipo: 'dehesa';
+      readonly comarca: IdComarca;
+      readonly dehesa: boolean;
+    }
+  | {
+      readonly tipo: 'conservar-sal';
+      readonly jugador: IdJugador;
+      readonly conservar: boolean;
+    }
+  | {
+      readonly tipo: 'desleal';
+      readonly comarca: IdComarca;
+      readonly turnos: number;
+    }
+  | {
+      readonly tipo: 'traslado';
+      readonly jugador: IdJugador;
+      readonly traslado: TrasladoDeCorte | null;
+    }
+  | {
+      readonly tipo: 'capital';
+      readonly jugador: IdJugador;
+      readonly comarca: IdComarca;
     }
   | {
       readonly tipo: 'obra-alta';
@@ -384,6 +422,19 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         { delta: cambio.delta, total: jugador.prestigio, motivo: cambio.motivo },
         { jugador: cambio.jugador },
       );
+      return;
+    }
+
+    case 'deuda': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      if (!Number.isSafeInteger(cambio.deuda) || cambio.deuda < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La deuda de ${cambio.jugador} no puede ser ${String(cambio.deuda)}.`,
+          { jugador: cambio.jugador },
+        );
+      }
+      jugador.deudaAdministracion = cambio.deuda;
       return;
     }
 
@@ -863,12 +914,86 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
     case 'fuero': {
       const comarca = comarcaDe(ctx, cambio.comarca);
       comarca.fuero = cambio.fuero;
+      comarca.turnoFuero = ctx.turno;
       registrarSuceso(
         ctx.sucesos,
         ctx.fase,
         'comarca.fuero',
         { fuero: cambio.fuero },
         { comarca: cambio.comarca, jugador: comarca.duenyo },
+      );
+      return;
+    }
+
+    case 'carga-fiscal': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      comarca.cargaFiscal = cambio.carga;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'comarca.carga-fiscal',
+        { carga: cambio.carga },
+        { comarca: cambio.comarca, jugador: comarca.duenyo },
+      );
+      return;
+    }
+
+    case 'dehesa': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      comarca.dehesa = cambio.dehesa;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'comarca.dehesa',
+        { dehesa: cambio.dehesa ? 1 : 0 },
+        { comarca: cambio.comarca, jugador: comarca.duenyo },
+      );
+      return;
+    }
+
+    case 'conservar-sal': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      jugador.conservarConSal = cambio.conservar;
+      return;
+    }
+
+    case 'desleal': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      if (!Number.isSafeInteger(cambio.turnos) || cambio.turnos < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Los turnos desleales de ${cambio.comarca} no pueden ser ${String(cambio.turnos)}.`,
+          { comarca: cambio.comarca },
+        );
+      }
+      comarca.turnosDesleal = cambio.turnos;
+      return;
+    }
+
+    case 'traslado': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      jugador.traslado = cambio.traslado === null ? null : { ...cambio.traslado };
+      return;
+    }
+
+    case 'capital': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      if (comarca.duenyo !== cambio.jugador) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `${cambio.jugador} no puede tener la corte en ${cambio.comarca}, que no es suya.`,
+          { jugador: cambio.jugador, comarca: cambio.comarca },
+        );
+      }
+      const antes = jugador.capital;
+      jugador.capital = cambio.comarca;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'corte.trasladada',
+        { desde: antes },
+        { jugador: cambio.jugador, comarca: cambio.comarca },
       );
       return;
     }

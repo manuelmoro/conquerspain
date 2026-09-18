@@ -19,6 +19,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-costa",
         "influencias": {},
         "lealtad": 50,
@@ -60,6 +61,7 @@
           "granja": 1
         },
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-llano",
         "influencias": {},
         "lealtad": 100,
@@ -99,6 +101,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-mina",
         "influencias": {},
         "lealtad": 50,
@@ -138,6 +141,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-monte",
         "influencias": {},
         "lealtad": 50,
@@ -177,6 +181,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-rio",
         "influencias": {},
         "lealtad": 50,
@@ -216,6 +221,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-sierra",
         "influencias": {},
         "lealtad": 50,
@@ -255,6 +261,7 @@
         "duenyo": null,
         "edificios": {},
         "fuero": "ninguno",
+        "turnoFuero": 0,
         "id": "prueba-vega",
         "influencias": {},
         "lealtad": 50,
@@ -328,6 +335,8 @@
           }
         },
         "conservarConSal": true,
+        "deudaAdministracion": 0,
+        "traslado": null,
         "credito": 50,
         "escasez": false,
         "escasezSeguidas": 0,
@@ -387,7 +396,7 @@
           "vecinos": 2
         }
       ],
-      "huellaEsperada": "08b60c693a13be2c0a05ed49666f3e4a348137810b858d8a3df5761e38243676"
+      "huellaEsperada": "57fe1ae40470171735e7136e6408d2920986b9397528e9523b9e8c1362c9f51d"
     },
     {
       "turno": 8,
@@ -452,57 +461,57 @@
           ]
         }
       ],
-      "huellaEsperada": "e5760af4e52c2916de602ca44ec034aa908976bdc82be72a9203be6d8ef2b736"
+      "huellaEsperada": "9c3e625e630297d12ea3b4b09f75d78731a32fac5b4ed4f7ec14fc8fec68545d"
     },
     {
       "turno": 9,
       "ordenes": [],
-      "huellaEsperada": "069d1359cc1354f90a86284a3fd866303d088d2665cdcbc35b4fe48727ae6061"
+      "huellaEsperada": "11c289bf1fd593ed0f529a23433a08eaf2b047f9c7a98f420ccb213b2a531b42"
     },
     {
       "turno": 10,
       "ordenes": [],
-      "huellaEsperada": "b1acbe55e26fe329ec2bb66853cee2c02fe32a4e1376b6acca778ebb0f3ee7ae"
+      "huellaEsperada": "1f37834d3de3ab11f7bd14eb0cb555b7be35c3389698d10e685b5a7385e991c1"
     },
     {
       "turno": 11,
       "ordenes": [],
-      "huellaEsperada": "7db68aaf86028b435b80998eede25ee88b4d8033f123f9e3acde2b9dca3e4fcd"
+      "huellaEsperada": "05d2535a117ccd65b08bfca902cb9bbd8d013b67295fb2894ea4b5734d8aaf5c"
     },
     {
       "turno": 12,
       "ordenes": [],
-      "huellaEsperada": "ca4f67d726d6d62a180ec3947b518d9ec51170060e3dea5c19f132eac19318d7"
+      "huellaEsperada": "86474a7a51ec5018c63bed1fc037c03136852c18c18797bd3205f5eabb437afb"
     },
     {
       "turno": 13,
       "ordenes": [],
-      "huellaEsperada": "b10d8b0e47685bf8fa7b0e3d16bd3b25ad337ef2410fa775ae65c3ba223d4c7a"
+      "huellaEsperada": "16a30cb7d0897f37cad79b4c55280c59c02d9f649c0ecbee558b922c7fc1aba5"
     },
     {
       "turno": 14,
       "ordenes": [],
-      "huellaEsperada": "ce188d3382165fea29421e40b22d6cf6093e4f768e014d77b4aa7b4a589d6bfe"
+      "huellaEsperada": "d63bc247759ac157ed85fac4340f8776d9d2dd092ddfa9e9f83664dce5e584a0"
     },
     {
       "turno": 15,
       "ordenes": [],
-      "huellaEsperada": "3587c1cb48b35200aa06ddf402b48ed89ca083dd9083462ba843d4c6ce604251"
+      "huellaEsperada": "4ece63d583c9420d9161f629bf9d23193e39bb2d823c75b7ad35ba47554e2d77"
     },
     {
       "turno": 16,
       "ordenes": [],
-      "huellaEsperada": "95590a00c3e18d73f2ec4606a63971f356c7b26d9d17eb8f31498dda42ae5a0d"
+      "huellaEsperada": "d07429699587b1540bc6091edf80d299570c80255f7e7c7cce946b136d874830"
     },
     {
       "turno": 17,
       "ordenes": [],
-      "huellaEsperada": "877874f8e59f2642acb9f0d374bae994ff611d2860a57a3970a39fa2c47164d2"
+      "huellaEsperada": "75c8f6415c9e7be12134b42c7352e57915db58b51378e81acbe95fdba42ab2f7"
     },
     {
       "turno": 18,
       "ordenes": [],
-      "huellaEsperada": "211355048588110a5ad4a42da30c56b31208ce9fa03df84bfe4249069d228380"
+      "huellaEsperada": "50ae38ee173188d87e32cba916e9bd7467ae00df43ae52e867a5904096df0f18"
     }
   ]
 }
