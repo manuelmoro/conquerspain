@@ -44,7 +44,10 @@
           "lana": 0
         },
         "turnosDesleal": 0,
-        "turnosSinMantenimiento": 0
+        "turnosSinMantenimiento": 0,
+        "presenciaSeguida": {},
+        "ultimoRegalo": {},
+        "exDuenyo": null
       },
       "prueba-llano": {
         "agotamiento": {
@@ -86,7 +89,10 @@
           "lana": 0
         },
         "turnosDesleal": 0,
-        "turnosSinMantenimiento": 0
+        "turnosSinMantenimiento": 0,
+        "presenciaSeguida": {},
+        "ultimoRegalo": {},
+        "exDuenyo": null
       },
       "prueba-mina": {
         "agotamiento": {
@@ -126,7 +132,10 @@
           "lana": 0
         },
         "turnosDesleal": 0,
-        "turnosSinMantenimiento": 0
+        "turnosSinMantenimiento": 0,
+        "presenciaSeguida": {},
+        "ultimoRegalo": {},
+        "exDuenyo": null
       },
       "prueba-monte": {
         "agotamiento": {
@@ -166,7 +175,10 @@
           "lana": 0
         },
         "turnosDesleal": 0,
-        "turnosSinMantenimiento": 0
+        "turnosSinMantenimiento": 0,
+        "presenciaSeguida": {},
+        "ultimoRegalo": {},
+        "exDuenyo": null
       },
       "prueba-rio": {
         "agotamiento": {
@@ -206,7 +218,10 @@
           "lana": 0
         },
         "turnosDesleal": 0,
-        "turnosSinMantenimiento": 0
+        "turnosSinMantenimiento": 0,
+        "presenciaSeguida": {},
+        "ultimoRegalo": {},
+        "exDuenyo": null
       },
       "prueba-sierra": {
         "agotamiento": {
@@ -246,7 +261,10 @@
           "lana": 0
         },
         "turnosDesleal": 0,
-        "turnosSinMantenimiento": 0
+        "turnosSinMantenimiento": 0,
+        "presenciaSeguida": {},
+        "ultimoRegalo": {},
+        "exDuenyo": null
       },
       "prueba-vega": {
         "agotamiento": {
@@ -286,7 +304,10 @@
           "lana": 0
         },
         "turnosDesleal": 0,
-        "turnosSinMantenimiento": 0
+        "turnosSinMantenimiento": 0,
+        "presenciaSeguida": {},
+        "ultimoRegalo": {},
+        "exDuenyo": null
       }
     },
     "configuracion": {
@@ -396,7 +417,7 @@
           "vecinos": 2
         }
       ],
-      "huellaEsperada": "57fe1ae40470171735e7136e6408d2920986b9397528e9523b9e8c1362c9f51d"
+      "huellaEsperada": "e59053c8ff8c66e617a59087527007e36dee1d73c9453e4d74dd45379ca356e0"
     },
     {
       "turno": 8,
@@ -461,57 +482,57 @@
           ]
         }
       ],
-      "huellaEsperada": "9c3e625e630297d12ea3b4b09f75d78731a32fac5b4ed4f7ec14fc8fec68545d"
+      "huellaEsperada": "6736b5fb7a71b973737a6e986f82ddc582012a035066dbf97726b7ee371a1730"
     },
     {
       "turno": 9,
       "ordenes": [],
-      "huellaEsperada": "11c289bf1fd593ed0f529a23433a08eaf2b047f9c7a98f420ccb213b2a531b42"
+      "huellaEsperada": "50b475abe0d9dd6f97704c52f191811cffafab54daa79ee79d9a0e1f07b764c6"
     },
     {
       "turno": 10,
       "ordenes": [],
-      "huellaEsperada": "1f37834d3de3ab11f7bd14eb0cb555b7be35c3389698d10e685b5a7385e991c1"
+      "huellaEsperada": "42ad84b138ad3356baaf9f2cc9ee388303deec4a8b54d7ae1c2e2f199d152b54"
     },
     {
       "turno": 11,
       "ordenes": [],
-      "huellaEsperada": "05d2535a117ccd65b08bfca902cb9bbd8d013b67295fb2894ea4b5734d8aaf5c"
+      "huellaEsperada": "0b3375ab4e481968ef37ccade4c485194bf5fcf59cc897f43fc6091d2bc5430d"
     },
     {
       "turno": 12,
       "ordenes": [],
-      "huellaEsperada": "86474a7a51ec5018c63bed1fc037c03136852c18c18797bd3205f5eabb437afb"
+      "huellaEsperada": "76fee18d00c635ec2e1677ae59def75bad837b894d008ee04388c8ef3bf4ae7a"
     },
     {
       "turno": 13,
       "ordenes": [],
-      "huellaEsperada": "16a30cb7d0897f37cad79b4c55280c59c02d9f649c0ecbee558b922c7fc1aba5"
+      "huellaEsperada": "53c74752ceea666eace22823877beb82e9c3b65099dd04d92cd0064e798ac71c"
     },
     {
       "turno": 14,
       "ordenes": [],
-      "huellaEsperada": "d63bc247759ac157ed85fac4340f8776d9d2dd092ddfa9e9f83664dce5e584a0"
+      "huellaEsperada": "94d56bdb2a74d26fae1226c823057b360200cb4325a20340fc9ba565f48b7b7a"
     },
     {
       "turno": 15,
       "ordenes": [],
-      "huellaEsperada": "4ece63d583c9420d9161f629bf9d23193e39bb2d823c75b7ad35ba47554e2d77"
+      "huellaEsperada": "586b2800804610e6920fec2fc59fbb41808b6dddf194d2029a124a68b2e36d6e"
     },
     {
       "turno": 16,
       "ordenes": [],
-      "huellaEsperada": "d07429699587b1540bc6091edf80d299570c80255f7e7c7cce946b136d874830"
+      "huellaEsperada": "043f1de2d84f4865bd30c0076d7ddc0a69e216178ea93bf208d133b76b507ea7"
     },
     {
       "turno": 17,
       "ordenes": [],
-      "huellaEsperada": "75c8f6415c9e7be12134b42c7352e57915db58b51378e81acbe95fdba42ab2f7"
+      "huellaEsperada": "023d2005fbfb1933c118379d0837dce615b7be0511e09135957bec6ea5829d06"
     },
     {
       "turno": 18,
       "ordenes": [],
-      "huellaEsperada": "50ae38ee173188d87e32cba916e9bd7467ae00df43ae52e867a5904096df0f18"
+      "huellaEsperada": "7a4bedabe852966a2ff3aad506d6474c1424c30d70a94a757773178719d929b7"
     }
   ]
 }

@@ -1,9 +1,9 @@
-// Fase 08 · Territorio (T-036, docs/03-economia.md §3.6 y §3.9; la influencia llega con T-038).
+// Fase 08 · Territorio (T-036 y T-038, docs/03-economia.md §3.6 y §3.9 y docs/06 §6.2).
 //
 // Por este orden: las ordenes de politica y de traslado de la corte, el avance de los traslados,
 // la lealtad de cada comarca propia con todas sus fuentes y la cuenta atras de las desleales, que
-// al acabar vuelven a ser neutrales. Cada jugador solo toca lo suyo, asi que el orden entre
-// jugadores no cambia nada.
+// al acabar vuelven a ser neutrales. Despues, la influencia y las incorporaciones (08-influencia).
+// Cada jugador solo toca lo suyo, asi que el orden entre jugadores no cambia nada.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ordenes.ts';
@@ -16,6 +16,7 @@ import { esDesleal, fuentesDeLealtad } from '../reglas/lealtad.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import type { EstadoComarca, EstadoJugador } from '../tipos/estado.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
+import { incorporaciones, influenciaDelTurno, regalos } from './08-influencia.ts';
 
 export function faseTerritorio(ctx: Contexto): void {
   for (const orden of ordenesVivas(ctx, 'politica')) politica(ctx, orden);
@@ -26,6 +27,9 @@ export function faseTerritorio(ctx: Contexto): void {
     avanzarTraslado(ctx, jugador);
     lealtad(ctx, jugador);
   }
+  regalos(ctx);
+  influenciaDelTurno(ctx);
+  incorporaciones(ctx);
 }
 
 /**

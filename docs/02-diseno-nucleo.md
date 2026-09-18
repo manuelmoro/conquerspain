@@ -98,6 +98,7 @@ interface Orden {
 | Recua | `cargar` / `descargar` | Mover recursos y vecinos entre almacén y recua |
 | Recua | `cometido` | Explorar, poblar, tratar, establecer presencia, disolver |
 | Territorio | `incorporar` | Sumar al dominio una comarca donde ya tienes influencia mayoritaria |
+| Territorio | `regalo` | 50 mrs al concejo de una comarca neutral: +5 de influencia, una vez cada 4 turnos |
 | Mercado | `vender` / `comprar` | Órdenes con precio límite, ejecutables en feria o mercado local por una recua quieta que trata |
 | Obra | `obra mayor` | Iniciar o financiar una obra monumental de varias decenas de turnos |
 | Casa | `tradicion` | Elegir una vía de desarrollo al alcanzar un hito |

@@ -29,6 +29,13 @@ textos (plantillas) de los sucesos.
 feria y los precios conocidos de otras plazas (`DatosConocidos.preciosMil`) los pone esta tarea:
 la fase 7 solo actualiza `EstadoMercado`, no toca el conocimiento de nadie.
 
+**Heredado de T-038.** Los sucesos de la influencia son `influencia.fuentes` (con el desglose:
+presencia, vecinas, mercado, comercio, monasterio, camino, desgaste, escasez, neto y total),
+`influencia.regalo`, `incorporar.empieza`, `incorporar.completa` e `incorporar.perdida` (con el
+`ganador` y su `nombre`: cortejar a un concejo es público). Las órdenes de `regalo` y de
+`incorporar` que esperan traen su `motivoEspera` (`regalo-reciente`, `influencia-baja`,
+`sin-ventaja`, `muy-lejos`, `escasez`).
+
 ## 4. Diseño detallado
 
 ### 4.1 Vista de jugador

@@ -7,6 +7,7 @@ import { ARRANQUE } from '../src/datos/arranque.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
+import { INFLUENCIA } from '../src/datos/influencia.ts';
 import { MERCADO } from '../src/datos/mercado.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
 import { OBRAS, OBRAS_MAYORES } from '../src/datos/obras.ts';
@@ -133,6 +134,9 @@ export function estadoDeEjemplo(): Registro {
     potenciales: potencialesLlanos(),
     agotamiento: { monte: 0, piedra: 0, hierro: 0, sal: 0 },
     influencias: duenyo === null ? { mesta: 10 } : {},
+    presenciaSeguida: {},
+    ultimoRegalo: {},
+    exDuenyo: null,
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
     obrasMayores: [],
@@ -293,25 +297,7 @@ export function tablasDeEjemplo(): Registro {
     poblacion: JSON.parse(JSON.stringify(POBLACION)) as Registro,
     territorio: JSON.parse(JSON.stringify(TERRITORIO)) as Registro,
     mercado: JSON.parse(JSON.stringify(MERCADO)) as Registro,
-    influencia: {
-      porPresencia: 2,
-      porComarcaVecina: 1,
-      maximoPorComarcasVecinas: 3,
-      porMercadoVecino: 1,
-      porComercioPorCadaCincuenta: 1,
-      maximoPorComercio: 3,
-      porMonasterio: 2,
-      porRegalo: 5,
-      costeRegalo: 50,
-      turnosEntreRegalos: 4,
-      porCamino: 1,
-      desgastePorTurno: 1,
-      minimaParaIncorporar: 60,
-      ventajaSobreElSegundo: 15,
-      jornadasMaximasDesdeElDominio: 6,
-      costeIncorporar: recursosCon({ pan: 40, maravedis: 30 }),
-      turnosIncorporar: 3,
-    },
+    influencia: JSON.parse(JSON.stringify(INFLUENCIA)) as Registro,
     prestigio: {
       porCadaCincoVecinos: 1,
       porComarca: 20,

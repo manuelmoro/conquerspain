@@ -2,7 +2,7 @@
 // despensa llena, recuas a medida y ordenes de recua bien formadas.
 import { resolverTurno } from '../src/resolver.ts';
 import type { Suceso } from '../src/tipos/cronica.ts';
-import type { EstadoJugador, EstadoPartida, Recua } from '../src/tipos/estado.ts';
+import type { EstadoComarca, EstadoJugador, EstadoPartida, Recua } from '../src/tipos/estado.ts';
 import type { IdComarca, IdJugador, IdOrden, IdRecua } from '../src/tipos/ids.ts';
 import type { Orden, OrdenBase, ParadaDeRuta } from '../src/tipos/ordenes.ts';
 import type { Recursos } from '../src/tipos/recursos.ts';
@@ -163,4 +163,22 @@ export function de(estado: EstadoPartida, id: string): Recua {
 
 export function tipos(sucesos: readonly Suceso[]): string[] {
   return sucesos.map((s) => s.tipo);
+}
+
+/** Copia del estado con campos de una comarca cambiados. */
+export function conComarca(
+  estado: EstadoPartida,
+  id: string,
+  cambios: Partial<EstadoComarca>,
+): EstadoPartida {
+  const comarca = estado.comarcas[id];
+  if (comarca === undefined) throw new Error(`falta la comarca ${id}`);
+  return { ...estado, comarcas: { ...estado.comarcas, [id]: { ...comarca, ...cambios } } };
+}
+
+/** La comarca de un estado, o un error claro si no esta. */
+export function comarcaDe(estado: EstadoPartida, id: string): EstadoComarca {
+  const comarca = estado.comarcas[id];
+  if (comarca === undefined) throw new Error(`falta la comarca ${id}`);
+  return comarca;
 }

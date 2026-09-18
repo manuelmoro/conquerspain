@@ -366,7 +366,9 @@ export interface DatosInfluencia {
   readonly porComarcaVecina: number;
   readonly maximoPorComarcasVecinas: number;
   readonly porMercadoVecino: number;
-  readonly porComercioPorCadaCincuenta: number;
+  /** Cada bloque de tantos maravedis comerciados en la comarca da `porBloqueDeComercio` puntos. */
+  readonly maravedisPorBloqueDeComercio: number;
+  readonly porBloqueDeComercio: number;
   readonly maximoPorComercio: number;
   readonly porMonasterio: number;
   readonly porRegalo: number;
@@ -374,6 +376,8 @@ export interface DatosInfluencia {
   readonly turnosEntreRegalos: number;
   readonly porCamino: number;
   readonly desgastePorTurno: number;
+  /** Lo que resta vaciar el mercado de pan de una comarca neutral. */
+  readonly desgastePorEscasez: number;
   readonly minimaParaIncorporar: number;
   readonly ventajaSobreElSegundo: number;
   readonly jornadasMaximasDesdeElDominio: number;

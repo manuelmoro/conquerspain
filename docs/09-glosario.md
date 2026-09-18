@@ -38,6 +38,7 @@ lista manda sobre cualquier otra forma que aparezca en textos antiguos del repos
 | Puebla | `puebla` | Asentamiento nuevo fundado con gente llevada por una recua |
 | Quincena | `quincena` | Duración de un turno en el calendario del juego |
 | Rebaño | `rebanyo` | Unidad móvil de ganado trashumante |
+| Regalo | `regalo` | Orden que da maravedís al concejo de una comarca neutral a cambio de influencia |
 | Recua | `recua` | Unidad móvil de transporte y expedición |
 | Solar | `solar` | Hueco de edificación en una comarca |
 | Tratar | `tratar` | Cometido de una recua quieta en una plaza: comprar y vender allí con precio límite |

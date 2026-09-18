@@ -110,6 +110,19 @@ export type Cambio =
       readonly jugador: IdJugador | null;
     }
   | {
+      /** Turnos seguidos con una recua presente en una comarca neutral; 0 borra la cuenta. */
+      readonly tipo: 'presencia-seguida';
+      readonly comarca: IdComarca;
+      readonly jugador: IdJugador;
+      readonly turnos: number;
+    }
+  | {
+      /** El jugador ha hecho un regalo al concejo de una comarca neutral este turno. */
+      readonly tipo: 'regalo';
+      readonly comarca: IdComarca;
+      readonly jugador: IdJugador;
+    }
+  | {
       readonly tipo: 'orden-alta';
       readonly orden: Orden;
     }
@@ -648,14 +661,63 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       const comarca = comarcaDe(ctx, cambio.comarca);
       const antes = comarca.duenyo;
       comarca.duenyo = cambio.jugador;
-      // Una comarca con duenyo no guarda influencias: al incorporarse, se borran.
-      if (cambio.jugador !== null) comarca.influencias = {};
+      // Una comarca con duenyo no guarda influencias ni cuentas del concejo: al incorporarse se
+      // borran; al volver a neutral se apunta quien la tenia.
+      if (cambio.jugador !== null) {
+        comarca.influencias = {};
+        comarca.presenciaSeguida = {};
+        comarca.ultimoRegalo = {};
+        comarca.exDuenyo = null;
+      } else {
+        comarca.exDuenyo = antes;
+      }
       registrarSuceso(
         ctx.sucesos,
         ctx.fase,
         cambio.jugador === null ? 'comarca.vuelve-neutral' : 'comarca.incorporada',
         { anterior: antes ?? '(neutral)' },
         { comarca: cambio.comarca, jugador: cambio.jugador ?? antes },
+      );
+      return;
+    }
+
+    case 'presencia-seguida': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      if (comarca.duenyo !== null || !Number.isSafeInteger(cambio.turnos) || cambio.turnos < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La presencia seguida de ${cambio.jugador} en ${cambio.comarca} no puede quedar en ${String(cambio.turnos)} (solo las comarcas neutrales la cuentan).`,
+          { comarca: cambio.comarca, jugador: cambio.jugador },
+        );
+      }
+      if (cambio.turnos === 0) {
+        const restantes: Record<string, number> = {};
+        for (const [id, turnos] of Object.entries(comarca.presenciaSeguida)) {
+          if (id !== cambio.jugador) restantes[id] = turnos;
+        }
+        comarca.presenciaSeguida = restantes;
+      } else {
+        comarca.presenciaSeguida[cambio.jugador] = cambio.turnos;
+      }
+      return;
+    }
+
+    case 'regalo': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      if (comarca.duenyo !== null) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `${cambio.comarca} tiene duenyo: el concejo solo recibe regalos mientras es neutral.`,
+          { comarca: cambio.comarca },
+        );
+      }
+      comarca.ultimoRegalo[cambio.jugador] = ctx.turno;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'influencia.regalo',
+        { turno: ctx.turno },
+        { comarca: cambio.comarca, jugador: cambio.jugador },
       );
       return;
     }

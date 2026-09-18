@@ -23,6 +23,7 @@ import type {
   OrdenIncorporar,
   OrdenMayordomo,
   OrdenMercado,
+  OrdenRegalo,
   OrdenObraMayor,
   OrdenPolitica,
   OrdenRoturar,
@@ -170,6 +171,12 @@ const incorporar: Validador<OrdenIncorporar> = objeto<OrdenIncorporar>({
   comarca: identificador<IdComarca>(),
 });
 
+const regalo: Validador<OrdenRegalo> = objeto<OrdenRegalo>({
+  ...camposBase,
+  tipo: unoDe(['regalo'] as const),
+  comarca: identificador<IdComarca>(),
+});
+
 const mercado: Validador<OrdenMercado> = objeto<OrdenMercado>({
   ...camposBase,
   // Una orden de mercado vale como mucho un anyo: lo que no se casa en tanto tiempo ya no interesa.
@@ -223,6 +230,7 @@ const validarForma = porTipo<Orden>({
   carga,
   cometido,
   incorporar,
+  regalo,
   mercado,
   'obra-mayor': obraMayor,
   tradicion,
@@ -270,6 +278,7 @@ function comarcasCitadas(orden: Orden): string[] {
     case 'formar-recua':
     case 'formar-rebanyo':
     case 'incorporar':
+    case 'regalo':
     case 'obra-mayor':
     case 'trasladar-corte':
       return [orden.comarca];

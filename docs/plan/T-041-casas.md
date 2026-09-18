@@ -22,6 +22,11 @@ límite, y la elección de casa al crear la partida.
 **No entra:** tradiciones (T-042), equilibrio fino (T-047), lo que dependa de mecánicas de conflicto
 (queda desactivado y documentado).
 
+**Heredado de T-038.** La fuente de influencia por monasterio (`reglas/influencia.ts`) da hoy +2 solo
+a quien tuvo la comarca (`EstadoComarca.exDuenyo`), porque una obra mayor no guarda quién la
+levantó y solo se levanta en comarca propia. Si el contrato de obra de los canteros o los monjes
+permite obras en comarca ajena o neutral, hay que guardar el autor de la obra y ampliar esa fuente.
+
 **Heredado de T-034.** Los monjes fundan puebla con la mitad de gente: hoy
 `cometidos.vecinosParaPuebla` (10) es igual para todas las casas y `impedimentoDePuebla`
 (`reglas/poblar.ts`) no consulta la casa; hay que añadir el modificador. `pasoRecuaMil` es aditivo

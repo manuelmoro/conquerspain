@@ -71,6 +71,14 @@ export function ordenesVivas<T extends TipoDeOrden>(ctx: Contexto, tipo: T): Ord
     .sort((a, b) => comparar(a.id, b.id));
 }
 
+/** Ordenes de un tipo que ya empezaron y siguen su curso, en orden de identificador. */
+export function ordenesEnCurso<T extends TipoDeOrden>(ctx: Contexto, tipo: T): OrdenDe<T>[] {
+  const ordenes: readonly Orden[] = ctx.estado.ordenes;
+  return ordenes
+    .filter((orden): orden is OrdenDe<T> => orden.tipo === tipo && orden.estado === 'en curso')
+    .sort((a, b) => comparar(a.id, b.id));
+}
+
 /** Empieza una orden: paga su coste reservado y la deja en curso o terminada. */
 export function empezarOrden(ctx: Contexto, orden: Orden, queda: 'en curso' | 'terminada'): void {
   reservar(ctx, orden, -1, `empieza la orden ${orden.id}`);

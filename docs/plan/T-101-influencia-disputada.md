@@ -24,6 +24,13 @@ y que el desenlace sea justo y legible.
 
 **No entra:** conflicto armado (fase 6).
 
+**Heredado de T-038.** Ya están hechos el cálculo de influencia, la orden `incorporar` y la disputa
+por tres criterios (`reglas/incorporar.ts`, `fases/08-influencia.ts`). Con el requisito de 15 puntos
+de ventaja dos jugadores no pueden *empezar* a la vez sobre una comarca, así que la disputa solo se
+da si las órdenes terminan el mismo turno tras empezar en turnos distintos; esta tarea decide si eso
+basta o si hay que permitir ofertas simultáneas. La racha de presencia
+(`EstadoComarca.presenciaSeguida`) y el regalo (`ultimoRegalo`) ya viven en el estado.
+
 ## 4. Puntos que hay que resolver al detallar
 
 - Cuánta influencia ajena se ve y con qué precisión (propuesta de T-044: tramos de 10, solo con presencia).

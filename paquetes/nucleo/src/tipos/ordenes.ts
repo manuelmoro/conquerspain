@@ -34,6 +34,7 @@ export const TIPOS_DE_ORDEN = [
   'cometido',
   'formar-rebanyo',
   'incorporar',
+  'regalo',
   'mercado',
   'obra-mayor',
   'tradicion',
@@ -135,6 +136,11 @@ export interface OrdenIncorporar extends OrdenBase {
   readonly comarca: IdComarca;
 }
 
+export interface OrdenRegalo extends OrdenBase {
+  readonly tipo: 'regalo';
+  readonly comarca: IdComarca;
+}
+
 export interface OrdenMercado extends OrdenBase {
   readonly tipo: 'mercado';
   readonly mercado: IdMercado;
@@ -192,6 +198,7 @@ export type Orden =
   | OrdenCarga
   | OrdenCometido
   | OrdenIncorporar
+  | OrdenRegalo
   | OrdenMercado
   | OrdenObraMayor
   | OrdenTradicion

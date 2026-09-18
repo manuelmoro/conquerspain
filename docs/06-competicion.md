@@ -25,26 +25,41 @@ comarca neutral que conoce.
 
 | Fuente | Influencia por turno |
 |---|---|
-| Recua con cometido «estar presente» | +2 |
+| Recua con cometido «estar presente» | +2 (varias recuas cuentan una vez) |
 | Comarca propia adyacente | +1 (por cada una, máximo +3) |
 | Mercado propio en comarca adyacente | +1 |
-| Comercio hecho en su mercado local este turno | +1 por cada 50 mrs, máximo +3 |
-| Monasterio o iglesia propia en la comarca | +2 |
-| Regalo al concejo (orden, 50 mrs) | +5 inmediato, una vez cada 4 turnos |
-| Caminos propios que la conectan | +1 |
+| Comercio hecho en una plaza de la comarca este turno | +1 por cada 50 mrs, máximo +3 |
+| Monasterio en la comarca, de quien la tuvo | +2 |
+| Regalo al concejo (orden `regalo`, 50 mrs) | +5 inmediato, una vez cada 4 turnos |
+| Camino mejorado que la une a una comarca propia | +1 |
 
 Y se pierde influencia: −1 por turno sin presencia ni comercio, y −5 si el jugador provoca escasez
-ahí (por ejemplo, vaciando su mercado de pan).
+ahí. Provocar escasez es **vaciar el mercado de pan**: una compra suya de pan en una plaza de la
+comarca que se queda sin casar porque la plaza no da más volumen. Todo se suma y se resta a la vez
+y se recorta a 0..100 una sola vez; cada cambio deja en la crónica su desglose. Conocer la comarca
+(al menos de oídas) es lo único que hace falta para acumular.
 
-**Incorporar** una comarca exige:
+El monasterio solo puede ser hoy el de quien la tuvo y la perdió por deslealtad: la obra sobrevive
+a la comarca y le da a su antiguo dueño un empujón para recuperarla.
 
-1. tener **influencia ≥ 60** y ser el jugador con más influencia, con al menos **15 puntos de
-   ventaja** sobre el segundo;
-2. tener una comarca propia a una distancia razonable (≤ 6 jornadas por camino conocido);
-3. pagar el coste de la orden y esperar sus turnos.
+**Incorporar** una comarca (orden `incorporar`) exige, comprobado al empezar:
 
-Si dos jugadores piden incorporar la misma comarca el mismo turno, **gana el de más influencia**;
-el otro recupera su coste íntegro y su influencia queda intacta. No hay carrera de clics: hay una
+1. tener **influencia ≥ 60**;
+2. ser el jugador con más influencia, con al menos **15 puntos de ventaja** sobre el segundo;
+3. tener una comarca propia a una distancia razonable (≤ 6 jornadas por camino **conocido**, en
+   verano y con las obras hechas);
+4. no estar en escasez, y llevar el coste reservado (40 de pan y 30 mrs).
+
+Si algo falla, la orden espera diciendo qué; si la comarca ya tiene dueño, se cancela. Al empezar
+paga y trabaja **tres turnos** (el primero cuenta). Si mientras tanto otro se queda la comarca, se
+cancela y se devuelve todo. Al terminar, la comarca es propia con lealtad 60 y su gente, y su
+producción y su consumo entran desde el turno siguiente. Antes de confirmar, el jugador ve la
+**previsión**: lo que cuesta, cómo queda su balance de pan, cuánto aguanta su reserva y cuánto más
+cuesta administrarla.
+
+Si dos jugadores terminan la orden el mismo turno sobre la misma comarca, **gana el de más
+influencia**, luego el de más turnos seguidos con presencia allí, y por último el de menor huella
+del turno; el otro recupera su coste íntegro y sabe quién ganó. No hay carrera de clics: hay una
 carrera de meses de presencia, visible para todos los implicados en la crónica («los canteros llevan
 seis quincenas cortejando al concejo de Berlanga»).
 

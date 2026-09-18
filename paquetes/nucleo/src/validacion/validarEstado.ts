@@ -124,6 +124,9 @@ const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
   potenciales: registroCompleto(POTENCIALES, nivelPotencial()),
   agotamiento: registroCompleto(RECURSOS_AGOTABLES, entero({ minimo: 0, maximo: 100 })),
   influencias: registro(entero({ minimo: 0, maximo: 100 }), identificador()),
+  presenciaSeguida: registro(enteroNoNegativo(), identificador()),
+  ultimoRegalo: registro(entero({ minimo: 1 }), identificador()),
+  exDuenyo: oNulo(identificador<IdJugador>()),
   turnosDesleal: enteroNoNegativo(),
   turnosSinMantenimiento: enteroNoNegativo(),
   obrasMayores: lista(unoDe(TIPOS_DE_OBRA_MAYOR), { maximo: TIPOS_DE_OBRA_MAYOR.length }),
@@ -336,12 +339,32 @@ export function validarEstado(dato: unknown, mundo?: Mundo): Resultado<EstadoPar
         mensaje: 'una comarca con duenyo no acumula influencias: solo las neutrales',
       });
     }
-    for (const jugador of Object.keys(comarca.influencias)) {
-      if (!hayJugador(jugador)) {
-        errores.push({
-          ruta: `comarcas.${clave}.influencias.${jugador}`,
-          mensaje: `el jugador "${jugador}" no existe en la partida`,
-        });
+    if (
+      comarca.duenyo !== null &&
+      (Object.keys(comarca.presenciaSeguida).length > 0 ||
+        Object.keys(comarca.ultimoRegalo).length > 0 ||
+        comarca.exDuenyo !== null)
+    ) {
+      errores.push({
+        ruta: `comarcas.${clave}`,
+        mensaje:
+          'una comarca con duenyo no lleva cuenta de presencia ni de regalos ni de ex dueño: solo las neutrales',
+      });
+    }
+    const cuentas: readonly (readonly [string, readonly string[]])[] = [
+      ['influencias', Object.keys(comarca.influencias)],
+      ['presenciaSeguida', Object.keys(comarca.presenciaSeguida)],
+      ['ultimoRegalo', Object.keys(comarca.ultimoRegalo)],
+      ['exDuenyo', comarca.exDuenyo === null ? [] : [comarca.exDuenyo]],
+    ];
+    for (const [campo, jugadores] of cuentas) {
+      for (const jugador of jugadores) {
+        if (!hayJugador(jugador)) {
+          errores.push({
+            ruta: `comarcas.${clave}.${campo}${campo === 'exDuenyo' ? '' : `.${jugador}`}`,
+            mensaje: `el jugador "${jugador}" no existe en la partida`,
+          });
+        }
       }
     }
     if (mundo !== undefined && !Object.hasOwn(mundo.comarcas, clave)) {

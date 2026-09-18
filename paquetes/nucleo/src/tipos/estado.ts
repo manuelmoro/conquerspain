@@ -113,6 +113,12 @@ export interface EstadoComarca {
   readonly agotamiento: Readonly<Record<RecursoAgotable, number>>;
   /** Influencia de cada jugador mientras la comarca es neutral (0..100). */
   readonly influencias: Readonly<Record<string, number>>;
+  /** Turnos seguidos con una recua presente de cada jugador: desempata las disputas. */
+  readonly presenciaSeguida: Readonly<Record<string, number>>;
+  /** Turno del ultimo regalo de cada jugador al concejo. */
+  readonly ultimoRegalo: Readonly<Record<string, number>>;
+  /** Quien la tuvo antes de que volviera a neutral; su monasterio le da influencia. */
+  readonly exDuenyo: IdJugador | null;
   /** Turnos seguidos con lealtad por debajo del minimo antes de volver a neutral. */
   readonly turnosDesleal: number;
   /** Turnos seguidos sin hierro para mantener los aperos: al segundo, bajan un nivel. */
