@@ -1,5 +1,6 @@
 // Tablas de equilibrio. Ningun numero de estos vive en la logica: todos entran por aqui,
 // desde paquetes/nucleo/datos (docs/07-arquitectura.md §7.9).
+import type { CargaFiscal, RecursoAgotable } from './estado.ts';
 import type { Potencial } from './mundo.ts';
 import type { Recurso, Recursos } from './recursos.ts';
 
@@ -144,6 +145,34 @@ export interface DatosEstaciones {
   readonly turnosPastoDeVerano: readonly number[];
 }
 
+/** Cadena de produccion de una explotacion (docs/03-economia.md §3.2 a §3.5). */
+export interface DatosProduccion {
+  /** Multiplicador por nivel de potencial, de 0 a 5. */
+  readonly multiplicadorPotencialMil: readonly number[];
+  /** Lo que suma cada nivel de aperos a la produccion de toda la comarca. */
+  readonly aperoMil: number;
+  /** Tramos de lealtad: el primero cuyo `menorQue` supere la lealtad fija el factor. */
+  readonly lealtad: readonly { readonly menorQue: number; readonly factorMil: number }[];
+  readonly agotamiento: {
+    readonly factorPorPuntoMil: number;
+    readonly sueloMil: number;
+    readonly porNivel: number;
+    readonly maximo: number;
+    readonly regeneracion: Readonly<Record<RecursoAgotable, number>>;
+  };
+  /** La dehesa: menos agotamiento del monte a cambio de menos madera. */
+  readonly dehesa: { readonly agotamientoMonteMil: number; readonly maderaMil: number };
+  /** Explotaciones cuyo pan sigue la estacion; la huerta y la lonja no. */
+  readonly edificiosEstacionales: readonly TipoEdificio[];
+  /** Lo que cada nivel de molino suma al pan de las granjas. */
+  readonly molinoMil: number;
+  readonly maravedis: {
+    readonly porNivelMercado: number;
+    readonly vecinosPorPunto: number;
+    readonly cargaFiscal: Readonly<Record<CargaFiscal, number>>;
+  };
+}
+
 export interface DatosMovimiento {
   readonly jornadasPorTerreno: Readonly<Record<string, number>>;
   readonly factorCaminoMil: Readonly<Record<CalidadCamino, number>>;
@@ -227,6 +256,7 @@ export interface TablasDeReglas {
   readonly casas: Readonly<Record<Casa, DatosCasa>>;
   readonly tradiciones: Readonly<Record<string, DatosTradicion>>;
   readonly estaciones: DatosEstaciones;
+  readonly produccion: DatosProduccion;
   readonly movimiento: DatosMovimiento;
   readonly poblacion: DatosPoblacion;
   readonly mercado: DatosMercado;

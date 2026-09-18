@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-030)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-031)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,10 +20,10 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-031 · Fase 2: producción](docs/plan/T-031-fase-produccion.md)**
+**[T-032 · Fase 3: consumo, merma y escasez](docs/plan/T-032-fase-consumo.md)**
 
-Lo que produce cada comarca cada quincena según sus potenciales, sus edificios, la estación y el
-clima anunciado, que ya calcula la fase 1.
+Lo que se come y lo que se pierde: un pan por vecino, la merma del pan almacenado, lo que consumen
+los edificios (la carbonera quema madera, la lonja gasta sal) y la escasez cuando no llega.
 
 ## Cómo continuar (resumen)
 
@@ -50,7 +50,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
-| Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
+| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario y 2 producción |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
 | Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
@@ -77,6 +77,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-031 hecha**: el motor produce. Primeras tablas reales del juego (quince edificios y la cadena de producción), cada explotación con su desglose explicable factor a factor, maravedís de mercado e impuestos y agotamiento con regeneración. 307 tests en verde |
 | 18-09-2026 | **T-030 hecha**: primera fase real del motor. Calendario, estado estacional (barro, puertos cerrados, pastos, factores) y clima anual reproducible, todo función pura del turno y fuera del estado; la fase 1 publica los cambios como sucesos. 280 tests en verde |
 | 18-09-2026 | **T-016 hecha y fase 1 completa**: las 451 notas del catálogo con su ortografía (pasada automática conservadora con el diccionario `es_ES` y dos pasadas a mano) y una guarda que impide volver atrás. 264 tests en verde |
 | 18-09-2026 | **T-014 hecha**: once ferias en su propio archivo (tres grandes: Medina ×2 y Sevilla), los diecisiete rasgos en uso, `ComarcaMundo.ferias` pasa a ser lista y **598 nombres visibles corregidos** (Logroño, Sigüenza, Àger, Guimarães…). Las notas pasan a T-016. 262 tests en verde |

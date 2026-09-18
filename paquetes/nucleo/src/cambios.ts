@@ -7,7 +7,8 @@ import { ErrorDeMotor } from './errores.ts';
 import { registrarSuceso } from './sucesos.ts';
 import type { IdComarca, IdJugador, IdOrden } from './tipos/ids.ts';
 import type { EstadoDeOrden, Orden } from './tipos/ordenes.ts';
-import type { Recurso } from './tipos/recursos.ts';
+import type { RecursoAgotable } from './tipos/estado.ts';
+import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { limitar } from './utiles/enteros.ts';
 
 export type Cambio =
@@ -60,6 +61,16 @@ export type Cambio =
       readonly jugador: IdJugador;
       readonly delta: number;
       readonly motivo: string;
+    }
+  | {
+      readonly tipo: 'agotamiento';
+      readonly comarca: IdComarca;
+      readonly valores: Readonly<Record<RecursoAgotable, number>>;
+    }
+  | {
+      readonly tipo: 'produccion-comarca';
+      readonly comarca: IdComarca;
+      readonly produccion: Recursos;
     }
   | {
       readonly tipo: 'duenyo';
@@ -283,6 +294,37 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         { delta: cambio.delta, total: despues, motivo: cambio.motivo },
         { comarca: cambio.comarca, jugador: cambio.jugador },
       );
+      return;
+    }
+
+    case 'agotamiento': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      const maximo = ctx.reglas.produccion.agotamiento.maximo;
+      for (const [recurso, valor] of Object.entries(cambio.valores)) {
+        if (!Number.isSafeInteger(valor) || valor < 0 || valor > maximo) {
+          throw new ErrorDeMotor(
+            'invariante-rota',
+            `El agotamiento de ${recurso} en ${cambio.comarca} seria ${String(valor)} y tiene que quedar entre 0 y ${String(maximo)}.`,
+            { comarca: cambio.comarca, recurso, valor },
+          );
+        }
+      }
+      comarca.agotamiento = { ...cambio.valores };
+      return;
+    }
+
+    case 'produccion-comarca': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      for (const [recurso, valor] of Object.entries(cambio.produccion)) {
+        if (!Number.isSafeInteger(valor) || valor < 0) {
+          throw new ErrorDeMotor(
+            'invariante-rota',
+            `La produccion de ${recurso} en ${cambio.comarca} no puede ser ${String(valor)}.`,
+            { comarca: cambio.comarca, recurso, valor },
+          );
+        }
+      }
+      comarca.produccionUltimoTurno = { ...cambio.produccion };
       return;
     }
 

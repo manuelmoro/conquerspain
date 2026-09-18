@@ -97,6 +97,7 @@ export type {
   DatosCasa,
   DatosEdificio,
   DatosEstaciones,
+  DatosProduccion,
   DatosInfluencia,
   DatosMercado,
   DatosMovimiento,

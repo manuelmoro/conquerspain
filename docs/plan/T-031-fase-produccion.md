@@ -1,6 +1,6 @@
 # T-031 · Fase 2: producción
 
-**Fase:** 2 · Motor · **Depende de:** T-030, T-012 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-030, T-012 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -120,3 +120,38 @@ npx vitest run paquetes/nucleo/src/reglas/produccion.test.ts
 
 Índice y `ESTADO.md` (siguiente T-032). Si has ajustado cifras de `docs/03-economia.md`, actualiza el
 documento. Commit: `T-031: fase de produccion`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 307 tests en verde; la partida de reproducción `humo-01` se regeneró a propósito
+(`npm run partidas -- --confirmo`), porque el motor por fin produce.
+
+- `paquetes/nucleo/src/datos/edificios.ts` y `produccion.ts`: **las primeras tablas reales del
+  juego**, con los quince edificios de `docs/03` §3.3 y las cifras de la cadena (potencial,
+  aperos, lealtad, agotamiento, dehesa, molino, maravedís). Son módulos TypeScript tipados y no
+  JSON: el núcleo no lee archivos, y así el compilador comprueba la forma antes que el validador.
+  Las tablas de las pruebas usan ya estas mismas cifras.
+- `paquetes/nucleo/src/reglas/produccion.ts`: la cadena pura, con cada factor nombrado
+  (`potencial`, `estacion`, `clima`, `molino`, `aperos`, `lealtad`, `mano-de-obra`,
+  `agotamiento`, `dehesa`, `casa`) y el truncado una sola vez; `maravedisDe`;
+  `siguienteAgotamiento`.
+- `paquetes/nucleo/src/fases/02-produccion.ts`: un suceso `produccion.explotacion` por
+  explotación con el desglose entero, `produccion.falta-mano-de-obra` y `produccion.maravedis`;
+  lo producido entra en el almacén común y la comarca guarda su producción del turno.
+- `paquetes/nucleo/pruebas/produccion.test.ts`: dieciocho casos escritos a mano, el clima, el
+  invariante almacén = suma de comarcas, el agotamiento acotado, la dehesa y la curva de un año
+  (máximo en verano, mínimo en invierno, media igual al valor plano).
+
+Decisiones tomadas al implementar:
+
+- **El fuero rebaja solo los impuestos**, no el ingreso del mercado: es lo que dice la tabla de
+  `docs/03` §3.9 («impuestos que rinde»).
+- **Lo que depende de fases posteriores queda enganchado y apuntado**: la actividad comercial del
+  mercado la pondrá T-037 (hoy vale 0) y el ingreso por tránsito de las ventas, T-033, porque el
+  movimiento se resuelve después de la producción. El consumo de los edificios (la carbonera
+  quema madera, la lonja gasta sal) es de T-032.
+- **La ferrería exige carbonera** (`requiereEdificio`): el carbón no es uno de los siete recursos,
+  así que es un paso intermedio dentro de la comarca.
+- `VERSION_REGLAS` sigue en 1: todavía no hay partidas reales que migrar.

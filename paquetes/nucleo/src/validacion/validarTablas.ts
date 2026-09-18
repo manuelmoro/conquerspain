@@ -1,5 +1,6 @@
 // Validacion de las tablas de equilibrio. Si un numero del juego esta mal escrito, se sabe aqui
 // y no tres fases despues, con una produccion imposible.
+import { CARGAS_FISCALES, RECURSOS_AGOTABLES } from '../tipos/estado.ts';
 import { POTENCIALES } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import type {
@@ -11,6 +12,7 @@ import type {
   DatosMovimiento,
   DatosPoblacion,
   DatosPrestigio,
+  DatosProduccion,
   DatosRecurso,
   DatosTradicion,
   Modificadores,
@@ -213,6 +215,36 @@ const validarPrestigio: Validador<DatosPrestigio> = objeto<DatosPrestigio>({
   penalizacionPorEscasez: enteroNoNegativo(100),
 });
 
+const validarProduccion: Validador<DatosProduccion> = objeto<DatosProduccion>({
+  multiplicadorPotencialMil: lista(milesimas(0, 3000), { minimo: 6, maximo: 6 }),
+  aperoMil: milesimas(0, 500),
+  lealtad: lista(
+    objeto<{ menorQue: number; factorMil: number }>({
+      menorQue: entero({ minimo: 1, maximo: 100 }),
+      factorMil: milesimas(0, 1000),
+    }),
+    { maximo: 10 },
+  ),
+  agotamiento: objeto<DatosProduccion['agotamiento']>({
+    factorPorPuntoMil: milesimas(0, 100),
+    sueloMil: milesimas(0, 1000),
+    porNivel: enteroNoNegativo(20),
+    maximo: entero({ minimo: 1, maximo: 100 }),
+    regeneracion: registroCompleto(RECURSOS_AGOTABLES, enteroNoNegativo(20)),
+  }),
+  dehesa: objeto<DatosProduccion['dehesa']>({
+    agotamientoMonteMil: milesimas(0, 1000),
+    maderaMil: milesimas(0, 1000),
+  }),
+  edificiosEstacionales: lista(unoDe(TIPOS_DE_EDIFICIO), { maximo: 15 }),
+  molinoMil: milesimas(0, 1000),
+  maravedis: objeto<DatosProduccion['maravedis']>({
+    porNivelMercado: enteroNoNegativo(100),
+    vecinosPorPunto: entero({ minimo: 1, maximo: 100 }),
+    cargaFiscal: registroCompleto(CARGAS_FISCALES, enteroNoNegativo(10)),
+  }),
+});
+
 const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   version: entero({ minimo: 1 }),
   recursos: registroCompleto(RECURSOS, validarRecurso),
@@ -220,6 +252,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   casas: registroCompleto(CASAS, validarCasa),
   tradiciones: registro(validarTradicion),
   estaciones: validarEstacionesDatos,
+  produccion: validarProduccion,
   movimiento: validarMovimiento,
   poblacion: validarPoblacion,
   mercado: validarMercado,

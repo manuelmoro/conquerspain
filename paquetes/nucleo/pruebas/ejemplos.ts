@@ -3,7 +3,9 @@
 // rechazan lo que tienen que rechazar.
 import { POTENCIALES } from '../src/tipos/mundo.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
-import { CASAS, ESTACIONES, TIPOS_DE_EDIFICIO, VERSION_REGLAS } from '../src/tipos/reglas.ts';
+import { EDIFICIOS } from '../src/datos/edificios.ts';
+import { PRODUCCION } from '../src/datos/produccion.ts';
+import { CASAS, VERSION_REGLAS } from '../src/tipos/reglas.ts';
 
 /** Los ejemplos son datos sueltos: los validadores reciben "unknown" y ellos dicen si valen. */
 export type Registro = Record<string, unknown>;
@@ -184,22 +186,8 @@ export function tablasDeEjemplo(): Registro {
     };
   }
 
-  const edificios: Registro = {};
-  for (const edificio of TIPOS_DE_EDIFICIO) {
-    edificios[edificio] = {
-      nombre: edificio,
-      potencial: null,
-      potencialMinimo: 0,
-      coste: recursosCon({ madera: 20, maravedis: 10 }),
-      turnos: 2,
-      nivelMaximo: 4,
-      produccion: { pan: 10 },
-      consumo: {},
-      vecinosPorNivel: 8,
-      requiereEdificio: null,
-      esDePiedra: false,
-    };
-  }
+  // Los edificios y la cadena de produccion son las tablas reales del juego (src/datos).
+  const edificios = JSON.parse(JSON.stringify(EDIFICIOS)) as Registro;
 
   const modificadores: Registro = {
     produccionMil: {},
@@ -259,7 +247,8 @@ export function tablasDeEjemplo(): Registro {
   }
 
   const factorPanMil: Registro = {};
-  for (const estacion of ESTACIONES) factorPanMil[estacion] = 1000;
+  // El pan sigue la estacion: el verano llena el granero y el invierno lo vacia (docs/03 §3.4).
+  Object.assign(factorPanMil, { primavera: 800, verano: 1600, otonyo: 1000, invierno: 600 });
 
   return {
     version: VERSION_REGLAS,
@@ -286,6 +275,7 @@ export function tablasDeEjemplo(): Registro {
       turnoDeEsquileo: 10,
       turnosPastoDeVerano: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
     },
+    produccion: JSON.parse(JSON.stringify(PRODUCCION)) as Registro,
     movimiento: {
       jornadasPorTerreno: { llano: 2, ondulado: 3, sierra: 5, costa: 2, vega: 2 },
       factorCaminoMil: { vereda: 1000, herradura: 800, carretero: 650, calzada: 500 },

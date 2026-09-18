@@ -31,15 +31,25 @@ describe('armazon del resolutor', () => {
     ]);
   });
 
-  it('avanza el turno y no cambia nada mas', () => {
+  it('avanza el turno y solo cambia lo que tocan las fases ya implementadas', () => {
     const estado = estadoMini();
     const { estado: despues } = resolverTurno(estado, [], mundoMini(), tablasMini());
     expect(despues.turno).toBe(estado.turno + 1);
-    // Salvo el turno y la huella, el estado tiene que ser identico.
+    // Fuera del turno, la huella, el almacen y lo que escribe la produccion (T-031), el estado
+    // tiene que ser identico: ninguna fase toca lo que no le corresponde.
     const sinVolatiles = (valor: typeof estado): unknown => ({
       ...valor,
       turno: 0,
       huellaTurnoAnterior: null,
+      jugadores: Object.fromEntries(
+        Object.entries(valor.jugadores).map(([id, jugador]) => [id, { ...jugador, almacen: null }]),
+      ),
+      comarcas: Object.fromEntries(
+        Object.entries(valor.comarcas).map(([id, comarca]) => [
+          id,
+          { ...comarca, produccionUltimoTurno: null, agotamiento: null },
+        ]),
+      ),
     });
     expect(huella(sinVolatiles(despues))).toBe(huella(sinVolatiles(estado)));
   });
