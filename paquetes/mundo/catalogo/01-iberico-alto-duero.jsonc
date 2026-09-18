@@ -40,7 +40,7 @@
     ],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Comunidad de Villas y Tierra de Pinares: madera de Urbion bajada por el Duero y pastos de verano de la Mesta. A 1 200 m no hay pan que valga.",
+    "nota": "Comunidad de Villas y Tierra de Pinares: madera de Urbión bajada por el Duero y pastos de verano de la Mesta. A 1 200 m no hay pan que valga.",
   },
   {
     "id": "tierra-de-soria",
@@ -68,7 +68,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": true,
-    "nota": "Cabecera de la Tierra y plaza de la lana: aqui se pesaba y se contrataba lo que bajaba de las sierras. El pan siempre llego de fuera.",
+    "nota": "Cabecera de la Tierra y plaza de la lana: aquí se pesaba y se contrataba lo que bajaba de las sierras. El pan siempre llegó de fuera.",
   },
   {
     "id": "tierra-del-burgo",
@@ -177,7 +177,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Senyorio de los Tovar entre el Duero y el paramo: cereal, algo de monte bajo y la caliza con la que se levantaron sus torres.",
+    "nota": "Señorío de los Tovar entre el Duero y el páramo: cereal, algo de monte bajo y la caliza con la que se levantaron sus torres.",
   },
   {
     "id": "tierras-altas",
@@ -205,7 +205,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Tierra de senyores de ganado: puros pastos de verano y muy poca gente, porque el invierno se pasa fuera con el rebanyo.",
+    "nota": "Tierra de señores de ganado: puros pastos de verano y muy poca gente, porque el invierno se pasa fuera con el rebaño.",
   },
   {
     "id": "cameros",
@@ -233,7 +233,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": true,
-    "nota": "Cuna de la trashumancia riojana: pasto de verano del mejor y cabanyas enteras que invernan en Extremadura. Sin pan propio.",
+    "nota": "Cuna de la trashumancia riojana: pasto de verano del mejor y cabañas enteras que invernan en Extremadura. Sin pan propio.",
   },
   {
     "id": "demanda",
@@ -262,7 +262,7 @@
     ],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Pinares y hayedos de la Demanda con canteras de arenisca; las minas de hierro de la sierra nunca pasaron de labor menor, asi que no llevan vena.",
+    "nota": "Pinares y hayedos de la Demanda con canteras de arenisca; las minas de hierro de la sierra nunca pasaron de labor menor, así que no llevan vena.",
   },
   {
     "id": "tierra-de-lara",
@@ -290,7 +290,7 @@
     ],
     "rasgos": ["cantera-noble"],
     "esOrigen": false,
-    "nota": "La caliza de Lara y Hontoria labro medio romanico burgales y la propia catedral de Burgos: piedra 4 es historia documentada, no paisaje.",
+    "nota": "La caliza de Lara y Hontoria labró medio románico burgalés y la propia catedral de Burgos: piedra 4 es historia documentada, no paisaje.",
   },
   {
     "id": "arlanza",
@@ -346,7 +346,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "Sabinares y pinares entre la Demanda y la Ribera, sobre la Clunia Sulpicia romana, cabeza de convento juridico. Cereal corto en tierra alta y fria.",
+    "nota": "Sabinares y pinares entre la Demanda y la Ribera, sobre la Clunia Sulpicia romana, cabeza de convento jurídico. Cereal corto en tierra alta y fría.",
   },
   {
     "id": "ribera-del-duero",
@@ -374,7 +374,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": false,
-    "nota": "Vega ancha del Duero con vinyedo viejo y bodegas subterraneas: la comarca de mejor labor del alto Duero.",
+    "nota": "Vega ancha del Duero con viñedo viejo y bodegas subterráneas: la comarca de mejor labor del alto Duero.",
   },
   {
     "id": "alfoz-de-burgos",
@@ -431,7 +431,7 @@
     ],
     "rasgos": ["salinas-historicas"],
     "esOrigen": true,
-    "nota": "El diapiro de Poza de la Sal abastecio de sal a toda Castilla la Vieja; el corredor de la Bureba anyade un cereal decente y el paso hacia el Ebro.",
+    "nota": "El diapiro de Poza de la Sal abasteció de sal a toda Castilla la Vieja; el corredor de la Bureba añade un cereal decente y el paso hacia el Ebro.",
   },
   {
     "id": "montes-de-oca",
@@ -458,7 +458,7 @@
     ],
     "rasgos": ["camino-de-santiago", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Robledales y el peor tramo del camino frances, con hospital de peregrinos en Villafranca. Pradoluengo vivio del panyo, no del pan.",
+    "nota": "Robledales y el peor tramo del camino francés, con hospital de peregrinos en Villafranca. Pradoluengo vivió del paño, no del pan.",
   },
   // --- Rioja y Ebro medio -------------------------------------------------------------------
   {
@@ -487,7 +487,7 @@
     ],
     "rasgos": ["camino-de-santiago", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Villa nacida del camino: calzada, puente y hospital de Santo Domingo. La huerta del Oja da pan, y Ezcaray, panyo y lenya.",
+    "nota": "Villa nacida del camino: calzada, puente y hospital de Santo Domingo. La huerta del Oja da pan, y Ezcaray, paño y leña.",
   },
   {
     "id": "najerilla",
@@ -515,7 +515,7 @@
     ],
     "rasgos": ["camino-de-santiago", "vinyedo"],
     "esOrigen": false,
-    "nota": "Corte de los reyes de Najera y puerta del valle del Najerilla: por aqui bajan los ganados de Cameros hacia el Ebro.",
+    "nota": "Corte de los reyes de Nájera y puerta del valle del Najerilla: por aquí bajan los ganados de Cameros hacia el Ebro.",
   },
   {
     "id": "rioja-media",
@@ -543,7 +543,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo", "camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Vega del Ebro con puente y aduana: huerta, vinyedo y el paso obligado entre Castilla y Navarra.",
+    "nota": "Vega del Ebro con puente y aduana: huerta, viñedo y el paso obligado entre Castilla y Navarra.",
   },
   {
     "id": "rioja-baja",
@@ -571,7 +571,7 @@
     ],
     "rasgos": ["vega-fluvial", "ciudad-episcopal", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Regadio viejo del Cidacos y el Alhama sobre la Calagurris romana: la mejor huerta de la region y sede episcopal desde epoca visigoda.",
+    "nota": "Regadío viejo del Cidacos y el Alhama sobre la Calagurris romana: la mejor huerta de la región y sede episcopal desde época visigoda.",
   },
   {
     "id": "rioja-alavesa",
@@ -599,7 +599,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Terraza al abrigo de la sierra de Cantabria: vinyedo documentado desde el siglo XIII y lagares rupestres por toda la comarca.",
+    "nota": "Terraza al abrigo de la sierra de Cantabria: viñedo documentado desde el siglo XIII y lagares rupestres por toda la comarca.",
   },
   {
     "id": "moncayo",
@@ -627,7 +627,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Raya de Castilla y Aragon al pie del Moncayo: villa de las tres culturas, puerto hacia el Ebro y hayedos de la umbria.",
+    "nota": "Raya de Castilla y Aragón al pie del Moncayo: villa de las tres culturas, puerto hacia el Ebro y hayedos de la umbría.",
   },
   {
     "id": "campo-de-borja",
@@ -655,7 +655,7 @@
     ],
     "rasgos": ["vinyedo", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Huerta de la Huecha regada desde el Moncayo y vinyedo de secano: el llano fertil que enlaza el Iberico con la ribera del Ebro.",
+    "nota": "Huerta de la Huecha regada desde el Moncayo y viñedo de secano: el llano fértil que enlaza el Ibérico con la ribera del Ebro.",
   },
   {
     "id": "aranda-jalon",
@@ -683,7 +683,7 @@
     ],
     "rasgos": ["ferreria-de-agua"],
     "esOrigen": false,
-    "nota": "Ferrerias menores movidas por el Aranda con mena traida de la sierra: hierro 2, porque hubo forja pero nunca vena propia de importancia.",
+    "nota": "Ferrerías menores movidas por el Aranda con mena traída de la sierra: hierro 2, porque hubo forja pero nunca vena propia de importancia.",
   },
   {
     "id": "calatayud",
@@ -711,7 +711,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Regadio del Jalon y del Jiloca heredado de al-Andalus, con la Comunidad de aldeas como concejo: la plaza mas poblada del Iberico aragones.",
+    "nota": "Regadío del Jalón y del Jiloca heredado de al-Andalus, con la Comunidad de aldeas como concejo: la plaza más poblada del Ibérico aragonés.",
   },
   {
     "id": "daroca",
@@ -739,7 +739,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Villa murada con la Mina que desvia las aguas del barranco: mercado de la Comunidad de Daroca y cereal del campo de Romanos.",
+    "nota": "Villa murada con la Mina que desvía las aguas del barranco: mercado de la Comunidad de Daroca y cereal del campo de Romanos.",
   },
   // --- Iberico meridional -------------------------------------------------------------------
   {
@@ -769,7 +769,7 @@
     ],
     "rasgos": ["vena-de-hierro", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "La mena de Ojos Negros alimento las forjas del Jiloca desde epoca celtiberica; la vega del rio da ademas un cereal regular.",
+    "nota": "La mena de Ojos Negros alimentó las forjas del Jiloca desde época celtibérica; la vega del río da además un cereal regular.",
   },
   {
     "id": "senyorio-de-molina",
@@ -798,7 +798,7 @@
     ],
     "rasgos": ["vena-de-hierro", "ferreria-de-agua", "pasto-de-verano"],
     "esOrigen": true,
-    "nota": "Senyorio con fuero propio entre Castilla y Aragon: Sierra Menera y las minas de Setiles surtieron de hierro a las dos coronas.",
+    "nota": "Señorío con fuero propio entre Castilla y Aragón: Sierra Menera y las minas de Setiles surtieron de hierro a las dos coronas.",
   },
   {
     "id": "alto-tajo",
@@ -826,7 +826,7 @@
     ],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Hoces del Tajo y pinar de la Comunidad de Molina: de aqui salian las maderadas que bajaban por el rio hasta Aranjuez. Comarca aislada y despoblada.",
+    "nota": "Hoces del Tajo y pinar de la Comunidad de Molina: de aquí salían las maderadas que bajaban por el río hasta Aranjuez. Comarca aislada y despoblada.",
   },
   {
     "id": "albarracin",
@@ -854,7 +854,7 @@
     ],
     "rasgos": ["pasto-de-verano", "cantera-noble"],
     "esOrigen": false,
-    "nota": "Comunidad de Santa Maria de Albarracin: lana de la sierra, pinar y la arenisca rodena con la que esta construida la propia ciudad.",
+    "nota": "Comunidad de Santa María de Albarracín: lana de la sierra, pinar y la arenisca rodena con la que está construida la propia ciudad.",
   },
   {
     "id": "siguenza",
@@ -883,7 +883,7 @@
     ],
     "rasgos": ["salinas-historicas", "ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "Las salinas de Imon y La Olmeda fueron regalia real y de las mas productivas del reino; la ciudad es senyorio del obispo, con catedral fortaleza.",
+    "nota": "Las salinas de Imón y La Olmeda fueron regalía real y de las más productivas del reino; la ciudad es señorío del obispo, con catedral fortaleza.",
   },
   {
     "id": "medinaceli",
@@ -910,7 +910,7 @@
     ],
     "rasgos": ["calzada-romana", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Paso obligado entre las dos mesetas y el valle del Jalon: por su arco romano cruzan la calzada y, despues, la Canyada Soriana Oriental.",
+    "nota": "Paso obligado entre las dos mesetas y el valle del Jalón: por su arco romano cruzan la calzada y, después, la Cañada Soriana Oriental.",
   },
   {
     "id": "ayllon",
@@ -938,7 +938,7 @@
     ],
     "rasgos": ["pasto-de-verano", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Hayedo de Montejo y robledales en la vertiente norte del macizo de Ayllon, con puertos de verano para los ganados de la Mesta.",
+    "nota": "Hayedo de Montejo y robledales en la vertiente norte del macizo de Ayllón, con puertos de verano para los ganados de la Mesta.",
   },
   {
     "id": "sepulveda",
@@ -966,7 +966,7 @@
     ],
     "rasgos": ["cantera-noble"],
     "esOrigen": false,
-    "nota": "Villa del Fuero de Sepulveda sobre las hoces del Duraton: la caliza de sus canteras es la piedra del romanico segoviano.",
+    "nota": "Villa del Fuero de Sepúlveda sobre las hoces del Duratón: la caliza de sus canteras es la piedra del románico segoviano.",
   },
   {
     "id": "pedraza",
@@ -994,6 +994,6 @@
     ],
     "rasgos": ["pasto-de-verano", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Pie de sierra segoviano: aqui pastaba la merina fina que dio fama a la lana de Segovia, y los pinares de Navafria surtian de madera a la ciudad.",
+    "nota": "Pie de sierra segoviano: aquí pastaba la merina fina que dio fama a la lana de Segovia, y los pinares de Navafría surtían de madera a la ciudad.",
   },
 ]

@@ -34,7 +34,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "camino-de-santiago", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Corte leonesa sobre la Legio VII romana: ciudad de camino y de mercado, con la vega del Bernesga por huerta y los pastos del paramo alrededor.",
+    "nota": "Corte leonesa sobre la Legio VII romana: ciudad de camino y de mercado, con la vega del Bernesga por huerta y los pastos del páramo alrededor.",
   },
   {
     "id": "paramo-leones",
@@ -61,7 +61,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Paramo de cantos rodados entre el Orbigo y el Esla: centeno antes que trigo, y poca agua hasta que llegaron los canales.",
+    "nota": "Páramo de cantos rodados entre el Órbigo y el Esla: centeno antes que trigo, y poca agua hasta que llegaron los canales.",
   },
   {
     "id": "esla-y-cea",
@@ -88,7 +88,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "La vega del Esla riega la mejor tierra de labor del reino de Leon, con Coyanza como plaza fuerte y mercado de la ribera.",
+    "nota": "La vega del Esla riega la mejor tierra de labor del reino de León, con Coyanza como plaza fuerte y mercado de la ribera.",
   },
   {
     "id": "sahagun",
@@ -116,7 +116,7 @@
     ],
     "rasgos": ["camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Senyorio del monasterio de San Facundo, el mayor de Castilla: pan de Campos, peregrinos y un burgo de francos junto al camino.",
+    "nota": "Señorío del monasterio de San Facundo, el mayor de Castilla: pan de Campos, peregrinos y un burgo de francos junto al camino.",
   },
   {
     "id": "maragateria",
@@ -144,7 +144,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "camino-de-santiago", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Asturica Augusta, cruce de calzadas y cabeza de los arrieros maragatos, que llevaron pescado del Cantabrico y trigo de Campos por media Espanya.",
+    "nota": "Asturica Augusta, cruce de calzadas y cabeza de los arrieros maragatos, que llevaron pescado del Cantábrico y trigo de Campos por media España.",
   },
   {
     "id": "ribera-del-orbigo",
@@ -172,7 +172,7 @@
     ],
     "rasgos": ["vega-fluvial", "camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Vega de lino y huerta a la sombra del puente del Passo Honroso, donde el camino cruza el Orbigo.",
+    "nota": "Vega de lino y huerta a la sombra del puente del Paso Honroso, donde el camino cruza el Órbigo.",
   },
   // --- Zamora y el Duero bajo -----------------------------------------------------------------
   {
@@ -201,7 +201,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Donde se juntan el Esla, el Orbigo y el Tera: nudo de caminos hacia Galicia y Asturias, con vegas de lino y huerta.",
+    "nota": "Donde se juntan el Esla, el Órbigo y el Tera: nudo de caminos hacia Galicia y Asturias, con vegas de lino y huerta.",
   },
   {
     "id": "campos-de-villalpando",
@@ -229,7 +229,7 @@
     ],
     "rasgos": ["salinas-historicas"],
     "esOrigen": true,
-    "nota": "Las lagunas de Villafafila dieron sal de calderas durante toda la Edad Media, en plena tierra de pan: es el unico salero del centro de la meseta.",
+    "nota": "Las lagunas de Villafáfila dieron sal de calderas durante toda la Edad Media, en plena tierra de pan: es el único salero del centro de la meseta.",
   },
   {
     "id": "tierra-del-pan",
@@ -257,7 +257,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Plaza fuerte sobre el Duero y paso de la Via de la Plata: la tierra da pan justo, pero el puente y las acenyas la hicieron rica.",
+    "nota": "Plaza fuerte sobre el Duero y paso de la Vía de la Plata: la tierra da pan justo, pero el puente y las aceñas la hicieron rica.",
   },
   {
     "id": "tierra-del-vino",
@@ -284,7 +284,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Arenales al sur del Duero plantados de vinya desde el siglo XII: el vino que bebia Zamora y que subia a Leon en carros.",
+    "nota": "Arenales al sur del Duero plantados de viña desde el siglo XII: el vino que bebía Zamora y que subía a León en carros.",
   },
   {
     "id": "tierra-de-toro",
@@ -312,7 +312,7 @@
     ],
     "rasgos": ["vinyedo", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Vinyedo viejo sobre la terraza del Duero y vega abajo: el vino de Toro se vendia en Sevilla y viajaba a Indias.",
+    "nota": "Viñedo viejo sobre la terraza del Duero y vega abajo: el vino de Toro se vendía en Sevilla y viajaba a Indias.",
   },
   {
     "id": "sayago",
@@ -366,7 +366,7 @@
     ],
     "rasgos": ["dehesa"],
     "esOrigen": false,
-    "nota": "Raya seca con Portugal, tierra de robledal y centeno; en Alcanyices se firmo en 1297 la frontera mas vieja de Europa.",
+    "nota": "Raya seca con Portugal, tierra de robledal y centeno; en Alcañices se firmó en 1297 la frontera más vieja de Europa.",
   },
   // --- Tierra de Campos y Palencia --------------------------------------------------------------
   {
@@ -395,7 +395,7 @@
     ],
     "rasgos": [],
     "esOrigen": true,
-    "nota": "El corazon del granero de Castilla: tierra parda sin un arbol, trigo hasta donde se ve y palomares de adobe. Labor 5 y nada mas: aqui todo lo demas se compra.",
+    "nota": "El corazón del granero de Castilla: tierra parda sin un árbol, trigo hasta donde se ve y palomares de adobe. Labor 5 y nada más: aquí todo lo demás se compra.",
   },
   {
     "id": "tierra-de-carrion",
@@ -422,7 +422,7 @@
     ],
     "rasgos": ["camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Etapa mayor del camino frances en Campos, con doce iglesias y el mercado de los Beni-Gomez; pan y peregrinos a partes iguales.",
+    "nota": "Etapa mayor del camino francés en Campos, con doce iglesias y el mercado de los Beni-Gómez; pan y peregrinos a partes iguales.",
   },
   {
     "id": "saldanya",
@@ -449,7 +449,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Vega del Carrion al pie de la montanya palentina: huerta en el fondo, pastos en las cuestas y el paso hacia los puertos del norte.",
+    "nota": "Vega del Carrión al pie de la montaña palentina: huerta en el fondo, pastos en las cuestas y el paso hacia los puertos del norte.",
   },
   {
     "id": "alfoz-de-palencia",
@@ -477,7 +477,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Vega del Carrion y del Pisuerga, sede del primer estudio general de Castilla y ciudad de panyos antes que de pan.",
+    "nota": "Vega del Carrión y del Pisuerga, sede del primer estudio general de Castilla y ciudad de paños antes que de pan.",
   },
   {
     "id": "cerrato",
@@ -505,7 +505,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Paramos de caliza cortados por valles de vinya y bodegas excavadas: ni Campos ni Duero, un escalon entre los dos.",
+    "nota": "Páramos de caliza cortados por valles de viña y bodegas excavadas: ni Campos ni Duero, un escalón entre los dos.",
   },
   {
     "id": "odra-pisuerga",
@@ -533,7 +533,7 @@
     ],
     "rasgos": ["camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Una calle de un kilometro al pie del cerro y el camino cruzandola entera: villa de peregrinos entre el pan de Campos y el alfoz de Burgos.",
+    "nota": "Una calle de un kilómetro al pie del cerro y el camino cruzándola entera: villa de peregrinos entre el pan de Campos y el alfoz de Burgos.",
   },
   // --- Valladolid y el Duero medio ---------------------------------------------------------------
   {
@@ -562,7 +562,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "La Ciudad de los Almirantes, mercado del trigo de Campos: sus alholies movian el grano que comia media Castilla.",
+    "nota": "La Ciudad de los Almirantes, mercado del trigo de Campos: sus alholíes movían el grano que comía media Castilla.",
   },
   {
     "id": "tierra-de-villalon",
@@ -590,7 +590,7 @@
     ],
     "rasgos": ["villa-de-feria"],
     "esOrigen": false,
-    "nota": "Villa de feria franca desde el siglo XIV, hermana menor de Medina; su rollo gotico presidia el mercado de lana y de queso. La feria entra en T-014.",
+    "nota": "Villa de feria franca desde el siglo XIV, hermana menor de Medina; su rollo gótico presidía el mercado de lana y de queso. La feria entra en T-014.",
   },
   {
     "id": "paramo-de-torozos",
@@ -617,7 +617,7 @@
     ],
     "rasgos": ["cantera-noble"],
     "esOrigen": false,
-    "nota": "Paramo calizo que separa Campos del Duero: de sus canteras salio la piedra de Valladolid y de media Tierra de Campos.",
+    "nota": "Páramo calizo que separa Campos del Duero: de sus canteras salió la piedra de Valladolid y de media Tierra de Campos.",
   },
   {
     "id": "tierra-de-valladolid",
@@ -645,7 +645,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": true,
-    "nota": "Donde el Esgueva entra en el Pisuerga: corte intermitente de Castilla, chancilleria y la plaza mas poblada de la meseta.",
+    "nota": "Donde el Esgueva entra en el Pisuerga: corte intermitente de Castilla, chancillería y la plaza más poblada de la meseta.",
   },
   {
     "id": "tierra-de-tordesillas",
@@ -701,7 +701,7 @@
     ],
     "rasgos": ["vinyedo", "villa-de-feria"],
     "esOrigen": true,
-    "nota": "Las ferias de mayo y octubre de Medina eran la bolsa de Castilla: alli se cambiaba la letra y se fijaba el precio de la lana. Las ferias se anyaden en T-014.",
+    "nota": "Las ferias de mayo y octubre de Medina eran la bolsa de Castilla: allí se cambiaba la letra y se fijaba el precio de la lana. Las ferias se añaden en T-014.",
   },
   {
     "id": "tierra-de-pinares",
@@ -728,7 +728,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "Pinar de resina y arena sobre el Cega: madera, pez y tea para Valladolid y Segovia; la labor es mala y todos lo sabian.",
+    "nota": "Pinar de resina y arena sobre el Cega: madera, pez y tea para Valladolid y Segovia; la labor es mala y todos lo sabían.",
   },
   {
     "id": "valle-de-esgueva",
@@ -755,7 +755,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Valle estrecho entre paramos, de aldeas alineadas junto al rio: pan corto, vinya en las laderas y camino directo a Valladolid.",
+    "nota": "Valle estrecho entre páramos, de aldeas alineadas junto al río: pan corto, viña en las laderas y camino directo a Valladolid.",
   },
   {
     "id": "tierra-de-penyafiel",
@@ -782,7 +782,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Castillo-proa sobre el Duraton y el Duero, senyorio de don Juan Manuel: vinyedo en las laderas y bodegas bajo el cerro.",
+    "nota": "Castillo-proa sobre el Duratón y el Duero, señorío de don Juan Manuel: viñedo en las laderas y bodegas bajo el cerro.",
   },
   // --- Segovia, La Moranya y Salamanca -----------------------------------------------------------
   {
@@ -810,7 +810,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Campinya de cereal entre el pinar y la sierra, con las pizarreras de Bernardos y el mercado de la Comunidad de Villa y Tierra.",
+    "nota": "Campiña de cereal entre el pinar y la sierra, con las pizarreras de Bernardos y el mercado de la Comunidad de Villa y Tierra.",
   },
   {
     "id": "tierra-de-segovia",
@@ -838,7 +838,7 @@
     ],
     "rasgos": ["pasto-de-verano", "ciudad-episcopal", "calzada-romana"],
     "esOrigen": true,
-    "nota": "La ciudad de la lana: cabanyas de merina en los puertos de la sierra y batanes en el Eresma. El panyo segoviano fue el mejor de Castilla.",
+    "nota": "La ciudad de la lana: cabañas de merina en los puertos de la sierra y batanes en el Eresma. El paño segoviano fue el mejor de Castilla.",
   },
   {
     "id": "la-moranya",
@@ -865,7 +865,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Llanura de cereal entre el Adaja y el Arevalillo, con villas de mudejar de ladrillo: el pan que subia a Avila y bajaba a Medina.",
+    "nota": "Llanura de cereal entre el Adaja y el Arevalillo, con villas de mudéjar de ladrillo: el pan que subía a Ávila y bajaba a Medina.",
   },
   {
     "id": "la-armunya",
@@ -893,7 +893,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "calzada-romana", "vega-fluvial"],
     "esOrigen": true,
-    "nota": "Estudio general, puente romano sobre el Tormes y la tierra de mejor pan de Salamanca: la Armunya alimentaba a la universidad.",
+    "nota": "Estudio general, puente romano sobre el Tormes y la tierra de mejor pan de Salamanca: la Armuña alimentaba a la universidad.",
   },
   {
     "id": "tierra-de-penyaranda",
@@ -920,7 +920,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Tierra llana de cereal entre el Tormes y el Zapardiel, con mercado franco en Penyaranda y alfares en Macotera.",
+    "nota": "Tierra llana de cereal entre el Tormes y el Zapardiel, con mercado franco en Peñaranda y alfares en Macotera.",
   },
   {
     "id": "tierra-de-alba",
@@ -947,7 +947,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Cabeza del ducado de Alba sobre el Tormes: vega de huerta, alfarerias y el senyorio mas poderoso de la meseta occidental.",
+    "nota": "Cabeza del ducado de Alba sobre el Tormes: vega de huerta, alfarerías y el señorío más poderoso de la meseta occidental.",
   },
   {
     "id": "tierra-de-ledesma",
@@ -1029,6 +1029,6 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "El lago glaciar y las sierras de la Culebra y Segundera, en la raya con Portugal y Galicia: centeno, castanya y ganado; tierra de arriería.",
+    "nota": "El lago glaciar y las sierras de la Culebra y Segundera, en la raya con Portugal y Galicia: centeno, castaña y ganado; tierra de arriería.",
   },
 ]

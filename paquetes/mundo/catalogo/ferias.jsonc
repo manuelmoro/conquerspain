@@ -11,7 +11,7 @@
     "turnos": [10, 11],
     "volumen": "grande",
     "recursosDestacados": ["lana", "maravedis", "pan"],
-    "nota": "La mayor plaza de cambio de Castilla: aqui se fijaba el precio de la lana y se pagaban las letras de toda Europa.",
+    "nota": "La mayor plaza de cambio de Castilla: aquí se fijaba el precio de la lana y se pagaban las letras de toda Europa.",
   },
   {
     "id": "medina-octubre",
@@ -20,7 +20,7 @@
     "turnos": [19, 20],
     "volumen": "grande",
     "recursosDestacados": ["lana", "maravedis", "hierro"],
-    "nota": "La segunda cita del anyo en Medina, la de los pagos de la cosecha y la saca de la lana.",
+    "nota": "La segunda cita del año en Medina, la de los pagos de la cosecha y la saca de la lana.",
   },
   {
     "id": "sevilla-primavera",
@@ -47,7 +47,7 @@
     "turnos": [14],
     "volumen": "mediana",
     "recursosDestacados": ["lana", "hierro"],
-    "nota": "La cita del Consulado: los mercaderes ajustan aqui los fletes de la lana hacia Flandes.",
+    "nota": "La cita del Consulado: los mercaderes ajustan aquí los fletes de la lana hacia Flandes.",
   },
   {
     "id": "sevilla-otonyo",
@@ -56,7 +56,7 @@
     "turnos": [21],
     "volumen": "mediana",
     "recursosDestacados": ["pan", "sal"],
-    "nota": "La feria de otonyo, la del ganado y la aceituna, antes de que salga la flota.",
+    "nota": "La feria de otoño, la del ganado y la aceituna, antes de que salga la flota.",
   },
   {
     "id": "zafra",
@@ -65,7 +65,7 @@
     "turnos": [19],
     "volumen": "mediana",
     "recursosDestacados": ["lana", "pan"],
-    "nota": "La mayor feria de ganado del suroeste: por ella pasa media cabanya extremenya.",
+    "nota": "La mayor feria de ganado del suroeste: por ella pasa media cabaña extremeña.",
   },
   {
     "id": "lleida",
@@ -92,7 +92,7 @@
     "turnos": [15],
     "volumen": "mediana",
     "recursosDestacados": ["lana", "madera"],
-    "nota": "La feria del apostol, que junta a los peregrinos con los tratantes de ganado gallego.",
+    "nota": "La feria del apóstol, que junta a los peregrinos con los tratantes de ganado gallego.",
   },
   {
     "id": "verin-chaves",

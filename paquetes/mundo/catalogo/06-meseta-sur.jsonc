@@ -34,7 +34,7 @@
     ],
     "rasgos": [],
     "esOrigen": true,
-    "nota": "Villa de fuero y alcazar sobre el Manzanares, entre el pinar del Pardo y la campinya: pequenya hasta que fue corte, pero siempre cruce de caminos.",
+    "nota": "Villa de fuero y alcázar sobre el Manzanares, entre el pinar del Pardo y la campiña: pequeña hasta que fue corte, pero siempre cruce de caminos.",
   },
   {
     "id": "vegas-del-jarama",
@@ -62,7 +62,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": false,
-    "nota": "Donde el Jarama recibe al Tajunya y al Henares: huerta de regadio y vinya de Arganda, la bodega que surtia a Madrid.",
+    "nota": "Donde el Jarama recibe al Tajuña y al Henares: huerta de regadío y viña de Arganda, la bodega que surtía a Madrid.",
   },
   {
     "id": "alcala-de-henares",
@@ -90,7 +90,7 @@
     ],
     "rasgos": ["vega-fluvial", "ciudad-episcopal", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Complutum romana y villa arzobispal de Toledo: universidad de Cisneros, vega del Henares y el camino real de Aragon pasando por delante.",
+    "nota": "Complutum romana y villa arzobispal de Toledo: universidad de Cisneros, vega del Henares y el camino real de Aragón pasando por delante.",
   },
   {
     "id": "tierra-de-guadalajara",
@@ -118,7 +118,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Wad-al-Hayara, la ciudad de los Mendoza: vega del Henares, panyos y el senyorio que mando en toda la Alcarria.",
+    "nota": "Wad-al-Hayara, la ciudad de los Mendoza: vega del Henares, paños y el señorío que mandó en toda la Alcarria.",
   },
   {
     "id": "serrania-de-guadalajara",
@@ -146,7 +146,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Pie de sierra entre el Henares y el Jarama, de robledal y pastos de verano; la plata de Hiendelaencina no se descubrio hasta el siglo XIX.",
+    "nota": "Pie de sierra entre el Henares y el Jarama, de robledal y pastos de verano; la plata de Hiendelaencina no se descubrió hasta el siglo XIX.",
   },
   // --- La Alcarria y Cuenca -------------------------------------------------------------------
   {
@@ -175,7 +175,7 @@
     ],
     "rasgos": [],
     "esOrigen": true,
-    "nota": "Paramos de caliza cortados por el Tajunya, con espliego y colmenas: la miel de la Alcarria se vendia en Madrid y en Toledo desde la Edad Media.",
+    "nota": "Páramos de caliza cortados por el Tajuña, con espliego y colmenas: la miel de la Alcarria se vendía en Madrid y en Toledo desde la Edad Media.",
   },
   {
     "id": "alcarria-baja",
@@ -203,7 +203,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Ducado de los Mendoza con tapices y obradores de seda; en las vegas del Tajo y el Tajunya, huerta, olivar y la encomienda calatrava de Zorita.",
+    "nota": "Ducado de los Mendoza con tapices y obradores de seda; en las vegas del Tajo y el Tajuña, huerta, olivar y la encomienda calatrava de Zorita.",
   },
   {
     "id": "alcarria-conquense",
@@ -257,7 +257,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Villa fuerte del alfoz conquense, cabeza de un obispado que nunca llego a serlo: cereal de paramo y olivar en las solanas.",
+    "nota": "Villa fuerte del alfoz conquense, cabeza de un obispado que nunca llegó a serlo: cereal de páramo y olivar en las solanas.",
   },
   {
     "id": "tierra-de-cuenca",
@@ -285,7 +285,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Ciudad colgada entre las hoces del Jucar y el Huecar: obispado, panyos y el negocio de la madera que bajaba por los dos rios.",
+    "nota": "Ciudad colgada entre las hoces del Júcar y el Huécar: obispado, paños y el negocio de la madera que bajaba por los dos ríos.",
   },
   {
     "id": "serrania-de-cuenca",
@@ -313,7 +313,7 @@
     ],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
     "esOrigen": true,
-    "nota": "El mayor pinar de la peninsula despues de Urbion: de aqui salieron las vigas de media Castilla, bajadas por el Jucar y el Tajo en maderadas.",
+    "nota": "El mayor pinar de la península después de Urbión: de aquí salieron las vigas de media Castilla, bajadas por el Júcar y el Tajo en maderadas.",
   },
   {
     "id": "la-manchuela",
@@ -340,7 +340,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Entre el Jucar y el Cabriel, el escalon que baja de la serrania a la Mancha: cereal, vinya y el camino de Valencia.",
+    "nota": "Entre el Júcar y el Cabriel, el escalón que baja de la serranía a la Mancha: cereal, viña y el camino de Valencia.",
   },
   // --- La Mancha ------------------------------------------------------------------------------
   {
@@ -369,7 +369,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Marquesado de Villena: castillo de Belmonte, azafran en las Pedronyeras y el trigo y el vino que sostuvieron a los Pacheco.",
+    "nota": "Marquesado de Villena: castillo de Belmonte, azafrán en las Pedroñeras y el trigo y el vino que sostuvieron a los Pacheco.",
   },
   {
     "id": "la-mancha-de-quintanar",
@@ -397,7 +397,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Encomienda santiaguista en el llano puro: cereal, azafran y tinajas de vino; el Toboso ya era famoso por sus mulas antes de serlo por Dulcinea.",
+    "nota": "Encomienda santiaguista en el llano puro: cereal, azafrán y tinajas de vino; el Toboso ya era famoso por sus mulas antes de serlo por Dulcinea.",
   },
   {
     "id": "mancha-de-alcazar",
@@ -424,7 +424,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Cabeza del priorato de San Juan: molinos de viento en los cerros de Criptana, lagunas salobres y el mayor vinyedo de la Mancha.",
+    "nota": "Cabeza del priorato de San Juan: molinos de viento en los cerros de Criptana, lagunas salobres y el mayor viñedo de la Mancha.",
   },
   {
     "id": "mancha-de-consuegra",
@@ -452,7 +452,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Azafran de Consuegra, el mas caro de Castilla por peso, y el castillo hospitalario sobre el cerro Calderico con sus molinos.",
+    "nota": "Azafrán de Consuegra, el más caro de Castilla por peso, y el castillo hospitalario sobre el cerro Calderico con sus molinos.",
   },
   {
     "id": "la-mesa-de-ocanya",
@@ -480,7 +480,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Mesa llana sobre la vega del Tajo, encomienda santiaguista y cruce del camino de Andalucia: pan, vino y aceite en la misma legua.",
+    "nota": "Mesa llana sobre la vega del Tajo, encomienda santiaguista y cruce del camino de Andalucía: pan, vino y aceite en la misma legua.",
   },
   {
     "id": "tierra-de-tarancon",
@@ -508,7 +508,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Paso del camino de Valencia por el llano conquense; las salinas de Belinchon fueron reales, pero pequenyas al lado de las de Imon.",
+    "nota": "Paso del camino de Valencia por el llano conquense; las salinas de Belinchón fueron reales, pero pequeñas al lado de las de Imón.",
   },
   {
     "id": "tierra-de-la-roda",
@@ -535,7 +535,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Llano sin un arbol entre el Jucar y la Mancha, con pozos y norias: trigo, azafran y las ventas del camino real de Valencia.",
+    "nota": "Llano sin un árbol entre el Júcar y la Mancha, con pozos y norias: trigo, azafrán y las ventas del camino real de Valencia.",
   },
   {
     "id": "llanos-de-albacete",
@@ -563,7 +563,7 @@
     ],
     "rasgos": ["marisma"],
     "esOrigen": true,
-    "nota": "Los llanos encharcadizos bajo Chinchilla, con el Salobral y las lagunas: pasto de invierno, cuchilleria y la feria de septiembre en Albacete.",
+    "nota": "Los llanos encharcadizos bajo Chinchilla, con el Salobral y las lagunas: pasto de invierno, cuchillería y la feria de septiembre en Albacete.",
   },
   // --- Toledo, sus montes y la Jara -------------------------------------------------------------
   {
@@ -592,7 +592,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "calzada-romana", "cantera-noble"],
     "esOrigen": true,
-    "nota": "Primada de las Espanyas en el meandro del Tajo: sedas, espadas y azulejos, con la mayor poblacion del mapa y una vega corta que nunca le basto.",
+    "nota": "Primada de las Españas en el meandro del Tajo: sedas, espadas y azulejos, con la mayor población del mapa y una vega corta que nunca le bastó.",
   },
   {
     "id": "tierra-de-torrijos",
@@ -620,7 +620,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Campinya de trigo al oeste de Toledo, de senyorio y colegiata: el granero mas cercano que tuvo la ciudad primada.",
+    "nota": "Campiña de trigo al oeste de Toledo, de señorío y colegiata: el granero más cercano que tuvo la ciudad primada.",
   },
   {
     "id": "la-sagra",
@@ -676,7 +676,7 @@
     ],
     "rasgos": ["vega-fluvial", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Vega ancha del Tajo y loza de Talavera, la ceramica que se vendia en toda la corona: la villa mas rica del arzobispado despues de Toledo.",
+    "nota": "Vega ancha del Tajo y loza de Talavera, la cerámica que se vendía en toda la corona: la villa más rica del arzobispado después de Toledo.",
   },
   {
     "id": "montes-de-toledo",
@@ -704,7 +704,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Sierras bajas de cuarcita y jaral que la ciudad de Toledo compro enteras en 1246: monte comunal, carboneo, colmenas e invernadero de ganado.",
+    "nota": "Sierras bajas de cuarcita y jaral que la ciudad de Toledo compró enteras en 1246: monte comunal, carboneo, colmenas e invernadero de ganado.",
   },
   {
     "id": "la-jara",
@@ -761,7 +761,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Villa Real fundada por Alfonso X para contrapesar a la orden de Calatrava: llano de cereal, judería grande y camino de Andalucia.",
+    "nota": "Villa Real fundada por Alfonso X para contrapesar a la orden de Calatrava: llano de cereal, judería grande y camino de Andalucía.",
   },
   {
     "id": "campo-de-calatrava",
@@ -789,7 +789,7 @@
     ],
     "rasgos": [],
     "esOrigen": true,
-    "nota": "Cabeza de la orden de Calatrava sobre suelo volcanico: encomiendas, banyos y las herrerias que trabajaban la mena pobre de los cerros; hierro 2, nunca vena mayor.",
+    "nota": "Cabeza de la orden de Calatrava sobre suelo volcánico: encomiendas, baños y las herrerías que trabajaban la mena pobre de los cerros; hierro 2, nunca vena mayor.",
   },
   {
     "id": "tierra-de-daimiel",
@@ -817,7 +817,7 @@
     ],
     "rasgos": ["marisma", "vinyedo"],
     "esOrigen": false,
-    "nota": "Las Tablas: donde el Guadiana vuelve a salir por los Ojos y encharca la llanura. Caza, pesca de rio y huerta, con el vinyedo alrededor.",
+    "nota": "Las Tablas: donde el Guadiana vuelve a salir por los Ojos y encharca la llanura. Caza, pesca de río y huerta, con el viñedo alrededor.",
   },
   {
     "id": "valdepenyas",
@@ -845,7 +845,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "El vino que abastecia a Madrid y a los ejercitos, criado en tinajas de barro; el camino real de Andalucia pasa por su calle mayor.",
+    "nota": "El vino que abastecía a Madrid y a los ejércitos, criado en tinajas de barro; el camino real de Andalucía pasa por su calle mayor.",
   },
   {
     "id": "campo-de-montiel",
@@ -873,7 +873,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Paramo alto de la orden de Santiago, con las lagunas de Ruidera al sur: cereal corto, oveja manchega y encomiendas por todas partes.",
+    "nota": "Páramo alto de la orden de Santiago, con las lagunas de Ruidera al sur: cereal corto, oveja manchega y encomiendas por todas partes.",
   },
   {
     "id": "valle-de-alcudia",
@@ -901,7 +901,7 @@
     ],
     "rasgos": ["pasto-de-invierno", "dehesa"],
     "esOrigen": true,
-    "nota": "El invernadero de la Mesta en Sierra Morena, arrendado por la orden de Calatrava: cien mil ovejas en invierno, pastor y poco mas el resto del anyo.",
+    "nota": "El invernadero de la Mesta en Sierra Morena, arrendado por la orden de Calatrava: cien mil ovejas en invierno, pastor y poco más el resto del año.",
   },
   {
     "id": "tierra-de-almaden",
@@ -929,7 +929,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Las minas de azogue mayores del mundo, arrendadas a los Fugger: el juego no tiene recurso de mercurio, asi que su riqueza se cuenta y no se juega.",
+    "nota": "Las minas de azogue mayores del mundo, arrendadas a los Fugger: el juego no tiene recurso de mercurio, así que su riqueza se cuenta y no se juega.",
   },
   {
     "id": "sierra-de-alcaraz",
@@ -957,7 +957,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Villa de realengo con dos ferias al anyo y una sierra de pinar y pasto detras: el nacimiento del Mundo y el paso hacia Andalucia por el Guadalimar.",
+    "nota": "Villa de realengo con dos ferias al año y una sierra de pinar y pasto detrás: el nacimiento del Mundo y el paso hacia Andalucía por el Guadalimar.",
   },
   {
     "id": "sierra-del-segura",
@@ -984,7 +984,7 @@
     ],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Encomienda santiaguista en el nacimiento del Segura: pinar de laricio cortado para los astilleros de Cartagena y bajado por el rio en maderadas.",
+    "nota": "Encomienda santiaguista en el nacimiento del Segura: pinar de laricio cortado para los astilleros de Cartagena y bajado por el río en maderadas.",
   },
 
   {
@@ -1012,7 +1012,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "El alto Tajunya y el alto Tajo guadalajarenyo, de sabinar y pinar: colmenas, madera y las hoces por donde bajaban las maderadas.",
+    "nota": "El alto Tajuña y el alto Tajo guadalajareño, de sabinar y pinar: colmenas, madera y las hoces por donde bajaban las maderadas.",
   },
   {
     "id": "serrania-baja",
@@ -1039,7 +1039,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "La serrania baja conquense, de pinar rodeno y hoces: madera para Valencia, resina y el camino de Cuenca a la Manchuela.",
+    "nota": "La serranía baja conquense, de pinar rodeno y hoces: madera para Valencia, resina y el camino de Cuenca a la Manchuela.",
   },
   {
     "id": "montes-de-toledo-occidentales",
@@ -1091,7 +1091,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Las ranyas y sierras entre el Guadiana y los Montes: monte mediterraneo de ciervo y buitre, dehesa boyal y ningun pueblo grande.",
+    "nota": "Las rañas y sierras entre el Guadiana y los Montes: monte mediterráneo de ciervo y buitre, dehesa boyal y ningún pueblo grande.",
   },
   {
     "id": "llanos-de-balazote",
@@ -1118,7 +1118,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "El llano entre Albacete y la sierra de Alcaraz, de esparto y cereal corto: pasto de invierno y ventas del camino real de Andalucia.",
+    "nota": "El llano entre Albacete y la sierra de Alcaraz, de esparto y cereal corto: pasto de invierno y ventas del camino real de Andalucía.",
   },
   {
     "id": "sierra-madrona",
@@ -1141,6 +1141,6 @@
     "localidades": [{ "nombre": "Fuencaliente", "coord": [-4302, 38410], "cabecera": true }],
     "rasgos": ["dehesa"],
     "esOrigen": false,
-    "nota": "El ultimo escalon de Sierra Morena antes de Andalucia, de quejigo y madronyo: banyos, colmenas y las pinturas rupestres de sus abrigos.",
+    "nota": "El último escalón de Sierra Morena antes de Andalucía, de quejigo y madroño: baños, colmenas y las pinturas rupestres de sus abrigos.",
   },
 ]

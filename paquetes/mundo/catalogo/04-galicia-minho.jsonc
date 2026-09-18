@@ -62,7 +62,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "La tierra llana de la costa coruñesa, que es decir poco llana: aqui el maiz y el centeno dieron de comer a los puertos de sardina.",
+    "nota": "La tierra llana de la costa coruñesa, que es decir poco llana: aquí el maíz y el centeno dieron de comer a los puertos de sardina.",
   },
   {
     "id": "a-corunya",
@@ -90,7 +90,7 @@
     ],
     "rasgos": ["puerto-de-mar", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Puerto mayor del noroeste bajo la Torre de Hercules, con alfoli de la sal y flota de sardina; el pan siempre lo trajo en barco desde Castilla o Bretaña.",
+    "nota": "Puerto mayor del noroeste bajo la Torre de Hércules, con alfolí de la sal y flota de sardina; el pan siempre lo trajo en barco desde Castilla o Bretaña.",
   },
   {
     "id": "betanzos",
@@ -118,7 +118,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": false,
-    "nota": "Una de las siete capitales del reino de Galicia, en el fondo de la ria: vino de Betanzos, huerta de las Marinyas y puerto fluvial para el Mandeo.",
+    "nota": "Una de las siete capitales del reino de Galicia, en el fondo de la ría: vino de Betanzos, huerta de las Mariñas y puerto fluvial para el Mandeo.",
   },
   {
     "id": "ferrol",
@@ -146,7 +146,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "La ria mejor abrigada de la costa, con astilleros y las fragas del Eume detras: madera de roble para los cascos y pesca todo el anyo.",
+    "nota": "La ría mejor abrigada de la costa, con astilleros y las fragas del Eume detrás: madera de roble para los cascos y pesca todo el año.",
   },
   {
     "id": "a-marinya",
@@ -174,7 +174,7 @@
     ],
     "rasgos": ["puerto-de-mar", "ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "La costa lucense, de Ribadeo a Viveiro, con la sede de Mondonyedo tierra adentro: puertos balleneros pequenyos y mucha madera embarcada.",
+    "nota": "La costa lucense, de Ribadeo a Viveiro, con la sede de Mondoñedo tierra adentro: puertos balleneros pequeños y mucha madera embarcada.",
   },
   // --- Interior lucense y compostelano ---------------------------------------------------------
   {
@@ -203,7 +203,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "La unica llanura de Galicia, y es una llanura encharcada: prados, brezal y ganado; el centeno se daba mejor que el trigo.",
+    "nota": "La única llanura de Galicia, y es una llanura encharcada: prados, brezal y ganado; el centeno se daba mejor que el trigo.",
   },
   {
     "id": "lugo",
@@ -231,7 +231,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Lucus Augusti dentro de su muralla entera: cabeza de convento juridico romano, obispado y el mayor mercado de ganado del interior gallego.",
+    "nota": "Lucus Augusti dentro de su muralla entera: cabeza de convento jurídico romano, obispado y el mayor mercado de ganado del interior gallego.",
   },
   {
     "id": "terra-de-melide",
@@ -259,7 +259,7 @@
     ],
     "rasgos": ["camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Donde se juntan el camino frances y el primitivo: hospitales, mercados de ganado y el cister de Sobrado criando vacas desde el siglo XII.",
+    "nota": "Donde se juntan el camino francés y el primitivo: hospitales, mercados de ganado y el Císter de Sobrado criando vacas desde el siglo XII.",
   },
   {
     "id": "terra-de-santiago",
@@ -287,7 +287,7 @@
     ],
     "rasgos": ["camino-de-santiago", "ciudad-episcopal", "cantera-noble", "villa-de-feria"],
     "esOrigen": true,
-    "nota": "El destino de toda Europa: arzobispado, voto de Santiago y canteras de granito que labraron la catedral. Vive del camino, no de su tierra. La feria la anyade T-014.",
+    "nota": "El destino de toda Europa: arzobispado, voto de Santiago y canteras de granito que labraron la catedral. Vive del camino, no de su tierra. La feria la añade T-014.",
   },
   {
     "id": "o-barbanza",
@@ -315,7 +315,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Puerto de Compostela en la ria de Muros y Noia: de aqui salia el pescado salado que comia la ciudad del apostol.",
+    "nota": "Puerto de Compostela en la ría de Muros y Noia: de aquí salía el pescado salado que comía la ciudad del apóstol.",
   },
   {
     "id": "o-deza",
@@ -343,7 +343,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Meseta interior entre Santiago y Ourense, de prados y ferias de ganado: el mercado de Lalin movia bueyes para media Galicia.",
+    "nota": "Meseta interior entre Santiago y Ourense, de prados y ferias de ganado: el mercado de Lalín movía bueyes para media Galicia.",
   },
   // --- Rias Baixas y el Minyo ------------------------------------------------------------------
   {
@@ -372,7 +372,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo", "marisma"],
     "esOrigen": false,
-    "nota": "La ria de Arousa: marisco de banco, sardina y el albarinyo de Cambados, vinyedo documentado desde que lo plantaron los monjes de Armenteira.",
+    "nota": "La ría de Arousa: marisco de banco, sardina y el albariño de Cambados, viñedo documentado desde que lo plantaron los monjes de Armenteira.",
   },
   {
     "id": "pontevedra",
@@ -400,7 +400,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "La villa mas poblada del reino de Galicia en el siglo XVI, con el gremio de mareantes y la sardina salada que exportaba a media peninsula.",
+    "nota": "La villa más poblada del reino de Galicia en el siglo XVI, con el gremio de mareantes y la sardina salada que exportaba a media península.",
   },
   {
     "id": "vigo-e-o-morrazo",
@@ -428,7 +428,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": true,
-    "nota": "La ria mayor y mas abrigada del sur: pesca de bajura, salazon y el trafico con Portugal; detras, el monte de Vigo sin una hectarea de labor.",
+    "nota": "La ría mayor y más abrigada del sur: pesca de bajura, salazón y el tráfico con Portugal; detrás, el monte de Vigo sin una hectárea de labor.",
   },
   {
     "id": "o-baixo-minyo",
@@ -456,7 +456,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo", "ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "La raya del Minyo: obispado en Tui, puerto en Baiona —donde llego la Pinta— y vinyedo en emparrado a los dos lados del rio.",
+    "nota": "La raya del Miño: obispado en Tui, puerto en Baiona —donde llegó la Pinta— y viñedo en emparrado a los dos lados del río.",
   },
   {
     "id": "o-condado",
@@ -484,7 +484,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Ribera alta del Minyo, la mejor tierra de labor del sur de Galicia: maiz, vinyedo de parra y molinos en el Tea.",
+    "nota": "Ribera alta del Miño, la mejor tierra de labor del sur de Galicia: maíz, viñedo de parra y molinos en el Tea.",
   },
   {
     "id": "o-ribeiro",
@@ -512,7 +512,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "El vino del Ribeiro se bebia en Inglaterra y en Flandes antes que ningun otro de la peninsula: bancales sobre el Avia y el Minyo, y una juderia en Ribadavia que vivia de ese comercio.",
+    "nota": "El vino del Ribeiro se bebía en Inglaterra y en Flandes antes que ningún otro de la península: bancales sobre el Avia y el Miño, y una judería en Ribadavia que vivía de ese comercio.",
   },
   {
     "id": "ourense",
@@ -540,7 +540,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Las Burgas y el puente romano sobre el Minyo: obispado, mercado y el paso obligado entre Galicia y la meseta por la via Nova.",
+    "nota": "Las Burgas y el puente romano sobre el Miño: obispado, mercado y el paso obligado entre Galicia y la meseta por la vía Nova.",
   },
   {
     "id": "a-limia",
@@ -596,7 +596,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Los canyones del Sil y del Minyo llenos de bancales y de monasterios: el vinyedo heroico se planto para decir misa y acabo pagando los foros.",
+    "nota": "Los cañones del Sil y del Miño llenos de bancales y de monasterios: el viñedo heroico se plantó para decir misa y acabó pagando los foros.",
   },
   {
     "id": "valdeorras",
@@ -624,7 +624,7 @@
     ],
     "rasgos": ["vinyedo", "cantera-noble"],
     "esOrigen": false,
-    "nota": "El valle del Sil donde Roma buscaba oro y donde se abre la mejor pizarra de Europa; en las laderas, vinyedo desde epoca romana.",
+    "nota": "El valle del Sil donde Roma buscaba oro y donde se abre la mejor pizarra de Europa; en las laderas, viñedo desde época romana.",
   },
   {
     "id": "os-ancares",
@@ -652,7 +652,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Sierras de pallozas y brañas entre Galicia y el Bierzo, con el camino frances cruzando por O Cebreiro: castanyar, pasto de verano y nieve.",
+    "nota": "Sierras de pallozas y brañas entre Galicia y el Bierzo, con el camino francés cruzando por O Cebreiro: castañar, pasto de verano y nieve.",
   },
   {
     "id": "o-bierzo",
@@ -680,7 +680,7 @@
     ],
     "rasgos": ["vinyedo", "camino-de-santiago"],
     "esOrigen": true,
-    "nota": "Hoya abrigada entre montanyas, con clima propio: vinyedo de mencia, castanyos, las medulas que Roma deshizo buscando oro y la encomienda templaria del camino.",
+    "nota": "Hoya abrigada entre montañas, con clima propio: viñedo de mencía, castaños, las médulas que Roma deshizo buscando oro y la encomienda templaria del camino.",
   },
   // --- Minho, Douro y Tras-os-Montes ------------------------------------------------------------
   {
@@ -709,7 +709,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Puerto de la costa minhota y armador de naos para Terranova: bacalao, sal y emigracion; la tierra, repartida en minifundio, nunca dio para vender.",
+    "nota": "Puerto de la costa minhota y armador de naos para Terranova: bacalao, sal y emigración; la tierra, repartida en minifundio, nunca dio para vender.",
   },
   {
     "id": "vale-do-lima",
@@ -736,7 +736,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "La villa mas antigua de Portugal, con foral de 1125 y feria quincenal en la ribera del Lima: vinho verde en emparrado y sequeiros de maiz.",
+    "nota": "La villa más antigua de Portugal, con foral de 1125 y feria quincenal en la ribera del Lima: vinho verde en emparrado y sequeiros de maíz.",
   },
   {
     "id": "terra-de-braga",
@@ -764,7 +764,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Bracara Augusta, arzobispado y primada de las Espanyas: cuatro calzadas romanas salian de aqui y el minifundio del entre Douro e Minho la rodea de aldeas.",
+    "nota": "Bracara Augusta, arzobispado y primada de las Españas: cuatro calzadas romanas salían de aquí y el minifundio del entre Douro e Minho la rodea de aldeas.",
   },
   {
     "id": "terra-de-guimaraes",
@@ -792,7 +792,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "La cuna del condado portucalense: castillo, colegiata y una industria de lino y cuchilleria que le dio fama antes que a ninguna otra villa del norte.",
+    "nota": "La cuna del condado portucalense: castillo, colegiata y una industria de lino y cuchillería que le dio fama antes que a ninguna otra villa del norte.",
   },
   {
     "id": "porto-e-douro-litoral",
@@ -820,7 +820,7 @@
     ],
     "rasgos": ["puerto-de-mar", "ciudad-episcopal"],
     "esOrigen": true,
-    "nota": "La boca del Douro: aqui bajan las rabelas con el vino de la ribera y salen las naos; ciudad de mercaderes y de obispo, sin tierra propia que labrar.",
+    "nota": "La boca del Douro: aquí bajan las rabelas con el vino de la ribera y salen las naos; ciudad de mercaderes y de obispo, sin tierra propia que labrar.",
   },
   {
     "id": "baixo-tamega",
@@ -848,7 +848,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "El Tamega antes de entrar en el Douro: puente medieval, feria de Amarante y vinho verde tinto en las laderas.",
+    "nota": "El Tâmega antes de entrar en el Douro: puente medieval, feria de Amarante y vinho verde tinto en las laderas.",
   },
   {
     "id": "douro-vinhateiro",
@@ -876,7 +876,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Laderas de esquisto aterrazadas sobre el Douro, la primera region vinicola demarcada del mundo: aqui no cabe otra cosa que la vinya.",
+    "nota": "Laderas de esquisto aterrazadas sobre el Douro, la primera región vinícola demarcada del mundo: aquí no cabe otra cosa que la viña.",
   },
   {
     "id": "terra-de-panoias",
@@ -904,7 +904,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Entre el Marao y el Douro, sobre el santuario rupestre de Panoias: granito, centeno y las quintas que surten de vino la ribera.",
+    "nota": "Entre el Marão y el Douro, sobre el santuario rupestre de Panoias: granito, centeno y las quintas que surten de vino la ribera.",
   },
   {
     "id": "alto-tamega",
@@ -931,7 +931,7 @@
     ],
     "rasgos": ["calzada-romana", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Aquae Flaviae y su puente de Trajano sobre el Tamega: banyos, vega de regadio y la feria de la raya con Verin, que entra en T-014.",
+    "nota": "Aquae Flaviae y su puente de Trajano sobre el Tâmega: baños, vega de regadío y la feria de la raya con Verín, que entra en T-014.",
   },
   {
     "id": "terra-de-barroso",
@@ -958,7 +958,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Baldios comunales sobre los 1 000 metros: boi barroso, centeno y vezeira, el rebanyo de la aldea que sube al monte por turnos. Frio de nueve meses.",
+    "nota": "Baldíos comunales sobre los 1 000 metros: boi barroso, centeno y vezeira, el rebaño de la aldea que sube al monte por turnos. Frío de nueve meses.",
   },
   {
     "id": "val-de-monterrei",
@@ -986,7 +986,7 @@
     ],
     "rasgos": ["vinyedo", "villa-de-feria"],
     "esOrigen": false,
-    "nota": "Valle abrigado en la raya seca, con la fortaleza de Monterrei mirando a Chaves: vinyedo, aguas minerales y la feria fronteriza mas viva del noroeste.",
+    "nota": "Valle abrigado en la raya seca, con la fortaleza de Monterrei mirando a Chaves: viñedo, aguas minerales y la feria fronteriza más viva del noroeste.",
   },
   {
     "id": "terra-de-braganca",
@@ -1014,7 +1014,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Terra fria transmontana: castanyar, centeno y la ciudadela de los duques de Braganca vigilando la raya; el invierno manda mas que el senyor.",
+    "nota": "Terra fría transmontana: castañar, centeno y la ciudadela de los duques de Bragança vigilando la raya; el invierno manda más que el señor.",
   },
   {
     "id": "terra-de-mirandela",
@@ -1041,7 +1041,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": false,
-    "nota": "Terra quente del Tua: olivar, almendro y vinya en la vega, con el puente de veinte arcos por donde pasaba el camino de Braganca a la ribera.",
+    "nota": "Terra quente del Tua: olivar, almendro y viña en la vega, con el puente de veinte arcos por donde pasaba el camino de Bragança a la ribera.",
   },
   {
     "id": "terra-de-miranda",
@@ -1068,7 +1068,7 @@
     ],
     "rasgos": ["ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "Planalto sobre los arribes del Douro, con lengua propia —el mirandes— y obispado desde 1545: centeno, pastor y frontera.",
+    "nota": "Planalto sobre los arribes del Douro, con lengua propia —el mirandés— y obispado desde 1545: centeno, pastor y frontera.",
   },
 
   {
@@ -1095,7 +1095,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "La punta mas septentrional de Galicia, de rias frias y acantilados: ballena, congrio y madera de roble para los astilleros de Ferrol.",
+    "nota": "La punta más septentrional de Galicia, de rías frías y acantilados: ballena, congrio y madera de roble para los astilleros de Ferrol.",
   },
   {
     "id": "a-fonsagrada",
@@ -1122,7 +1122,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "La montanya lucense en la raya con Asturias, por donde entra el camino primitivo: brañas de verano, centeno y aldeas a mil metros.",
+    "nota": "La montaña lucense en la raya con Asturias, por donde entra el camino primitivo: brañas de verano, centeno y aldeas a mil metros.",
   },
   {
     "id": "terra-de-mogadouro",
@@ -1148,7 +1148,7 @@
     ],
     "rasgos": ["montado"],
     "esOrigen": false,
-    "nota": "El planalto sobre los arribes del Douro, de olivar y almendro: tierra quente por el rio y fria arriba, con la raya a un paso.",
+    "nota": "El planalto sobre los arribes del Douro, de olivar y almendro: tierra quente por el río y fría arriba, con la raya a un paso.",
   },
   {
     "id": "douro-superior",
@@ -1175,6 +1175,6 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "El Douro antes de la Regua, encajado entre esquistos: vinyedo de quinta, almendro y la sierra de hierro de Moncorvo, que nunca se llego a explotar en serio.",
+    "nota": "El Douro antes de la Régua, encajado entre esquistos: viñedo de quinta, almendro y la sierra de hierro de Moncorvo, que nunca se llegó a explotar en serio.",
   },
 ]

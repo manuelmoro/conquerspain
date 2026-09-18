@@ -1,6 +1,6 @@
 # T-016 · Ortografía de las notas del catálogo
 
-**Fase:** 1 · El mundo · **Depende de:** T-014 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-014 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -61,3 +61,27 @@ npm run verificar
 
 1. Índice: T-016 `hecha`; `ESTADO.md`: fase 1 cerrada, siguiente T-030.
 2. Commit: `T-016: ortografia de las notas del catalogo`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 264 tests en verde. Las **451 notas** del catálogo están escritas con su ortografía
+—tildes, eñes y los nombres propios en la lengua de su tierra— y una prueba impide volver atrás.
+
+Cómo se hizo:
+
+1. **Pasada automática conservadora** (352 notas): la ñ escrita como `ny` con una lista explícita
+   de 81 palabras —dejando intactas las catalanas que la llevan de verdad (Cerdanya, Matarranya,
+   Ontinyent, Penyagolosa)— y las palabras que el diccionario `es_ES` de hunspell solo conoce con
+   tilde. Solo se cambiaba una palabra si no existía sin tilde y tenía un único candidato.
+2. **Dos pasadas a mano sobre las 451 notas leídas enteras**: pretéritos (`fundó`, `mandó`,
+   `entró`, `trabajó`, `cambió`), imperfectos (`vendía`, `salía`, `surtían`), `él` pronombre,
+   `está` verbo, `sí` enfático, `aún` por «todavía», y nombres propios (Ávila, Júcar, Setúbal,
+   São Mamede, Marão). Tres correcciones del automático se deshicieron a mano: `Rio Maior` es
+   portugués y no lleva tilde, y `Ria Formosa` tampoco.
+3. **Guarda en `catalogo.test.ts`**: ninguna nota ni nombre visible puede contener las formas
+   ASCII delatoras (`anyo`, `montanya`, `canyada`, `historico`, `aqui`, `Avila`…), con límites de
+   palabra Unicode porque en JavaScript `\b` corta en cada letra acentuada.
+
+Los comentarios `//` de los archivos siguen en ASCII, como el resto del código del repositorio.

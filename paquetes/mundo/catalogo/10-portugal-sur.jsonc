@@ -33,7 +33,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "El condado de Santa Maria entre el Douro y el Vouga, con su castillo y sus alcornocales: corcho, lino y las ferias que abastecian a Porto.",
+    "nota": "El condado de Santa Maria entre el Douro y el Vouga, con su castillo y sus alcornocales: corcho, lino y las ferias que abastecían a Porto.",
   },
   {
     "id": "ria-de-aveiro",
@@ -62,7 +62,7 @@
     ],
     "rasgos": ["puerto-de-mar", "salinas-historicas", "marisma"],
     "esOrigen": true,
-    "nota": "La ria y sus marinhas de sal, con la flota que iba al bacalao de Terranova: sal, pescado y moliceiros; tierra de labor, casi ninguna.",
+    "nota": "La ría y sus marinhas de sal, con la flota que iba al bacalao de Terranova: sal, pescado y moliceiros; tierra de labor, casi ninguna.",
   },
   {
     "id": "bairrada",
@@ -90,7 +90,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Tierra de barro entre el Vouga y el Mondego, de vinya baga y horno de lenya: el vino de la Bairrada y el leitao se venden desde Coimbra a Porto.",
+    "nota": "Tierra de barro entre el Vouga y el Mondego, de viña baga y horno de leña: el vino de la Bairrada y el leitão se venden desde Coimbra a Porto.",
   },
   {
     "id": "coimbra",
@@ -146,7 +146,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma"],
     "esOrigen": false,
-    "nota": "La boca del Mondego, con Buarcos armando para el bacalao y las gandaras arenosas detras: pino, sal menor y pesca de costa.",
+    "nota": "La boca del Mondego, con Buarcos armando para el bacalao y las gandaras arenosas detrás: pino, sal menor y pesca de costa.",
   },
   {
     "id": "pinhal-interior",
@@ -174,7 +174,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "Serra da Lousa, de esquisto y pinar: aldeas colgadas, molinos de rodezno y la madera que bajaba al Mondego para los astilleros.",
+    "nota": "Serra da Lousã, de esquisto y pinar: aldeas colgadas, molinos de rodezno y la madera que bajaba al Mondego para los astilleros.",
   },
   {
     "id": "viseu-e-o-dao",
@@ -202,7 +202,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vinyedo"],
     "esOrigen": false,
-    "nota": "La meseta del Dao entre el Caramulo y la Estrela: granito, vinyedo viejo en las laderas y una feria de San Mateo que dura tres semanas.",
+    "nota": "La meseta del Dão entre el Caramulo y la Estrela: granito, viñedo viejo en las laderas y una feria de San Mateo que dura tres semanas.",
   },
   {
     "id": "serra-da-estrela",
@@ -230,7 +230,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "La montanya mayor de Portugal: rebanyos de churra, queso de la Estrela y los panyos de Covilha, batanados con el agua de la sierra.",
+    "nota": "La montaña mayor de Portugal: rebaños de churra, queso de la Estrela y los paños de Covilhã, batanados con el agua de la sierra.",
   },
   {
     "id": "cova-da-beira",
@@ -258,7 +258,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": false,
-    "nota": "Hondonada abrigada al pie de la Estrela, de cerezos y olivar; en Belmonte se mantuvo la mayor comunidad criptojudia de Portugal.",
+    "nota": "Hondonada abrigada al pie de la Estrela, de cerezos y olivar; en Belmonte se mantuvo la mayor comunidad criptojudía de Portugal.",
   },
   {
     "id": "beira-alta-guarda",
@@ -286,7 +286,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "La ciudad mas alta de Portugal, obispado y plaza fuerte de la raya: granito, centeno, lana y las ferias francas de Trancoso.",
+    "nota": "La ciudad más alta de Portugal, obispado y plaza fuerte de la raya: granito, centeno, lana y las ferias francas de Trancoso.",
   },
   {
     "id": "riba-coa",
@@ -314,7 +314,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "La tierra entre el Coa y el Duero, portuguesa desde el tratado de Alcanyices: almendro, vinyedo y una linea de plazas fuertes en la raya.",
+    "nota": "La tierra entre el Coa y el Duero, portuguesa desde el tratado de Alcañices: almendro, viñedo y una línea de plazas fuertes en la raya.",
   },
   {
     "id": "beira-baixa",
@@ -370,7 +370,7 @@
     ],
     "rasgos": ["montado", "calzada-romana"],
     "esOrigen": false,
-    "nota": "La Egitania romana y visigoda, con sede episcopal propia antes de la invasion: llanos de montado y granito, y Monsanto encaramado a sus penyas.",
+    "nota": "La Egitania romana y visigoda, con sede episcopal propia antes de la invasión: llanos de montado y granito, y Monsanto encaramado a sus peñas.",
   },
   // --- Estremadura y Ribatejo --------------------------------------------------------------------
   {
@@ -399,7 +399,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "El Pinhal de Leiria, plantado por orden real en el siglo XIII para sujetar las dunas y dar madera a las naos: de aqui salio la flota de los descubrimientos.",
+    "nota": "El Pinhal de Leiria, plantado por orden real en el siglo XIII para sujetar las dunas y dar madera a las naos: de aquí salió la flota de los descubrimientos.",
   },
   {
     "id": "oeste",
@@ -427,7 +427,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": false,
-    "nota": "La costa de Peniche, con su fortaleza y su flota de sardina, y detras el senyorio del monasterio de Alcobaca, que organizo la huerta y la vinya.",
+    "nota": "La costa de Peniche, con su fortaleza y su flota de sardina, y detrás el señorío del monasterio de Alcobaça, que organizó la huerta y la viña.",
   },
   {
     "id": "rio-maior",
@@ -456,7 +456,7 @@
     ],
     "rasgos": ["salinas-historicas"],
     "esOrigen": true,
-    "nota": "Un pozo de agua siete veces mas salada que el mar, en plena serra dos Candeeiros: las marinhas de Rio Maior surten de sal a todo el interior desde el siglo XII.",
+    "nota": "Un pozo de agua siete veces más salada que el mar, en plena serra dos Candeeiros: las marinhas de Rio Maior surten de sal a todo el interior desde el siglo XII.",
   },
   {
     "id": "leziria-do-tejo",
@@ -484,7 +484,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": true,
-    "nota": "La vega del Tejo, el granero y la despensa de Lisboa: trigo, caballos, toros bravos y las cortes reunidas en Santarem mas que en ninguna otra villa.",
+    "nota": "La vega del Tejo, el granero y la despensa de Lisboa: trigo, caballos, toros bravos y las cortes reunidas en Santarém más que en ninguna otra villa.",
   },
   {
     "id": "medio-tejo",
@@ -512,7 +512,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Cabeza del Temple portugues y despues de la Orden de Cristo, que financio los descubrimientos: el convento manda, y el Nabao mueve los molinos.",
+    "nota": "Cabeza del Temple portugués y después de la Orden de Cristo, que financió los descubrimientos: el convento manda, y el Nabão mueve los molinos.",
   },
   {
     "id": "abrantes",
@@ -540,7 +540,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "El ultimo puerto del Tejo navegable desde Lisboa: aqui se cargaba el grano del Alentejo alto y la madera que bajaba del Zezere.",
+    "nota": "El último puerto del Tejo navegable desde Lisboa: aquí se cargaba el grano del Alentejo alto y la madera que bajaba del Zêzere.",
   },
   {
     "id": "lisboa",
@@ -568,7 +568,7 @@
     ],
     "rasgos": ["puerto-de-mar", "ciudad-episcopal", "calzada-romana"],
     "esOrigen": true,
-    "nota": "La boca del Tejo y la Casa da India: la mayor plaza maritima de la peninsula, que come de su rio y de sus barcos, no de su tierra.",
+    "nota": "La boca del Tejo y la Casa da Índia: la mayor plaza marítima de la península, que come de su río y de sus barcos, no de su tierra.",
   },
   {
     "id": "sintra-e-mafra",
@@ -596,7 +596,7 @@
     ],
     "rasgos": ["cantera-noble", "vinyedo"],
     "esOrigen": false,
-    "nota": "La serra humeda que riega la huerta de Lisboa, con la vinya de Colares en arena sobre la duna y las canteras de piedra lioz para la capital.",
+    "nota": "La serra húmeda que riega la huerta de Lisboa, con la viña de Colares en arena sobre la duna y las canteras de piedra lioz para la capital.",
   },
   {
     "id": "peninsula-de-setubal",
@@ -625,7 +625,7 @@
     ],
     "rasgos": ["puerto-de-mar", "salinas-historicas", "marisma", "vinyedo"],
     "esOrigen": true,
-    "nota": "El estuario del Sado, la mayor salina de la peninsula atlantica: los barcos hanseaticos venian a por sal de Setubal y dejaban trigo y madera.",
+    "nota": "El estuario del Sado, la mayor salina de la península atlántica: los barcos hanseáticos venían a por sal de Setúbal y dejaban trigo y madera.",
   },
   {
     "id": "alcacer-do-sal",
@@ -653,7 +653,7 @@
     ],
     "rasgos": ["montado", "marisma"],
     "esOrigen": false,
-    "nota": "La villa de la sal del Sado, cabeza de la orden de Santiago en Portugal: arrozal, montado y pinar; la sal de verdad se cuenta en Setubal, aguas abajo.",
+    "nota": "La villa de la sal del Sado, cabeza de la orden de Santiago en Portugal: arrozal, montado y pinar; la sal de verdad se cuenta en Setúbal, aguas abajo.",
   },
   // --- Alentejo ------------------------------------------------------------------------------------
   {
@@ -682,7 +682,7 @@
     ],
     "rasgos": ["montado", "ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "La serra de Sao Mamede, isla humeda en el Alentejo seco: castanyar, tapices de Portalegre y las plazas fuertes de Marvao y Castelo de Vide en la raya.",
+    "nota": "La serra de São Mamede, isla húmeda en el Alentejo seco: castañar, tapices de Portalegre y las plazas fuertes de Marvão y Castelo de Vide en la raya.",
   },
   {
     "id": "elvas-e-campo-maior",
@@ -738,7 +738,7 @@
     ],
     "rasgos": ["cantera-noble", "vinyedo"],
     "esOrigen": false,
-    "nota": "El marmol de Estremoz, Borba y Vila Vicosa: la mayor cantera de marmol blanco de la peninsula despues de Macael, y el palacio ducal de Braganca encima.",
+    "nota": "El mármol de Estremoz, Borba y Vila Viçosa: la mayor cantera de mármol blanco de la península después de Macael, y el palacio ducal de Bragança encima.",
   },
   {
     "id": "evora",
@@ -822,7 +822,7 @@
     ],
     "rasgos": ["montado", "vinyedo"],
     "esOrigen": false,
-    "nota": "La raya del Guadiana, de encinar y olivar, con el queso de Serpa y una frontera que el ganado cruzo siempre a su aire.",
+    "nota": "La raya del Guadiana, de encinar y olivar, con el queso de Serpa y una frontera que el ganado cruzó siempre a su aire.",
   },
   {
     "id": "alentejo-litoral",
@@ -850,7 +850,7 @@
     ],
     "rasgos": ["puerto-de-mar", "montado"],
     "esOrigen": false,
-    "nota": "Costa brava y despoblada donde nacio Vasco da Gama: pesca, sal menor y el montado de alcornoque llegando casi hasta el acantilado.",
+    "nota": "Costa brava y despoblada donde nació Vasco da Gama: pesca, sal menor y el montado de alcornoque llegando casi hasta el acantilado.",
   },
   {
     "id": "campo-branco",
@@ -878,7 +878,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Estepa cerealista sin un arbol, la mas seca de Portugal; en Aljustrel, la misma faja piritica de Riotinto, que los romanos ya trabajaron.",
+    "nota": "Estepa cerealista sin un árbol, la más seca de Portugal; en Aljustrel, la misma faja pirítica de Riotinto, que los romanos ya trabajaron.",
   },
   // --- Algarve --------------------------------------------------------------------------------------
   {
@@ -907,7 +907,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "La sierra que separa el Algarve del Alentejo: castanyar y alcornocal en Monchique, y Silves, que fue capital del Algarve andalusi y puerto fluvial del Arade.",
+    "nota": "La sierra que separa el Algarve del Alentejo: castañar y alcornocal en Monchique, y Silves, que fue capital del Algarve andalusí y puerto fluvial del Arade.",
   },
   {
     "id": "barlavento-algarvio",
@@ -935,7 +935,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": false,
-    "nota": "De aqui salieron las naos de Africa y aqui estuvo la villa del Infante en Sagres: atun de almadraba, higo, almendra y un puerto de armadores.",
+    "nota": "De aquí salieron las naos de África y aquí estuvo la villa del Infante en Sagres: atún de almadraba, higo, almendra y un puerto de armadores.",
   },
   {
     "id": "algarve-central",
@@ -963,7 +963,7 @@
     ],
     "rasgos": ["puerto-de-mar", "ciudad-episcopal", "marisma"],
     "esOrigen": false,
-    "nota": "La Ria Formosa y su cordon de islas: marisco, sardina y naranjos; el obispado del Algarve se traslado aqui desde Silves.",
+    "nota": "La Ria Formosa y su cordón de islas: marisco, sardina y naranjos; el obispado del Algarve se trasladó aquí desde Silves.",
   },
   {
     "id": "sotavento-algarvio",
@@ -992,7 +992,7 @@
     ],
     "rasgos": ["puerto-de-mar", "salinas-historicas", "marisma"],
     "esOrigen": false,
-    "nota": "Las salinas de Tavira y Castro Marim y las almadrabas del sotavento: sal y atun embarcados hacia el Mediterraneo y el norte de Europa.",
+    "nota": "Las salinas de Tavira y Castro Marim y las almadrabas del sotavento: sal y atún embarcados hacia el Mediterráneo y el norte de Europa.",
   },
 
   {
@@ -1019,7 +1019,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "Las sierras del Zezere, de esquisto y pinar, entre la Estrela y el Tejo: madera, miel y aldeas de piedra en las laderas.",
+    "nota": "Las sierras del Zêzere, de esquisto y pinar, entre la Estrela y el Tejo: madera, miel y aldeas de piedra en las laderas.",
   },
   {
     "id": "pinhal-interior-sul",
@@ -1046,7 +1046,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "El monte bajo entre el Zezere y el Tejo, tierra de resina y de olivar corto: por el rio bajaban las maderadas hacia Abrantes.",
+    "nota": "El monte bajo entre el Zêzere y el Tejo, tierra de resina y de olivar corto: por el río bajaban las maderadas hacia Abrantes.",
   },
   {
     "id": "coruche-e-o-sorraia",
@@ -1072,7 +1072,7 @@
     ],
     "rasgos": ["montado", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "El Sorraia y la charneca: montado de alcornoque, yeguadas y toros bravos, con la cetreria real de Salvaterra al lado del Tejo.",
+    "nota": "El Sorraia y la charneca: montado de alcornoque, yeguadas y toros bravos, con la cetrería real de Salvaterra al lado del Tejo.",
   },
   {
     "id": "avis-e-o-alto-alentejo",
@@ -1098,7 +1098,7 @@
     ],
     "rasgos": ["montado"],
     "esOrigen": false,
-    "nota": "Cabeza de la orden de Avis, que dio dinastia a Portugal: montado, cereal y los pastos de la raya alentejana.",
+    "nota": "Cabeza de la orden de Avis, que dio dinastía a Portugal: montado, cereal y los pastos de la raya alentejana.",
   },
   {
     "id": "terras-de-alvito",
@@ -1124,7 +1124,7 @@
     ],
     "rasgos": ["montado"],
     "esOrigen": false,
-    "nota": "El llano entre Evora y Beja, de barros y montado: trigo, aceituna y las primeras adegas de vino del Alentejo central.",
+    "nota": "El llano entre Évora y Beja, de barros y montado: trigo, aceituna y las primeras adegas de vino del Alentejo central.",
   },
   {
     "id": "mertola-e-o-guadiana",
@@ -1150,6 +1150,6 @@
     ],
     "rasgos": ["montado"],
     "esOrigen": false,
-    "nota": "El Guadiana navegable hasta Mertola, puerto fluvial desde los fenicios: cobre de Sao Domingos, esparto y una sierra pelada alrededor.",
+    "nota": "El Guadiana navegable hasta Mértola, puerto fluvial desde los fenicios: cobre de São Domingos, esparto y una sierra pelada alrededor.",
   },
 ]

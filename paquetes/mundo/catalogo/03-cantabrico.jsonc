@@ -62,7 +62,7 @@
     ],
     "rasgos": ["pasto-de-verano", "vinyedo"],
     "esOrigen": false,
-    "nota": "Robledal y castanyar cerrado en los valles del suroccidente, con branyas de verano arriba y el vinyedo de Cangas, el mas septentrional de la peninsula.",
+    "nota": "Robledal y castañar cerrado en los valles del suroccidente, con brañas de verano arriba y el viñedo de Cangas, el más septentrional de la península.",
   },
   {
     "id": "tierra-de-grado",
@@ -90,7 +90,7 @@
     ],
     "rasgos": ["camino-de-santiago", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "La vega del Nalon es la unica tierra de labor de verdad del centro de Asturias, y por eso Pravia fue corte y Grado, mercado semanal desde el siglo XIII.",
+    "nota": "La vega del Nalón es la única tierra de labor de verdad del centro de Asturias, y por eso Pravia fue corte y Grado, mercado semanal desde el siglo XIII.",
   },
   {
     "id": "aviles",
@@ -118,7 +118,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma"],
     "esOrigen": false,
-    "nota": "Ria abrigada con alfoli de la sal y privilegio de puerto: por Aviles entraba la sal de Castilla y salia la manteca y la madera del centro de Asturias.",
+    "nota": "Ría abrigada con alfolí de la sal y privilegio de puerto: por Avilés entraba la sal de Castilla y salía la manteca y la madera del centro de Asturias.",
   },
   {
     "id": "gijon",
@@ -146,7 +146,7 @@
     ],
     "rasgos": ["puerto-de-mar", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Gijon de la mar y los cabos de Penyas: sardina, ballena y el puerto que miraba a Flandes; la campinya de detras nunca dio mas que para comer.",
+    "nota": "Gijón de la mar y los cabos de Peñas: sardina, ballena y el puerto que miraba a Flandes; la campiña de detrás nunca dio más que para comer.",
   },
   {
     "id": "tierra-de-oviedo",
@@ -174,7 +174,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "camino-de-santiago"],
     "esOrigen": true,
-    "nota": "Corte del reino de Asturias y camara santa: capital de camino, de obispado y de mercado, con valles de manzano y monte alrededor.",
+    "nota": "Corte del reino de Asturias y cámara santa: capital de camino, de obispado y de mercado, con valles de manzano y monte alrededor.",
   },
   {
     "id": "montanya-central-asturiana",
@@ -202,7 +202,7 @@
     ],
     "rasgos": ["pasto-de-verano", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Los valles que suben al puerto de Pajares: branyas de verano, hayedo y el unico paso comodo entre Asturias y la meseta.",
+    "nota": "Los valles que suben al puerto de Pajares: brañas de verano, hayedo y el único paso cómodo entre Asturias y la meseta.",
   },
   {
     "id": "villaviciosa",
@@ -230,7 +230,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "La comarca de la manzana: pumaradas en la vega de la ria y lagares de sidra en cada aldea, con puerto de cabotaje en Tazones.",
+    "nota": "La comarca de la manzana: pumaradas en la vega de la ría y lagares de sidra en cada aldea, con puerto de cabotaje en Tazones.",
   },
   {
     "id": "picos-de-europa",
@@ -258,7 +258,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": true,
-    "nota": "Puertos de Aliva y majadas de verano bajo la caliza: pasto 5 y queso de cabrales, que fue moneda de renta en los foros del monasterio.",
+    "nota": "Puertos de Áliva y majadas de verano bajo la caliza: pasto 5 y queso de cabrales, que fue moneda de renta en los foros del monasterio.",
   },
   {
     "id": "tierra-de-llanes",
@@ -315,7 +315,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma"],
     "esOrigen": false,
-    "nota": "Una de las Cuatro Villas de la Costa de la Mar, con astillero y flota ballenera; Cabezon guarda el nombre de unas salinas menores que nunca fueron regalia.",
+    "nota": "Una de las Cuatro Villas de la Costa de la Mar, con astillero y flota ballenera; Cabezón guarda el nombre de unas salinas menores que nunca fueron regalía.",
   },
   {
     "id": "liebana",
@@ -343,7 +343,7 @@
     ],
     "rasgos": ["pasto-de-verano", "vinyedo"],
     "esOrigen": false,
-    "nota": "Hoya abrigada entre los Picos y la cordillera, con su propio clima: vinyedo y nogal en el fondo, hayedo y puertos de verano arriba. El monasterio de Santo Toribio la hizo cabeza de valle.",
+    "nota": "Hoya abrigada entre los Picos y la cordillera, con su propio clima: viñedo y nogal en el fondo, hayedo y puertos de verano arriba. El monasterio de Santo Toribio la hizo cabeza de valle.",
   },
   {
     "id": "campoo",
@@ -370,7 +370,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Cabecera del Ebro y paso de la meseta al mar: pastos de verano, colegiatas romanicas y el camino por el que subia el trigo y bajaba el pescado.",
+    "nota": "Cabecera del Ebro y paso de la meseta al mar: pastos de verano, colegiatas románicas y el camino por el que subía el trigo y bajaba el pescado.",
   },
   {
     "id": "valles-pasiegos",
@@ -398,7 +398,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Praderias cerradas de muro y cabanyas de muda: la ganaderia pasiega vivia del pasto todo el anyo y bajaba a vender manteca a Burgos.",
+    "nota": "Praderías cerradas de muro y cabañas de muda: la ganadería pasiega vivía del pasto todo el año y bajaba a vender manteca a Burgos.",
   },
   {
     "id": "santander",
@@ -426,7 +426,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma"],
     "esOrigen": true,
-    "nota": "La mejor bahia del Cantabrico y salida natural de la lana de Burgos: astilleros, aduana y la flota de las Cuatro Villas.",
+    "nota": "La mejor bahía del Cantábrico y salida natural de la lana de Burgos: astilleros, aduana y la flota de las Cuatro Villas.",
   },
   {
     "id": "trasmiera",
@@ -454,7 +454,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma"],
     "esOrigen": false,
-    "nota": "Junta de Trasmiera, tierra de canteros y de campaneros que trabajaron en media Espanya, con Laredo y Santonya de puertos de la mar.",
+    "nota": "Junta de Trasmiera, tierra de canteros y de campaneros que trabajaron en media España, con Laredo y Santoña de puertos de la mar.",
   },
   {
     "id": "castro-urdiales",
@@ -482,7 +482,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "La mayor de las Cuatro Villas en la Edad Media: flota ballenera, hermandad de la Marina de Castilla y ferrerias de agua en el valle de Guriezo.",
+    "nota": "La mayor de las Cuatro Villas en la Edad Media: flota ballenera, hermandad de la Marina de Castilla y ferrerías de agua en el valle de Guriezo.",
   },
   // --- Vizcaya y Guipuzcoa ----------------------------------------------------------------------
   {
@@ -512,7 +512,7 @@
     ],
     "rasgos": ["vena-de-hierro", "ferreria-de-agua"],
     "esOrigen": false,
-    "nota": "La vena de Somorrostro, exportada en bruto a Inglaterra y Flandes desde el siglo XIV, y decenas de ferrerias de agua en los rios de la encartacion.",
+    "nota": "La vena de Somorrostro, exportada en bruto a Inglaterra y Flandes desde el siglo XIV, y decenas de ferrerías de agua en los ríos de la encartación.",
   },
   {
     "id": "bilbao",
@@ -540,7 +540,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vena-de-hierro", "ferreria-de-agua"],
     "esOrigen": true,
-    "nota": "Villa de 1300 con Consulado propio: por su ria salia el hierro de Somorrostro y la lana de Burgos, y entraban el panyo y el bacalao del norte.",
+    "nota": "Villa de 1300 con Consulado propio: por su ría salía el hierro de Somorrostro y la lana de Burgos, y entraban el paño y el bacalao del norte.",
   },
   {
     "id": "busturialdea",
@@ -568,7 +568,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma"],
     "esOrigen": false,
-    "nota": "La ria de Mundaka y el arbol de Gernika, donde juraban fuero los senyores de Vizcaya; Bermeo fue cabeza del senyorio y puerto ballenero mayor.",
+    "nota": "La ría de Mundaka y el árbol de Gernika, donde juraban fuero los señores de Vizcaya; Bermeo fue cabeza del señorío y puerto ballenero mayor.",
   },
   {
     "id": "lea-artibai",
@@ -596,7 +596,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Costa de puertos balleneros: Lekeitio y Ondarroa armaban chalupas para Terranova, y de la mar salia todo, porque tierra llana no hay.",
+    "nota": "Costa de puertos balleneros: Lekeitio y Ondarroa armaban chalupas para Terranova, y de la mar salía todo, porque tierra llana no hay.",
   },
   {
     "id": "durangaldea",
@@ -624,7 +624,7 @@
     ],
     "rasgos": ["vena-de-hierro", "ferreria-de-agua", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Merindad de Durango al pie del Anboto: ferrerias, armerias y hayedo de carboneo; el hierro se labraba aqui y bajaba ya en barras.",
+    "nota": "Merindad de Durango al pie del Anboto: ferrerías, armerías y hayedo de carboneo; el hierro se labraba aquí y bajaba ya en barras.",
   },
   {
     "id": "debagoiena",
@@ -652,7 +652,7 @@
     ],
     "rasgos": ["ferreria-de-agua", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Las armerias del Deba: cerrajeria y armas blancas con vena traida de Vizcaya, porque aqui hubo agua y carbon de hayedo, pero no mena propia.",
+    "nota": "Las armerías del Deba: cerrajería y armas blancas con vena traída de Vizcaya, porque aquí hubo agua y carbón de hayedo, pero no mena propia.",
   },
   {
     "id": "goierri",
@@ -680,7 +680,7 @@
     ],
     "rasgos": ["pasto-de-verano", "ferreria-de-agua"],
     "esOrigen": false,
-    "nota": "Al pie del Aizkorri y del camino real a Castilla por San Adrian: pastos de Urbia, queso de Idiazabal y ferrerias en el Oria alto.",
+    "nota": "Al pie del Aizkorri y del camino real a Castilla por San Adrián: pastos de Urbia, queso de Idiazabal y ferrerías en el Oria alto.",
   },
   {
     "id": "urola-kosta",
@@ -708,7 +708,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "De Getaria salio Elcano y salian las ballenas: puertos pequenyos encajados entre el flysch y la montanya, con astilleros en cada ria.",
+    "nota": "De Getaria salió Elcano y salían las ballenas: puertos pequeños encajados entre el flysch y la montaña, con astilleros en cada ría.",
   },
   {
     "id": "donostialdea",
@@ -736,7 +736,7 @@
     ],
     "rasgos": ["puerto-de-mar", "camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Puerto de Pasajes, el mejor abrigo del golfo, y villa de fuero de Jaca: pesca, corso y el trafico de hierro y lana hacia Bayona.",
+    "nota": "Puerto de Pasajes, el mejor abrigo del golfo, y villa de fuero de Jaca: pesca, corso y el tráfico de hierro y lana hacia Bayona.",
   },
   {
     "id": "oiartzun-bidasoa",
@@ -763,7 +763,7 @@
     ],
     "rasgos": ["vena-de-hierro", "ferreria-de-agua", "puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Las minas de Arditurri llevaban explotandose desde Roma y daban hierro y plata; en el Bidasoa, ademas, esta la raya con Francia y su aduana.",
+    "nota": "Las minas de Arditurri llevaban explotándose desde Roma y daban hierro y plata; en el Bidasoa, además, está la raya con Francia y su aduana.",
   },
   // --- Alava y las merindades de Burgos ---------------------------------------------------------
   {
@@ -792,7 +792,7 @@
     ],
     "rasgos": ["ferreria-de-agua"],
     "esOrigen": false,
-    "nota": "Tierra de Ayala con fuero propio y el puerto de Ordunya, por donde subia la lana castellana hacia Bilbao; ferrerias menores en el Nervion alto.",
+    "nota": "Tierra de Ayala con fuero propio y el puerto de Orduña, por donde subía la lana castellana hacia Bilbao; ferrerías menores en el Nervión alto.",
   },
   {
     "id": "valles-alaveses",
@@ -821,7 +821,7 @@
     ],
     "rasgos": ["salinas-historicas"],
     "esOrigen": true,
-    "nota": "El valle salado de Anyana: eras de evaporacion escalonadas sobre el manantial, documentadas desde el anyo 822 y regalia real. La mejor sal del norte.",
+    "nota": "El valle salado de Añana: eras de evaporación escalonadas sobre el manantial, documentadas desde el año 822 y regalía real. La mejor sal del norte.",
   },
   {
     "id": "llanada-alavesa",
@@ -849,7 +849,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": true,
-    "nota": "La unica tierra de pan del norte: llanura cerrada entre montes, con la villa de Vitoria de mercado y el camino de la lana cruzandola entera.",
+    "nota": "La única tierra de pan del norte: llanura cerrada entre montes, con la villa de Vitoria de mercado y el camino de la lana cruzándola entera.",
   },
   {
     "id": "montanya-alavesa",
@@ -904,7 +904,7 @@
     ],
     "rasgos": ["vena-de-hierro", "ferreria-de-agua"],
     "esOrigen": false,
-    "nota": "Valle abierto al norte con clima atlantico dentro de Burgos: ferrerias de agua en el Cadagua y mena de la misma faja que Somorrostro.",
+    "nota": "Valle abierto al norte con clima atlántico dentro de Burgos: ferrerías de agua en el Cadagua y mena de la misma faja que Somorrostro.",
   },
   {
     "id": "merindades",
@@ -959,7 +959,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Los montes de Pas por la vertiente burgalesa, tierra de los monteros que guardaban la camara del rey: hayedo, pasto de verano y nieve medio anyo.",
+    "nota": "Los montes de Pas por la vertiente burgalesa, tierra de los monteros que guardaban la cámara del rey: hayedo, pasto de verano y nieve medio año.",
   },
   {
     "id": "paramos-de-sedano",
@@ -987,7 +987,7 @@
     ],
     "rasgos": ["cantera-noble"],
     "esOrigen": false,
-    "nota": "Paramos calizos cortados por el canyon del Ebro: canteras de sillar, sabinar y las iglesias rupestres mas viejas de Castilla.",
+    "nota": "Páramos calizos cortados por el cañón del Ebro: canteras de sillar, sabinar y las iglesias rupestres más viejas de Castilla.",
   },
 
   {
@@ -1015,7 +1015,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Los puertos de Babia y Laciana, donde veraneaban los reyes de Leon: braña, vaca y las mejores yeguadas de la cordillera.",
+    "nota": "Los puertos de Babia y Laciana, donde veraneaban los reyes de León: braña, vaca y las mejores yeguadas de la cordillera.",
   },
   {
     "id": "montanya-de-luna",
@@ -1042,7 +1042,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Los valles del Bernesga y el Luna que suben a Pajares: pasto de verano, hayedo y el camino de hierro natural entre Leon y Asturias.",
+    "nota": "Los valles del Bernesga y el Luna que suben a Pajares: pasto de verano, hayedo y el camino de hierro natural entre León y Asturias.",
   },
   {
     "id": "montanya-de-riano",
@@ -1069,7 +1069,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Puertos de Riano y valles del Esla alto: la Mesta leonesa subia aqui en verano y bajaba a Extremadura por la canyada Leonesa Oriental.",
+    "nota": "Puertos de Riaño y valles del Esla alto: la Mesta leonesa subía aquí en verano y bajaba a Extremadura por la cañada Leonesa Oriental.",
   },
   {
     "id": "montanya-palentina",
@@ -1095,6 +1095,6 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Hayedos y robledal al pie de Curavacas y Espigueete, con las colegiatas del romanico palentino: pasto, carbon de lenya y muy poca labor.",
+    "nota": "Hayedos y robledal al pie de Curavacas y Espigueete, con las colegiatas del románico palentino: pasto, carbón de leña y muy poca labor.",
   },
 ]

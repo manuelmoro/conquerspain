@@ -34,7 +34,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Dehesa de encina y castanyar en la sierra de Huelva: el cerdo iberico se cria y se cura aqui, y el monte da bellota, carbon y corcho.",
+    "nota": "Dehesa de encina y castañar en la sierra de Huelva: el cerdo ibérico se cría y se cura aquí, y el monte da bellota, carbón y corcho.",
   },
   {
     "id": "andevalo-y-riotinto",
@@ -63,7 +63,7 @@
     ],
     "rasgos": ["vena-de-hierro"],
     "esOrigen": false,
-    "nota": "Los filones de Riotinto y Tharsis se llevan explotando desde Tartessos: cobre, plata y hierro en una tierra que no da de comer por si sola.",
+    "nota": "Los filones de Riotinto y Tharsis se llevan explotando desde Tartessos: cobre, plata y hierro en una tierra que no da de comer por sí sola.",
   },
   {
     "id": "costa-de-huelva",
@@ -91,7 +91,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma"],
     "esOrigen": false,
-    "nota": "Las marismas del Odiel y el Tinto, con Palos y Moguer armando carabelas: sardina, atun de almadraba y el trafico con Canarias y las Indias.",
+    "nota": "Las marismas del Odiel y el Tinto, con Palos y Moguer armando carabelas: sardina, atún de almadraba y el tráfico con Canarias y las Indias.",
   },
   {
     "id": "condado-de-huelva",
@@ -119,7 +119,7 @@
     ],
     "rasgos": ["vinyedo", "marisma"],
     "esOrigen": false,
-    "nota": "Arenas y vinyedo del condado de Niebla, con las marismas de Donyana al sur: el vino del Condado se embarcaba en Sanlucar rumbo a Indias.",
+    "nota": "Arenas y viñedo del condado de Niebla, con las marismas de Doñana al sur: el vino del Condado se embarcaba en Sanlúcar rumbo a Indias.",
   },
   {
     "id": "sierra-norte-de-sevilla",
@@ -147,7 +147,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Sierra Morena sevillana, de dehesa y castanyar, con los aguardientes de Cazalla y la plata de Guadalcanal, que dio un golpe de suerte al fisco real.",
+    "nota": "Sierra Morena sevillana, de dehesa y castañar, con los aguardientes de Cazalla y la plata de Guadalcanal, que dio un golpe de suerte al fisco real.",
   },
   {
     "id": "valle-del-guadiato",
@@ -175,7 +175,7 @@
     ],
     "rasgos": ["dehesa"],
     "esOrigen": false,
-    "nota": "Dehesa y monte bajo en el paso de Cordoba a Extremadura; el carbon del Guadiato es cosa del siglo XIX, aqui solo cuenta la encina.",
+    "nota": "Dehesa y monte bajo en el paso de Córdoba a Extremadura; el carbón del Guadiato es cosa del siglo XIX, aquí solo cuenta la encina.",
   },
   {
     "id": "valle-de-los-pedroches",
@@ -203,7 +203,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "La dehesa mayor de Cordoba, de granito y encina, con las Siete Villas en comunidad de pastos: invernadero de rebanyos y cria de cerdo y oveja.",
+    "nota": "La dehesa mayor de Córdoba, de granito y encina, con las Siete Villas en comunidad de pastos: invernadero de rebaños y cría de cerdo y oveja.",
   },
   // --- El Guadalquivir -------------------------------------------------------------------------
   {
@@ -238,7 +238,7 @@
       "villa-de-feria",
     ],
     "esOrigen": true,
-    "nota": "Sevilla y su Aljarafe: puerto de rio con monopolio de Indias, olivar en la loma y la vega del Guadalquivir. Sus dos ferias las anyade T-014.",
+    "nota": "Sevilla y su Aljarafe: puerto de río con monopolio de Indias, olivar en la loma y la vega del Guadalquivir. Sus dos ferias las añade T-014.",
   },
   {
     "id": "vega-de-carmona",
@@ -266,7 +266,7 @@
     ],
     "rasgos": ["vega-fluvial", "calzada-romana"],
     "esOrigen": false,
-    "nota": "La cornisa de los Alcores sobre la vega: trigo de la mejor tierra de Espanya, olivar en las cuestas y la puerta de Sevilla hacia Cordoba.",
+    "nota": "La cornisa de los Alcores sobre la vega: trigo de la mejor tierra de España, olivar en las cuestas y la puerta de Sevilla hacia Córdoba.",
   },
   {
     "id": "campinya-de-ecija",
@@ -294,7 +294,7 @@
     ],
     "rasgos": ["vega-fluvial", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Astigi, la sarten de Andalucia: campinya de tierras negras que daba el mejor trigo y el aceite que Roma llevaba en anforas hasta el monte Testaccio.",
+    "nota": "Astigi, la sartén de Andalucía: campiña de tierras negras que daba el mejor trigo y el aceite que Roma llevaba en ánforas hasta el monte Testaccio.",
   },
   {
     "id": "sierra-sur-de-sevilla",
@@ -322,7 +322,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Las lomas entre la campinya y la sierra, senyorio de los duques de Osuna: olivar, cereal y una universidad que fundo el propio duque.",
+    "nota": "Las lomas entre la campiña y la sierra, señorío de los duques de Osuna: olivar, cereal y una universidad que fundó el propio duque.",
   },
   {
     "id": "bajo-guadalquivir",
@@ -378,7 +378,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Capital del califato y despues ciudad de mezquita convertida: vega del Guadalquivir, huerta de la Arruzafa, cuero guadameci y molinos de aceite.",
+    "nota": "Capital del califato y después ciudad de mezquita convertida: vega del Guadalquivir, huerta de la Arruzafa, cuero guadamecí y molinos de aceite.",
   },
   {
     "id": "campinya-de-lucena",
@@ -406,7 +406,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Lucena fue la mayor juderia de al-Andalus, la Perla de Sefarad; despues, vinyedo de Montilla y olivar hasta donde alcanza la vista.",
+    "nota": "Lucena fue la mayor judería de al-Andalus, la Perla de Sefarad; después, viñedo de Montilla y olivar hasta donde alcanza la vista.",
   },
   {
     "id": "la-subbetica",
@@ -434,7 +434,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Sierras calizas entre las campinyas de Cordoba y Granada, frontera del reino nazari: olivar en bancales, agua de manantial y castillos a la vista unos de otros.",
+    "nota": "Sierras calizas entre las campiñas de Córdoba y Granada, frontera del reino nazarí: olivar en bancales, agua de manantial y castillos a la vista unos de otros.",
   },
   // --- Cadiz y el Estrecho ----------------------------------------------------------------------
   {
@@ -464,7 +464,7 @@
     ],
     "rasgos": ["puerto-de-mar", "salinas-historicas", "marisma"],
     "esOrigen": true,
-    "nota": "Gadir, la ciudad mas vieja de occidente: esteros de sal, almadrabas de atun y el puerto por el que salieron las flotas. Tierra de labor, ninguna.",
+    "nota": "Gadir, la ciudad más vieja de occidente: esteros de sal, almadrabas de atún y el puerto por el que salieron las flotas. Tierra de labor, ninguna.",
   },
   {
     "id": "jerez-y-el-marco",
@@ -492,7 +492,7 @@
     ],
     "rasgos": ["vinyedo", "puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Las tierras albarizas del Marco: el vino de Jerez y la manzanilla de Sanlucar se criaban aqui y se cargaban para Inglaterra y Flandes.",
+    "nota": "Las tierras albarizas del Marco: el vino de Jerez y la manzanilla de Sanlúcar se criaban aquí y se cargaban para Inglaterra y Flandes.",
   },
   {
     "id": "la-janda",
@@ -548,7 +548,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "La orilla del Estrecho, paso obligado entre dos mares y dos continentes: alcornocal, atun y una frontera que cambio de manos cada siglo.",
+    "nota": "La orilla del Estrecho, paso obligado entre dos mares y dos continentes: alcornocal, atún y una frontera que cambió de manos cada siglo.",
   },
   {
     "id": "sierra-de-cadiz",
@@ -576,7 +576,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Los pueblos blancos entre la campinya y la serrania: pinsapar en Grazalema —donde mas llueve de la peninsula— y curtidurias en Ubrique.",
+    "nota": "Los pueblos blancos entre la campiña y la serranía: pinsapar en Grazalema —donde más llueve de la península— y curtidurías en Ubrique.",
   },
   // --- Malaga y las serranias beticas --------------------------------------------------------------
   {
@@ -605,7 +605,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "El mayor alcornocal de la peninsula, anyadido al cerrar la entrega porque quedaba un hueco entre Ronda, la sierra de Cadiz y el Estrecho: corcho, carbon y curtidurias en Ubrique.",
+    "nota": "El mayor alcornocal de la península, añadido al cerrar la entrega porque quedaba un hueco entre Ronda, la sierra de Cádiz y el Estrecho: corcho, carbón y curtidurías en Ubrique.",
   },
   {
     "id": "serrania-de-ronda",
@@ -633,7 +633,7 @@
     ],
     "rasgos": ["pasto-de-verano", "vinyedo"],
     "esOrigen": false,
-    "nota": "La ciudad partida por el Tajo, ultima taifa en caer en el occidente nazari: sierras de pasto, bandoleros despues y vinyedo en las laderas.",
+    "nota": "La ciudad partida por el Tajo, última taifa en caer en el occidente nazarí: sierras de pasto, bandoleros después y viñedo en las laderas.",
   },
   {
     "id": "hoya-de-malaga",
@@ -661,7 +661,7 @@
     ],
     "rasgos": ["puerto-de-mar", "ciudad-episcopal", "vinyedo"],
     "esOrigen": true,
-    "nota": "El puerto del reino de Granada y despues de Castilla: pasas y vino dulce de los montes, higos, y una hoya de regadio entre la sierra y el mar.",
+    "nota": "El puerto del reino de Granada y después de Castilla: pasas y vino dulce de los montes, higos, y una hoya de regadío entre la sierra y el mar.",
   },
   {
     "id": "axarquia",
@@ -689,7 +689,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": false,
-    "nota": "Laderas de pizarra sobre el mar plantadas de vinya moscatel y canya de azucar: la pasa de la Axarquia se exportaba a Flandes por Velez.",
+    "nota": "Laderas de pizarra sobre el mar plantadas de viña moscatel y caña de azúcar: la pasa de la Axarquía se exportaba a Flandes por Vélez.",
   },
   {
     "id": "costa-del-sol",
@@ -717,7 +717,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Franja estrecha entre Sierra Blanca y el mar, de torres almenaras y pesquerias; en Marbella hubo ferrerias de agua con vena de Ojen.",
+    "nota": "Franja estrecha entre Sierra Blanca y el mar, de torres almenaras y pesquerías; en Marbella hubo ferrerías de agua con vena de Ojén.",
   },
   {
     "id": "antequera",
@@ -745,7 +745,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "La vega de Antequera, el granero del reino de Granada antes y del de Malaga despues, con la laguna salada de Fuente de Piedra al lado.",
+    "nota": "La vega de Antequera, el granero del reino de Granada antes y del de Málaga después, con la laguna salada de Fuente de Piedra al lado.",
   },
   // --- Jaen y el alto Guadalquivir ------------------------------------------------------------------
   {
@@ -774,7 +774,7 @@
     ],
     "rasgos": ["ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "Cabeza del reino de Jaen y guarda del paso a Granada: olivar en las lomas, catedral y castillo de Santa Catalina sobre la ciudad.",
+    "nota": "Cabeza del reino de Jaén y guarda del paso a Granada: olivar en las lomas, catedral y castillo de Santa Catalina sobre la ciudad.",
   },
   {
     "id": "campinya-de-andujar",
@@ -802,7 +802,7 @@
     ],
     "rasgos": ["vega-fluvial", "calzada-romana"],
     "esOrigen": false,
-    "nota": "El vado historico del Guadalquivir en el camino de Toledo a Cordoba: vega de regadio, olivar y el santuario de la Cabeza en la sierra.",
+    "nota": "El vado histórico del Guadalquivir en el camino de Toledo a Córdoba: vega de regadío, olivar y el santuario de la Cabeza en la sierra.",
   },
   {
     "id": "sierra-morena-de-jaen",
@@ -830,7 +830,7 @@
     ],
     "rasgos": ["calzada-romana"],
     "esOrigen": false,
-    "nota": "Castulo y las minas de plomo argentifero de Linares, trabajadas desde iberos y romanos: aqui empieza el paso de Despenyaperros hacia la Mancha.",
+    "nota": "Cástulo y las minas de plomo argentífero de Linares, trabajadas desde iberos y romanos: aquí empieza el paso de Despeñaperros hacia la Mancha.",
   },
   {
     "id": "la-loma-de-ubeda",
@@ -858,7 +858,7 @@
     ],
     "rasgos": ["cantera-noble"],
     "esOrigen": false,
-    "nota": "La loma entre el Guadalquivir y el Guadalimar, con Ubeda y Baeza de ciudades gemelas: olivar, alfarerias y la piedra dorada de sus canteras.",
+    "nota": "La loma entre el Guadalquivir y el Guadalimar, con Úbeda y Baeza de ciudades gemelas: olivar, alfarerías y la piedra dorada de sus canteras.",
   },
   {
     "id": "sierras-de-cazorla-y-segura",
@@ -886,7 +886,7 @@
     ],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "El pinar mas extenso de Andalucia y el nacimiento del Guadalquivir: la madera bajaba por el rio hasta Cordoba y Sevilla en maderadas.",
+    "nota": "El pinar más extenso de Andalucía y el nacimiento del Guadalquivir: la madera bajaba por el río hasta Córdoba y Sevilla en maderadas.",
   },
   // --- Granada y Almeria -----------------------------------------------------------------------------
   {
@@ -915,7 +915,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial"],
     "esOrigen": true,
-    "nota": "La capital nazari y su vega de acequias: lino, seda, morera y trigo, con la Alhambra encima y Sierra Nevada dando agua todo el verano.",
+    "nota": "La capital nazarí y su vega de acequias: lino, seda, morera y trigo, con la Alhambra encima y Sierra Nevada dando agua todo el verano.",
   },
   {
     "id": "los-montes-de-granada",
@@ -943,7 +943,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Los Montes Orientales, secano de cereal y encinar al norte de la vega: tierra de frontera con Jaen y de pastos para los ganados de la vega.",
+    "nota": "Los Montes Orientales, secano de cereal y encinar al norte de la vega: tierra de frontera con Jaén y de pastos para los ganados de la vega.",
   },
   {
     "id": "loja-y-el-poniente",
@@ -971,7 +971,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "La llave del reino de Granada por el poniente, sobre el Genil: huerta de regadio, banyos en Alhama y el boquete de Zafarraya hacia el mar.",
+    "nota": "La llave del reino de Granada por el poniente, sobre el Genil: huerta de regadío, baños en Alhama y el boquete de Zafarraya hacia el mar.",
   },
   {
     "id": "las-alpujarras",
@@ -999,7 +999,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Bancales de morera en la cara sur de Sierra Nevada: la seda alpujarrenya sostuvo al reino nazari y siguio hasta la expulsion de los moriscos.",
+    "nota": "Bancales de morera en la cara sur de Sierra Nevada: la seda alpujarreña sostuvo al reino nazarí y siguió hasta la expulsión de los moriscos.",
   },
   {
     "id": "costa-de-granada",
@@ -1027,7 +1027,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "La costa de la canya de azucar, con trapiches en Motril y Salobrenya desde epoca nazari: el unico azucar de Europa junto al de la Safor.",
+    "nota": "La costa de la caña de azúcar, con trapiches en Motril y Salobreña desde época nazarí: el único azúcar de Europa junto al de la Safor.",
   },
   {
     "id": "guadix-y-el-marquesado",
@@ -1055,7 +1055,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Hoya de badlands y casas cueva al pie del Marquesado del Cenete: obispado viejo, seda, y el camino de Granada a Almeria pasando por medio.",
+    "nota": "Hoya de badlands y casas cueva al pie del Marquesado del Cenete: obispado viejo, seda, y el camino de Granada a Almería pasando por medio.",
   },
   {
     "id": "baza-y-huescar",
@@ -1083,7 +1083,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Hoyas altas y frias al nordeste del reino nazari, ganadas en 1489: canyamo, cereal y pastos de invierno para los rebanyos de la sierra.",
+    "nota": "Hoyas altas y frías al nordeste del reino nazarí, ganadas en 1489: cáñamo, cereal y pastos de invierno para los rebaños de la sierra.",
   },
   {
     "id": "los-velez",
@@ -1111,7 +1111,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Marquesado de los Velez en la raya de Murcia: sierras de pinar y pasto, esparto en los llanos y un castillo renacentista en Velez-Blanco.",
+    "nota": "Marquesado de los Vélez en la raya de Murcia: sierras de pinar y pasto, esparto en los llanos y un castillo renacentista en Vélez-Blanco.",
   },
   {
     "id": "valle-del-almanzora",
@@ -1140,7 +1140,7 @@
     ],
     "rasgos": ["cantera-noble"],
     "esOrigen": false,
-    "nota": "El marmol blanco de Macael sale de estas canteras desde los romanos: con el se labraron los leones de la Alhambra y medio palacio nazari.",
+    "nota": "El mármol blanco de Macael sale de estas canteras desde los romanos: con él se labraron los leones de la Alhambra y medio palacio nazarí.",
   },
   {
     "id": "campo-de-almeria",
@@ -1168,7 +1168,7 @@
     ],
     "rasgos": ["puerto-de-mar", "ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "El puerto de la seda del reino nazari, con su alcazaba: tierra arida de esparto y barrilla, y las salinas de Cabo de Gata al lado.",
+    "nota": "El puerto de la seda del reino nazarí, con su alcazaba: tierra árida de esparto y barrilla, y las salinas de Cabo de Gata al lado.",
   },
   {
     "id": "levante-almeriense",
@@ -1196,7 +1196,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Costa seca de torres y calas, con el embarcadero de Garrucha sacando el esparto y el marmol del Almanzora: menos de 250 mm de lluvia al anyo.",
+    "nota": "Costa seca de torres y calas, con el embarcadero de Garrucha sacando el esparto y el mármol del Almanzora: menos de 250 mm de lluvia al año.",
   },
   {
     "id": "sierra-de-gador",
@@ -1224,7 +1224,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Sierra de plomo entre la Alpujarra y el mar: las minas de galena de Gador se trabajaron desde epoca romana, y la parra de Berja llego despues.",
+    "nota": "Sierra de plomo entre la Alpujarra y el mar: las minas de galena de Gádor se trabajaron desde época romana, y la parra de Berja llegó después.",
   },
 
   {
@@ -1252,7 +1252,7 @@
     ],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Encomienda santiaguista de pinar laricio: de aqui bajaban por el Guadalquivir y el Segura las maderadas para las flotas de Sevilla y Cartagena.",
+    "nota": "Encomienda santiaguista de pinar laricio: de aquí bajaban por el Guadalquivir y el Segura las maderadas para las flotas de Sevilla y Cartagena.",
   },
   {
     "id": "el-condado-de-jaen",
@@ -1279,7 +1279,7 @@
     ],
     "rasgos": ["dehesa"],
     "esOrigen": false,
-    "nota": "El Condado jienense entre Sierra Morena y el Guadalimar: olivar, dehesa y el camino de la Mancha a Andalucia por Despenyaperros.",
+    "nota": "El Condado jienense entre Sierra Morena y el Guadalimar: olivar, dehesa y el camino de la Mancha a Andalucía por Despeñaperros.",
   },
   {
     "id": "tierras-de-huescar",
@@ -1306,7 +1306,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Altiplano frio al nordeste de Granada, ganado a los nazaries en 1488: cereal, canyamo y pastos de invierno para la sierra de Segura.",
+    "nota": "Altiplano frío al nordeste de Granada, ganado a los nazaríes en 1488: cereal, cáñamo y pastos de invierno para la sierra de Segura.",
   },
   {
     "id": "andevalo-occidental",
@@ -1332,7 +1332,7 @@
     ],
     "rasgos": ["dehesa"],
     "esOrigen": false,
-    "nota": "La raya seca de Huelva con Portugal: dehesa de encina, cerdo y contrabando, con las plazas fuertes de Aroche y Encinasola vigilandose.",
+    "nota": "La raya seca de Huelva con Portugal: dehesa de encina, cerdo y contrabando, con las plazas fuertes de Aroche y Encinasola vigilándose.",
   },
   {
     "id": "sierra-norte-de-huelva",
@@ -1359,6 +1359,6 @@
     ],
     "rasgos": ["dehesa", "cantera-noble"],
     "esOrigen": false,
-    "nota": "El pie de Sierra Morena al norte de Sevilla, con las canteras de marmol de Almaden de la Plata que labraron Italica: dehesa, corcho y carbon.",
+    "nota": "El pie de Sierra Morena al norte de Sevilla, con las canteras de mármol de Almadén de la Plata que labraron Itálica: dehesa, corcho y carbón.",
   },
 ]

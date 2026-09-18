@@ -35,7 +35,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Morella sobre su muela, cabeza de una tierra de puertos de montanya: la lana de Els Ports se tejia alli mismo y se vendia en Valencia y en Italia.",
+    "nota": "Morella sobre su muela, cabeza de una tierra de puertos de montaña: la lana de Els Ports se tejía allí mismo y se vendía en Valencia y en Italia.",
   },
   {
     "id": "alt-maestrat",
@@ -63,7 +63,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Capital de la orden de Montesa tras la caida del Temple: tierra de lana y de arrieros, con los ganados de Els Ports invernando en sus llanos.",
+    "nota": "Capital de la orden de Montesa tras la caída del Temple: tierra de lana y de arrieros, con los ganados de Els Ports invernando en sus llanos.",
   },
   {
     "id": "baix-maestrat",
@@ -91,7 +91,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": false,
-    "nota": "El penyon de Peñiscola y los puertos de Vinaros y Benicarlo, que embarcaban vino y algarroba hacia Italia: costa de pescadores y de corsarios.",
+    "nota": "El peñón de Peñíscola y los puertos de Vinaròs y Benicarló, que embarcaban vino y algarroba hacia Italia: costa de pescadores y de corsarios.",
   },
   {
     "id": "alt-millars",
@@ -147,7 +147,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vega-fluvial"],
     "esOrigen": true,
-    "nota": "Llanura de regadio ganada al secano con las acequias del Millars: canyamo, algarroba y huerta, con el Grau de Castello embarcando hacia Barcelona.",
+    "nota": "Llanura de regadío ganada al secano con las acequias del Millars: cáñamo, algarroba y huerta, con el Grau de Castelló embarcando hacia Barcelona.",
   },
   {
     "id": "plana-baixa",
@@ -175,7 +175,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Huerta de acequia y alfarerias de Onda, cuya azulejeria compitio con la de Manises: la morisma trabajo esta tierra hasta la expulsion.",
+    "nota": "Huerta de acequia y alfarerías de Onda, cuya azulejería compitió con la de Manises: la morisma trabajó esta tierra hasta la expulsión.",
   },
   {
     "id": "alt-palancia",
@@ -203,7 +203,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "El corredor del Palancia, camino natural de Valencia a Aragon, con obispado en Segorbe y regadio corto en el fondo del valle.",
+    "nota": "El corredor del Palancia, camino natural de Valencia a Aragón, con obispado en Segorbe y regadío corto en el fondo del valle.",
   },
   // --- Valencia y su huerta ----------------------------------------------------------------------
   {
@@ -232,7 +232,7 @@
     ],
     "rasgos": ["puerto-de-mar", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Saguntum y su teatro sobre el mar, con el Grau Vell de puerto: aqui empieza la Via Augusta hacia el sur y la huerta de Valencia hacia el interior.",
+    "nota": "Saguntum y su teatro sobre el mar, con el Grau Vell de puerto: aquí empieza la Vía Augusta hacia el sur y la huerta de Valencia hacia el interior.",
   },
   {
     "id": "horta-de-valencia",
@@ -260,7 +260,7 @@
     ],
     "rasgos": ["vega-fluvial", "ciudad-episcopal", "puerto-de-mar", "marisma", "villa-de-feria"],
     "esOrigen": true,
-    "nota": "La huerta mayor de la peninsula, con el Tribunal de las Aguas repartiendo ocho acequias, la Albufera al sur y la loza dorada de Manises. Su feria la anyade T-014.",
+    "nota": "La huerta mayor de la península, con el Tribunal de las Aguas repartiendo ocho acequias, la Albufera al sur y la loza dorada de Manises. Su feria la añade T-014.",
   },
   {
     "id": "la-ribera",
@@ -288,7 +288,7 @@
     ],
     "rasgos": ["vega-fluvial", "marisma"],
     "esOrigen": false,
-    "nota": "El Jucar bajo: arrozales en los marjales de Sueca, morera para la seda y naranjos despues. La tierra mas productiva y la que peor se inunda.",
+    "nota": "El Júcar bajo: arrozales en los marjales de Sueca, morera para la seda y naranjos después. La tierra más productiva y la que peor se inunda.",
   },
   {
     "id": "la-safor",
@@ -316,7 +316,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "El ducado de Gandia de los Borja: canyas de azucar con trapiches propios, el primer azucar de Europa occidental, y un puerto que lo embarcaba.",
+    "nota": "El ducado de Gandía de los Borja: cañas de azúcar con trapiches propios, el primer azúcar de Europa occidental, y un puerto que lo embarcaba.",
   },
   {
     "id": "la-costera",
@@ -344,7 +344,7 @@
     ],
     "rasgos": ["vega-fluvial", "calzada-romana"],
     "esOrigen": false,
-    "nota": "En Xativa se hizo el primer papel de Europa, en molinos andalusies del siglo XI, y de aqui salieron los Borja: castillo doble y camino real a Castilla.",
+    "nota": "En Xàtiva se hizo el primer papel de Europa, en molinos andalusíes del siglo XI, y de aquí salieron los Borja: castillo doble y camino real a Castilla.",
   },
   {
     "id": "vall-d-albaida",
@@ -372,7 +372,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Valle de batanes y telares entre sierras: el panyo de Ontinyent y Bocairent se vendia en Castilla, y la morera daba la otra mitad del jornal.",
+    "nota": "Valle de batanes y telares entre sierras: el paño de Ontinyent y Bocairent se vendía en Castilla, y la morera daba la otra mitad del jornal.",
   },
   {
     "id": "el-comtat",
@@ -400,7 +400,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Sierras de Mariola y Aitana cortadas por barrancos, con agua todo el anyo: batanes, papel y panyo, y la nieve de los pozos de Mariola bajando a Alicante.",
+    "nota": "Sierras de Mariola y Aitana cortadas por barrancos, con agua todo el año: batanes, papel y paño, y la nieve de los pozos de Mariola bajando a Alicante.",
   },
   {
     "id": "els-serrans",
@@ -428,7 +428,7 @@
     ],
     "rasgos": ["pinar-maderable"],
     "esOrigen": false,
-    "nota": "Serranias del Turia con acueducto romano y pinares: la madera bajaba por el rio en maderadas hasta la propia ciudad de Valencia.",
+    "nota": "Serranías del Turia con acueducto romano y pinares: la madera bajaba por el río en maderadas hasta la propia ciudad de Valencia.",
   },
   {
     "id": "utiel-requena",
@@ -456,7 +456,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Meseta de vinyedo a 700 metros que fue castellana hasta el siglo XIX: de aqui bajaba el vino a Valencia por el camino de las Cabrillas.",
+    "nota": "Meseta de viñedo a 700 metros que fue castellana hasta el siglo XIX: de aquí bajaba el vino a Valencia por el camino de las Cabrillas.",
   },
   {
     "id": "hoya-de-bunyol",
@@ -484,7 +484,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "El escalon entre la meseta de Requena y la huerta, con el desfiladero de las Cabrillas: ventas, arrieria y carbon de monte bajo.",
+    "nota": "El escalón entre la meseta de Requena y la huerta, con el desfiladero de las Cabrillas: ventas, arriería y carbón de monte bajo.",
   },
   {
     "id": "vall-d-ayora",
@@ -512,7 +512,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Valle largo entre el Jucar y el Cabriel, de frontera con Castilla: el castillo de Almansa guarda el paso por el que entra y sale todo.",
+    "nota": "Valle largo entre el Júcar y el Cabriel, de frontera con Castilla: el castillo de Almansa guarda el paso por el que entra y sale todo.",
   },
   // --- Alicante --------------------------------------------------------------------------------
   {
@@ -541,7 +541,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": false,
-    "nota": "Daniya fue taifa y puerto de la ruta de Mallorca: pasa de moscatel puesta a secar en riu-raus, pesca de almadraba y el marjal de Pego detras.",
+    "nota": "Daniya fue taifa y puerto de la ruta de Mallorca: pasa de moscatel puesta a secar en riu-raus, pesca de almadraba y el marjal de Pego detrás.",
   },
   {
     "id": "marina-baixa",
@@ -569,7 +569,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Costa de torres vigia contra los corsarios berberiscos, con huertas de riego colgadas en los barrancos del Algar y el Guadalest.",
+    "nota": "Costa de torres vigía contra los corsarios berberiscos, con huertas de riego colgadas en los barrancos del Algar y el Guadalest.",
   },
   {
     "id": "alacanti",
@@ -597,7 +597,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": true,
-    "nota": "Puerto de Castilla en el Mediterraneo por concesion de los Reyes Catolicos: vino de fondillon, almendra y el pantano de Tibi regando su huerta.",
+    "nota": "Puerto de Castilla en el Mediterráneo por concesión de los Reyes Católicos: vino de fondillón, almendra y el pantano de Tibi regando su huerta.",
   },
   {
     "id": "el-vinalopo",
@@ -625,7 +625,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "El corredor del Vinalopo, camino de Castilla al mar y cabeza del marquesado de Villena: vinyedo, esparto y la laguna salada de Villena.",
+    "nota": "El corredor del Vinalopó, camino de Castilla al mar y cabeza del marquesado de Villena: viñedo, esparto y la laguna salada de Villena.",
   },
   {
     "id": "baix-vinalopo",
@@ -652,7 +652,7 @@
     ],
     "rasgos": ["vega-fluvial", "marisma"],
     "esOrigen": false,
-    "nota": "El palmeral de Elche, regadio salobre heredado de al-Andalus, con esparto en Crevillent y las salinas de Santa Pola a un paso.",
+    "nota": "El palmeral de Elche, regadío salobre heredado de al-Andalus, con esparto en Crevillent y las salinas de Santa Pola a un paso.",
   },
   {
     "id": "vega-baixa",
@@ -681,7 +681,7 @@
     ],
     "rasgos": ["vega-fluvial", "salinas-historicas", "ciudad-episcopal", "marisma"],
     "esOrigen": true,
-    "nota": "La huerta del Segura bajo y las salinas de La Mata y Torrevieja, regalia desde 1389: pan, canyamo y sal en la misma comarca, cosa rara en el mapa.",
+    "nota": "La huerta del Segura bajo y las salinas de La Mata y Torrevieja, regalía desde 1389: pan, cáñamo y sal en la misma comarca, cosa rara en el mapa.",
   },
   // --- Murcia ------------------------------------------------------------------------------------
   {
@@ -710,7 +710,7 @@
     ],
     "rasgos": ["vega-fluvial", "ciudad-episcopal"],
     "esOrigen": true,
-    "nota": "La huerta del Segura con sus azudes y norias andalusies y el Consejo de Hombres Buenos repartiendo el agua: morera, seda y pimiento.",
+    "nota": "La huerta del Segura con sus azudes y norias andalusíes y el Consejo de Hombres Buenos repartiendo el agua: morera, seda y pimiento.",
   },
   {
     "id": "valle-de-ricote",
@@ -738,7 +738,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "El ultimo valle morisco de la peninsula, encomienda santiaguista: huerta encajada entre canyones, con norias, azudes y palmeras.",
+    "nota": "El último valle morisco de la península, encomienda santiaguista: huerta encajada entre cañones, con norias, azudes y palmeras.",
   },
   {
     "id": "altiplano-de-yecla",
@@ -764,7 +764,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Altiplano de secano entre el reino de Murcia y el de Valencia: vinya de monastrell, esparto y pasto de invierno para los ganados manchegos.",
+    "nota": "Altiplano de secano entre el reino de Murcia y el de Valencia: viña de monastrell, esparto y pasto de invierno para los ganados manchegos.",
   },
   {
     "id": "campo-de-cartagena",
@@ -793,7 +793,7 @@
     ],
     "rasgos": ["puerto-de-mar", "salinas-historicas", "marisma"],
     "esOrigen": true,
-    "nota": "Carthago Nova: la mejor darsena natural del Mediterraneo occidental, con las salinas del Mar Menor, el esparto del campo y las minas viejas de la Union.",
+    "nota": "Carthago Nova: la mejor dársena natural del Mediterráneo occidental, con las salinas del Mar Menor, el esparto del campo y las minas viejas de la Unión.",
   },
   {
     "id": "noroeste-murciano",
@@ -821,7 +821,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Encomienda santiaguista en la frontera con Granada, con la Vera Cruz de romeria: sierras de pinar, pasto de verano y castillos cada legua.",
+    "nota": "Encomienda santiaguista en la frontera con Granada, con la Vera Cruz de romería: sierras de pinar, pasto de verano y castillos cada legua.",
   },
   {
     "id": "valle-del-guadalentin",
@@ -875,7 +875,7 @@
     ],
     "rasgos": ["puerto-de-mar"],
     "esOrigen": false,
-    "nota": "Costa arida de almadrabas y torres: las alumbreras de Mazarron surtieron de alumbre a los tintoreros de media Europa, pero el juego no tiene ese bien.",
+    "nota": "Costa árida de almadrabas y torres: las alumbreras de Mazarrón surtieron de alumbre a los tintoreros de media Europa, pero el juego no tiene ese bien.",
   },
 
   {
@@ -903,7 +903,7 @@
     ],
     "rasgos": ["pasto-de-verano", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Las sierras altas de Teruel, frias y de pinar: pasto de verano para los ganados del Maestrazgo y neveros que vendian hielo a Valencia.",
+    "nota": "Las sierras altas de Teruel, frías y de pinar: pasto de verano para los ganados del Maestrazgo y neveros que vendían hielo a Valencia.",
   },
   {
     "id": "campos-de-hellin",
@@ -930,7 +930,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "El corredor entre la Mancha y Murcia, con azufre en Hellin y huerta en el Mundo: esparto, azafran y el camino real de Cartagena.",
+    "nota": "El corredor entre la Mancha y Murcia, con azufre en Hellín y huerta en el Mundo: esparto, azafrán y el camino real de Cartagena.",
   },
   {
     "id": "corredor-de-almansa",
@@ -957,6 +957,6 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "El paso llano entre la Mancha y el reino de Valencia, con lagunas salobres y esparto: por aqui entran y salen los ejercitos y los rebanyos.",
+    "nota": "El paso llano entre la Mancha y el reino de Valencia, con lagunas salobres y esparto: por aquí entran y salen los ejércitos y los rebaños.",
   },
 ]

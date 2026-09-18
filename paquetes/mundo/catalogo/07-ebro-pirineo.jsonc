@@ -34,7 +34,7 @@
     ],
     "rasgos": ["ferreria-de-agua", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Valle universal del Baztan, hidalgo por fuero entero: hayedo, ferrerias en el Bidasoa con vena traida de Vizcaya y el paso a Francia por Dantxarinea.",
+    "nota": "Valle universal del Baztán, hidalgo por fuero entero: hayedo, ferrerías en el Bidasoa con vena traída de Vizcaya y el paso a Francia por Dantxarinea.",
   },
   {
     "id": "cuenca-de-pamplona",
@@ -62,7 +62,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "camino-de-santiago", "vega-fluvial"],
     "esOrigen": true,
-    "nota": "Cabeza del reino de Navarra en una cuenca cerrada y fertil: tres burgos amurallados, obispado y la puerta del camino frances por Roncesvalles.",
+    "nota": "Cabeza del reino de Navarra en una cuenca cerrada y fértil: tres burgos amurallados, obispado y la puerta del camino francés por Roncesvalles.",
   },
   {
     "id": "valles-pirenaicos-navarros",
@@ -90,7 +90,7 @@
     ],
     "rasgos": ["pasto-de-verano", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Los valles de Roncal y Salazar, con junta propia y tributo de las tres vacas: queso, pino bajado en almadias por el Esca y pastos que invernan en las Bardenas.",
+    "nota": "Los valles de Roncal y Salazar, con junta propia y tributo de las tres vacas: queso, pino bajado en almadías por el Esca y pastos que invernan en las Bardenas.",
   },
   {
     "id": "sanguesa",
@@ -118,7 +118,7 @@
     ],
     "rasgos": ["camino-de-santiago"],
     "esOrigen": false,
-    "nota": "Puerto seco del reino sobre el Aragon, con puente y aduana: por aqui entraba el camino aragones y salia la lana navarra hacia Francia.",
+    "nota": "Puerto seco del reino sobre el Aragón, con puente y aduana: por aquí entraba el camino aragonés y salía la lana navarra hacia Francia.",
   },
   {
     "id": "tierra-estella",
@@ -146,7 +146,7 @@
     ],
     "rasgos": ["camino-de-santiago", "vinyedo"],
     "esOrigen": false,
-    "nota": "Lizarra, villa de francos en el camino, con feria y barrio de mercaderes; la sierra de Urbasa por encima y el vinyedo de la Solana por debajo.",
+    "nota": "Lizarra, villa de francos en el camino, con feria y barrio de mercaderes; la sierra de Urbasa por encima y el viñedo de la Solana por debajo.",
   },
   {
     "id": "valdizarbe-y-tafalla",
@@ -174,7 +174,7 @@
     ],
     "rasgos": ["vinyedo", "camino-de-santiago"],
     "esOrigen": false,
-    "nota": "El palacio real de Olite y la corte itinerante de Navarra: vinyedo, olivar y el punto donde se juntan los dos caminos de Santiago.",
+    "nota": "El palacio real de Olite y la corte itinerante de Navarra: viñedo, olivar y el punto donde se juntan los dos caminos de Santiago.",
   },
   {
     "id": "ribera-de-tudela",
@@ -202,7 +202,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": true,
-    "nota": "La huerta mayor del Ebro medio, con las acequias que dejaron los moros y una aljama que siguio trabajandolas: verdura, canyamo y trigo de regadio.",
+    "nota": "La huerta mayor del Ebro medio, con las acequias que dejaron los moros y una aljama que siguió trabajándolas: verdura, cáñamo y trigo de regadío.",
   },
   {
     "id": "bardenas",
@@ -230,7 +230,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Desierto de yeso y barrancos sin un arbol: labor 1 en terreno llano porque aqui no se siembra, se apacienta. Es el invernadero de los valles pirenaicos, con sus derechos de paso reconocidos desde el siglo XIII.",
+    "nota": "Desierto de yeso y barrancos sin un árbol: labor 1 en terreno llano porque aquí no se siembra, se apacienta. Es el invernadero de los valles pirenaicos, con sus derechos de paso reconocidos desde el siglo XIII.",
   },
   // --- Aragon ------------------------------------------------------------------------------------
   {
@@ -259,7 +259,7 @@
     ],
     "rasgos": ["camino-de-santiago", "ciudad-episcopal", "pasto-de-verano"],
     "esOrigen": true,
-    "nota": "Primera capital del reino de Aragon y primer fuero de villa: catedral, mercado de los jueves desde 1063 y el puerto del Somport encima.",
+    "nota": "Primera capital del reino de Aragón y primer fuero de villa: catedral, mercado de los jueves desde 1063 y el puerto del Somport encima.",
   },
   {
     "id": "alto-gallego",
@@ -287,7 +287,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "El valle de Tena bajando al Serrablo, con sus iglesias mozarabes de torre: puertos de verano, ganado trashumante y el paso de Portalet.",
+    "nota": "El valle de Tena bajando al Serrablo, con sus iglesias mozárabes de torre: puertos de verano, ganado trashumante y el paso de Portalet.",
   },
   {
     "id": "sobrarbe",
@@ -315,7 +315,7 @@
     ],
     "rasgos": ["pasto-de-verano", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Los canyones de Ordesa y Anisclo por encima de la villa de Ainsa: puertos de verano arrendados a ganaderos franceses y pino bajado por el Cinca.",
+    "nota": "Los cañones de Ordesa y Añisclo por encima de la villa de Aínsa: puertos de verano arrendados a ganaderos franceses y pino bajado por el Cinca.",
   },
   {
     "id": "ribagorza",
@@ -343,7 +343,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Condado propio hasta que entro en Aragon, con la catedral de Roda de Isabena en una aldea: valles del Esera y el Isabena, ganado y madera.",
+    "nota": "Condado propio hasta que entró en Aragón, con la catedral de Roda de Isábena en una aldea: valles del Ésera y el Isábena, ganado y madera.",
   },
   {
     "id": "hoya-de-huesca",
@@ -399,7 +399,7 @@
     ],
     "rasgos": ["vinyedo", "ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "El pie de monte del Cinca, de vinya y olivar, con las salinas menores de Naval abasteciendo la comarca: sal la hubo, pero nunca de regalia.",
+    "nota": "El pie de monte del Cinca, de viña y olivar, con las salinas menores de Naval abasteciendo la comarca: sal la hubo, pero nunca de regalía.",
   },
   {
     "id": "cinco-villas",
@@ -427,7 +427,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Cereal de secano y regadio del Arba entre el Pirineo y el Ebro, con las cinco villas de voto en Cortes y las canyadas bajando hacia las Bardenas.",
+    "nota": "Cereal de secano y regadío del Arba entre el Pirineo y el Ebro, con las cinco villas de voto en Cortes y las cañadas bajando hacia las Bardenas.",
   },
   {
     "id": "zaragoza",
@@ -455,7 +455,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Caesaraugusta, capital del reino y del Ebro navegable: huerta de acequias, mudejares, dos catedrales y el puente de piedra que cobraba a todo el que cruzaba.",
+    "nota": "Caesaraugusta, capital del reino y del Ebro navegable: huerta de acequias, mudéjares, dos catedrales y el puente de piedra que cobraba a todo el que cruzaba.",
   },
   {
     "id": "monegros",
@@ -483,7 +483,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Estepa de sabina y saladares con menos de 350 mm de lluvia: se sembraba a suerte y se vivia del ganado que bajaba del Pirineo a invernar.",
+    "nota": "Estepa de sabina y saladares con menos de 350 mm de lluvia: se sembraba a suerte y se vivía del ganado que bajaba del Pirineo a invernar.",
   },
   {
     "id": "campo-de-carinyena",
@@ -511,7 +511,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Vinyedo documentado desde los romanos en las terrazas del Huerva y el Jalon: el vino de Carinyena se cargaba en el Ebro hacia Tortosa.",
+    "nota": "Viñedo documentado desde los romanos en las terrazas del Huerva y el Jalón: el vino de Cariñena se cargaba en el Ebro hacia Tortosa.",
   },
   {
     "id": "ribera-baja-del-ebro",
@@ -539,7 +539,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Encomienda sanjuanista donde se firmo el Compromiso de 1412: olivar, vinya y el Ebro navegable con barcazas hasta Tortosa.",
+    "nota": "Encomienda sanjuanista donde se firmó el Compromiso de 1412: olivar, viña y el Ebro navegable con barcazas hasta Tortosa.",
   },
   {
     "id": "bajo-aragon",
@@ -567,7 +567,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "Cabeza de la orden de Calatrava en Aragon sobre el Guadalope: olivar de empeltre, azafran y el mejor aceite que salia por el Ebro.",
+    "nota": "Cabeza de la orden de Calatrava en Aragón sobre el Guadalope: olivar de empeltre, azafrán y el mejor aceite que salía por el Ebro.",
   },
   {
     "id": "cuencas-mineras",
@@ -595,7 +595,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Sierras del Martin y de San Just, de sabinar y pasto; el carbon de Utrillas no se explota hasta el siglo XIX, asi que aqui no cuenta.",
+    "nota": "Sierras del Martín y de San Just, de sabinar y pasto; el carbón de Utrillas no se explota hasta el siglo XIX, así que aquí no cuenta.",
   },
   {
     "id": "comunidad-de-teruel",
@@ -623,7 +623,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Ultima fundacion del reino, en 1171, con comunidad de aldeas y torres mudejares: la fuente de Cella riega una vega corta en tierra muy fria.",
+    "nota": "Última fundación del reino, en 1171, con comunidad de aldeas y torres mudéjares: la fuente de Cella riega una vega corta en tierra muy fría.",
   },
   // --- Pirineo catalan y el interior ---------------------------------------------------------------
   {
@@ -651,7 +651,7 @@
     ],
     "rasgos": ["pasto-de-verano", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Condado del Pallars con puertos de alta montanya y raiers que bajaban la madera por la Noguera hasta Lleida y Tortosa.",
+    "nota": "Condado del Pallars con puertos de alta montaña y raiers que bajaban la madera por la Noguera hasta Lleida y Tortosa.",
   },
   {
     "id": "alt-urgell",
@@ -679,7 +679,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "El obispo de Urgell es cosenyor de los valles de Andorra desde el pareaje de 1278: prados de siega, queso y el mercado de la Seu.",
+    "nota": "El obispo de Urgell es coseñor de los valles de Andorra desde el pareaje de 1278: prados de siega, queso y el mercado de la Seu.",
   },
   {
     "id": "cerdanya",
@@ -707,7 +707,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Un valle llano a 1 100 metros, raro en el Pirineo: prados de siega, vacas y la villa nueva de Puigcerda fundada en 1177 para mandar en ellos.",
+    "nota": "Un valle llano a 1 100 metros, raro en el Pirineo: prados de siega, vacas y la villa nueva de Puigcerdà fundada en 1177 para mandar en ellos.",
   },
   {
     "id": "ripolles",
@@ -736,7 +736,7 @@
     ],
     "rasgos": ["vena-de-hierro", "ferreria-de-agua", "pasto-de-verano"],
     "esOrigen": true,
-    "nota": "El hierro del Pirineo oriental y la farga catalana, que daba acero con un solo fuego: Ripoll fue taller de armas y clavazon, y su monasterio, la cuna del condado.",
+    "nota": "El hierro del Pirineo oriental y la farga catalana, que daba acero con un solo fuego: Ripoll fue taller de armas y clavazón, y su monasterio, la cuna del condado.",
   },
   {
     "id": "bergueda",
@@ -764,7 +764,7 @@
     ],
     "rasgos": ["pasto-de-verano", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "El escalon entre el Cadi y el Llobregat, anyadido al cerrar la entrega porque quedaba un hueco: pinar, pasto de verano y el camino de la sal de Cardona hacia la Cerdanya.",
+    "nota": "El escalón entre el Cadí y el Llobregat, añadido al cerrar la entrega porque quedaba un hueco: pinar, pasto de verano y el camino de la sal de Cardona hacia la Cerdanya.",
   },
   {
     "id": "cardona-y-el-solsones",
@@ -793,7 +793,7 @@
     ],
     "rasgos": ["salinas-historicas"],
     "esOrigen": true,
-    "nota": "La montanya de sal de Cardona, un diapiro que aflora en la superficie: los vizcondes vivieron de su renta desde el siglo IX y fue la sal de media Cataluña.",
+    "nota": "La montaña de sal de Cardona, un diapiro que aflora en la superficie: los vizcondes vivieron de su renta desde el siglo IX y fue la sal de media Cataluña.",
   },
   {
     "id": "bages",
@@ -821,7 +821,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "La Seu de Manresa y la Sequia que trajo el agua del Llobregat en 1339: vinya en bancales, molinos y el camino de Cardona a Barcelona.",
+    "nota": "La Seu de Manresa y la Sequía que trajo el agua del Llobregat en 1339: viña en bancales, molinos y el camino de Cardona a Barcelona.",
   },
   {
     "id": "osona",
@@ -849,7 +849,7 @@
     ],
     "rasgos": ["ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "La plana de Vic, obispado desde el siglo IX y mercado de embutidos y ganado: niebla en invierno y el mejor cereal del interior catalan.",
+    "nota": "La plana de Vic, obispado desde el siglo IX y mercado de embutidos y ganado: niebla en invierno y el mejor cereal del interior catalán.",
   },
   // --- Lleida, el sur y la costa -------------------------------------------------------------------
   {
@@ -878,7 +878,7 @@
     ],
     "rasgos": ["vega-fluvial", "ciudad-episcopal", "villa-de-feria"],
     "esOrigen": true,
-    "nota": "La huerta del Segre con las acequias andalusies, la Seu Vella en lo alto y estudio general desde 1300: el granero de Cataluña. Su feria entra en T-014.",
+    "nota": "La huerta del Segre con las acequias andalusíes, la Seu Vella en lo alto y estudio general desde 1300: el granero de Cataluña. Su feria entra en T-014.",
   },
   {
     "id": "urgell-i-segarra",
@@ -962,7 +962,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Villa ducal amurallada al pie de Poblet: el cister de Poblet y Santes Creus organizo aqui el vinyedo y la granja desde el siglo XII.",
+    "nota": "Villa ducal amurallada al pie de Poblet: el Císter de Poblet y Santes Creus organizó aquí el viñedo y la granja desde el siglo XII.",
   },
   {
     "id": "priorat",
@@ -990,7 +990,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "Las laderas de llicorella de la cartuja de Escaladei, que planto la vinya en el siglo XII: vino negro y fuerte en la peor tierra del principado.",
+    "nota": "Las laderas de llicorella de la cartuja de Escaladei, que plantó la viña en el siglo XII: vino negro y fuerte en la peor tierra del principado.",
   },
   {
     "id": "camp-de-tarragona",
@@ -1018,7 +1018,7 @@
     ],
     "rasgos": ["puerto-de-mar", "calzada-romana", "ciudad-episcopal"],
     "esOrigen": false,
-    "nota": "Tarraco, capital de la Hispania Citerior y arzobispado restaurado en 1091: puerto, avellana, vino y la Via Augusta entrando por sus arcos.",
+    "nota": "Tarraco, capital de la Hispania Citerior y arzobispado restaurado en 1091: puerto, avellana, vino y la Vía Augusta entrando por sus arcos.",
   },
   {
     "id": "terres-de-l-ebre",
@@ -1046,7 +1046,7 @@
     ],
     "rasgos": ["puerto-de-mar", "marisma", "ciudad-episcopal", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "El ultimo puerto fluvial del Ebro y la puerta del delta: arroz, pesca de bajura y las barcazas que subian sal y bajaban trigo de Aragon.",
+    "nota": "El último puerto fluvial del Ebro y la puerta del delta: arroz, pesca de bajura y las barcazas que subían sal y bajaban trigo de Aragón.",
   },
   {
     "id": "penedes",
@@ -1074,7 +1074,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "La comarca del vino de Barcelona: vinya desde la reconquista del siglo X, mercado en Vilafranca y embarque en las playas de Sitges y Vilanova.",
+    "nota": "La comarca del vino de Barcelona: viña desde la reconquista del siglo X, mercado en Vilafranca y embarque en las playas de Sitges y Vilanova.",
   },
   {
     "id": "barcelona",
@@ -1130,7 +1130,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo"],
     "esOrigen": false,
-    "nota": "Franja estrecha entre la sierra y el mar: huerta de riego, vinya de malvasia y playas de pescadores que armaban para el corso y la sardina.",
+    "nota": "Franja estrecha entre la sierra y el mar: huerta de riego, viña de malvasía y playas de pescadores que armaban para el corso y la sardina.",
   },
   {
     "id": "girona-i-la-selva",
@@ -1158,7 +1158,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Llave del corredor entre Francia y Barcelona, con obispado, call judio y los banyos arabes: bosque, corcho y la Via Augusta cruzandola.",
+    "nota": "Llave del corredor entre Francia y Barcelona, con obispado, call judío y los baños árabes: bosque, corcho y la Vía Augusta cruzándola.",
   },
   {
     "id": "emporda",
@@ -1186,7 +1186,7 @@
     ],
     "rasgos": ["puerto-de-mar", "vinyedo", "marisma"],
     "esOrigen": false,
-    "nota": "El llano del Fluvia y el Muga, con los condes de Empuries y el puerto de Roses sobre la antigua Rhode: trigo, vino y tramontana.",
+    "nota": "El llano del Fluvià y el Muga, con los condes de Empúries y el puerto de Roses sobre la antigua Rhode: trigo, vino y tramontana.",
   },
 
   {
@@ -1214,7 +1214,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "El unico valle pirenaico que vierte al Atlantico, con conselh general y fueros propios desde 1313: prados, vaca y nieve media montanya.",
+    "nota": "El único valle pirenaico que vierte al Atlántico, con conselh general y fueros propios desde 1313: prados, vaca y nieve media montaña.",
   },
   {
     "id": "alta-ribagorza",
@@ -1241,7 +1241,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Los valles altos del Esera y la Noguera Ribagorzana bajo el Aneto: puertos de verano arrendados y ganado que baja a invernar al Cinca.",
+    "nota": "Los valles altos del Ésera y la Noguera Ribagorzana bajo el Aneto: puertos de verano arrendados y ganado que baja a invernar al Cinca.",
   },
   {
     "id": "pallars-jussa",
@@ -1267,7 +1267,7 @@
     ],
     "rasgos": ["vinyedo"],
     "esOrigen": false,
-    "nota": "La conca de Tremp, hoya cerrada entre sierras: cereal y vinya en el fondo, pasto en el Montsec y el paso de la Noguera hacia el llano.",
+    "nota": "La conca de Tremp, hoya cerrada entre sierras: cereal y viña en el fondo, pasto en el Montsec y el paso de la Noguera hacia el llano.",
   },
   {
     "id": "la-noguera",
@@ -1294,7 +1294,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "El Segre medio entre el Pirineo y el llano de Urgell, tierra de castillos de frontera: secano, huerta de ribera y molinos en el rio.",
+    "nota": "El Segre medio entre el Pirineo y el llano de Urgell, tierra de castillos de frontera: secano, huerta de ribera y molinos en el río.",
   },
   {
     "id": "tierra-de-alcubierre",
@@ -1320,7 +1320,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "La sierra de Alcubierre y su llano de sabina y estepa: corral, carrasca y pasto de invierno para los rebanyos del Pirineo. Se siembra poco y se cosecha menos.",
+    "nota": "La sierra de Alcubierre y su llano de sabina y estepa: corral, carrasca y pasto de invierno para los rebaños del Pirineo. Se siembra poco y se cosecha menos.",
   },
   {
     "id": "campo-de-belchite",
@@ -1347,7 +1347,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Estepa de yesos al sur del Ebro, de olivar corto y ganado: por aqui pasa la canyada que baja del Moncayo al valle del Ebro.",
+    "nota": "Estepa de yesos al sur del Ebro, de olivar corto y ganado: por aquí pasa la cañada que baja del Moncayo al valle del Ebro.",
   },
   {
     "id": "bajo-martin",
@@ -1374,6 +1374,6 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "El Martin antes de entrar en el Ebro, senyorio de la orden de Santiago: huerta estrecha en la vega, olivar y azafran en el secano.",
+    "nota": "El Martín antes de entrar en el Ebro, señorío de la orden de Santiago: huerta estrecha en la vega, olivar y azafrán en el secano.",
   },
 ]

@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -280,5 +280,30 @@ describe('el archivo de ejemplo se lee tal cual esta en el repositorio', () => {
   it('conserva sus comentarios', () => {
     const texto = readFileSync(join(CATALOGO, '00-ejemplo.jsonc'), 'utf8');
     expect(texto).toMatch(/\/\/ Region de ejemplo/);
+  });
+});
+
+describe('ortografia del texto visible del catalogo (T-016)', () => {
+  // Las formas ASCII que delatan una nota escrita sin tildes ni eñes (con limites de palabra
+  // Unicode: en JavaScript `\b` corta en cada letra acentuada). Los `id` y los rasgos
+  // (`vinyedo`, `canyada`) siguen en ASCII porque son claves; las notas son texto que se lee.
+  const DELATORAS =
+    /(?<!\p{L})(anyo|anyos|montanya|montanyas|canyada|canyadas|senyor|senyores|senyorio|vinya|vinyedo|panyo|panyos|campinya|castanyar|rebanyo|rebanyos|pequenya|historico|historica|epoca|peninsula|region|tambien|despues|aqui|mas|rio|via|ria|salia|azucar|Avila|Leon|Cordoba|Cadiz|Malaga|Jaen)(?!\p{L})/u;
+
+  it('la guarda salta si se reintroduce una nota en ASCII', () => {
+    expect(DELATORAS.test('El pinar de la montanya se corta cada anyo')).toBe(true);
+    expect(DELATORAS.test('El Páramo Leonés y la Lezíria do Tejo')).toBe(false);
+  });
+
+  it('ninguna nota ni nombre visible usa las formas ASCII delatoras', () => {
+    const texto = readdirSync(CATALOGO)
+      .filter((archivo) => archivo.endsWith('.jsonc') && !archivo.startsWith('00-'))
+      .map((archivo) => readFileSync(join(CATALOGO, archivo), 'utf8'))
+      .join('\n');
+    const campos = [...texto.matchAll(/"(?:nota|nombre|cabecera)": "((?:[^"\\]|\\.)*)"/g)].map(
+      (coincidencia) => coincidencia[1] ?? '',
+    );
+    const malos = campos.filter((valor) => DELATORAS.test(valor));
+    expect(malos).toEqual([]);
   });
 });

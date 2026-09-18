@@ -34,7 +34,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "cantera-noble", "pasto-de-verano"],
     "esOrigen": true,
-    "nota": "Ciudad amurallada de granito a 1 130 metros, cabeza de una Tierra de cien pueblos: lana, ganado y canteras. El pan siempre subio de la Moranya.",
+    "nota": "Ciudad amurallada de granito a 1 130 metros, cabeza de una Tierra de cien pueblos: lana, ganado y canteras. El pan siempre subió de la Moraña.",
   },
   {
     "id": "sierra-de-gredos",
@@ -62,7 +62,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Los mejores agostaderos de la Mesta: por aqui suben en mayo las cabanyas que invernan en la Serena y en las dehesas de Badajoz.",
+    "nota": "Los mejores agostaderos de la Mesta: por aquí suben en mayo las cabañas que invernan en la Serena y en las dehesas de Badajoz.",
   },
   {
     "id": "valle-del-tietar",
@@ -90,7 +90,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": false,
-    "nota": "La vertiente sur de Gredos, la Andalucia de Avila: castanyar, higuera, olivo y vinya al abrigo de la sierra, con el puerto del Pico encima.",
+    "nota": "La vertiente sur de Gredos, la Andalucía de Ávila: castañar, higuera, olivo y viña al abrigo de la sierra, con el puerto del Pico encima.",
   },
   {
     "id": "tierra-de-cebreros",
@@ -118,7 +118,7 @@
     ],
     "rasgos": ["vinyedo", "pinar-maderable"],
     "esOrigen": false,
-    "nota": "Valle del Alberche, entre el pinar y la vinya: el vino de Cebreros subia a Avila y a la corte, y los toros de Guisando llevan aqui dos mil anyos.",
+    "nota": "Valle del Alberche, entre el pinar y la viña: el vino de Cebreros subía a Ávila y a la corte, y los toros de Guisando llevan aquí dos mil años.",
   },
   {
     "id": "sierra-de-guadarrama",
@@ -146,7 +146,7 @@
     ],
     "rasgos": ["pasto-de-verano", "cantera-noble"],
     "esOrigen": false,
-    "nota": "Puertos de la Fuenfria y de Navacerrada, cerrados por nieve medio invierno, y canteras de granito con las que se levanto El Escorial.",
+    "nota": "Puertos de la Fuenfría y de Navacerrada, cerrados por nieve medio invierno, y canteras de granito con las que se levantó El Escorial.",
   },
   {
     "id": "sierra-norte-de-madrid",
@@ -174,7 +174,7 @@
     ],
     "rasgos": ["pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Villa murada del Real de Manzanares con el puerto de Somosierra detras: hayedo de Montejo, robledal y el paso de Castilla la Vieja a la Nueva.",
+    "nota": "Villa murada del Real de Manzanares con el puerto de Somosierra detrás: hayedo de Montejo, robledal y el paso de Castilla la Vieja a la Nueva.",
   },
   {
     "id": "tierra-de-bejar",
@@ -202,7 +202,7 @@
     ],
     "rasgos": ["pasto-de-verano", "calzada-romana"],
     "esOrigen": true,
-    "nota": "Panyos de Bejar y batanes en el Cuerpo de Hombre: la unica villa textil de la sierra, con la Via de la Plata subiendo por Banyos de Montemayor.",
+    "nota": "Paños de Béjar y batanes en el Cuerpo de Hombre: la única villa textil de la sierra, con la Vía de la Plata subiendo por Baños de Montemayor.",
   },
   {
     "id": "penya-de-francia",
@@ -230,7 +230,7 @@
     ],
     "rasgos": ["pasto-de-verano", "vinyedo"],
     "esOrigen": false,
-    "nota": "Castanyar, colmenas y bancales de vinya en las Batuecas, con el santuario de la Penya de Francia en lo alto: tierra de romeria y de miel.",
+    "nota": "Castañar, colmenas y bancales de viña en las Batuecas, con el santuario de la Peña de Francia en lo alto: tierra de romería y de miel.",
   },
   {
     "id": "campo-charro",
@@ -258,7 +258,7 @@
     ],
     "rasgos": ["dehesa"],
     "esOrigen": false,
-    "nota": "Encinar aclarado y cerrado de piedra: la dehesa charra cria el toro bravo y el cerdo, y da bellota en otonyo y pasto en invierno.",
+    "nota": "Encinar aclarado y cerrado de piedra: la dehesa charra cría el toro bravo y el cerdo, y da bellota en otoño y pasto en invierno.",
   },
   {
     "id": "tierra-de-ciudad-rodrigo",
@@ -286,7 +286,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "dehesa", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Plaza de la raya con Portugal sobre la calzada de la Dalmacia: obispado, murallas y una Tierra de dehesas y campo de Arganyan alrededor.",
+    "nota": "Plaza de la raya con Portugal sobre la calzada de la Dalmacia: obispado, murallas y una Tierra de dehesas y campo de Argañán alrededor.",
   },
   // --- Extremadura alta: sierras, valles y Via de la Plata ------------------------------------
   {
@@ -315,7 +315,7 @@
     ],
     "rasgos": ["pasto-de-verano", "vinyedo"],
     "esOrigen": false,
-    "nota": "Sierra de olivar y castanyar en la raya, con tres pueblos de fala propia: aceite, miel y pasto de verano para los rebanyos que invernan abajo.",
+    "nota": "Sierra de olivar y castañar en la raya, con tres pueblos de fala propia: aceite, miel y pasto de verano para los rebaños que invernan abajo.",
   },
   {
     "id": "las-hurdes",
@@ -343,7 +343,7 @@
     ],
     "rasgos": [],
     "esOrigen": false,
-    "nota": "Alquerias de pizarra en barrancos sin salida: huertos de terraza, miel y castanya. La comarca mas pobre y aislada de la sierra, y se nota en el mapa.",
+    "nota": "Alquerías de pizarra en barrancos sin salida: huertos de terraza, miel y castaña. La comarca más pobre y aislada de la sierra, y se nota en el mapa.",
   },
   {
     "id": "valle-del-ambroz",
@@ -370,7 +370,7 @@
     ],
     "rasgos": ["calzada-romana", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Por el Ambroz sube la Via de la Plata hacia Banyos de Montemayor: castanyar, juderia en Hervas y el paso natural de Extremadura a Castilla.",
+    "nota": "Por el Ambroz sube la Vía de la Plata hacia Baños de Montemayor: castañar, judería en Hervás y el paso natural de Extremadura a Castilla.",
   },
   {
     "id": "valle-del-jerte",
@@ -398,7 +398,7 @@
     ],
     "rasgos": ["vega-fluvial", "pasto-de-verano"],
     "esOrigen": false,
-    "nota": "Garganta recta entre dos sierras, aterrazada de cerezos desde el siglo XVI, con el puerto de Tornavacas cerrandola por arriba.",
+    "nota": "Garganta recta entre dos sierras, aterrazada de cerezos desde el siglo XVI, con el puerto de Tornavacas cerrándola por arriba.",
   },
   {
     "id": "la-vera",
@@ -426,7 +426,7 @@
     ],
     "rasgos": ["vega-fluvial", "vinyedo"],
     "esOrigen": false,
-    "nota": "Gargantas que bajan de Gredos y riegan huertas todo el anyo: pimiento, higo y vinya; a Yuste vino a morir el emperador por este clima.",
+    "nota": "Gargantas que bajan de Gredos y riegan huertas todo el año: pimiento, higo y viña; a Yuste vino a morir el emperador por este clima.",
   },
   {
     "id": "tierra-de-plasencia",
@@ -482,7 +482,7 @@
     ],
     "rasgos": ["dehesa"],
     "esOrigen": false,
-    "nota": "Llanura de arena entre Gredos y el Tajo, con dehesa de encina y el paso del rio por Almaraz: camino real de Madrid a Portugal.",
+    "nota": "Llanura de arena entre Gredos y el Tajo, con dehesa de encina y el paso del río por Almaraz: camino real de Madrid a Portugal.",
   },
   {
     "id": "tierra-de-coria",
@@ -510,7 +510,7 @@
     ],
     "rasgos": ["ciudad-episcopal", "vega-fluvial"],
     "esOrigen": false,
-    "nota": "Vega del Alagon dentro de la muralla romana: la mejor tierra de labor de Extremadura alta, con obispado y puente que el rio dejo en seco.",
+    "nota": "Vega del Alagón dentro de la muralla romana: la mejor tierra de labor de Extremadura alta, con obispado y puente que el río dejó en seco.",
   },
   {
     "id": "alcantara",
@@ -538,7 +538,7 @@
     ],
     "rasgos": ["calzada-romana", "dehesa"],
     "esOrigen": false,
-    "nota": "Al-qantara, el puente: la obra de Trajano sobre el Tajo que mando la frontera con Portugal durante mil anyos, y la cabeza de su orden militar.",
+    "nota": "Al-qantara, el puente: la obra de Trajano sobre el Tajo que mandó la frontera con Portugal durante mil años, y la cabeza de su orden militar.",
   },
   {
     "id": "sierra-de-san-pedro",
@@ -565,7 +565,7 @@
     ],
     "rasgos": ["dehesa", "montado"],
     "esOrigen": false,
-    "nota": "Alcornocal de la raya, mitad dehesa y mitad montado portugues: corcho, cerdo y contrabando; la sierra separa el Tajo del Guadiana.",
+    "nota": "Alcornocal de la raya, mitad dehesa y mitad montado portugués: corcho, cerdo y contrabando; la sierra separa el Tajo del Guadiana.",
   },
   {
     "id": "alburquerque",
@@ -621,7 +621,7 @@
     ],
     "rasgos": ["dehesa", "calzada-romana", "pasto-de-invierno"],
     "esOrigen": true,
-    "nota": "Norba Caesarina sobre la Via de la Plata: villa de casas fuertes y de senyores de ganado, con la dehesa boyal mas extensa de Extremadura.",
+    "nota": "Norba Caesarina sobre la Vía de la Plata: villa de casas fuertes y de señores de ganado, con la dehesa boyal más extensa de Extremadura.",
   },
   {
     "id": "tierra-de-trujillo",
@@ -649,7 +649,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno", "cantera-noble"],
     "esOrigen": false,
-    "nota": "Berrocal de granito y dehesa: una de las mayores Tierras concejiles de Castilla, con mas ovejas que vecinos y ferias de ganado en septiembre.",
+    "nota": "Berrocal de granito y dehesa: una de las mayores Tierras concejiles de Castilla, con más ovejas que vecinos y ferias de ganado en septiembre.",
   },
   {
     "id": "sierra-de-montanchez",
@@ -677,7 +677,7 @@
     ],
     "rasgos": ["dehesa", "vinyedo"],
     "esOrigen": false,
-    "nota": "Sierra de encina y castanyo entre dos llanos: el jamon de Montanchez se curaba en las bodegas de la villa y viajaba a la corte.",
+    "nota": "Sierra de encina y castaño entre dos llanos: el jamón de Montánchez se curaba en las bodegas de la villa y viajaba a la corte.",
   },
   {
     "id": "villuercas-e-ibores",
@@ -705,7 +705,7 @@
     ],
     "rasgos": ["pasto-de-verano", "cantera-noble"],
     "esOrigen": false,
-    "nota": "Sierras de cuarcita en crestas paralelas con el monasterio de Guadalupe dentro: el mayor senyorio jeronimo de Castilla, con romeria, hospital y ganaderia propia.",
+    "nota": "Sierras de cuarcita en crestas paralelas con el monasterio de Guadalupe dentro: el mayor señorío jerónimo de Castilla, con romería, hospital y ganadería propia.",
   },
   {
     "id": "la-siberia",
@@ -732,7 +732,7 @@
     ],
     "rasgos": ["dehesa", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Monte bajo y jaral entre el Guadiana y los montes de Toledo, tierra de invernadero para las cabanyas sorianas y de muy poca gente.",
+    "nota": "Monte bajo y jaral entre el Guadiana y los montes de Toledo, tierra de invernadero para las cabañas sorianas y de muy poca gente.",
   },
   // --- Guadiana, Tierra de Barros y el sur ------------------------------------------------------
   {
@@ -761,7 +761,7 @@
     ],
     "rasgos": ["calzada-romana", "vega-fluvial", "ciudad-episcopal"],
     "esOrigen": true,
-    "nota": "Emerita Augusta: puente de sesenta arcos, embalses romanos que aun riegan y el cruce de la Via de la Plata con el camino del Guadiana.",
+    "nota": "Emérita Augusta: puente de sesenta arcos, embalses romanos que aún riegan y el cruce de la Vía de la Plata con el camino del Guadiana.",
   },
   {
     "id": "vegas-del-guadiana",
@@ -789,7 +789,7 @@
     ],
     "rasgos": ["vega-fluvial"],
     "esOrigen": false,
-    "nota": "La vega ancha del Guadiana medio, con Medellin de puerto fluvial y mercado: la mejor labor de Extremadura, y la que pagaba el diezmo mas alto.",
+    "nota": "La vega ancha del Guadiana medio, con Medellín de puerto fluvial y mercado: la mejor labor de Extremadura, y la que pagaba el diezmo más alto.",
   },
   {
     "id": "tierra-de-badajoz",
@@ -871,7 +871,7 @@
     ],
     "rasgos": ["vinyedo", "calzada-romana"],
     "esOrigen": false,
-    "nota": "Tierra roja y profunda, la mejor de secano del suroeste: vinya y olivar desde epoca romana, con la Via de la Plata partiendola en dos.",
+    "nota": "Tierra roja y profunda, la mejor de secano del suroeste: viña y olivar desde época romana, con la Vía de la Plata partiéndola en dos.",
   },
   {
     "id": "zafra-rio-bodion",
@@ -899,7 +899,7 @@
     ],
     "rasgos": ["dehesa", "calzada-romana", "villa-de-feria"],
     "esOrigen": true,
-    "nota": "Segeda la de los duques de Feria: su feria de San Miguel movia el ganado de media Extremadura y Andalucia. La feria entra en T-014.",
+    "nota": "Segeda la de los duques de Feria: su feria de San Miguel movía el ganado de media Extremadura y Andalucía. La feria entra en T-014.",
   },
   {
     "id": "sierra-suroeste",
@@ -927,7 +927,7 @@
     ],
     "rasgos": ["dehesa", "montado", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Encomienda templaria primero y santiaguista despues: dehesa de bellota, cerdo iberico y alfarerias de Salvatierra.",
+    "nota": "Encomienda templaria primero y santiaguista después: dehesa de bellota, cerdo ibérico y alfarerías de Salvatierra.",
   },
   {
     "id": "tentudia",
@@ -955,7 +955,7 @@
     ],
     "rasgos": ["dehesa", "calzada-romana", "pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "El escalon de Sierra Morena por donde la Via de la Plata entra en Andalucia: dehesa de bellota y el priorato santiaguista de Tentudia arriba.",
+    "nota": "El escalón de Sierra Morena por donde la Vía de la Plata entra en Andalucía: dehesa de bellota y el priorato santiaguista de Tentudia arriba.",
   },
   {
     "id": "tierra-de-llerena",
@@ -983,7 +983,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Capital de la provincia de Leon de la Orden de Santiago, con tribunal de la Inquisicion y campinya cerealista alrededor.",
+    "nota": "Capital de la provincia de León de la Orden de Santiago, con tribunal de la Inquisición y campiña cerealista alrededor.",
   },
   {
     "id": "campinya-de-azuaga",
@@ -1010,7 +1010,7 @@
     ],
     "rasgos": ["pasto-de-invierno"],
     "esOrigen": false,
-    "nota": "Ultimo llano antes de Sierra Morena, con minas de plomo argentifero conocidas desde Roma que nunca llegaron a gran explotacion medieval.",
+    "nota": "Último llano antes de Sierra Morena, con minas de plomo argentífero conocidas desde Roma que nunca llegaron a gran explotación medieval.",
   },
   {
     "id": "la-serena",

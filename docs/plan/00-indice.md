@@ -30,7 +30,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-013](T-013-caminos-y-canyadas.md) | Caminos, puertos, vados y cañadas reales | **hecha** | T-015 |
 | [T-014](T-014-ferias-y-patrimonio.md) | Ferias, patrimonio y rasgos de comarca | **hecha** | T-015 |
 | [T-015](T-015-catalogo-resto-de-regiones.md) | Catálogo · regiones 2 a 10 (nueve entregas) | **hecha** | T-012 |
-| [T-016](T-016-ortografia-de-las-notas.md) | Ortografía de las notas del catálogo | pendiente | T-014 |
+| [T-016](T-016-ortografia-de-las-notas.md) | Ortografía de las notas del catálogo | **hecha** | T-014 |
 
 > **18-09-2026 · cambio de orden en la fase 1.** T-013 y T-014 se hacen *después* de T-015. Sus
 > datos (puertos de Pajares o Despeñaperros, cañadas de ocho a dieciséis comarcas, ferias de Medina,
