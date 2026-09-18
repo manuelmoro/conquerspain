@@ -4,7 +4,7 @@
 // El movimiento (T-033) la usa para gastar jornadas; el cliente, para ensenyar la prevision.
 import type { Camino } from '../tipos/mundo.ts';
 import type { CalidadCamino, Estacion, TablasDeReglas } from '../tipos/reglas.ts';
-import { multiplicarFactores } from '../utiles/enteros.ts';
+import { MIL, aEntero, aMilesimas, multiplicarFactores } from '../utiles/enteros.ts';
 
 /** Un puerto de montanya cuesta lo mismo sea cual sea el terreno de las comarcas que une. */
 export const JORNADAS_DE_PUERTO = 7;
@@ -29,21 +29,25 @@ function llevaPuente(camino: Camino, calidad: CalidadCamino, opciones: OpcionesD
   return opciones.puente === true || camino.calzadaRomana || calidad === 'calzada';
 }
 
+/** Lo que cuesta cruzar un tramo en milesimas de jornada, o `cerrado`. */
+export type CosteDeTramoMil = number | 'cerrado';
+
 /**
- * Jornadas que cuesta cruzar un tramo:
+ * Jornadas que cuesta cruzar un tramo, en milesimas y sin truncar:
  * `base × factor de camino × factores de estacion`, mas el vado, con un minimo de una jornada.
+ * Es lo que gasta una recua al andar (T-033).
  *
  * Un puerto de montanya en invierno es **intransitable** salvo que el tramo tenga calzada; esa es
  * la regla que hace existir la trashumancia y que convierte una obra en una decision (docs/03
  * §3.7.2).
  */
-export function jornadasDeTramo(
+export function jornadasDeTramoMil(
   camino: Camino,
   estacion: Estacion,
   calidad: CalidadCamino,
   reglas: TablasDeReglas,
   opciones: OpcionesDeTramo = {},
-): CosteDeTramo {
+): CosteDeTramoMil {
   const movimiento = reglas.movimiento;
   const esPuerto = camino.puertoDeMontanya !== null;
   const hayCalzada = camino.calzadaRomana || calidad === 'calzada';
@@ -63,8 +67,20 @@ export function jornadasDeTramo(
   if (estacion === 'verano') factores.push(movimiento.factorVeranoMil);
   if (opciones.barro === true) factores.push(movimiento.factorBarroMil);
 
-  const jornadas = multiplicarFactores(base, factores);
+  const jornadasMil = multiplicarFactores(aMilesimas(base), factores);
   const vado =
     camino.vado && !llevaPuente(camino, calidad, opciones) ? movimiento.jornadasDeVado : 0;
-  return Math.max(1, jornadas + vado);
+  return Math.max(MIL, jornadasMil + vado * MIL);
+}
+
+/** Lo mismo en jornadas enteras, truncadas: es la cifra que se ensenya en el mapa. */
+export function jornadasDeTramo(
+  camino: Camino,
+  estacion: Estacion,
+  calidad: CalidadCamino,
+  reglas: TablasDeReglas,
+  opciones: OpcionesDeTramo = {},
+): CosteDeTramo {
+  const mil = jornadasDeTramoMil(camino, estacion, calidad, reglas, opciones);
+  return mil === 'cerrado' ? mil : aEntero(mil);
 }

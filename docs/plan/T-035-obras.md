@@ -21,6 +21,11 @@ terminar.
 
 **No entra:** privilegios de casa sobre obras (T-041), prestigio (T-043).
 
+**Heredado de T-033.** La calidad de cada tramo sale hoy de `calidadDeTramo` (`reglas/ruta.ts`):
+calzada romana → carretero, lo demás vereda. Los caminos y puentes que se construyan tienen que
+guardarse en el estado y entrar en esa función (y en la opción `puente` de `jornadasDeTramoMil`).
+Las órdenes empiezan con `empezarOrden` y esperan con `dejarEnEspera` (`src/ordenes.ts`).
+
 ## 4. Diseño detallado
 
 ### 4.1 Cuadrillas y solares

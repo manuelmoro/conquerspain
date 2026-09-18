@@ -193,14 +193,20 @@ en la crónica. Exprimir territorio tiene precio.
 
 | Atributo | Valor inicial | Notas |
 |---|---|---|
-| Coste de formar | 20 mrs, 10 pan, 4 vecinos | Los vecinos salen de la comarca y vuelven al disolverla |
-| Porte | 10 cargas | +10 por cada nivel de carro (requiere camino carretero en toda la ruta) |
-| Paso | 3 jornadas por turno | −1 con carga completa, −1 en barro, +1 por calzada |
-| Bastimento | 2 pan por jornada | +1 sal por cada 4 jornadas en verano (conservas) |
-| Gente | hasta 20 vecinos | Para repoblar o fundar puebla |
+| Coste de formar | 20 mrs, 10 pan, 4 vecinos | Los 4 arrieros salen de la comarca y vuelven al disolverla |
+| Porte | 10 cargas | 10 acémilas de una carga cada una; +10 por cada nivel de carro (requiere camino carretero en toda la ruta). Los maravedís no ocupan porte |
+| Paso | 3 jornadas por turno | −1 con la carga al 80 % del porte, −1 en barro, +1 si el primer tramo del turno tiene calzada; nunca menos de 1 |
+| Bastimento | 2 pan por jornada andada | +1 sal por cada 4 jornadas o fracción en verano (conservas). Del almacén si la recua sale de comarca propia; de su carga si está fuera |
+| Gente | hasta 20 vecinos | Además de los arrieros. Para repoblar o fundar puebla |
 
-Sin bastimento, la recua se detiene, pierde acémilas (−2 de porte permanente) y la crónica lo avisa
-un turno antes. Nunca desaparece sola: siempre puede volver a casa.
+Sin bastimento, el primer turno la recua se para y la crónica lo avisa. Desde el segundo **malvive**:
+anda al paso mínimo sin pagar y pierde una acémila por turno (una carga menos de porte), hasta
+quedarse con una. Nunca desaparece sola y siempre puede volver a casa.
+
+Las rutas se trazan por el camino más corto de la estación, **solo por comarcas exploradas o
+propias** (el destino basta con conocerlo de oídas), sin tramos cerrados por nieve. Una ruta circular
+es un circuito que empieza y acaba donde está la recua. Si la nieve la pilla a medio puerto, vuelve a
+la comarca de la que salió y espera.
 
 ### 3.7.2 Jornadas entre comarcas
 

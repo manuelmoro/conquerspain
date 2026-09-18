@@ -1,0 +1,500 @@
+{
+  "nombre": "humo-02",
+  "descripcion": "Arrieros: se forma una recua, se carga y hace una ruta circular del llano a la costa durante medio anyo.",
+  "versionReglas": 1,
+  "mundo": "mini",
+  "estadoInicial": {
+    "acontecimientos": [],
+    "comarcas": {
+      "prueba-costa": {
+        "agotamiento": {
+          "monte": 0,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0
+        },
+        "aperos": 0,
+        "cargaFiscal": "normal",
+        "dehesa": false,
+        "duenyo": null,
+        "edificios": {},
+        "fuero": "ninguno",
+        "id": "prueba-costa",
+        "influencias": {},
+        "lealtad": 50,
+        "poblacion": 20,
+        "potenciales": {
+          "labor": 2,
+          "monte": 1,
+          "pasto": 1,
+          "piedra": 1,
+          "hierro": 0,
+          "sal": 4,
+          "pesca": 5
+        },
+        "produccionUltimoTurno": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
+      },
+      "prueba-llano": {
+        "agotamiento": {
+          "monte": 0,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0
+        },
+        "aperos": 0,
+        "cargaFiscal": "normal",
+        "dehesa": false,
+        "duenyo": "casa-uno",
+        "edificios": {
+          "granja": 1
+        },
+        "fuero": "ninguno",
+        "id": "prueba-llano",
+        "influencias": {},
+        "lealtad": 100,
+        "poblacion": 40,
+        "potenciales": {
+          "labor": 3,
+          "monte": 1,
+          "pasto": 2,
+          "piedra": 1,
+          "hierro": 0,
+          "sal": 0,
+          "pesca": 0
+        },
+        "produccionUltimoTurno": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
+      },
+      "prueba-mina": {
+        "agotamiento": {
+          "monte": 0,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0
+        },
+        "aperos": 0,
+        "cargaFiscal": "normal",
+        "dehesa": false,
+        "duenyo": null,
+        "edificios": {},
+        "fuero": "ninguno",
+        "id": "prueba-mina",
+        "influencias": {},
+        "lealtad": 50,
+        "poblacion": 20,
+        "potenciales": {
+          "labor": 1,
+          "monte": 2,
+          "pasto": 2,
+          "piedra": 3,
+          "hierro": 5,
+          "sal": 0,
+          "pesca": 0
+        },
+        "produccionUltimoTurno": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
+      },
+      "prueba-monte": {
+        "agotamiento": {
+          "monte": 0,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0
+        },
+        "aperos": 0,
+        "cargaFiscal": "normal",
+        "dehesa": false,
+        "duenyo": null,
+        "edificios": {},
+        "fuero": "ninguno",
+        "id": "prueba-monte",
+        "influencias": {},
+        "lealtad": 50,
+        "poblacion": 20,
+        "potenciales": {
+          "labor": 1,
+          "monte": 5,
+          "pasto": 3,
+          "piedra": 2,
+          "hierro": 0,
+          "sal": 0,
+          "pesca": 0
+        },
+        "produccionUltimoTurno": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
+      },
+      "prueba-rio": {
+        "agotamiento": {
+          "monte": 0,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0
+        },
+        "aperos": 0,
+        "cargaFiscal": "normal",
+        "dehesa": false,
+        "duenyo": null,
+        "edificios": {},
+        "fuero": "ninguno",
+        "id": "prueba-rio",
+        "influencias": {},
+        "lealtad": 50,
+        "poblacion": 20,
+        "potenciales": {
+          "labor": 3,
+          "monte": 2,
+          "pasto": 2,
+          "piedra": 1,
+          "hierro": 0,
+          "sal": 3,
+          "pesca": 0
+        },
+        "produccionUltimoTurno": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
+      },
+      "prueba-sierra": {
+        "agotamiento": {
+          "monte": 0,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0
+        },
+        "aperos": 0,
+        "cargaFiscal": "normal",
+        "dehesa": false,
+        "duenyo": null,
+        "edificios": {},
+        "fuero": "ninguno",
+        "id": "prueba-sierra",
+        "influencias": {},
+        "lealtad": 50,
+        "poblacion": 20,
+        "potenciales": {
+          "labor": 1,
+          "monte": 3,
+          "pasto": 5,
+          "piedra": 4,
+          "hierro": 2,
+          "sal": 0,
+          "pesca": 0
+        },
+        "produccionUltimoTurno": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
+      },
+      "prueba-vega": {
+        "agotamiento": {
+          "monte": 0,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0
+        },
+        "aperos": 0,
+        "cargaFiscal": "normal",
+        "dehesa": false,
+        "duenyo": null,
+        "edificios": {},
+        "fuero": "ninguno",
+        "id": "prueba-vega",
+        "influencias": {},
+        "lealtad": 50,
+        "poblacion": 20,
+        "potenciales": {
+          "labor": 5,
+          "monte": 1,
+          "pasto": 2,
+          "piedra": 0,
+          "hierro": 0,
+          "sal": 0,
+          "pesca": 0
+        },
+        "produccionUltimoTurno": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
+      }
+    },
+    "configuracion": {
+      "esDePrueba": true,
+      "intervaloMinutos": 60,
+      "modo": "solitario",
+      "nombre": "Partida mini",
+      "reservaMinimaDePan": 30,
+      "turnosDeTemporada": null
+    },
+    "huellaTurnoAnterior": null,
+    "id": "partida-arrieros",
+    "jugadores": {
+      "casa-uno": {
+        "almacen": {
+          "pan": 300,
+          "madera": 60,
+          "piedra": 20,
+          "maravedis": 120,
+          "sal": 10,
+          "hierro": 0,
+          "lana": 0
+        },
+        "capital": "prueba-llano",
+        "casa": "mesta",
+        "conocimiento": {
+          "prueba-costa": {
+            "nivel": "explorada",
+            "turnoUltimaNoticia": 7,
+            "datos": null
+          },
+          "prueba-llano": {
+            "nivel": "propia",
+            "turnoUltimaNoticia": 7,
+            "datos": null
+          },
+          "prueba-rio": {
+            "nivel": "explorada",
+            "turnoUltimaNoticia": 7,
+            "datos": null
+          },
+          "prueba-vega": {
+            "nivel": "explorada",
+            "turnoUltimaNoticia": 7,
+            "datos": null
+          }
+        },
+        "conservarConSal": true,
+        "credito": 50,
+        "escasez": false,
+        "escasezSeguidas": 0,
+        "hitos": {},
+        "id": "casa-uno",
+        "nombre": "Casa Uno",
+        "prestigio": 0,
+        "reservado": {
+          "pan": 0,
+          "madera": 0,
+          "piedra": 0,
+          "maravedis": 0,
+          "sal": 0,
+          "hierro": 0,
+          "lana": 0
+        },
+        "tradiciones": [],
+        "turnosSinOrdenes": 0
+      }
+    },
+    "mercados": {},
+    "obras": {},
+    "ordenes": [],
+    "rebanyos": {},
+    "recuas": {},
+    "semilla": "semilla-mini",
+    "siguienteId": 1,
+    "turno": 7,
+    "version": 1
+  },
+  "turnos": [
+    {
+      "turno": 7,
+      "ordenes": [
+        {
+          "id": "orden-001",
+          "jugador": "casa-uno",
+          "turnoAlta": 7,
+          "estado": "pendiente",
+          "coste": {
+            "pan": 10,
+            "madera": 0,
+            "piedra": 0,
+            "maravedis": 20,
+            "sal": 0,
+            "hierro": 0,
+            "lana": 0
+          },
+          "turnosTotales": 1,
+          "turnosHechos": 0,
+          "motivoEspera": null,
+          "delMayordomo": false,
+          "tipo": "formar-recua",
+          "comarca": "prueba-llano",
+          "acemilas": 10,
+          "vecinos": 2
+        }
+      ],
+      "huellaEsperada": "3caf53080a556afb3f5278059088a1a77bba2cac1bcc5a3f8eb437bcd0e8ccb1"
+    },
+    {
+      "turno": 8,
+      "ordenes": [
+        {
+          "id": "orden-002",
+          "jugador": "casa-uno",
+          "turnoAlta": 8,
+          "estado": "pendiente",
+          "coste": {
+            "pan": 0,
+            "madera": 0,
+            "piedra": 0,
+            "maravedis": 0,
+            "sal": 0,
+            "hierro": 0,
+            "lana": 0
+          },
+          "turnosTotales": 1,
+          "turnosHechos": 0,
+          "motivoEspera": null,
+          "delMayordomo": false,
+          "tipo": "carga",
+          "recua": "recua-1",
+          "cargar": {
+            "pan": 6,
+            "madera": 3
+          },
+          "descargar": {},
+          "vecinosCargados": 0
+        },
+        {
+          "id": "orden-003",
+          "jugador": "casa-uno",
+          "turnoAlta": 8,
+          "estado": "pendiente",
+          "coste": {
+            "pan": 0,
+            "madera": 0,
+            "piedra": 0,
+            "maravedis": 0,
+            "sal": 0,
+            "hierro": 0,
+            "lana": 0
+          },
+          "turnosTotales": 1,
+          "turnosHechos": 0,
+          "motivoEspera": null,
+          "delMayordomo": false,
+          "tipo": "ruta",
+          "recua": "recua-1",
+          "rebanyo": null,
+          "circular": true,
+          "paradas": [
+            {
+              "comarca": "prueba-costa",
+              "cargar": {},
+              "descargar": {},
+              "vender": {},
+              "comprar": {}
+            }
+          ]
+        }
+      ],
+      "huellaEsperada": "4def03591eed5c121bb7bbdd115895bab3a2977b29066381232e716e95235ee2"
+    },
+    {
+      "turno": 9,
+      "ordenes": [],
+      "huellaEsperada": "70adbf797045e4bbe6ced93ac57d76c89416ca2afb42c3490b316f7b47de5d19"
+    },
+    {
+      "turno": 10,
+      "ordenes": [],
+      "huellaEsperada": "8de75653b79f944133f71f134129fbeb9737f6b8c5b6bc504cfef02d2619b419"
+    },
+    {
+      "turno": 11,
+      "ordenes": [],
+      "huellaEsperada": "57697f123f3f5ecb16d34dd3447abc84bc34c869292195def3607ef3983162fd"
+    },
+    {
+      "turno": 12,
+      "ordenes": [],
+      "huellaEsperada": "d157cbb1bbc73396d92d722c062ed3547ae889a0d6699b07bfd5c61c3b822c33"
+    },
+    {
+      "turno": 13,
+      "ordenes": [],
+      "huellaEsperada": "44678e78d2286fe1bf36b27bcf8ce5d17ff4a19bfedcadfe30a27edd1828577a"
+    },
+    {
+      "turno": 14,
+      "ordenes": [],
+      "huellaEsperada": "f8eb04ed8a714ca8ea51482d6df072ac845681a5396071fcdd954003604779e1"
+    },
+    {
+      "turno": 15,
+      "ordenes": [],
+      "huellaEsperada": "7a33605b9aa5d325e0ccbf29162ba1a10984ddd0c752005c2b0acca5da45692d"
+    },
+    {
+      "turno": 16,
+      "ordenes": [],
+      "huellaEsperada": "4443f213e0b09a3f1fa838f6556a3494f79997a6f4def665228a6ac5a0e864ed"
+    },
+    {
+      "turno": 17,
+      "ordenes": [],
+      "huellaEsperada": "f8d4d045bc69a0368f89bdd279c2e07fcad7e49fe5f3e25c4022948b3bae41dd"
+    },
+    {
+      "turno": 18,
+      "ordenes": [],
+      "huellaEsperada": "c7250654dc6a4f11036e5f76f8a2ba2076eaa12f0a84761529b13522be7b5360"
+    }
+  ]
+}

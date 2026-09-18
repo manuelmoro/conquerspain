@@ -5,10 +5,12 @@ import type { Contexto } from './contexto.ts';
 import { comoBorrador } from './contexto.ts';
 import { ErrorDeMotor } from './errores.ts';
 import { registrarSuceso } from './sucesos.ts';
-import type { IdComarca, IdJugador, IdOrden } from './tipos/ids.ts';
+import type { IdComarca, IdJugador, IdOrden, IdRecua } from './tipos/ids.ts';
 import type { EstadoDeOrden, Orden } from './tipos/ordenes.ts';
-import type { RecursoAgotable } from './tipos/estado.ts';
+import type { Cometido, Recua, RecursoAgotable, SituacionMovil } from './tipos/estado.ts';
+import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
+import { RECURSOS } from './tipos/recursos.ts';
 import { limitar } from './utiles/enteros.ts';
 
 export type Cambio =
@@ -102,6 +104,61 @@ export type Cambio =
       readonly tipo: 'orden-avance';
       readonly orden: IdOrden;
       readonly turnos: number;
+    }
+  | {
+      readonly tipo: 'orden-retirar';
+      readonly orden: IdOrden;
+    }
+  | {
+      /** Consume el siguiente numero de identificador de la partida. */
+      readonly tipo: 'siguiente-id';
+    }
+  | {
+      readonly tipo: 'recua-alta';
+      readonly recua: Recua;
+    }
+  | {
+      readonly tipo: 'recua-mover';
+      readonly recua: IdRecua;
+      readonly situacion: SituacionMovil;
+      readonly ruta: readonly IdComarca[];
+    }
+  | {
+      readonly tipo: 'recua-ruta';
+      readonly recua: IdRecua;
+      readonly ruta: readonly IdComarca[];
+      readonly circular: boolean;
+    }
+  | {
+      readonly tipo: 'recua-carga';
+      readonly recua: IdRecua;
+      readonly recurso: Recurso;
+      readonly delta: number;
+      readonly motivo: string;
+    }
+  | {
+      readonly tipo: 'recua-vecinos';
+      readonly recua: IdRecua;
+      readonly delta: number;
+      readonly motivo: string;
+    }
+  | {
+      readonly tipo: 'recua-acemilas';
+      readonly recua: IdRecua;
+      readonly delta: number;
+      /** Porte que queda con las acemilas nuevas (depende de la casa: lo calcula quien llama). */
+      readonly porte: number;
+      readonly motivo: string;
+    }
+  | {
+      readonly tipo: 'recua-bastimento';
+      readonly recua: IdRecua;
+      readonly avisada: boolean;
+    }
+  | {
+      readonly tipo: 'recua-cometido';
+      readonly recua: IdRecua;
+      readonly cometido: Cometido | null;
     };
 
 function jugadorDe(
@@ -124,6 +181,32 @@ function comarcaDe(
     throw new ErrorDeMotor('entidad-desconocida', `No hay ninguna comarca "${id}" en la partida.`);
   }
   return comarca;
+}
+
+function recuaDe(ctx: Contexto, id: IdRecua): NonNullable<Contexto['estado']['recuas'][string]> {
+  const recua = ctx.estado.recuas[id];
+  if (recua === undefined) {
+    throw new ErrorDeMotor('entidad-desconocida', `No hay ninguna recua "${id}" en la partida.`);
+  }
+  return recua;
+}
+
+/** La ruta de una unidad es coherente con donde esta: si va de camino, empieza por su destino. */
+function comprobarRuta(id: string, situacion: SituacionMovil, ruta: readonly IdComarca[]): void {
+  if (ruta.length > LONGITUD_MAXIMA_DE_RUTA) {
+    throw new ErrorDeMotor(
+      'invariante-rota',
+      `La ruta de ${id} tendria ${String(ruta.length)} comarcas y el maximo es ${String(LONGITUD_MAXIMA_DE_RUTA)}.`,
+      { unidad: id },
+    );
+  }
+  if (situacion.donde === 'camino' && ruta[0] !== situacion.hasta) {
+    throw new ErrorDeMotor(
+      'invariante-rota',
+      `${id} va de camino a ${situacion.hasta} y su ruta no empieza por alli.`,
+      { unidad: id },
+    );
+  }
 }
 
 function ordenDe(ctx: Contexto, id: IdOrden): NonNullable<Contexto['estado']['ordenes'][number]> {
@@ -427,6 +510,195 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         'orden.estado',
         { orden: cambio.orden, estado: cambio.estado, motivo: cambio.motivo ?? '' },
         { jugador: orden.jugador },
+      );
+      return;
+    }
+
+    case 'orden-retirar': {
+      const indice = ctx.estado.ordenes.findIndex((o) => o.id === cambio.orden);
+      const orden = ctx.estado.ordenes[indice];
+      if (orden === undefined) {
+        throw new ErrorDeMotor('entidad-desconocida', `No hay ninguna orden "${cambio.orden}".`);
+      }
+      if (orden.estado !== 'terminada' && orden.estado !== 'cancelada') {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La orden "${cambio.orden}" sigue viva (${orden.estado}) y no se puede retirar.`,
+          { orden: cambio.orden },
+        );
+      }
+      ctx.estado.ordenes.splice(indice, 1);
+      return;
+    }
+
+    case 'siguiente-id': {
+      ctx.estado.siguienteId += 1;
+      return;
+    }
+
+    case 'recua-alta': {
+      if (ctx.estado.recuas[cambio.recua.id] !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Ya hay una recua con el identificador "${cambio.recua.id}".`,
+          { recua: cambio.recua.id },
+        );
+      }
+      jugadorDe(ctx, cambio.recua.jugador);
+      comprobarRuta(cambio.recua.id, cambio.recua.situacion, cambio.recua.ruta);
+      ctx.estado.recuas[cambio.recua.id] = comoBorrador(cambio.recua);
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'recua.formada',
+        {
+          recua: cambio.recua.id,
+          nombre: cambio.recua.nombre,
+          acemilas: cambio.recua.acemilas,
+          vecinos: cambio.recua.vecinos,
+        },
+        {
+          jugador: cambio.recua.jugador,
+          comarca:
+            cambio.recua.situacion.donde === 'comarca' ? cambio.recua.situacion.comarca : null,
+        },
+      );
+      return;
+    }
+
+    case 'recua-mover': {
+      const recua = recuaDe(ctx, cambio.recua);
+      comprobarRuta(cambio.recua, cambio.situacion, cambio.ruta);
+      recua.situacion = comoBorrador(cambio.situacion);
+      recua.ruta = [...cambio.ruta];
+      return;
+    }
+
+    case 'recua-ruta': {
+      const recua = recuaDe(ctx, cambio.recua);
+      comprobarRuta(cambio.recua, recua.situacion, cambio.ruta);
+      recua.ruta = [...cambio.ruta];
+      recua.rutaCircular = cambio.circular;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'recua.ruta',
+        {
+          recua: cambio.recua,
+          comarcas: cambio.ruta.length,
+          destino: cambio.ruta.at(-1) ?? '',
+          circular: cambio.circular ? 1 : 0,
+        },
+        { jugador: recua.jugador },
+      );
+      return;
+    }
+
+    case 'recua-carga': {
+      const recua = recuaDe(ctx, cambio.recua);
+      const despues = recua.carga[cambio.recurso] + cambio.delta;
+      if (despues < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La recua ${cambio.recua} se quedaria con ${String(despues)} de ${cambio.recurso}.`,
+          { recua: cambio.recua, recurso: cambio.recurso },
+        );
+      }
+      const peso = RECURSOS.filter((r) => r !== 'maravedis').reduce(
+        (total, r) => total + (r === cambio.recurso ? despues : recua.carga[r]),
+        0,
+      );
+      if (cambio.delta > 0 && cambio.recurso !== 'maravedis' && peso > recua.porte) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La recua ${cambio.recua} llevaria ${String(peso)} cargas y su porte es ${String(recua.porte)}.`,
+          { recua: cambio.recua },
+        );
+      }
+      recua.carga[cambio.recurso] = despues;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'recua.carga',
+        {
+          recua: cambio.recua,
+          recurso: cambio.recurso,
+          delta: cambio.delta,
+          total: despues,
+          motivo: cambio.motivo,
+        },
+        { jugador: recua.jugador },
+      );
+      return;
+    }
+
+    case 'recua-vecinos': {
+      const recua = recuaDe(ctx, cambio.recua);
+      const despues = recua.vecinos + cambio.delta;
+      const maximo = ctx.reglas.movimiento.vecinosMaximosPorRecua;
+      if (despues < 0 || (cambio.delta > 0 && despues > maximo)) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La recua ${cambio.recua} llevaria ${String(despues)} vecinos y caben ${String(maximo)}.`,
+          { recua: cambio.recua },
+        );
+      }
+      recua.vecinos = despues;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'recua.vecinos',
+        { recua: cambio.recua, delta: cambio.delta, total: despues, motivo: cambio.motivo },
+        { jugador: recua.jugador },
+      );
+      return;
+    }
+
+    case 'recua-acemilas': {
+      const recua = recuaDe(ctx, cambio.recua);
+      const despues = recua.acemilas + cambio.delta;
+      // Una recua nunca desaparece sola: se queda al menos con una acemila.
+      if (despues < 1 || cambio.porte < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La recua ${cambio.recua} se quedaria con ${String(despues)} acemilas.`,
+          { recua: cambio.recua },
+        );
+      }
+      recua.acemilas = despues;
+      recua.porte = cambio.porte;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'recua.acemilas',
+        {
+          recua: cambio.recua,
+          delta: cambio.delta,
+          acemilas: despues,
+          porte: cambio.porte,
+          motivo: cambio.motivo,
+        },
+        { jugador: recua.jugador },
+      );
+      return;
+    }
+
+    case 'recua-bastimento': {
+      const recua = recuaDe(ctx, cambio.recua);
+      recua.avisadaSinBastimento = cambio.avisada;
+      return;
+    }
+
+    case 'recua-cometido': {
+      const recua = recuaDe(ctx, cambio.recua);
+      recua.cometido = cambio.cometido;
+      recua.turnosDeCometido = 0;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'recua.cometido',
+        { recua: cambio.recua, cometido: cambio.cometido ?? '' },
+        { jugador: recua.jugador },
       );
       return;
     }

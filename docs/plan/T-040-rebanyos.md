@@ -22,6 +22,10 @@ producción menor; privilegio de la Mesta enganchado (detalle en T-041).
 
 **No entra:** venta de la lana (T-037, ya hecho), portazgos (T-103).
 
+**Heredado de T-033.** La orden `ruta` con `rebanyo` no la atiende nadie todavía (la fase 4 solo
+toma las de recua) y queda pendiente hasta esta tarea. Se reutilizan `rutaMasCorta`, `avanzar` y el
+ciclo de vida de `src/ordenes.ts`.
+
 ## 4. Diseño detallado
 
 ### 4.1 Unidad

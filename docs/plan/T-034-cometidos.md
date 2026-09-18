@@ -22,6 +22,17 @@ El cometido «tratar» se ejecuta en la fase de mercado (T-037) pero se registra
 
 **No entra:** influencia acumulada e incorporación (T-038), mercado (T-037).
 
+**Heredado de T-033.** La fase 4 ya guarda el cometido en la recua (`Recua.cometido`, orden
+`cometido`), la deja en destino el mismo turno que llega (suceso `recua.llega`) y atiende las
+órdenes `carga` en comarca propia. Queda para aquí:
+
+- las acciones de cada parada de una orden `ruta` (`cargar`, `descargar`, `vender`, `comprar`): la
+  fase 4 solo usa las comarcas de las paradas para trazar la ruta, y `Recua` todavía no guarda
+  qué hacer en cada una; hay que añadirlo al estado y ejecutarlo al pasar;
+- la carga y descarga en mercado ajeno (la fase 4 solo carga en comarca propia);
+- `Recua.vecinos` no incluye a los 4 arrieros (`movimiento.arrierosPorRecua`): se puede poblar con
+  todos los `vecinos`, y los arrieros vuelven a su comarca al disolver.
+
 ## 4. Diseño detallado
 
 ### 4.1 Explorar

@@ -111,6 +111,9 @@ export interface EstadoComarca {
 
 // ——— Unidades moviles ——————————————————————————————————————————————————————
 
+/** Comarcas que puede tener pendientes la ruta de una unidad movil. */
+export const LONGITUD_MAXIMA_DE_RUTA = 120;
+
 export type SituacionMovil =
   | { readonly donde: 'comarca'; readonly comarca: IdComarca }
   | {

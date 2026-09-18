@@ -96,6 +96,7 @@ export interface Modificadores {
   readonly potencialMinimoEdificio: Readonly<Partial<Record<TipoEdificio, number>>>;
   readonly solaresExtra: number;
   readonly aperosMaximo: number;
+  /** Jornadas de paso que suma la casa a sus recuas, en milesimas (arrieros: +1000). */
   readonly pasoRecuaMil: number;
   readonly costeRecuaMil: number;
   readonly porteExtra: number;
@@ -200,9 +201,25 @@ export interface DatosMovimiento {
   readonly jornadasPorTerreno: Readonly<Record<string, number>>;
   readonly factorCaminoMil: Readonly<Record<CalidadCamino, number>>;
   readonly jornadasDeVado: number;
+  /** Jornadas que anda una recua por turno, en milesimas, antes de ajustes. */
   readonly pasoBaseMil: number;
+  /** Lo que resta ir cargada (a partir de `cargaPesadaMil` del porte) y el barro; suma la calzada. */
+  readonly pasoCargadaMil: number;
+  readonly pasoBarroMil: number;
+  readonly pasoCalzadaMil: number;
+  /** Nunca se anda menos de esto por turno. */
+  readonly pasoMinimoMil: number;
+  readonly cargaPesadaMil: number;
   readonly bastimentoPorJornada: number;
-  readonly porteBase: number;
+  /** En verano, una carga de sal de conservas por cada tantas jornadas (o fraccion). */
+  readonly jornadasPorSalEnVerano: number;
+  /** Acemilas de una recua recien formada; cada una lleva `portePorAcemila` cargas. */
+  readonly acemilasPorRecua: number;
+  readonly portePorAcemila: number;
+  /** Vecinos que salen de la comarca para llevar la recua; vuelven al disolverla. */
+  readonly arrierosPorRecua: number;
+  /** Gente que puede llevar una recua ademas de sus arrieros. */
+  readonly vecinosMaximosPorRecua: number;
   readonly costeFormarRecua: Recursos;
   readonly factorBarroMil: number;
   readonly factorNieveMil: number;

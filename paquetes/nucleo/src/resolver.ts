@@ -18,6 +18,7 @@ import { fasePoblacion } from './fases/09-poblacion.ts';
 import { faseAcontecimientos } from './fases/10-acontecimientos.ts';
 import { fasePrestigio } from './fases/11-prestigio.ts';
 import { faseCronica } from './fases/12-cronica.ts';
+import { darDeAltaOrdenesNuevas, retirarOrdenesCerradas } from './ordenes.ts';
 import { registrarSuceso } from './sucesos.ts';
 import type { Cronica, NombreFase, Suceso } from './tipos/cronica.ts';
 import type { EstadoPartida } from './tipos/estado.ts';
@@ -101,10 +102,13 @@ export function resolverTurno(
     ordenesNuevas: ctx.ordenes.length,
   });
 
+  darDeAltaOrdenesNuevas(ctx);
+
   for (const [nombre, fase] of FASES) {
     ctx.fase = nombre;
     fase(ctx);
   }
+  retirarOrdenesCerradas(ctx);
 
   ctx.estado.turno = ctx.turno + 1;
   ctx.estado.huellaTurnoAnterior = huella(ctx.estado);

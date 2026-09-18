@@ -45,7 +45,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-030](T-030-fase-calendario.md) | Fase 1: calendario, estaciones y clima conocido | **hecha** | T-004 |
 | [T-031](T-031-fase-produccion.md) | Fase 2: producción | **hecha** | T-030, T-012 |
 | [T-032](T-032-fase-consumo.md) | Fase 3: consumo, merma y escasez | **hecha** | T-031 |
-| [T-033](T-033-movimiento.md) | Fase 4: movimiento de recuas por el grafo | pendiente | T-013 |
+| [T-033](T-033-movimiento.md) | Fase 4: movimiento de recuas por el grafo | **hecha** | T-013 |
 | [T-034](T-034-cometidos.md) | Fase 5: cometidos (explorar, portear, poblar, presencia) | pendiente | T-033 |
 | [T-035](T-035-obras.md) | Fase 6: obras, cuadrillas y obras mayores | pendiente | T-031 |
 | [T-036](T-036-poblacion-y-lealtad.md) | Fases 8–9: población, lealtad, fueros y administración | pendiente | T-032 |

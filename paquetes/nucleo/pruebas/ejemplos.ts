@@ -6,6 +6,7 @@ import { RECURSOS } from '../src/tipos/recursos.ts';
 import { ARRANQUE } from '../src/datos/arranque.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
+import { MOVIMIENTO } from '../src/datos/movimiento.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
 import { CASAS, VERSION_REGLAS } from '../src/tipos/reglas.ts';
 
@@ -200,7 +201,7 @@ export function tablasDeEjemplo(): Registro {
     potencialMinimoEdificio: {},
     solaresExtra: 0,
     aperosMaximo: 3,
-    pasoRecuaMil: 1000,
+    pasoRecuaMil: 0,
     costeRecuaMil: 1000,
     porteExtra: 0,
     obraMayorCosteMil: 1000,
@@ -281,18 +282,7 @@ export function tablasDeEjemplo(): Registro {
     },
     produccion: JSON.parse(JSON.stringify(PRODUCCION)) as Registro,
     consumo: JSON.parse(JSON.stringify(CONSUMO)) as Registro,
-    movimiento: {
-      jornadasPorTerreno: { llano: 2, ondulado: 3, sierra: 5, costa: 2, vega: 2 },
-      factorCaminoMil: { vereda: 1000, herradura: 800, carretero: 650, calzada: 500 },
-      jornadasDeVado: 2,
-      pasoBaseMil: 3000,
-      bastimentoPorJornada: 2,
-      porteBase: 10,
-      costeFormarRecua: recursosCon({ maravedis: 20, pan: 10 }),
-      factorBarroMil: 1250,
-      factorNieveMil: 1500,
-      factorVeranoMil: 900,
-    },
+    movimiento: JSON.parse(JSON.stringify(MOVIMIENTO)) as Registro,
     poblacion: {
       consumoPorVecinoMil: 250,
       vecinosPorCuadrilla: 40,

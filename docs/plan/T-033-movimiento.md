@@ -1,6 +1,6 @@
 # T-033 · Fase 4: movimiento de recuas por el grafo
 
-**Fase:** 2 · Motor · **Depende de:** T-013 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-013 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -131,3 +131,53 @@ npx vitest run paquetes/nucleo/src/reglas/ruta.test.ts paquetes/nucleo/src/regla
 ## 8. Al terminar
 
 Índice y `ESTADO.md` (siguiente T-034). Commit: `T-033: movimiento de recuas`.
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 372 tests en verde; `humo-01` no cambia y hay una partida de reproducción nueva,
+`humo-02` («arrieros»: formar, cargar, ruta circular, hambre y acémilas perdidas durante doce turnos).
+
+- `paquetes/nucleo/src/reglas/ruta.ts`: `rutaMasCorta` (Dijkstra en milésimas, solo por comarcas
+  exploradas o propias, sin tramos cerrados, desempate por la secuencia de identificadores),
+  `rutaPorParadas`, `calidadDeTramo`, `tramoEntre`, `comarcasTransitables`.
+- `paquetes/nucleo/src/reglas/movimiento.ts` (`pasoDeRecua`, `avanzar`, `porteDe`,
+  `pesoDeLaCarga`) y `bastimento.ts`; `jornadas.ts` gana `jornadasDeTramoMil` y la versión entera
+  sale de ella con los mismos resultados.
+- `paquetes/nucleo/src/fases/04-movimiento.ts`: órdenes `formar-recua`, `carga`, `cometido` y
+  `ruta` (de recua) y el avance de todas las recuas, con sucesos `recua.formada`, `recua.ruta`,
+  `recua.avanza`, `recua.entra`, `recua.llega`, `recua.detenida`, `recua.vuelve-por-nieve`,
+  `recua.sin-bastimento`, `recua.acemilas` y `recua.carga-recortada`.
+- `paquetes/nucleo/src/ordenes.ts`: **el ciclo de vida de las órdenes, que no existía**. Las nuevas
+  se dan de alta al empezar el turno y reservan su coste (si ya no cabe, se cancelan con
+  `sin-recursos`); cada fase las empieza (`empezarOrden` paga lo reservado), las deja en espera con
+  motivo o las cancela; al acabar el turno se retiran las terminadas y canceladas.
+- `paquetes/nucleo/src/datos/movimiento.ts`: tabla real de movimiento; diez cambios nuevos en
+  `cambios.ts` (recuas, `siguiente-id`, `orden-retirar`) y `nuevoId` en `tipos/ids.ts`.
+- Pruebas: `pruebas/ruta.test.ts` (ocho pares a mano, nieve, conocimiento, empate) y
+  `pruebas/movimiento.test.ts` (paso, avance por varias comarcas, nieve, bastimento y su secuencia,
+  órdenes, dos jugadores iguales y órdenes barajadas con la misma huella).
+
+Decisiones tomadas al implementar:
+
+- **Sin bastimento, la recua malvive en vez de quedarse parada para siempre.** El primer turno se
+  para y avisa; desde el segundo anda al paso mínimo sin pagar y pierde una acémila por turno, hasta
+  quedarse con una. Con la regla literal («sigue detenida») una recua sin pan fuera de casa no podría
+  volver nunca, y el diseño exige que siempre pueda.
+- **Porte = acémilas × 1 carga** (`portePorAcemila`) más lo que dé la casa; se quitó `porteBase`,
+  que duplicaba el dato. Perder una acémila es −1 de porte (la ficha; `docs/03` decía −2).
+- **Los maravedís no ocupan porte** ni cuentan para ir cargada.
+- **La calzada suma paso si la tiene el primer tramo del turno**; el paso se fija una vez por turno.
+- **La sal de conservas se redondea hacia arriba** (una carga por cada cuatro jornadas o fracción):
+  si no, una recua de tres jornadas por turno no gastaría nunca sal.
+- **Una ruta circular empieza y acaba donde está la recua**, y cada comarca en la que entra vuelve al
+  final de la lista: no hace falta guardar el circuito aparte.
+- **Si la nieve pilla a una recua a medio puerto, vuelve** a la comarca de la que salió y espera.
+- **Con escasez no sale ninguna expedición**: se bloquea la orden `ruta` de una recua parada; la que
+  va de camino puede cambiar de rumbo.
+- **Rutas solo por comarcas exploradas o propias**; el destino basta con conocerlo de oídas. La
+  distancia administrativa de T-032 usa ahora el mismo criterio.
+- `pasoRecuaMil` de las casas es **aditivo** (arrieros: +1000), no un factor.
+- Quedan anotados en sus fichas: acciones de las paradas y carga en mercado (T-034), reponer
+  bastimento en ruta permanente (T-045), rutas de rebaños (T-040) y caminos construidos (T-035).
+- Las pruebas viven en `paquetes/nucleo/pruebas/` y no en `src/reglas/*.test.ts`, como exige el
+  montaje.

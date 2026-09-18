@@ -6,6 +6,7 @@ import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estad
 import type { IdComarca } from '../tipos/ids.ts';
 import type { Mundo } from '../tipos/mundo.ts';
 import type { TablasDeReglas } from '../tipos/reglas.ts';
+import { comarcasTransitables } from './ruta.ts';
 import { multiplicarFactores } from '../utiles/enteros.ts';
 import { comparar } from '../utiles/orden.ts';
 
@@ -96,17 +97,17 @@ export interface Cercania {
 /**
  * Las comarcas de un jugador de la mas cercana a su capital a la mas lejana, con las jornadas por
  * el mejor camino que conoce (si no conoce ninguno, por el mejor que existe). Es el orden en que se
- * reparte lo que no llega para todas: las lejanas son las primeras en quedarse sin nada.
+ * reparte lo que no llega para todas: las lejanas son las primeras en quedarse sin nada. El camino
+ * conocido pasa solo por comarcas exploradas o propias, como las rutas de las recuas.
  */
 export function comarcasPorCercania(
   comarcas: readonly EstadoComarca[],
   jugador: EstadoJugador,
   mundo: Mundo,
 ): Cercania[] {
-  const conocidas = new Set(Object.keys(jugador.conocimiento));
-  for (const comarca of comarcas) conocidas.add(comarca.id);
-  conocidas.add(jugador.capital);
-  const porLoConocido = jornadasDesde(jugador.capital, mundo, conocidas);
+  const transitables = comarcasTransitables(jugador);
+  for (const comarca of comarcas) transitables.add(comarca.id);
+  const porLoConocido = jornadasDesde(jugador.capital, mundo, transitables);
   let porCualquiera: Map<string, number> | null = null;
 
   const cercanias = comarcas.map((comarca) => {

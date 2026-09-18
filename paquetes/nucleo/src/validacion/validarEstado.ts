@@ -18,6 +18,7 @@ import {
   CARGAS_FISCALES,
   COMETIDOS,
   FUEROS,
+  LONGITUD_MAXIMA_DE_RUTA,
   MODOS_DE_PARTIDA,
   NIVELES_DE_CONOCIMIENTO,
   RECURSOS_AGOTABLES,
@@ -150,7 +151,7 @@ const validarRecua: Validador<Recua> = objeto<Recua>({
   jugador: identificador<IdJugador>(),
   nombre: texto({ minimo: 1, maximo: 60 }),
   situacion: validarSituacion,
-  ruta: lista(identificador<IdComarca>(), { maximo: 60 }),
+  ruta: lista(identificador<IdComarca>(), { maximo: LONGITUD_MAXIMA_DE_RUTA }),
   rutaCircular: booleano(),
   acemilas: enteroNoNegativo(1000),
   porte: enteroNoNegativo(1000),
@@ -166,7 +167,7 @@ const validarRebanyo: Validador<Rebanyo> = objeto<Rebanyo>({
   jugador: identificador<IdJugador>(),
   nombre: texto({ minimo: 1, maximo: 60 }),
   situacion: validarSituacion,
-  ruta: lista(identificador<IdComarca>(), { maximo: 60 }),
+  ruta: lista(identificador<IdComarca>(), { maximo: LONGITUD_MAXIMA_DE_RUTA }),
   rutaCircular: booleano(),
   cabezas: enteroNoNegativo(100000),
   turnosEnPastoCorrecto: enteroNoNegativo(),
@@ -352,9 +353,18 @@ export function validarEstado(dato: unknown, mundo?: Mundo): Resultado<EstadoPar
         });
       }
     }
+    if (situacion.donde === 'camino' && rutaPendiente[0] !== situacion.hasta) {
+      errores.push({
+        ruta: `${ruta}.ruta`,
+        mensaje: `va de camino a "${situacion.hasta}" y su ruta tiene que empezar por alli`,
+      });
+    }
   };
 
   for (const [clave, recua] of Object.entries(estado.recuas)) {
+    if (recua.id !== clave) {
+      errores.push({ ruta: `recuas.${clave}.id`, mensaje: `no coincide con su clave "${clave}"` });
+    }
     comprobarUnidad(`recuas.${clave}`, recua.jugador, recua.situacion, recua.ruta);
   }
   for (const [clave, rebanyo] of Object.entries(estado.rebanyos)) {

@@ -23,6 +23,11 @@ condicionales, plan de temporada de hasta seis turnos y su interacción con la v
 
 **No entra:** interfaz (T-082) ni notificaciones (T-064).
 
+**Heredado de T-033.** Las rutas circulares ya existen (un circuito que empieza y acaba donde está
+la recua; al entrar en cada comarca, esta vuelve al final de `Recua.ruta`). Falta que una recua en
+ruta permanente reponga su bastimento al pasar por comarca propia: hoy solo come del almacén si
+**empieza** el turno en comarca propia, y una ruta larga sin carga de pan acaba malviviendo.
+
 ## 4. Diseño detallado
 
 ### 4.1 Colas
