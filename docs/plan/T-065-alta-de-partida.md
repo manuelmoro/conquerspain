@@ -31,6 +31,12 @@ sorteados y persistidos.
 - Persistencia del sorteo: recargar no vuelve a sortear.
 - Distancia mínima entre capitales de jugadores distintos (propuesta: 6 jornadas) y comprobación de que todos tienen espacio neutral alrededor.
 - Semilla de partida visible: parte de la transparencia competitiva.
+- **Economía de arranque** (añadido al cerrar T-032): la tabla `arranque` de las reglas
+  (`paquetes/nucleo/src/datos/arranque.ts`: almacén inicial y edificios de origen) la aplica el
+  alta. Dos granjas alimentan un origen típico (labor 3, 75 vecinos) sin escasez el primer año;
+  un origen de 100 vecinos, o de labor 1–2, pasa hambre en la primavera. El alta tiene que
+  ajustar los edificios de origen a la población y a la labor (o a la vía de la casa, como la
+  lonja del pescador) y comprobarlo con el banco de pruebas: nadie empieza condenado.
 
 ## 5. Criterios de aceptación provisionales
 

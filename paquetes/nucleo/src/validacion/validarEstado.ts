@@ -96,6 +96,7 @@ const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
   conocimiento: registro(validarConocimiento, identificador()),
   escasez: booleano(),
   escasezSeguidas: enteroNoNegativo(),
+  conservarConSal: booleano(),
   turnosSinOrdenes: enteroNoNegativo(),
 });
 
@@ -113,6 +114,7 @@ const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
   agotamiento: registroCompleto(RECURSOS_AGOTABLES, entero({ minimo: 0, maximo: 100 })),
   influencias: registro(entero({ minimo: 0, maximo: 100 }), identificador()),
   turnosDesleal: enteroNoNegativo(),
+  turnosSinMantenimiento: enteroNoNegativo(),
   produccionUltimoTurno: recursos(),
 });
 

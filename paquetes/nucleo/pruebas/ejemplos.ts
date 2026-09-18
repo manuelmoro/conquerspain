@@ -3,6 +3,8 @@
 // rechazan lo que tienen que rechazar.
 import { POTENCIALES } from '../src/tipos/mundo.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
+import { ARRANQUE } from '../src/datos/arranque.ts';
+import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
 import { CASAS, VERSION_REGLAS } from '../src/tipos/reglas.ts';
@@ -124,6 +126,7 @@ export function estadoDeEjemplo(): Registro {
     agotamiento: { monte: 0, piedra: 0, hierro: 0, sal: 0 },
     influencias: duenyo === null ? { mesta: 10 } : {},
     turnosDesleal: 0,
+    turnosSinMantenimiento: 0,
     produccionUltimoTurno: sinRecursos(),
   });
 
@@ -157,6 +160,7 @@ export function estadoDeEjemplo(): Registro {
         },
         escasez: false,
         escasezSeguidas: 0,
+        conservarConSal: true,
         turnosSinOrdenes: 0,
       },
     },
@@ -276,6 +280,7 @@ export function tablasDeEjemplo(): Registro {
       turnosPastoDeVerano: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
     },
     produccion: JSON.parse(JSON.stringify(PRODUCCION)) as Registro,
+    consumo: JSON.parse(JSON.stringify(CONSUMO)) as Registro,
     movimiento: {
       jornadasPorTerreno: { llano: 2, ondulado: 3, sierra: 5, costa: 2, vega: 2 },
       factorCaminoMil: { vereda: 1000, herradura: 800, carretero: 650, calzada: 500 },
@@ -289,7 +294,7 @@ export function tablasDeEjemplo(): Registro {
       factorVeranoMil: 900,
     },
     poblacion: {
-      consumoPorVecino: 1,
+      consumoPorVecinoMil: 250,
       vecinosPorCuadrilla: 40,
       cuadrillasMaximas: 4,
       capacidadBase: 60,
@@ -349,5 +354,6 @@ export function tablasDeEjemplo(): Registro {
       penalizacionPorComarcaPerdida: 20,
       penalizacionPorEscasez: 1,
     },
+    arranque: JSON.parse(JSON.stringify(ARRANQUE)) as Registro,
   };
 }

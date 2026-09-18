@@ -1,10 +1,13 @@
 // Fase 02 · Produccion (T-031, docs/03-economia.md §3.2 a §3.5).
 //
-// Cada comarca con duenyo produce segun sus explotaciones, y lo producido entra en el almacen
-// comun del jugador. Cada explotacion deja su suceso con el desglose entero, la comarca guarda su
+// Primero cada jugador paga los insumos de sus edificios (T-032), de la comarca mas cercana a la
+// capital a la mas lejana y con lo que tenia al empezar el turno. Despues cada comarca con duenyo
+// produce segun sus explotaciones, y lo producido entra en el almacen comun del jugador. Cada explotacion deja su suceso con el desglose entero, la comarca guarda su
 // produccion del turno para la cronica, y al final se agota y se regenera lo explotado.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
+import { comarcasDe, comarcasPorCercania } from '../reglas/consumo.ts';
+import { insumosDe } from '../reglas/insumos.ts';
 import {
   explotacionesDe,
   maravedisDe,
@@ -14,15 +17,68 @@ import {
 import { registrarSuceso } from '../sucesos.ts';
 import type { Fuero } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
+import type { TipoEdificio } from '../tipos/reglas.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
 
-export function faseProduccion(ctx: Contexto): void {
-  const fueroImpuestos = {} as Record<Fuero, number>;
-  for (const [fuero, datos] of Object.entries(ctx.reglas.poblacion.fueros)) {
-    fueroImpuestos[fuero as Fuero] = datos.impuestosMil;
+type NivelesActivos = Readonly<Partial<Record<TipoEdificio, number>>>;
+
+/** Cobra los insumos de todos los jugadores y devuelve los niveles que trabajan en cada comarca. */
+function pagarInsumos(ctx: Contexto): Map<string, NivelesActivos> {
+  const activos = new Map<string, NivelesActivos>();
+  for (const clave of idsEnOrden(ctx.estado.jugadores)) {
+    const jugador = ctx.estado.jugadores[clave];
+    if (jugador === undefined) continue;
+    const idJugador = jugador.id;
+    const disponible: Partial<Record<Recurso, number>> = {};
+    for (const recurso of RECURSOS) {
+      disponible[recurso] = jugador.almacen[recurso] - jugador.reservado[recurso];
+    }
+    const comarcas = comarcasDe(ctx.estado, idJugador);
+    for (const { comarca: id } of comarcasPorCercania(comarcas, jugador, ctx.mundo)) {
+      const comarca = ctx.estado.comarcas[id];
+      if (comarca === undefined) continue;
+      const insumos = insumosDe(comarca, disponible, ctx.reglas);
+      activos.set(id, insumos.nivelesActivos);
+      for (const recurso of RECURSOS) {
+        const cantidad = insumos.gasto[recurso] ?? 0;
+        if (cantidad > 0) {
+          aplicar(ctx, {
+            tipo: 'recurso',
+            jugador: idJugador,
+            recurso,
+            delta: -cantidad,
+            motivo: `insumos de ${id}`,
+          });
+        }
+      }
+      for (const parado of insumos.parados) {
+        registrarSuceso(
+          ctx.sucesos,
+          ctx.fase,
+          'produccion.sin-insumo',
+          {
+            edificio: parado.edificio,
+            nivel: comarca.edificios[parado.edificio] ?? 0,
+            activos: parado.activos,
+          },
+          { comarca: id, jugador: idJugador },
+        );
+      }
+    }
   }
+  return activos;
+}
+
+export function faseProduccion(ctx: Contexto): void {
+  const nivelesActivos = pagarInsumos(ctx);
+  const fueros = ctx.reglas.poblacion.fueros;
+  const fueroImpuestos: Record<Fuero, number> = {
+    ninguno: fueros.ninguno.impuestosMil,
+    'carta puebla': fueros['carta puebla'].impuestosMil,
+    fuero: fueros.fuero.impuestosMil,
+  };
 
   for (const id of idsEnOrden(ctx.estado.comarcas)) {
     const comarca = ctx.estado.comarcas[id];
@@ -36,7 +92,14 @@ export function faseProduccion(ctx: Contexto): void {
       const casaMil =
         jugador === undefined ? {} : ctx.reglas.casas[jugador.casa].modificadores.produccionMil;
       const explotaciones = explotacionesDe(
-        { comarca, region, estacion: ctx.estacional.estacion, clima: ctx.clima, casaMil },
+        {
+          comarca,
+          region,
+          estacion: ctx.estacional.estacion,
+          clima: ctx.clima,
+          casaMil,
+          nivelesActivos: nivelesActivos.get(id) ?? {},
+        },
         ctx.reglas,
       );
 

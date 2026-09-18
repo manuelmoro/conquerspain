@@ -1,6 +1,6 @@
 // Tablas de equilibrio. Ningun numero de estos vive en la logica: todos entran por aqui,
 // desde paquetes/nucleo/datos (docs/07-arquitectura.md §7.9).
-import type { CargaFiscal, RecursoAgotable } from './estado.ts';
+import type { CargaFiscal, Fuero, RecursoAgotable } from './estado.ts';
 import type { Potencial } from './mundo.ts';
 import type { Recurso, Recursos } from './recursos.ts';
 
@@ -173,6 +173,29 @@ export interface DatosProduccion {
   };
 }
 
+/** Lo que se come, se mantiene y se pierde cada turno (docs/03 §3.1, §3.6 y §3.9; T-032). */
+export interface DatosConsumo {
+  readonly panPorCuadrilla: number;
+  readonly hierroPorApero: number;
+  /** Turnos seguidos sin hierro tras los que los aperos bajan un nivel. */
+  readonly turnosSinHierroParaPerderApero: number;
+  /** Lo que rebajan la merma del pan un granero y la sal gastada en conservarlo. */
+  readonly mermaGraneroMil: number;
+  readonly mermaSalMil: number;
+  /** Una carga de sal conserva esta cantidad de pan. */
+  readonly panPorSal: number;
+  readonly administracionBase: number;
+  readonly administracionPorJornada: number;
+  readonly lealtadPorEscasez: number;
+  /** Lo que baja la lealtad por turno cuando el hambre se alarga y la gente ya se va. */
+  readonly lealtadPorHambreProlongada: number;
+  readonly lealtadPorDeudaDeAdministracion: number;
+  /** Escaseces seguidas a partir de las que la gente se va. */
+  readonly escasezParaEmigrar: number;
+  /** Turnos de reserva por debajo de los que se avisa del hambre. */
+  readonly turnosDeAvisoDeHambre: number;
+}
+
 export interface DatosMovimiento {
   readonly jornadasPorTerreno: Readonly<Record<string, number>>;
   readonly factorCaminoMil: Readonly<Record<CalidadCamino, number>>;
@@ -187,7 +210,11 @@ export interface DatosMovimiento {
 }
 
 export interface DatosPoblacion {
-  readonly consumoPorVecino: number;
+  /**
+   * Pan que come cada vecino por turno, en milesimas. El vecino es una familia que vive casi toda
+   * de lo suyo: el pan del almacen es el excedente que la sostiene en los malos meses.
+   */
+  readonly consumoPorVecinoMil: number;
   readonly vecinosPorCuadrilla: number;
   readonly cuadrillasMaximas: number;
   readonly capacidadBase: number;
@@ -197,9 +224,13 @@ export interface DatosPoblacion {
   readonly emigracionPorHambreMil: number;
   readonly lealtadInicialIncorporada: number;
   readonly turnosDeslealParaPerderla: number;
-  readonly fueros: Readonly<
-    Record<string, { administracionMil: number; impuestosMil: number; lealtadPorTurno: number }>
-  >;
+  readonly fueros: Readonly<Record<Fuero, DatosFuero>>;
+}
+
+export interface DatosFuero {
+  readonly administracionMil: number;
+  readonly impuestosMil: number;
+  readonly lealtadPorTurno: number;
 }
 
 export interface DatosMercado {
@@ -249,6 +280,12 @@ export interface DatosPrestigio {
   readonly penalizacionPorEscasez: number;
 }
 
+/** Con que empieza una casa en su comarca de origen (lo usa el alta de partida, T-065). */
+export interface DatosArranque {
+  readonly almacen: Recursos;
+  readonly edificiosDeOrigen: Readonly<Partial<Record<TipoEdificio, number>>>;
+}
+
 export interface TablasDeReglas {
   readonly version: number;
   readonly recursos: Readonly<Record<Recurso, DatosRecurso>>;
@@ -257,9 +294,11 @@ export interface TablasDeReglas {
   readonly tradiciones: Readonly<Record<string, DatosTradicion>>;
   readonly estaciones: DatosEstaciones;
   readonly produccion: DatosProduccion;
+  readonly consumo: DatosConsumo;
   readonly movimiento: DatosMovimiento;
   readonly poblacion: DatosPoblacion;
   readonly mercado: DatosMercado;
   readonly influencia: DatosInfluencia;
   readonly prestigio: DatosPrestigio;
+  readonly arranque: DatosArranque;
 }

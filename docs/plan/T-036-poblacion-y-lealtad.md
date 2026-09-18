@@ -16,7 +16,9 @@ administración y traslado de la corte.
 
 ## 3. Alcance
 
-**Entra:** todo lo anterior y la orden `politica` (fuero, carga fiscal, dehesa, uso de sal).
+**Entra:** todo lo anterior y la orden `politica` (fuero, carga fiscal, dehesa, uso de sal). El uso
+de sal es del jugador, no de la comarca, porque el pan está en el almacén común: la orden cambia
+`EstadoJugador.conservarConSal`, que la fase 3 ya respeta (T-032).
 
 **No entra:** influencia sobre comarcas neutrales (T-038), prestigio (T-043).
 
@@ -26,7 +28,7 @@ administración y traslado de la corte.
 
 Condiciones (todas):
 
-1. no hubo escasez este turno;
+1. no hubo escasez este turno (`permiteCrecer` de `reglas/escasez.ts`, T-032);
 2. `poblacion < capacidad`;
 3. `almacen.pan − reservado.pan >= reservaMinima` (30 por defecto, configurable en la partida);
 4. el balance de pan previsto con la población nueva sigue siendo ≥ 0.

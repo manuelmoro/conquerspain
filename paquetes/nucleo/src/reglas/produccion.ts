@@ -45,6 +45,8 @@ export interface DatosDeComarcaParaProducir {
   readonly clima: ClimaAnual;
   /** Modificador de produccion de la casa del duenyo, por recurso (enganche para T-041). */
   readonly casaMil: Readonly<Partial<Record<Recurso, number>>>;
+  /** Niveles que trabajan este turno si no son todos los construidos (insumos, T-032). */
+  readonly nivelesActivos?: Readonly<Partial<Record<TipoEdificio, number>>>;
 }
 
 export function multiplicadorPotencial(nivel: NivelPotencial, reglas: TablasDeReglas): Milesimas {
@@ -107,7 +109,10 @@ export function explotacionesDe(
   ];
   const resultado: Explotacion[] = [];
   for (const tipo of TIPOS_DE_EDIFICIO) {
-    const nivel = comarca.edificios[tipo] ?? 0;
+    const nivel = Math.min(
+      comarca.edificios[tipo] ?? 0,
+      datos.nivelesActivos?.[tipo] ?? Number.POSITIVE_INFINITY,
+    );
     if (nivel <= 0) continue;
     const edificio = reglas.edificios[tipo];
     for (const recurso of Object.keys(edificio.produccion).sort() as Recurso[]) {

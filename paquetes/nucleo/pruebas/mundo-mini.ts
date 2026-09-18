@@ -220,6 +220,7 @@ function comarcaDeEstado(plantilla: Plantilla, duenyo: string | null): Registro 
     agotamiento: { monte: 0, piedra: 0, hierro: 0, sal: 0 },
     influencias: {},
     turnosDesleal: 0,
+    turnosSinMantenimiento: 0,
     produccionUltimoTurno: recursos({}),
   };
 }
@@ -265,6 +266,7 @@ export function estadoMini(): EstadoPartida {
         },
         escasez: false,
         escasezSeguidas: 0,
+        conservarConSal: true,
         turnosSinOrdenes: 0,
       },
     },

@@ -1,6 +1,6 @@
 # T-032 · Fase 3: consumo, merma y escasez
 
-**Fase:** 2 · Motor · **Depende de:** T-031 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-031 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -28,7 +28,7 @@ maravedís; merma del pan; regla de escasez y sus consecuencias.
 
 | Concepto | Cantidad |
 |---|---|
-| Población | 1 pan por vecino y turno |
+| Población | ¼ de pan por vecino y turno (250 milésimas; ver §9) |
 | Cuadrilla ocupada en obra | 2 pan por turno |
 | Recua en ruta | 2 pan por jornada recorrida (lo cobra la fase de movimiento, no esta) |
 | Aperos | 1 hierro por nivel y comarca |
@@ -92,6 +92,18 @@ La fase calcula también la **previsión**: con el balance actual, cuántos turn
 Si son menos de tres, emite `consumo.aviso-hambre` con la cifra, para que la crónica lo destaque.
 El jugador nunca debe llegar a la escasez sin haber sido avisado.
 
+### 4.6 Insumos de los edificios y economía de arranque
+
+Añadido al implementar (T-031 dejó aquí el consumo de los edificios):
+
+- La carbonera paga 4 madera por nivel y la lonja 2 sal por nivel **al empezar la fase 2**, de lo
+  disponible al empezar el turno y de la comarca más cercana a la capital a la más lejana. El nivel
+  que no paga se para (`produccion.sin-insumo`). La ferrería trabaja como mucho tantos niveles
+  como carboneras encendidas haya en su comarca. Se cobra en la fase 2 y no en la 3 porque el
+  insumo decide lo que se produce en el mismo turno; cobrarlo después daría un turno de desfase.
+- La tabla `arranque` (almacén inicial y edificios de origen) define la «economía de partida» del
+  criterio 7. La aplica el alta de partida (T-065).
+
 ## 5. Archivos
 
 ```
@@ -124,3 +136,44 @@ npx vitest run paquetes/nucleo/src/reglas/consumo.test.ts paquetes/nucleo/src/re
 ## 8. Al terminar
 
 Índice y `ESTADO.md` (siguiente T-033). Commit: `T-032: consumo, merma y escasez`.
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 331 tests en verde; `humo-01` regenerada a propósito (el motor ya come).
+
+- `paquetes/nucleo/src/fases/03-consumo.ts`: por jugador, pan de la gente y de las cuadrillas,
+  hierro de los aperos, administración, merma, escasez y avisos (`consumo.pan`,
+  `consumo.aviso-aperos`, `consumo.administracion`, `consumo.merma`, `escasez.empieza|sigue|termina`,
+  `consumo.aviso-emigracion`, `consumo.aviso-hambre`).
+- `paquetes/nucleo/src/reglas/consumo.ts` (consumo, jornadas a la capital por Dijkstra sobre lo
+  conocido, orden de cercanía, costes de administración, turnos de reserva), `merma.ts`,
+  `escasez.ts` (`permiteIniciar`, `permiteCrecer`, emigración) e `insumos.ts`.
+- `paquetes/nucleo/src/datos/consumo.ts` y `arranque.ts`: tablas nuevas `consumo` y `arranque`.
+- `paquetes/nucleo/pruebas/consumo.test.ts`: 24 casos, entre ellos la propiedad sobre 10 000
+  estados generados con semilla fija, las tres combinaciones de merma, la emigración exacta en la
+  tercera escasez y el año de arranque.
+
+Decisiones tomadas al implementar:
+
+- **Un cuarto de pan por vecino** (`consumoPorVecinoMil: 250`), no uno entero: con un pan por
+  vecino, una comarca de origen típica (75 vecinos) no se alimentaba ni con todos sus solares en
+  granjas, y el criterio 7 era imposible. `docs/03` §3.6 lo explica. Queda sujeto al ajuste de
+  equilibrio de T-047.
+- **Hambre prolongada**: desde la tercera escasez seguida la lealtad cae 10 y no 5 (lo dice
+  `docs/03` §3.6) y emigra el 3 % de cada comarca, al menos un vecino.
+- **La deuda de administración corta en seco**: se paga de la comarca más cercana a la más
+  lejana y, en cuanto una no llega, esa y todas las más lejanas pierden 2 de lealtad.
+- **La sal de las conservas es una política del jugador** (`EstadoJugador.conservarConSal`), porque
+  el pan está en el almacén común; la orden `politica` que la cambia es de T-036.
+- **Los aperos se pagan por comarca**, también por cercanía; el contador de turnos sin hierro
+  vive en `EstadoComarca.turnosSinMantenimiento`.
+- **Las tablas de fueros exigen las tres claves** (`registroCompleto(FUEROS, …)`): antes aceptaban
+  cualquier clave y el motor tenía que suponer un valor por defecto.
+- **Efectos de la escasez en otras fases**: esta fase marca la escasez y aplica lealtad y
+  emigración; no iniciar expediciones ni obras ni crecer lo comprueban T-033, T-035 y T-036 con
+  `permiteIniciar` y `permiteCrecer` (anotado en sus fichas). La revalidación de las órdenes «en
+  espera» al levantarse la escasez es de T-034/T-045.
+- El aviso de hambre usa el balance de este turno (producción − consumo − merma); no anticipa el
+  cambio de estación. La crónica (T-044) puede afinarlo con la previsión del cliente.
+- Las pruebas viven en `paquetes/nucleo/pruebas/consumo.test.ts` y no en `src/reglas/*.test.ts`:
+  así lo exige el montaje (el núcleo no ve tipos de Node; sus pruebas, sí).

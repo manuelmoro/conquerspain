@@ -199,15 +199,18 @@ describe('la fase en el turno', () => {
 
   it('lo que producen las comarcas es exactamente lo que entra en el almacen', () => {
     const estado = estadoConVariasComarcas();
-    const { estado: despues } = resolverTurno(estado, [], mundoMini(), reglas);
-    const antes = estado.jugadores['casa-uno']?.almacen;
-    const ahora = despues.jugadores['casa-uno']?.almacen;
+    const { estado: despues, sucesos } = resolverTurno(estado, [], mundoMini(), reglas);
     for (const recurso of RECURSOS) {
       const producido = Object.values(despues.comarcas).reduce(
         (total, c) => total + c.produccionUltimoTurno[recurso],
         0,
       );
-      expect((ahora?.[recurso] ?? 0) - (antes?.[recurso] ?? 0), recurso).toBe(producido);
+      // Solo lo que entro en la fase de produccion: el consumo de la fase 3 va aparte.
+      const entrado = sucesos
+        .filter((s) => s.fase === 'produccion' && s.tipo === 'almacen.cambio')
+        .filter((s) => s.datos['recurso'] === recurso)
+        .reduce((total, s) => total + Number(s.datos['delta']), 0);
+      expect(entrado, recurso).toBe(producido);
     }
   });
 
@@ -246,7 +249,16 @@ describe('la fase en el turno', () => {
   });
 
   it('un anyo entero dibuja la curva del pan: maximo en verano, minimo en invierno', () => {
-    let estado: EstadoPartida = estadoMini();
+    // Con la despensa sobrada, ni el hambre ni la deuda tocan la lealtad y la curva es pura.
+    const inicial = estadoMini();
+    const casa = inicial.jugadores['casa-uno'];
+    if (casa === undefined) throw new Error('falta casa-uno');
+    let estado: EstadoPartida = {
+      ...inicial,
+      jugadores: {
+        'casa-uno': { ...casa, almacen: { ...casa.almacen, pan: 100_000, maravedis: 10_000 } },
+      },
+    };
     const porTurno: number[] = [];
     for (let i = 0; i < 24; i += 1) {
       estado = resolverTurno(estado, [], mundoMini(), reglas).estado;

@@ -24,8 +24,9 @@ geografía. Esa asimetría es la que obliga a comerciar y a pelear por comarcas 
 Notas de diseño:
 
 - **El pan se pierde.** Sin sal ni granero, el almacén de pan mengua un 4 % por turno. Con granero
-  −2 puntos; gastando 1 de sal por cada 50 de pan almacenado, −2 puntos más. Acaparar pan sin
-  logística no funciona: hay que producir, conservar o comprar a tiempo.
+  −2 puntos; gastando 1 de sal por cada 50 de pan almacenado, −2 puntos más. La sal solo se gasta
+  si alcanza para todo el pan, y el jugador puede desactivarlo con una orden de política. Acaparar
+  pan sin logística no funciona: hay que producir, conservar o comprar a tiempo.
 - **El hierro no se acumula por gusto**: mantener aperos consume hierro cada turno.
 - **La lana no gotea**: se cobra de golpe en el esquileo (segunda quincena de mayo). Es una apuesta
   anual.
@@ -94,6 +95,10 @@ Reglas comunes:
   disponibles: `1 + floor(vecinos / 40)`, máximo 4.
 - En invierno las obras de piedra tardan el doble (heladas). Las de madera, un 50 % más.
 - Derribar devuelve la mitad del material, redondeando a la baja, y libera el solar en 1 turno.
+- **Insumos.** La carbonera quema 4 madera por nivel y la lonja gasta 2 sal por nivel. Se pagan al
+  empezar la producción, de lo que había en el almacén, de la comarca más cercana a la capital a la
+  más lejana; el nivel que no puede pagar se para ese turno. La ferrería trabaja como mucho tantos
+  niveles como carboneras encendidas haya en su comarca: el carbón no sale de ella.
 
 ### 3.3.1 Aperos (el producto del ferrón)
 
@@ -146,7 +151,15 @@ Monte, piedra, hierro y sal se agotan si se explotan a tope:
 
 ## 3.6 Población, hambre y lealtad
 
-- **Consumo**: 1 pan por vecino y turno. Las recuas y cuadrillas consumen aparte (§3.7).
+- **Consumo**: un cuarto de pan por vecino y turno (250 milésimas, truncado sobre el total del
+  jugador). El vecino es una familia que vive casi toda de lo suyo; el pan del almacén es el
+  excedente que la sostiene en los malos meses. Con un pan entero por vecino, un origen típico
+  (labor 3, 75 vecinos) no se alimentaba ni con todos sus solares en granjas. Las recuas y
+  cuadrillas consumen aparte (§3.7): 2 pan por cuadrilla en obra y turno.
+- **Economía de arranque**: la comarca de origen empieza con dos niveles de granja y 80 de pan,
+  60 de madera, 20 de piedra y 60 maravedís. En un origen típico eso da la curva buscada: la
+  reserva baja en invierno y primavera, se llena en verano y no llega a la escasez en el primer
+  año si no se hace nada.
 - **Crecimiento**: en la fase 9, una comarca gana vecinos si se cumple todo:
   1. hay abastecimiento (no hubo escasez este turno);
   2. hay capacidad libre;
@@ -157,7 +170,10 @@ Monte, piedra, hierro y sal se agotan si se explotan a tope:
   negativa), se marca escasez y: se detiene el crecimiento, no se pueden iniciar expediciones ni
   obras nuevas, y la lealtad baja 5 puntos. Las órdenes ya empezadas continúan.
 - **Hambre prolongada**: a la tercera escasez consecutiva, la comarca pierde un 3 % de vecinos por
-  turno (emigran, no mueren: el juego no hace morir gente en pantalla) y la lealtad cae 10 por turno.
+  turno (emigran, no mueren: el juego no hace morir gente en pantalla; al menos un vecino si queda
+  alguno) y la lealtad cae 10 por turno en lugar de 5. Se avisa en las dos escaseces anteriores.
+- **Aviso de hambre**: si con el balance de pan del turno la reserva aguanta menos de tres turnos,
+  la crónica lo destaca con la cifra. Nadie llega a la escasez sin haber sido avisado.
 - **Lealtad**: empieza en 60 en una comarca incorporada y en 100 en la de origen.
 
 | Sube | Puntos/turno | Baja | Puntos/turno |

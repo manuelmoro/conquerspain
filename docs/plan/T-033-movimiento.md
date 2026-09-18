@@ -18,7 +18,8 @@ bastimento, respetando puertos cerrados y dejando el estado listo para la fase d
 ## 3. Alcance
 
 **Entra:** cálculo de ruta, avance por jornadas, bastimento, bloqueos por cierre, llegada, y las
-órdenes `formar`, `ruta`, `cargar`, `descargar`.
+órdenes `formar`, `ruta`, `cargar`, `descargar`. Con escasez no sale ninguna expedición nueva
+(`permiteIniciar` de `reglas/escasez.ts`, T-032); las que ya están en camino siguen.
 
 **No entra:** lo que hace la recua al llegar (T-034), rebaños (T-040), portazgos (T-103).
 

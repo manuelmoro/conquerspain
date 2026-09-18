@@ -71,6 +71,8 @@ export interface EstadoJugador {
   readonly escasez: boolean;
   /** Escaseces seguidas: a la tercera empieza la emigracion. */
   readonly escasezSeguidas: number;
+  /** Gastar sal en conservar el pan del almacen; se cambia con una orden de politica. */
+  readonly conservarConSal: boolean;
   readonly turnosSinOrdenes: number;
 }
 
@@ -102,6 +104,8 @@ export interface EstadoComarca {
   readonly influencias: Readonly<Record<string, number>>;
   /** Turnos seguidos con lealtad por debajo del minimo antes de volver a neutral. */
   readonly turnosDesleal: number;
+  /** Turnos seguidos sin hierro para mantener los aperos: al segundo, bajan un nivel. */
+  readonly turnosSinMantenimiento: number;
   readonly produccionUltimoTurno: Recursos;
 }
 

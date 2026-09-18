@@ -41,7 +41,8 @@
           "hierro": 0,
           "lana": 0
         },
-        "turnosDesleal": 0
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
       },
       "prueba-llano": {
         "agotamiento": {
@@ -80,7 +81,8 @@
           "hierro": 0,
           "lana": 0
         },
-        "turnosDesleal": 0
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
       },
       "prueba-mina": {
         "agotamiento": {
@@ -117,7 +119,8 @@
           "hierro": 0,
           "lana": 0
         },
-        "turnosDesleal": 0
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
       },
       "prueba-monte": {
         "agotamiento": {
@@ -154,7 +157,8 @@
           "hierro": 0,
           "lana": 0
         },
-        "turnosDesleal": 0
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
       },
       "prueba-rio": {
         "agotamiento": {
@@ -191,7 +195,8 @@
           "hierro": 0,
           "lana": 0
         },
-        "turnosDesleal": 0
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
       },
       "prueba-sierra": {
         "agotamiento": {
@@ -228,7 +233,8 @@
           "hierro": 0,
           "lana": 0
         },
-        "turnosDesleal": 0
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
       },
       "prueba-vega": {
         "agotamiento": {
@@ -265,7 +271,8 @@
           "hierro": 0,
           "lana": 0
         },
-        "turnosDesleal": 0
+        "turnosDesleal": 0,
+        "turnosSinMantenimiento": 0
       }
     },
     "configuracion": {
@@ -306,6 +313,7 @@
         "credito": 50,
         "escasez": false,
         "escasezSeguidas": 0,
+        "conservarConSal": true,
         "hitos": {},
         "id": "casa-uno",
         "nombre": "Casa Uno",
@@ -337,17 +345,17 @@
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "fcdf94d121e3a7aacc912c0038499b7c44becf68701381f8b36c7498b3335c93"
+      "huellaEsperada": "0a28d4b168fa6b714696aac2f0a420c773fd325e10a1298f05b4ac66de028b85"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "60113c1826ab687c94c2f42345fba39a57ff568264ffe45dc3ae38ec91215c64"
+      "huellaEsperada": "a959acea7ab23b87c696f23734bafd3d391b946cb2c5b42ddc2666faeb8ae46f"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "bccb1112a8c13aa121b2c3af02e5f73d7203d80f313444e2708d0400dc60ef10"
+      "huellaEsperada": "f382a7f0b66162530872ce03816c2f80d0fe575d7648732df6b2e46eac883bcc"
     }
   ]
 }

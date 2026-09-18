@@ -50,6 +50,17 @@ export type Cambio =
       readonly motivo: string;
     }
   | {
+      readonly tipo: 'aperos';
+      readonly comarca: IdComarca;
+      readonly delta: number;
+      readonly motivo: string;
+    }
+  | {
+      readonly tipo: 'mantenimiento';
+      readonly comarca: IdComarca;
+      readonly turnosSinMantenimiento: number;
+    }
+  | {
       readonly tipo: 'edificio';
       readonly comarca: IdComarca;
       readonly edificio: string;
@@ -197,14 +208,20 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
     }
 
     case 'escasez': {
+      // Se aplica una vez por turno y jugador: cada turno con escasez suma uno a la racha.
       const jugador = jugadorDe(ctx, cambio.jugador);
-      if (jugador.escasez === cambio.hay) return;
+      if (!jugador.escasez && !cambio.hay) return;
+      const clave = !cambio.hay
+        ? 'escasez.termina'
+        : jugador.escasez
+          ? 'escasez.sigue'
+          : 'escasez.empieza';
       jugador.escasez = cambio.hay;
       jugador.escasezSeguidas = cambio.hay ? jugador.escasezSeguidas + 1 : 0;
       registrarSuceso(
         ctx.sucesos,
         ctx.fase,
-        cambio.hay ? 'escasez.empieza' : 'escasez.termina',
+        clave,
         { seguidas: jugador.escasezSeguidas },
         { jugador: cambio.jugador },
       );
@@ -244,6 +261,43 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         { delta: cambio.delta, total: despues, motivo: cambio.motivo },
         { comarca: cambio.comarca, jugador: comarca.duenyo },
       );
+      return;
+    }
+
+    case 'aperos': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      const despues = comarca.aperos + cambio.delta;
+      if (despues < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Los aperos de ${cambio.comarca} quedarian en el nivel ${String(despues)}.`,
+          { comarca: cambio.comarca, delta: cambio.delta },
+        );
+      }
+      comarca.aperos = despues;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'aperos.cambio',
+        { delta: cambio.delta, nivel: despues, motivo: cambio.motivo },
+        { comarca: cambio.comarca, jugador: comarca.duenyo },
+      );
+      return;
+    }
+
+    case 'mantenimiento': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      if (
+        !Number.isSafeInteger(cambio.turnosSinMantenimiento) ||
+        cambio.turnosSinMantenimiento < 0
+      ) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Los turnos sin mantenimiento de ${cambio.comarca} no pueden ser ${String(cambio.turnosSinMantenimiento)}.`,
+          { comarca: cambio.comarca },
+        );
+      }
+      comarca.turnosSinMantenimiento = cambio.turnosSinMantenimiento;
       return;
     }
 

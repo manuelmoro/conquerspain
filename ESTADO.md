@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-031)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-032)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,10 +20,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-032 · Fase 3: consumo, merma y escasez](docs/plan/T-032-fase-consumo.md)**
+**[T-033 · Fase 4: movimiento de recuas por el grafo](docs/plan/T-033-movimiento.md)**
 
-Lo que se come y lo que se pierde: un pan por vecino, la merma del pan almacenado, lo que consumen
-los edificios (la carbonera quema madera, la lonja gasta sal) y la escasez cuando no llega.
+Las recuas echan a andar: ruta por el grafo de caminos, avance por jornadas con `jornadasDeTramo`,
+bastimento, puertos cerrados en invierno y llegada. Con escasez no sale ninguna expedición nueva
+(`permiteIniciar`).
 
 ## Cómo continuar (resumen)
 
@@ -50,7 +51,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
-| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario y 2 producción |
+| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios) y 3 consumo, merma y escasez |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
 | Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
@@ -75,6 +76,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 18-09-2026 | **T-032 hecha**: el motor come. Pan de la gente y de las cuadrillas, hierro de los aperos, administración por jornadas a la capital, merma con granero y sal, escasez con sus efectos, emigración a la tercera y avisos de hambre y de aperos; insumos de carbonera y lonja en la fase 2. **Cambio de equilibrio**: un cuarto de pan por vecino (con uno entero, un origen típico no se alimentaba). Tabla `arranque` nueva, pendiente de que el alta (T-065) la ajuste por origen. 331 tests en verde |
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
 | 18-09-2026 | **T-031 hecha**: el motor produce. Primeras tablas reales del juego (quince edificios y la cadena de producción), cada explotación con su desglose explicable factor a factor, maravedís de mercado e impuestos y agotamiento con regeneración. 307 tests en verde |

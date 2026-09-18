@@ -1,10 +1,13 @@
 // Validacion de las tablas de equilibrio. Si un numero del juego esta mal escrito, se sabe aqui
 // y no tres fases despues, con una produccion imposible.
-import { CARGAS_FISCALES, RECURSOS_AGOTABLES } from '../tipos/estado.ts';
+import { CARGAS_FISCALES, FUEROS, RECURSOS_AGOTABLES } from '../tipos/estado.ts';
 import { POTENCIALES } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import type {
+  DatosArranque,
   DatosCasa,
+  DatosConsumo,
+  DatosFuero,
   DatosEdificio,
   DatosEstaciones,
   DatosInfluencia,
@@ -149,7 +152,7 @@ const validarMovimiento: Validador<DatosMovimiento> = objeto<DatosMovimiento>({
 });
 
 const validarPoblacion: Validador<DatosPoblacion> = objeto<DatosPoblacion>({
-  consumoPorVecino: entero({ minimo: 1, maximo: 10 }),
+  consumoPorVecinoMil: milesimas(1, 3000),
   vecinosPorCuadrilla: entero({ minimo: 1, maximo: 200 }),
   cuadrillasMaximas: entero({ minimo: 1, maximo: 10 }),
   capacidadBase: entero({ minimo: 1, maximo: 1000 }),
@@ -159,8 +162,9 @@ const validarPoblacion: Validador<DatosPoblacion> = objeto<DatosPoblacion>({
   emigracionPorHambreMil: milesimas(0, 1000),
   lealtadInicialIncorporada: entero({ minimo: 0, maximo: 100 }),
   turnosDeslealParaPerderla: entero({ minimo: 1, maximo: 50 }),
-  fueros: registro(
-    objeto<{ administracionMil: number; impuestosMil: number; lealtadPorTurno: number }>({
+  fueros: registroCompleto(
+    FUEROS,
+    objeto<DatosFuero>({
       administracionMil: milesimas(0, 3000),
       impuestosMil: milesimas(0, 3000),
       lealtadPorTurno: entero({ minimo: -10, maximo: 10 }),
@@ -245,6 +249,27 @@ const validarProduccion: Validador<DatosProduccion> = objeto<DatosProduccion>({
   }),
 });
 
+const validarConsumo: Validador<DatosConsumo> = objeto<DatosConsumo>({
+  panPorCuadrilla: enteroNoNegativo(20),
+  hierroPorApero: enteroNoNegativo(10),
+  turnosSinHierroParaPerderApero: entero({ minimo: 1, maximo: 10 }),
+  mermaGraneroMil: milesimas(0, 1000),
+  mermaSalMil: milesimas(0, 1000),
+  panPorSal: entero({ minimo: 1, maximo: 1000 }),
+  administracionBase: enteroNoNegativo(100),
+  administracionPorJornada: enteroNoNegativo(100),
+  lealtadPorEscasez: enteroNoNegativo(50),
+  lealtadPorHambreProlongada: enteroNoNegativo(50),
+  lealtadPorDeudaDeAdministracion: enteroNoNegativo(50),
+  escasezParaEmigrar: entero({ minimo: 1, maximo: 20 }),
+  turnosDeAvisoDeHambre: entero({ minimo: 1, maximo: 24 }),
+});
+
+const validarArranque: Validador<DatosArranque> = objeto<DatosArranque>({
+  almacen: recursos(),
+  edificiosDeOrigen: registro(entero({ minimo: 1, maximo: 10 }), unoDe(TIPOS_DE_EDIFICIO)),
+});
+
 const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   version: entero({ minimo: 1 }),
   recursos: registroCompleto(RECURSOS, validarRecurso),
@@ -253,11 +278,13 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   tradiciones: registro(validarTradicion),
   estaciones: validarEstacionesDatos,
   produccion: validarProduccion,
+  consumo: validarConsumo,
   movimiento: validarMovimiento,
   poblacion: validarPoblacion,
   mercado: validarMercado,
   influencia: validarInfluencia,
   prestigio: validarPrestigio,
+  arranque: validarArranque,
 });
 
 /** Valida las tablas de equilibrio y su coherencia con la version de reglas del motor. */
@@ -281,11 +308,24 @@ export function validarTablas(dato: unknown): Resultado<TablasDeReglas> {
     });
   }
 
-  for (const [clave, edificio] of Object.entries(tablas.edificios)) {
+  for (const clave of TIPOS_DE_EDIFICIO) {
+    const edificio = tablas.edificios[clave];
     if (edificio.potencial === null && edificio.potencialMinimo > 0) {
       errores.push({
         ruta: `edificios.${clave}.potencialMinimo`,
         mensaje: 'pide un potencial minimo pero no dice de que potencial depende',
+      });
+    }
+    // Los insumos se resuelven en el orden de TIPOS_DE_EDIFICIO (reglas/insumos.ts): el edificio
+    // del que depende otro tiene que ir antes para saber cuantos niveles suyos trabajan.
+    const requerido = edificio.requiereEdificio;
+    if (
+      requerido !== null &&
+      TIPOS_DE_EDIFICIO.indexOf(requerido) >= TIPOS_DE_EDIFICIO.indexOf(clave)
+    ) {
+      errores.push({
+        ruta: `edificios.${clave}.requiereEdificio`,
+        mensaje: `"${requerido}" tiene que ir antes que "${clave}" en la lista de tipos de edificio`,
       });
     }
   }

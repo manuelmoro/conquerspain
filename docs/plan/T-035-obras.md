@@ -53,7 +53,7 @@ Se comprueban al **dar la orden** y otra vez al **empezar**:
 - requisitos propios (molino exige granja; catedral exige ciudad y `ciudad-episcopal`; acequia exige
   `vega-fluvial`);
 - recursos disponibles (se reservan al dar la orden);
-- sin escasez.
+- sin escasez (`permiteIniciar` de `reglas/escasez.ts`, T-032).
 
 Si al empezar falla algo, la orden pasa a `en espera` con motivo, sin perder la reserva.
 
