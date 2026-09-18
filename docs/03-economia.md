@@ -92,9 +92,13 @@ con ella, el comercio.
 Reglas comunes:
 
 - Construir ocupa **una cuadrilla** de la comarca durante los turnos indicados. Cuadrillas
-  disponibles: `1 + floor(vecinos / 40)`, máximo 4.
+  disponibles: `1 + floor(vecinos / 40)`, máximo 4; una más con fuero y otra con monasterio. Si no
+  hay cuadrilla libre, la orden espera y dice cuándo quedará una.
 - En invierno las obras de piedra tardan el doble (heladas). Las de madera, un 50 % más.
+- El edificio se paga entero al empezar. Un edificio en obra ya ocupa su solar.
 - Derribar devuelve la mitad del material, redondeando a la baja, y libera el solar en 1 turno.
+- Roturar pasa un punto de monte a labor en 3 turnos (10 pan y 20 mrs); en dehesa cuesta el doble
+  y la comarca pierde 5 de lealtad; con monasterio es gratis.
 - **Insumos.** La carbonera quema 4 madera por nivel y la lonja gasta 2 sal por nivel. Se pagan al
   empezar la producción, de lo que había en el almacén, de la comarca más cercana a la capital a la
   más lejana; el nivel que no puede pagar se para ese turno. La ferrería trabaja como mucho tantos
@@ -328,18 +332,24 @@ quedar vigente los turnos siguientes.
 Proyectos de decenas de turnos que marcan la partida. Ocupan cuadrillas, consumen material a lo
 largo de la obra y dan prestigio y efectos permanentes.
 
-| Obra | Turnos | Requisitos | Efecto |
-|---|---|---|---|
-| **Puente** | 12 | Vado en el tramo | Elimina el +2 del vado; el tramo no se cierra por crecida |
-| **Calzada** | 20 | Camino carretero en el tramo | Factor 50 %, nunca se cierra por nieve |
-| **Monasterio** | 25 | Lealtad ≥ 60 | +20 % de crecimiento en la comarca y las vecinas; roturación gratuita |
-| **Catedral** | 45 | Ciudad (≥ 200 vecinos), cantera propia | Prestigio alto; +2 de lealtad regional por turno; atrae peregrinos (mrs) |
-| **Muralla** | 18 | Piedra | Protege del bandidaje; +15 de lealtad; requisito de ciudad |
-| **Atarazana** | 30 | Comarca costera | Habilita el comercio marítimo de larga distancia (fase posterior) |
-| **Acequia mayor** | 22 | Vega, río | +50 % de labor en la comarca y elimina la penalización estacional |
+| Obra | Turnos | Coste total | Requisitos | Efecto |
+|---|---|---|---|---|
+| **Puente** | 12 | 120 piedra, 40 madera, 60 mrs | Vado en el tramo | Elimina el +2 del vado; el tramo no se cierra por crecida |
+| **Calzada** | 20 | 200 piedra, 100 mrs | Camino carretero en el tramo | Factor 50 %, nunca se cierra por nieve |
+| **Monasterio** | 25 | 150 piedra, 100 madera, 150 mrs | Lealtad ≥ 60 | +20 % de crecimiento en la comarca y las vecinas; roturación gratuita; +1 cuadrilla |
+| **Catedral** | 45 | 1 200 piedra, 300 madera, 800 mrs | Ciudad, sede episcopal (`ciudad-episcopal`), cantera propia | Prestigio alto; +2 de lealtad por turno a las comarcas propias de la región; 12 mrs de peregrinos por turno |
+| **Muralla** | 18 | 250 piedra, 80 mrs | — | Protege del bandidaje; +15 de lealtad; hace falta para ser ciudad |
+| **Atarazana** | 30 | 250 madera, 100 piedra, 200 mrs | Comarca costera | Habilita el comercio marítimo de larga distancia (fase posterior) |
+| **Acequia mayor** | 22 | 120 piedra, 60 madera, 150 mrs | Vega con río (`vega-fluvial`) | +50 % de labor en la comarca y elimina la penalización estacional |
 
-Una obra mayor puede **abandonarse** y retomarse: lo construido no se pierde, pero se deteriora un
-1 % por turno de abandono.
+Una **ciudad** es una comarca con al menos 200 vecinos y muralla. El puente y la calzada se levantan
+en un tramo que sale de una comarca propia; las demás, en la comarca. Todas son de piedra salvo la
+atarazana, así que el invierno las frena.
+
+El coste se **paga a plazos**: cada turno se entrega lo que corresponde al avance de ese turno, y al
+terminar se ha pagado exactamente el total. Si un turno no hay material, la obra se detiene (no se
+pierde) y sigue sola en cuanto lo haya. Una obra mayor puede **abandonarse** y retomarse: libera la
+cuadrilla y lo construido no se pierde, pero se deteriora un 1 % por turno de abandono.
 
 ## 3.12 Por qué hay muchas estrategias
 

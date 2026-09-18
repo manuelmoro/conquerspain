@@ -22,6 +22,11 @@ de sal es del jugador, no de la comarca, porque el pan está en el almacén com�
 
 **No entra:** influencia sobre comarcas neutrales (T-038), prestigio (T-043).
 
+**Heredado de T-034 y T-035.** Ya existen `capacidadDe` (`reglas/poblar.ts`, base + casas) y
+`factorCrecimientoPorObrasMil` (`reglas/obras.ts`, +20 % con monasterio en la comarca o una
+vecina); el crecimiento tiene que usarlos. La catedral ya da +2 de lealtad por turno a las comarcas
+propias de su región (fase 6) y la muralla +15 al terminarse: no hay que repetirlo aquí.
+
 ## 4. Diseño detallado
 
 ### 4.1 Crecimiento

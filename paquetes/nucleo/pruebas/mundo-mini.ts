@@ -221,6 +221,7 @@ function comarcaDeEstado(plantilla: Plantilla, duenyo: string | null): Registro 
     influencias: {},
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
+    obrasMayores: [],
     produccionUltimoTurno: recursos({}),
   };
 }
@@ -274,6 +275,7 @@ export function estadoMini(): EstadoPartida {
     recuas: {},
     rebanyos: {},
     obras: {},
+    caminos: {},
     mercados: {},
     acontecimientos: [],
     ordenes: [],

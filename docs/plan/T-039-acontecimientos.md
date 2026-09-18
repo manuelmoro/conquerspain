@@ -21,6 +21,10 @@ efecto y siempre con una respuesta posible por parte del jugador.
 
 **No entra:** el clima anual (ya en T-030), la guerra ni nada entre jugadores.
 
+**Heredado de T-035.** Una crecida no cierra un vado con puente: `salvaCrecidas(estado.caminos,
+claveDeTramo(a, b))` (`reglas/obras.ts`). La muralla protege del bandidaje:
+`protegeDelBandidaje(comarca)`.
+
 ## 4. Diseño detallado
 
 ### 4.1 Forma

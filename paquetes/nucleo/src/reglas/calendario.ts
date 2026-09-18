@@ -51,6 +51,7 @@ export interface EstadoEstacional {
   readonly pastosDeInvierno: boolean;
   readonly factorPanMil: Milesimas;
   readonly factorObraPiedraMil: Milesimas;
+  readonly factorObraMaderaMil: Milesimas;
 }
 
 export const EFECTOS_DE_CLIMA = ['seco', 'lluvioso', 'duro', 'benigno'] as const;
@@ -154,6 +155,7 @@ export function estadoEstacionalDe(
     pastosDeInvierno: !pastosDeVerano,
     factorPanMil: reglas.estaciones.factorPanMil[estacion],
     factorObraPiedraMil: reglas.estaciones.factorObraPiedraMil[estacion],
+    factorObraMaderaMil: reglas.estaciones.factorObraMaderaMil[estacion],
   };
 }
 

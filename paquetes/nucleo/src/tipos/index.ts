@@ -99,6 +99,8 @@ export type {
   DatosArranque,
   DatosCometidos,
   DatosConsumo,
+  DatosObraMayor,
+  DatosObras,
   DatosFuero,
   DatosEstaciones,
   DatosProduccion,

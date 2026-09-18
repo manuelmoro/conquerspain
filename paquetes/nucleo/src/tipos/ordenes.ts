@@ -12,7 +12,7 @@ import type {
   IdRecua,
 } from './ids.ts';
 import type { Recurso, Recursos } from './recursos.ts';
-import type { Tradicion, TipoEdificio } from './reglas.ts';
+import type { Tradicion, TipoEdificio, TipoObraMayor } from './reglas.ts';
 
 export const ESTADOS_DE_ORDEN = [
   'pendiente',
@@ -147,9 +147,13 @@ export interface OrdenMercado extends OrdenBase {
 export interface OrdenObraMayor extends OrdenBase {
   readonly tipo: 'obra-mayor';
   readonly comarca: IdComarca;
-  readonly obra: string;
-  /** Obra ya empezada a la que se aporta material, o null si se empieza ahora. */
+  readonly obra: TipoObraMayor;
+  /** Otra punta del tramo para el puente y la calzada; null en las demas. */
+  readonly hacia: IdComarca | null;
+  /** Obra ya empezada a la que se refiere la orden, o null si se empieza ahora. */
   readonly continuar: IdObra | null;
+  /** Con `continuar`: true la abandona, false la retoma. */
+  readonly abandonar: boolean;
 }
 
 export interface OrdenTradicion extends OrdenBase {

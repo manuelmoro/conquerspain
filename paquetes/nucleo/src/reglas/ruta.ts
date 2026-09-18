@@ -7,24 +7,39 @@
 import type { EstadoEstacional } from './calendario.ts';
 import type { CosteDeTramoMil } from './jornadas.ts';
 import { jornadasDeTramoMil } from './jornadas.ts';
-import type { EstadoJugador } from '../tipos/estado.ts';
+import type { EstadoJugador, EstadoTramo } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
 import type { Camino, Mundo } from '../tipos/mundo.ts';
 import type { CalidadCamino, TablasDeReglas } from '../tipos/reglas.ts';
 import type { Milesimas } from '../utiles/enteros.ts';
 import { comparar } from '../utiles/orden.ts';
 
+/** Tramos mejorados por obras (`EstadoPartida.caminos`). */
+export type Mejoras = Readonly<Record<string, EstadoTramo>>;
+
+/** Clave de un tramo en `EstadoPartida.caminos`: las dos comarcas en orden, con una barra. */
+export function claveDeTramo(una: string, otra: string): string {
+  return comparar(una, otra) <= 0 ? `${una}|${otra}` : `${otra}|${una}`;
+}
+
 /**
- * Calidad de un tramo al empezar la partida: las calzadas romanas empiezan como camino carretero
- * (docs/05 §5.4) y el resto como vereda. Los caminos que se construyan los mejoraran (T-035).
+ * Calidad de un tramo: la que le hayan dado las obras o, si no, la de partida. Las calzadas romanas
+ * empiezan como camino carretero (docs/05 §5.4) y el resto como vereda.
  */
-export function calidadDeTramo(camino: Camino): CalidadCamino {
+export function calidadDeTramo(camino: Camino, mejoras: Mejoras): CalidadCamino {
+  const obra = mejoras[claveDeTramo(camino.desde, camino.hasta)];
+  if (obra !== undefined) return obra.calidad;
   return camino.calzadaRomana ? 'carretero' : 'vereda';
 }
 
 /** El tramo tiene calzada: nunca se cierra y la recua anda una jornada mas por el. */
-export function tieneCalzada(camino: Camino): boolean {
-  return camino.calzadaRomana || calidadDeTramo(camino) === 'calzada';
+export function tieneCalzada(camino: Camino, mejoras: Mejoras): boolean {
+  return camino.calzadaRomana || calidadDeTramo(camino, mejoras) === 'calzada';
+}
+
+/** El vado del tramo tiene puente. */
+export function tienePuente(camino: Camino, mejoras: Mejoras): boolean {
+  return mejoras[claveDeTramo(camino.desde, camino.hasta)]?.puente === true;
 }
 
 /** Lo que cuesta cruzar un tramo este turno, en milesimas de jornada. */
@@ -32,9 +47,11 @@ export function costeDeTramoMil(
   camino: Camino,
   estacional: EstadoEstacional,
   reglas: TablasDeReglas,
+  mejoras: Mejoras,
 ): CosteDeTramoMil {
-  return jornadasDeTramoMil(camino, estacional.estacion, calidadDeTramo(camino), reglas, {
+  return jornadasDeTramoMil(camino, estacional.estacion, calidadDeTramo(camino, mejoras), reglas, {
     barro: estacional.barro,
+    puente: tienePuente(camino, mejoras),
   });
 }
 
@@ -110,6 +127,7 @@ export function rutaMasCorta(
   estacional: EstadoEstacional,
   transitables: ReadonlySet<string>,
   reglas: TablasDeReglas,
+  mejoras: Mejoras,
 ): Ruta | null {
   if (desde === hasta) return { comarcas: [], jornadasMil: 0 };
   const etiquetas = new Map<string, Etiqueta>([[desde, { coste: 0, camino: [] }]]);
@@ -140,7 +158,7 @@ export function rutaMasCorta(
       const vecina = camino.desde === actual ? camino.hasta : camino.desde;
       if (cerradas.has(vecina)) continue;
       if (vecina !== hasta && !transitables.has(vecina)) continue;
-      const coste = costeDeTramoMil(camino, estacional, reglas);
+      const coste = costeDeTramoMil(camino, estacional, reglas, mejoras);
       if (coste === 'cerrado') continue;
       const nueva: Etiqueta = { coste: mejor.coste + coste, camino: [...mejor.camino, vecina] };
       const vieja = etiquetas.get(vecina);
@@ -167,13 +185,14 @@ export function rutaPorParadas(
   estacional: EstadoEstacional,
   transitables: ReadonlySet<string>,
   reglas: TablasDeReglas,
+  mejoras: Mejoras,
 ): Ruta | null {
   const destinos = circular ? [...paradas, desde] : [...paradas];
   const comarcas: IdComarca[] = [];
   let jornadasMil = 0;
   let origen = desde;
   for (const destino of destinos) {
-    const tramo = rutaMasCorta(origen, destino, mundo, estacional, transitables, reglas);
+    const tramo = rutaMasCorta(origen, destino, mundo, estacional, transitables, reglas, mejoras);
     if (tramo === null) return null;
     comarcas.push(...tramo.comarcas);
     jornadasMil += tramo.jornadasMil;

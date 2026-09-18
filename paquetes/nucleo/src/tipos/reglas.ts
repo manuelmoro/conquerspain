@@ -41,6 +41,10 @@ export const TIPOS_DE_EDIFICIO = [
 ] as const;
 export type TipoEdificio = (typeof TIPOS_DE_EDIFICIO)[number];
 
+export function esTipoDeEdificio(texto: string): texto is TipoEdificio {
+  return (TIPOS_DE_EDIFICIO as readonly string[]).includes(texto);
+}
+
 export const ESTACIONES = ['primavera', 'verano', 'otonyo', 'invierno'] as const;
 export type Estacion = (typeof ESTACIONES)[number];
 
@@ -140,7 +144,9 @@ export interface DatosEstaciones {
   readonly estacionPorTurno: readonly Estacion[];
   readonly factorPanMil: Readonly<Record<Estacion, number>>;
   /** Coste de las obras de canteria por estacion: en invierno la helada estropea la cal. */
+  /** Lo que se alarga una obra de piedra o de madera en cada estacion (2000 = el doble). */
   readonly factorObraPiedraMil: Readonly<Record<Estacion, number>>;
+  readonly factorObraMaderaMil: Readonly<Record<Estacion, number>>;
   readonly turnosDeBarro: readonly number[];
   readonly turnoDeEsquileo: number;
   readonly turnosPastoDeVerano: readonly number[];
@@ -240,6 +246,56 @@ export interface DatosCometidos {
   readonly devolucionAlDisolverMil: number;
 }
 
+/** Las siete obras mayores (docs/03-economia.md §3.11). */
+export const TIPOS_DE_OBRA_MAYOR = [
+  'puente',
+  'calzada',
+  'monasterio',
+  'catedral',
+  'muralla',
+  'atarazana',
+  'acequia-mayor',
+] as const;
+export type TipoObraMayor = (typeof TIPOS_DE_OBRA_MAYOR)[number];
+
+export function esTipoDeObraMayor(texto: string): texto is TipoObraMayor {
+  return (TIPOS_DE_OBRA_MAYOR as readonly string[]).includes(texto);
+}
+
+/** Las que se levantan en un tramo de camino y no en una comarca. */
+export const OBRAS_MAYORES_DE_TRAMO: readonly TipoObraMayor[] = ['puente', 'calzada'];
+
+export interface DatosObraMayor {
+  readonly nombre: string;
+  readonly turnos: number;
+  /** Coste total, que se paga a plazos segun avanza la obra. */
+  readonly coste: Recursos;
+  readonly esDePiedra: boolean;
+}
+
+/** Obras, cuadrillas y efectos de las obras mayores (docs/03 §3.3 y §3.11; ficha T-035). */
+export interface DatosObras {
+  readonly cuadrillasPorFuero: number;
+  readonly cuadrillasPorMonasterio: number;
+  readonly turnosDerribo: number;
+  /** Parte del material de un edificio que se recupera al derribarlo. */
+  readonly devolucionDerriboMil: number;
+  readonly turnosRoturar: number;
+  readonly costeRoturar: Recursos;
+  /** En dehesa roturar cuesta mas (2000 = el doble) y enfada al concejo. */
+  readonly costeRoturarDehesaMil: number;
+  readonly lealtadPorRoturarDehesa: number;
+  /** Lo que se deteriora al turno una obra mayor abandonada, sobre lo construido. */
+  readonly deterioroAbandonoMil: number;
+  readonly lealtadParaMonasterio: number;
+  readonly vecinosDeCiudad: number;
+  readonly lealtadPorMuralla: number;
+  readonly lealtadRegionalPorCatedral: number;
+  readonly maravedisPorPeregrinos: number;
+  readonly crecimientoPorMonasterioMil: number;
+  readonly laborPorAcequiaMil: number;
+}
+
 export interface DatosPoblacion {
   /**
    * Pan que come cada vecino por turno, en milesimas. El vecino es una familia que vive casi toda
@@ -328,6 +384,8 @@ export interface TablasDeReglas {
   readonly consumo: DatosConsumo;
   readonly movimiento: DatosMovimiento;
   readonly cometidos: DatosCometidos;
+  readonly obras: DatosObras;
+  readonly obrasMayores: Readonly<Record<TipoObraMayor, DatosObraMayor>>;
   readonly poblacion: DatosPoblacion;
   readonly mercado: DatosMercado;
   readonly influencia: DatosInfluencia;

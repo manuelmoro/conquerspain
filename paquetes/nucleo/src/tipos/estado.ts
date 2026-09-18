@@ -11,7 +11,7 @@ import type {
   IdRecua,
 } from './ids.ts';
 import type { Recurso, Recursos } from './recursos.ts';
-import type { Casa, Tradicion } from './reglas.ts';
+import type { CalidadCamino, Casa, TipoObraMayor, Tradicion } from './reglas.ts';
 import type { Potencial, NivelPotencial, VolumenFeria } from './mundo.ts';
 import type { Orden, ParadaDeRuta } from './ordenes.ts';
 
@@ -106,6 +106,8 @@ export interface EstadoComarca {
   readonly turnosDesleal: number;
   /** Turnos seguidos sin hierro para mantener los aperos: al segundo, bajan un nivel. */
   readonly turnosSinMantenimiento: number;
+  /** Obras mayores terminadas en la comarca (las de tramo se guardan en `EstadoPartida.caminos`). */
+  readonly obrasMayores: readonly TipoObraMayor[];
   readonly produccionUltimoTurno: Recursos;
 }
 
@@ -183,6 +185,8 @@ export interface Obra {
   readonly tipo: TipoDeObra;
   /** Que se levanta: un tipo de edificio o el identificador de una obra mayor. */
   readonly que: string;
+  /** Otra punta del tramo, en las obras mayores de camino (puente, calzada); si no, null. */
+  readonly hacia: IdComarca | null;
   /** Avance en milesimas de turno: una obra de tres turnos necesita 3000. */
   readonly avanceMil: number;
   readonly avanceNecesarioMil: number;
@@ -190,6 +194,12 @@ export interface Obra {
   readonly entregado: Recursos;
   readonly costeTotal: Recursos;
   readonly abandonada: boolean;
+}
+
+/** Lo que se ha construido en un tramo de camino. */
+export interface EstadoTramo {
+  readonly calidad: CalidadCamino;
+  readonly puente: boolean;
 }
 
 // ——— Mercado ———————————————————————————————————————————————————————————————
@@ -235,6 +245,8 @@ export interface EstadoPartida {
   readonly recuas: Readonly<Record<string, Recua>>;
   readonly rebanyos: Readonly<Record<string, Rebanyo>>;
   readonly obras: Readonly<Record<string, Obra>>;
+  /** Tramos mejorados por obras, con clave `claveDeTramo(a, b)`; los demas son como en el mundo. */
+  readonly caminos: Readonly<Record<string, EstadoTramo>>;
   readonly mercados: Readonly<Record<string, EstadoMercado>>;
   readonly acontecimientos: readonly Acontecimiento[];
   /** Ordenes vivas: pendientes, en curso o en espera. */

@@ -211,6 +211,7 @@ function fijarRuta(ctx: Contexto, orden: OrdenDe<'ruta'>): void {
     ctx.estacional,
     transitables,
     ctx.reglas,
+    ctx.estado.caminos,
   );
   if (ruta === null) {
     dejarEnEspera(ctx, orden, 'sin-ruta-conocida');
@@ -286,13 +287,13 @@ function moverRecua(ctx: Contexto, id: string): void {
     recua,
     {
       barro: ctx.estacional.barro,
-      calzada: tieneCalzada(primerTramo),
+      calzada: tieneCalzada(primerTramo, ctx.estado.caminos),
       pasoCasaMil: ctx.reglas.casas[jugador.casa].modificadores.pasoRecuaMil,
     },
     ctx.reglas,
   );
   const costeDe = (a: IdComarca, b: IdComarca) =>
-    costeDeTramoMil(tramo(ctx, a, b), ctx.estacional, ctx.reglas);
+    costeDeTramoMil(tramo(ctx, a, b), ctx.estacional, ctx.reglas, ctx.estado.caminos);
 
   // Sin bastimento, el primer turno se para y avisa; despues malvive: anda al paso minimo sin
   // pagar y pierde una acemila por turno, para que siempre pueda volver a casa.

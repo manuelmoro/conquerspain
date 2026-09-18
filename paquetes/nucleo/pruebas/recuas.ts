@@ -150,8 +150,9 @@ export function turno(
   estado: EstadoPartida,
   ordenes: readonly Orden[] = [],
   tablas = reglas,
+  elMundo = mundo,
 ): ReturnType<typeof resolverTurno> {
-  return resolverTurno(estado, ordenes, mundo, tablas);
+  return resolverTurno(estado, ordenes, elMundo, tablas);
 }
 
 export function de(estado: EstadoPartida, id: string): Recua {

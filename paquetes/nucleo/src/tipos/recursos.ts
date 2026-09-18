@@ -10,3 +10,16 @@ export type Recursos = Readonly<Record<Recurso, number>>;
 
 /** Los recursos que se echan a perder si no se conservan (docs/03-economia.md §3.1). */
 export const RECURSOS_PERECEDEROS = ['pan'] as const;
+
+/** Unas cantidades de los siete recursos, calculadas una a una. */
+export function recursosSegun(cantidad: (recurso: Recurso) => number): Recursos {
+  return {
+    pan: cantidad('pan'),
+    madera: cantidad('madera'),
+    piedra: cantidad('piedra'),
+    maravedis: cantidad('maravedis'),
+    sal: cantidad('sal'),
+    hierro: cantidad('hierro'),
+    lana: cantidad('lana'),
+  };
+}

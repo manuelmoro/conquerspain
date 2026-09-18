@@ -13,6 +13,7 @@ import type {
   Rebanyo,
   Recua,
   SituacionMovil,
+  EstadoTramo,
 } from '../tipos/estado.ts';
 import {
   CARGAS_FISCALES,
@@ -38,7 +39,7 @@ import type { Mundo } from '../tipos/mundo.ts';
 import type { Orden } from '../tipos/ordenes.ts';
 import { POTENCIALES, VOLUMENES_FERIA } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
-import { CASAS, VERSION_REGLAS } from '../tipos/reglas.ts';
+import { CALIDADES_CAMINO, CASAS, TIPOS_DE_OBRA_MAYOR, VERSION_REGLAS } from '../tipos/reglas.ts';
 import { milesimas, nivelPotencial, recursos } from './comunes.ts';
 import { validarOrdenEntrante, validarParada } from './validarOrden.ts';
 import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
@@ -116,6 +117,7 @@ const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
   influencias: registro(entero({ minimo: 0, maximo: 100 }), identificador()),
   turnosDesleal: enteroNoNegativo(),
   turnosSinMantenimiento: enteroNoNegativo(),
+  obrasMayores: lista(unoDe(TIPOS_DE_OBRA_MAYOR), { maximo: TIPOS_DE_OBRA_MAYOR.length }),
   produccionUltimoTurno: recursos(),
 });
 
@@ -184,6 +186,7 @@ const validarObra: Validador<Obra> = objeto<Obra>({
   comarca: identificador<IdComarca>(),
   tipo: unoDe(TIPOS_DE_OBRA),
   que: texto({ minimo: 1, maximo: 40 }),
+  hacia: oNulo(identificador<IdComarca>()),
   avanceMil: enteroNoNegativo(),
   avanceNecesarioMil: entero({ minimo: 1 }),
   entregado: recursos(),
@@ -228,6 +231,11 @@ const validarOrdenGuardada: Validador<Orden> = (dato, ruta) => {
   );
 };
 
+const validarTramo: Validador<EstadoTramo> = objeto<EstadoTramo>({
+  calidad: unoDe(CALIDADES_CAMINO),
+  puente: booleano(),
+});
+
 const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
   version: entero({ minimo: 1 }),
   id: identificador<IdPartida>(),
@@ -239,6 +247,7 @@ const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
   recuas: registro(validarRecua, identificador()),
   rebanyos: registro(validarRebanyo, identificador()),
   obras: registro(validarObra, identificador()),
+  caminos: registro(validarTramo),
   mercados: registro(validarMercado, identificador()),
   acontecimientos: lista(validarAcontecimiento, { maximo: 40 }),
   ordenes: lista(validarOrdenGuardada, { maximo: 2000 }),

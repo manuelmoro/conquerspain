@@ -1,6 +1,6 @@
 # T-035 · Fase 6: obras, cuadrillas y obras mayores
 
-**Fase:** 2 · Motor · **Depende de:** T-031 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-031 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -113,3 +113,47 @@ npx vitest run paquetes/nucleo/src/reglas/obras.test.ts
 ## 8. Al terminar
 
 Índice y `ESTADO.md` (siguiente T-036). Commit: `T-035: obras, cuadrillas y obras mayores`.
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 410 tests en verde; `humo-01` y `humo-02` regeneradas a propósito (el estado gana
+`caminos` y `obrasMayores`).
+
+- `paquetes/nucleo/src/fases/06-obras.ts`: órdenes `construir`, `derribar`, `roturar` y
+  `obra-mayor` (empezar, abandonar y retomar) en orden de identificador; avance de cada obra con el
+  frenazo invernal; efectos al terminar y efectos de cada turno de la catedral.
+- `paquetes/nucleo/src/reglas/obras.ts` (avance, solares, requisitos de edificios y de obras
+  mayores, ciudad, cuotas a plazos, deterioro y las consultas de efectos que usarán otras fases),
+  `cuadrillas.ts` y `roturar.ts`.
+- `paquetes/nucleo/src/datos/obras.ts`: tablas `obras` y `obrasMayores` (los costes de las obras
+  mayores no estaban en el diseño y se fijan aquí; están en `docs/03` §3.11).
+- Estado: `EstadoPartida.caminos` (tramos con puente o calzada, con `claveDeTramo`),
+  `EstadoComarca.obrasMayores` y `Obra.hacia`. La calidad de un tramo sale ya del estado
+  (`calidadDeTramo(camino, mejoras)`) y las rutas lo tienen en cuenta.
+- La acequia mayor entra en la cadena de producción (factor `acequia`, sin estación).
+- Pruebas en `pruebas/obras.test.ts` (21 casos): duración en verano e invierno, cuadrillas con su
+  previsión, la propiedad de niveles y solares, pagos exactos a plazos, parada y reanudación,
+  abandono, requisitos, roturar, derribar y los efectos de las siete obras mayores uno a uno.
+
+Decisiones tomadas al implementar:
+
+- **Los datos van en `src/datos/obras.ts` y no en `nucleo/datos/obras-mayores.json`**, como el resto
+  de tablas desde T-031: el núcleo no lee archivos y el compilador comprueba la forma.
+- **La orden de obra mayor gana `hacia` y `abandonar`**: el puente y la calzada necesitan el tramo,
+  y abandonar o retomar se hace con la misma orden sobre la obra (`continuar`).
+- **La orden de obra acaba al empezar la obra**: la obra es la entidad viva (como la recua) y lleva
+  su avance; la orden solo la pone en marcha.
+- **El pago a plazos es proporcional al avance**, no al turno: así el frenazo invernal no adelanta
+  pagos y al final se ha pagado exactamente el total.
+- **El deterioro del abandono es el 1 % de lo construido**; al retomar, rehacerlo cuesta tiempo pero
+  no material (ya se entregó).
+- **El avance de madera en invierno se redondea hacia arriba** (667): con 666, una obra de dos
+  turnos tardaría cuatro en lugar de tres.
+- **Derribar y roturar no dependen de la estación**, y ocupan cuadrilla como cualquier obra.
+- **La muralla no pide nada más que su material**; «Piedra» en el diseño era el material. Ciudad =
+  200 vecinos y muralla.
+- **Roturar en dehesa cuesta el doble de material, no de tiempo.** «No se puede deshacer en menos de
+  20 turnos» no tiene regla: no hay orden que devuelva la labor a monte.
+- Enganches anotados en sus fichas: crecimiento y capacidad (T-036), crecidas y bandidaje (T-039),
+  hitos (T-043), modificadores de casa (T-041) y el cálculo de costes del servidor (T-062).
+- Las pruebas viven en `paquetes/nucleo/pruebas/`, como exige el montaje.

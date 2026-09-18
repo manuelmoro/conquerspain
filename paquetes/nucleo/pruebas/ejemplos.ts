@@ -8,6 +8,7 @@ import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
+import { OBRAS, OBRAS_MAYORES } from '../src/datos/obras.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
 import { CASAS, VERSION_REGLAS } from '../src/tipos/reglas.ts';
 
@@ -129,6 +130,7 @@ export function estadoDeEjemplo(): Registro {
     influencias: duenyo === null ? { mesta: 10 } : {},
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
+    obrasMayores: [],
     produccionUltimoTurno: sinRecursos(),
   });
 
@@ -173,6 +175,7 @@ export function estadoDeEjemplo(): Registro {
     recuas: {},
     rebanyos: {},
     obras: {},
+    caminos: {},
     mercados: {},
     acontecimientos: [],
     ordenes: [],
@@ -277,6 +280,7 @@ export function tablasDeEjemplo(): Registro {
       estacionPorTurno,
       factorPanMil,
       factorObraPiedraMil: { primavera: 1000, verano: 1000, otonyo: 1000, invierno: 2000 },
+      factorObraMaderaMil: { primavera: 1000, verano: 1000, otonyo: 1000, invierno: 1500 },
       turnosDeBarro: [5, 21],
       turnoDeEsquileo: 10,
       turnosPastoDeVerano: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
@@ -285,6 +289,8 @@ export function tablasDeEjemplo(): Registro {
     consumo: JSON.parse(JSON.stringify(CONSUMO)) as Registro,
     movimiento: JSON.parse(JSON.stringify(MOVIMIENTO)) as Registro,
     cometidos: JSON.parse(JSON.stringify(COMETIDOS_DE_RECUA)) as Registro,
+    obras: JSON.parse(JSON.stringify(OBRAS)) as Registro,
+    obrasMayores: JSON.parse(JSON.stringify(OBRAS_MAYORES)) as Registro,
     poblacion: {
       consumoPorVecinoMil: 250,
       vecinosPorCuadrilla: 40,

@@ -7,6 +7,8 @@ import type {
   DatosArranque,
   DatosCasa,
   DatosCometidos,
+  DatosObraMayor,
+  DatosObras,
   DatosConsumo,
   DatosFuero,
   DatosEdificio,
@@ -29,6 +31,7 @@ import {
   CASAS,
   ESTACIONES,
   TIPOS_DE_EDIFICIO,
+  TIPOS_DE_OBRA_MAYOR,
   VERSION_REGLAS,
 } from '../tipos/reglas.ts';
 import { milesimas, recursos, recursosParciales } from './comunes.ts';
@@ -134,6 +137,7 @@ const validarEstacionesDatos: Validador<DatosEstaciones> = objeto<DatosEstacione
   estacionPorTurno: lista(unoDe(ESTACIONES), { minimo: 1, maximo: 48 }),
   factorPanMil: registroCompleto(ESTACIONES, milesimas(0, 3000)),
   factorObraPiedraMil: registroCompleto(ESTACIONES, milesimas(500, 4000)),
+  factorObraMaderaMil: registroCompleto(ESTACIONES, milesimas(500, 4000)),
   turnosDeBarro: lista(entero({ minimo: 1, maximo: 48 }), { maximo: 12 }),
   turnoDeEsquileo: entero({ minimo: 1, maximo: 48 }),
   turnosPastoDeVerano: lista(entero({ minimo: 1, maximo: 48 }), { minimo: 1, maximo: 24 }),
@@ -169,6 +173,32 @@ const validarCometidos: Validador<DatosCometidos> = objeto<DatosCometidos>({
   lealtadDePuebla: entero({ minimo: 0, maximo: 100 }),
   bastimentoPresenciaMil: milesimas(0, 10000),
   devolucionAlDisolverMil: milesimas(0, 1000),
+});
+
+const validarObras: Validador<DatosObras> = objeto<DatosObras>({
+  cuadrillasPorFuero: enteroNoNegativo(4),
+  cuadrillasPorMonasterio: enteroNoNegativo(4),
+  turnosDerribo: entero({ minimo: 1, maximo: 10 }),
+  devolucionDerriboMil: milesimas(0, 1000),
+  turnosRoturar: entero({ minimo: 1, maximo: 20 }),
+  costeRoturar: recursos(),
+  costeRoturarDehesaMil: milesimas(1000, 5000),
+  lealtadPorRoturarDehesa: enteroNoNegativo(50),
+  deterioroAbandonoMil: milesimas(0, 1000),
+  lealtadParaMonasterio: entero({ minimo: 0, maximo: 100 }),
+  vecinosDeCiudad: entero({ minimo: 1, maximo: 10000 }),
+  lealtadPorMuralla: enteroNoNegativo(100),
+  lealtadRegionalPorCatedral: enteroNoNegativo(20),
+  maravedisPorPeregrinos: enteroNoNegativo(200),
+  crecimientoPorMonasterioMil: milesimas(0, 2000),
+  laborPorAcequiaMil: milesimas(1000, 3000),
+});
+
+const validarObraMayor: Validador<DatosObraMayor> = objeto<DatosObraMayor>({
+  nombre: texto({ minimo: 1, maximo: 40 }),
+  turnos: entero({ minimo: 1, maximo: 100 }),
+  coste: recursos(),
+  esDePiedra: booleano(),
 });
 
 const validarPoblacion: Validador<DatosPoblacion> = objeto<DatosPoblacion>({
@@ -301,6 +331,8 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   consumo: validarConsumo,
   movimiento: validarMovimiento,
   cometidos: validarCometidos,
+  obras: validarObras,
+  obrasMayores: registroCompleto(TIPOS_DE_OBRA_MAYOR, validarObraMayor),
   poblacion: validarPoblacion,
   mercado: validarMercado,
   influencia: validarInfluencia,

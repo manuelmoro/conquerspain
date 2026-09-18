@@ -19,7 +19,7 @@ const BARRO = estadoEstacionalDe(5, mundo, reglas);
 const c = (id: string): IdComarca => id as IdComarca;
 
 function ruta(desde: string, hasta: string, estacional = PRIMAVERA, transitables = TODAS) {
-  return rutaMasCorta(c(desde), c(hasta), mundo, estacional, transitables, reglas);
+  return rutaMasCorta(c(desde), c(hasta), mundo, estacional, transitables, reglas, {});
 }
 
 describe('rutaMasCorta en el mundo mini', () => {
@@ -87,7 +87,7 @@ describe('rutaMasCorta en el mundo mini', () => {
       caminos: [tramo('d', 'c'), tramo('a', 'c'), tramo('b', 'd'), tramo('a', 'b')],
     };
     const todas = new Set(['a', 'b', 'c', 'd']);
-    const resultado = rutaMasCorta(c('a'), c('d'), cuadrado, PRIMAVERA, todas, reglas);
+    const resultado = rutaMasCorta(c('a'), c('d'), cuadrado, PRIMAVERA, todas, reglas, {});
     expect(resultado?.comarcas).toEqual(['b', 'd']);
   });
 });
@@ -102,6 +102,7 @@ describe('rutaPorParadas', () => {
       PRIMAVERA,
       TODAS,
       reglas,
+      {},
     );
     expect(ida?.comarcas).toEqual(['prueba-vega', 'prueba-rio', 'prueba-costa']);
     const vuelta = rutaPorParadas(
@@ -112,6 +113,7 @@ describe('rutaPorParadas', () => {
       PRIMAVERA,
       TODAS,
       reglas,
+      {},
     );
     expect(vuelta?.comarcas).toEqual(['prueba-rio', 'prueba-costa', 'prueba-rio', 'prueba-llano']);
   });

@@ -25,6 +25,7 @@ export interface Factor {
     | 'agotamiento'
     | 'dehesa'
     | 'mano-de-obra'
+    | 'acequia'
     | 'casa';
   readonly mil: Milesimas;
 }
@@ -126,8 +127,17 @@ export function explotacionesDe(
           mil: multiplicadorPotencial(comarca.potenciales[edificio.potencial], reglas),
         });
       }
+      // La acequia mayor riega la labor: rinde mas y no depende de la estacion (docs/03 §3.11).
+      const regada =
+        edificio.potencial === 'labor' && comarca.obrasMayores.includes('acequia-mayor');
+      if (regada) factores.push({ nombre: 'acequia', mil: reglas.obras.laborPorAcequiaMil });
       if (recurso === 'pan' && produccion.edificiosEstacionales.includes(tipo)) {
-        factores.push({ nombre: 'estacion', mil: reglas.estaciones.factorPanMil[datos.estacion] });
+        if (!regada) {
+          factores.push({
+            nombre: 'estacion',
+            mil: reglas.estaciones.factorPanMil[datos.estacion],
+          });
+        }
         factores.push({
           nombre: 'clima',
           mil: factorClima(datos.region, datos.estacion, datos.clima),

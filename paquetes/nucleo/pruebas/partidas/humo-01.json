@@ -32,6 +32,7 @@
           "sal": 4,
           "pesca": 5
         },
+        "obrasMayores": [],
         "produccionUltimoTurno": {
           "pan": 0,
           "madera": 0,
@@ -72,6 +73,7 @@
           "sal": 0,
           "pesca": 0
         },
+        "obrasMayores": [],
         "produccionUltimoTurno": {
           "pan": 0,
           "madera": 0,
@@ -110,6 +112,7 @@
           "sal": 0,
           "pesca": 0
         },
+        "obrasMayores": [],
         "produccionUltimoTurno": {
           "pan": 0,
           "madera": 0,
@@ -148,6 +151,7 @@
           "sal": 0,
           "pesca": 0
         },
+        "obrasMayores": [],
         "produccionUltimoTurno": {
           "pan": 0,
           "madera": 0,
@@ -186,6 +190,7 @@
           "sal": 3,
           "pesca": 0
         },
+        "obrasMayores": [],
         "produccionUltimoTurno": {
           "pan": 0,
           "madera": 0,
@@ -224,6 +229,7 @@
           "sal": 0,
           "pesca": 0
         },
+        "obrasMayores": [],
         "produccionUltimoTurno": {
           "pan": 0,
           "madera": 0,
@@ -262,6 +268,7 @@
           "sal": 0,
           "pesca": 0
         },
+        "obrasMayores": [],
         "produccionUltimoTurno": {
           "pan": 0,
           "madera": 0,
@@ -333,6 +340,7 @@
     },
     "mercados": {},
     "obras": {},
+    "caminos": {},
     "ordenes": [],
     "rebanyos": {},
     "recuas": {},
@@ -345,17 +353,17 @@
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "0a28d4b168fa6b714696aac2f0a420c773fd325e10a1298f05b4ac66de028b85"
+      "huellaEsperada": "48aa35edd314c55a2289bdcf4fa1f37154ef91f045419574e67cf49311524197"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "a959acea7ab23b87c696f23734bafd3d391b946cb2c5b42ddc2666faeb8ae46f"
+      "huellaEsperada": "42b00f3e09139e334ec09014bbb65b9b88f787f859e55f1390f78a83b523c5c9"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "f382a7f0b66162530872ce03816c2f80d0fe575d7648732df6b2e46eac883bcc"
+      "huellaEsperada": "c515335046d27019a1d87477fdb9ad8e2b192b50a4fa9fdaf929214416637939"
     }
   ]
 }

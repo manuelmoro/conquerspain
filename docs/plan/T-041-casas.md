@@ -25,7 +25,9 @@ límite, y la elección de casa al crear la partida.
 **Heredado de T-034.** Los monjes fundan puebla con la mitad de gente: hoy
 `cometidos.vecinosParaPuebla` (10) es igual para todas las casas y `impedimentoDePuebla`
 (`reglas/poblar.ts`) no consulta la casa; hay que añadir el modificador. `pasoRecuaMil` es aditivo
-(arrieros: +1000) y `porteExtra` ya entra en el porte de las recuas.
+(arrieros: +1000) y `porteExtra` ya entra en el porte de las recuas. **De T-035:** la fase de obras
+ya aplica `solaresExtra`, `nivelMaximoEdificio`, `potencialMinimoEdificio`,
+`obraSinFrenazoInvernal`, `obraMayorAvanceMil` y `obraMayorCosteMil`; falta darles valor por casa.
 
 ## 4. Diseño detallado
 

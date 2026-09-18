@@ -53,6 +53,7 @@ function escenario(opciones: Escenario = {}): EstadoPartida {
       comarca: LLANO,
       tipo: 'edificio',
       que: 'granja',
+      hacia: null,
       avanceMil: 0,
       avanceNecesarioMil: 2000,
       entregado: recursos(),

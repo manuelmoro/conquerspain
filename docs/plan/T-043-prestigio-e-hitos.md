@@ -20,6 +20,9 @@ Calcular el prestigio de cada jugador cada turno, con desglose por capítulos, r
 
 **No entra:** presentación (T-085) ni temporadas (T-104).
 
+**Heredado de T-035.** Al terminar una obra mayor la fase 6 emite `hito.obra-mayor` con el tipo;
+las terminadas quedan en `EstadoComarca.obrasMayores` y, las de tramo, en `EstadoPartida.caminos`.
+
 ## 4. Diseño detallado
 
 ### 4.1 Prestigio por capítulos

@@ -34,7 +34,7 @@ import type {
 } from '../tipos/ordenes.ts';
 import { ESTADOS_DE_ORDEN } from '../tipos/ordenes.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
-import { TIPOS_DE_EDIFICIO } from '../tipos/reglas.ts';
+import { TIPOS_DE_EDIFICIO, TIPOS_DE_OBRA_MAYOR } from '../tipos/reglas.ts';
 import { recursos, recursosParciales } from './comunes.ts';
 import type { CamposDe, ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
@@ -183,8 +183,10 @@ const obraMayor: Validador<OrdenObraMayor> = objeto<OrdenObraMayor>({
   ...camposBase,
   tipo: unoDe(['obra-mayor'] as const),
   comarca: identificador<IdComarca>(),
-  obra: texto({ minimo: 1, maximo: 40 }),
+  obra: unoDe(TIPOS_DE_OBRA_MAYOR),
+  hacia: oNulo(identificador<IdComarca>()),
   continuar: oNulo(identificador<IdObra>()),
+  abandonar: booleano(),
 });
 
 const tradicion: Validador<OrdenTradicion> = objeto<OrdenTradicion>({

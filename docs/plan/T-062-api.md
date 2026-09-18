@@ -23,6 +23,12 @@ API REST con la vista filtrada del estado, alta y baja de órdenes, crónicas y 
 
 **No entra:** cuentas y sesiones (T-063), avisos (T-064).
 
+**Heredado de T-032 a T-035.** El motor se fía del `coste` de cada orden y lo reserva al darla de
+alta (si ya no cabe, la cancela con `sin-recursos`). El servidor tiene que calcularlo con las
+reglas: edificios (`reglas.edificios[e].coste` × `costeEdificioMil` de la casa), formar recua
+(`movimiento.costeFormarRecua` × `costeRecuaMil`), roturar (`costeDeRoturar`, que ya aplica la
+dehesa y el monasterio). Las obras mayores no reservan nada: se pagan a plazos en la fase 6.
+
 ## 4. Puntos que hay que resolver al detallar
 
 - Rutas de [docs/07-arquitectura.md](../07-arquitectura.md) §7.4 y sus códigos de error en español.

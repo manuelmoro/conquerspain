@@ -5,16 +5,20 @@ import type { Contexto } from './contexto.ts';
 import { comoBorrador } from './contexto.ts';
 import { ErrorDeMotor } from './errores.ts';
 import { registrarSuceso } from './sucesos.ts';
-import type { IdComarca, IdJugador, IdOrden, IdRecua } from './tipos/ids.ts';
+import type { IdComarca, IdJugador, IdObra, IdOrden, IdRecua } from './tipos/ids.ts';
 import type { EstadoDeOrden, Orden, ParadaDeRuta } from './tipos/ordenes.ts';
 import type {
   Cometido,
   Conocimiento,
+  EstadoTramo,
   Fuero,
+  Obra,
   Recua,
   RecursoAgotable,
   SituacionMovil,
 } from './tipos/estado.ts';
+import type { NivelPotencial, Potencial } from './tipos/mundo.ts';
+import type { TipoObraMayor } from './tipos/reglas.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
@@ -190,6 +194,41 @@ export type Cambio =
       readonly tipo: 'fuero';
       readonly comarca: IdComarca;
       readonly fuero: Fuero;
+    }
+  | {
+      readonly tipo: 'obra-alta';
+      readonly obra: Obra;
+    }
+  | {
+      readonly tipo: 'obra-avance';
+      readonly obra: IdObra;
+      readonly avanceMil: number;
+      readonly entregado: Recursos;
+    }
+  | {
+      readonly tipo: 'obra-abandono';
+      readonly obra: IdObra;
+      readonly abandonada: boolean;
+    }
+  | {
+      readonly tipo: 'obra-baja';
+      readonly obra: IdObra;
+    }
+  | {
+      /** Los potenciales efectivos de una comarca (roturar los cambia). */
+      readonly tipo: 'potenciales';
+      readonly comarca: IdComarca;
+      readonly potenciales: Readonly<Record<Potencial, NivelPotencial>>;
+    }
+  | {
+      readonly tipo: 'obra-mayor-terminada';
+      readonly comarca: IdComarca;
+      readonly obra: TipoObraMayor;
+    }
+  | {
+      readonly tipo: 'tramo';
+      readonly clave: string;
+      readonly tramo: EstadoTramo;
     };
 
 function jugadorDe(
@@ -257,6 +296,14 @@ function comprobarParadas(
       { unidad: id },
     );
   }
+}
+
+function obraDe(ctx: Contexto, id: IdObra): NonNullable<Contexto['estado']['obras'][string]> {
+  const obra = ctx.estado.obras[id];
+  if (obra === undefined) {
+    throw new ErrorDeMotor('entidad-desconocida', `No hay ninguna obra "${id}" en la partida.`);
+  }
+  return obra;
 }
 
 function ordenDe(ctx: Contexto, id: IdOrden): NonNullable<Contexto['estado']['ordenes'][number]> {
@@ -823,6 +870,119 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         { fuero: cambio.fuero },
         { comarca: cambio.comarca, jugador: comarca.duenyo },
       );
+      return;
+    }
+
+    case 'obra-alta': {
+      if (ctx.estado.obras[cambio.obra.id] !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Ya hay una obra con el identificador "${cambio.obra.id}".`,
+          { obra: cambio.obra.id },
+        );
+      }
+      comarcaDe(ctx, cambio.obra.comarca);
+      ctx.estado.obras[cambio.obra.id] = comoBorrador(cambio.obra);
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'obra.empieza',
+        {
+          obra: cambio.obra.id,
+          clase: cambio.obra.tipo,
+          que: cambio.obra.que,
+          turnos: Math.ceil(cambio.obra.avanceNecesarioMil / 1000),
+        },
+        { jugador: cambio.obra.jugador, comarca: cambio.obra.comarca },
+      );
+      return;
+    }
+
+    case 'obra-avance': {
+      const obra = obraDe(ctx, cambio.obra);
+      if (cambio.avanceMil < 0 || cambio.avanceMil > obra.avanceNecesarioMil) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La obra "${cambio.obra}" quedaria en ${String(cambio.avanceMil)} de ${String(obra.avanceNecesarioMil)}.`,
+          { obra: cambio.obra },
+        );
+      }
+      for (const recurso of RECURSOS) {
+        const entregado = cambio.entregado[recurso];
+        if (entregado < 0 || entregado > obra.costeTotal[recurso]) {
+          throw new ErrorDeMotor(
+            'invariante-rota',
+            `La obra "${cambio.obra}" habria recibido ${String(entregado)} de ${recurso} y cuesta ${String(obra.costeTotal[recurso])}.`,
+            { obra: cambio.obra, recurso },
+          );
+        }
+      }
+      obra.avanceMil = cambio.avanceMil;
+      obra.entregado = { ...cambio.entregado };
+      return;
+    }
+
+    case 'obra-abandono': {
+      const obra = obraDe(ctx, cambio.obra);
+      if (obra.tipo !== 'obra mayor') {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Solo se abandonan obras mayores y "${cambio.obra}" es de ${obra.tipo}.`,
+          { obra: cambio.obra },
+        );
+      }
+      obra.abandonada = cambio.abandonada;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        cambio.abandonada ? 'obra.abandonada' : 'obra.retomada',
+        { obra: cambio.obra, que: obra.que },
+        { jugador: obra.jugador, comarca: obra.comarca },
+      );
+      return;
+    }
+
+    case 'obra-baja': {
+      const obra = obraDe(ctx, cambio.obra);
+      const restantes: typeof ctx.estado.obras = {};
+      for (const [id, otra] of Object.entries(ctx.estado.obras)) {
+        if (id !== cambio.obra) restantes[id] = otra;
+      }
+      ctx.estado.obras = restantes;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'obra.termina',
+        { obra: cambio.obra, clase: obra.tipo, que: obra.que },
+        { jugador: obra.jugador, comarca: obra.comarca },
+      );
+      return;
+    }
+
+    case 'potenciales': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      comarca.potenciales = { ...cambio.potenciales };
+      return;
+    }
+
+    case 'obra-mayor-terminada': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      if (comarca.obrasMayores.includes(cambio.obra)) {
+        throw new ErrorDeMotor('invariante-rota', `${cambio.comarca} ya tiene ${cambio.obra}.`, {
+          comarca: cambio.comarca,
+        });
+      }
+      comarca.obrasMayores = [...comarca.obrasMayores, cambio.obra];
+      return;
+    }
+
+    case 'tramo': {
+      ctx.estado.caminos[cambio.clave] = { ...cambio.tramo };
+      registrarSuceso(ctx.sucesos, ctx.fase, 'camino.mejora', {
+        tramo: cambio.clave,
+        calidad: cambio.tramo.calidad,
+        puente: cambio.tramo.puente ? 1 : 0,
+      });
       return;
     }
 
