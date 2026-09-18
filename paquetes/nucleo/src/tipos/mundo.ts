@@ -68,7 +68,8 @@ export interface ComarcaMundo {
   readonly poblacionInicial: number;
   readonly localidades: readonly Localidad[];
   readonly rasgos: readonly Rasgo[];
-  readonly feria: Feria | null;
+  /** Ferias que se celebran en la comarca; Medina del Campo tuvo dos al anyo. */
+  readonly ferias: readonly Feria[];
   readonly esOrigen: boolean;
 }
 

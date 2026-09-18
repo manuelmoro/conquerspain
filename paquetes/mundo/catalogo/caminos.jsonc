@@ -34,7 +34,7 @@
       "nota": "El paso mas corto entre Segovia y Madrid, y el primero en cerrarse cada anyo.",
     },
     {
-      "nombre": "Alto del Leon",
+      "nombre": "Alto del León",
       "entre": ["sierra-de-guadarrama", "tierra-de-cebreros"],
       "altitud": 1511,
       "cierre": "invierno",
@@ -97,7 +97,7 @@
       "nota": "La cabecera del valle del Jerte, cerrada por la nieve de la vertiente norte de Gredos.",
     },
     {
-      "nombre": "Puerto de Bejar",
+      "nombre": "Puerto de Béjar",
       "entre": ["tierra-de-bejar", "valle-del-ambroz"],
       "altitud": 1000,
       "cierre": "ninguno",
@@ -111,7 +111,7 @@
       "nota": "Paso de la sierra de Gata entre Extremadura y el campo de Ciudad Rodrigo.",
     },
     {
-      "nombre": "Despenyaperros",
+      "nombre": "Despeñaperros",
       "entre": ["sierra-morena-de-jaen", "valdepenyas"],
       "altitud": 780,
       "cierre": "ninguno",
@@ -146,7 +146,7 @@
       "nota": "La unica salida del valle de Aran hacia el sur, cerrada por nieve medio anyo.",
     },
     {
-      "nombre": "Coll de Canto",
+      "nombre": "Coll de Cantó",
       "entre": ["alt-urgell", "pallars"],
       "altitud": 1725,
       "cierre": "invierno",
@@ -195,16 +195,16 @@
     { "entre": ["alcantara", "sierra-de-san-pedro"], "rio": "Tajo" },
     { "entre": ["la-jara", "tierra-de-talavera"], "rio": "Tajo" },
     { "entre": ["huerta-de-murcia", "vega-baixa"], "rio": "Segura" },
-    { "entre": ["o-baixo-minyo", "vale-do-lima"], "rio": "Minyo" },
+    { "entre": ["o-baixo-minyo", "vale-do-lima"], "rio": "Miño" },
     { "entre": ["leziria-do-tejo", "medio-tejo"], "rio": "Tejo" },
-    { "entre": ["ribera-de-tudela", "bardenas"], "rio": "Aragon" },
+    { "entre": ["ribera-de-tudela", "bardenas"], "rio": "Aragón" },
   ],
 
   // --- Calzadas romanas (docs/05-geografia.md §5.4) ---------------------------------------------
   // Sus tramos empiezan la partida con calidad de camino carretero y no se cierran nunca.
   "calzadas": [
     {
-      "nombre": "Via de la Plata",
+      "nombre": "Vía de la Plata",
       "comarcas": [
         "tierra-de-merida",
         "sierra-de-montanchez",
@@ -222,7 +222,7 @@
       "nota": "De Emerita a Asturica: la espina dorsal del oeste peninsular, y despues canyada.",
     },
     {
-      "nombre": "Via Augusta",
+      "nombre": "Vía Augusta",
       "comarcas": [
         "bahia-de-cadiz",
         "jerez-y-el-marco",
@@ -298,7 +298,7 @@
   // y atraviesa entre 8 y 16 comarcas contiguas. Los rebanyos las usan sin pagar portazgo.
   "canyadas": [
     {
-      "nombre": "Canyada Real Soriana Occidental",
+      "nombre": "Cañada Real Soriana Occidental",
       "comarcas": [
         "pinares",
         "tierra-del-burgo",
@@ -317,7 +317,7 @@
       "nota": "De los pinares de Urbion a los invernaderos de la Serena: la canyada mas transitada.",
     },
     {
-      "nombre": "Canyada Real Soriana Oriental",
+      "nombre": "Cañada Real Soriana Oriental",
       "comarcas": [
         "tierras-altas",
         "campo-de-gomara",
@@ -334,7 +334,7 @@
       "nota": "De las Tierras Altas sorianas al campo de Montiel, por la Alcarria y la serrania.",
     },
     {
-      "nombre": "Canyada Real Segoviana",
+      "nombre": "Cañada Real Segoviana",
       "comarcas": [
         "sierra-de-guadarrama",
         "tierra-de-segovia",
@@ -350,7 +350,7 @@
       "nota": "Del Guadarrama al valle de Alcudia: la que lleva la merina fina segoviana.",
     },
     {
-      "nombre": "Canyada Real Leonesa Occidental",
+      "nombre": "Cañada Real Leonesa Occidental",
       "comarcas": [
         "babia-y-laciana",
         "maragateria",
@@ -370,7 +370,7 @@
       "nota": "De los puertos de Babia a la raya de Badajoz, bordeando Portugal por los arribes.",
     },
     {
-      "nombre": "Canyada Real Leonesa Oriental",
+      "nombre": "Cañada Real Leonesa Oriental",
       "comarcas": [
         "montanya-de-riano",
         "sahagun",
@@ -390,7 +390,7 @@
       "nota": "De Riano a la Serena cruzando Tierra de Campos y saltando Gredos por Bejar.",
     },
     {
-      "nombre": "Canyada Real Galiana",
+      "nombre": "Cañada Real Galiana",
       "comarcas": [
         "cameros",
         "tierra-de-soria",
@@ -408,7 +408,7 @@
       "nota": "De Cameros a Sierra Morena por la Alcarria y la Mancha; la via de los riojanos.",
     },
     {
-      "nombre": "Canyada Real Riojana",
+      "nombre": "Cañada Real Riojana",
       "comarcas": [
         "demanda",
         "valle-del-oja",
@@ -424,7 +424,7 @@
       "nota": "De la Demanda a las Bardenas y los Monegros: invernadero de estepa, no de dehesa.",
     },
     {
-      "nombre": "Canyada Real Conquense",
+      "nombre": "Cañada Real Conquense",
       "comarcas": [
         "serrania-de-cuenca",
         "tierra-de-cuenca",
@@ -438,7 +438,7 @@
       "nota": "De los pinares de la serrania de Cuenca a las dehesas del Condado de Jaen.",
     },
     {
-      "nombre": "Canyada Real de la Plata",
+      "nombre": "Cañada Real de la Plata",
       "comarcas": [
         "babia-y-laciana",
         "maragateria",

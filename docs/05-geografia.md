@@ -29,27 +29,33 @@ datos reales, con un proceso reproducible, y se revisa a mano comarca por comarc
 
 ### 5.2.1 Ficha de comarca en el catálogo
 
+Una región es un archivo `paquetes/mundo/catalogo/NN-region.jsonc` con una lista de fichas así
+(el formato exacto y sus reglas están en la ficha de [T-010](plan/T-010-esquema-del-catalogo.md)):
+
 ```jsonc
 {
-  "id": "pinares-soria",
-  "nombre": "Pinares",
+  "id": "pinares",                    // minúsculas, sin tildes ni eñes
+  "nombre": "Pinares",                // texto visible: con su ortografía
   "cabecera": "Covaleda",
-  "region": "Sistema Ibérico norte",
-  "centro": [-2.92, 41.92],
-  "terreno": "sierra",              // llano | ondulado | sierra | costa | vega
+  "region": "01-iberico-alto-duero",
+  "centro": [-2900, 41920],           // milésimas de grado: [longitud, latitud]
+  "terreno": "sierra",                // llano | ondulado | sierra | costa | vega
   "potenciales": { "labor": 1, "monte": 5, "pasto": 4, "piedra": 2, "hierro": 0, "sal": 0, "pesca": 0 },
   "solares": 6,
-  "poblacionInicial": 40,
+  "poblacionInicial": 35,
   "localidades": [
-    { "nombre": "Covaleda", "coord": [-2.879, 41.934], "cabecera": true },
-    { "nombre": "Duruelo de la Sierra", "coord": [-2.931, 41.955] }
+    { "nombre": "Covaleda", "coord": [-2879, 41934], "cabecera": true },
+    { "nombre": "Duruelo de la Sierra", "coord": [-2931, 41955], "cabecera": null }
   ],
-  "rasgos": ["pastos de verano", "pinar maderable"],
-  "patrimonio": [],
-  "feria": null,
-  "canyada": "Soriana Occidental"
+  "rasgos": ["pinar-maderable", "pasto-de-verano"],
+  "esOrigen": false,
+  "nota": "Pinar de Urbión: la madera fue su economía real durante siglos."
 }
 ```
+
+Las ferias (`catalogo/ferias.jsonc`) y la capa de caminos, puertos, vados y cañadas
+(`catalogo/caminos.jsonc`) viven en sus propios archivos, no en la ficha de la comarca: el atlas
+las une al generar el mundo.
 
 ### 5.2.2 De dónde salen los potenciales
 
@@ -90,33 +96,54 @@ se cierran en invierno.
 
 Cada comarca puede tener rasgos que dan color y efecto:
 
-| Rasgo | Efecto |
-|---|---|
-| Salinas históricas | Habilita salina de nivel alto |
-| Ferrería de agua | Ferrerías más baratas |
-| Cantera noble (mármol de Macael, piedra de Villamayor) | Obras mayores más baratas y más prestigio |
-| Dehesa | Pasto de invierno de calidad; penaliza roturar |
-| Marisma | Pesca y sal; labor mala |
-| Ciudad episcopal | Requisito de catedral; +prestigio |
-| Villa de feria | Derecho de feria (§5.6) |
-| Puerto de mar | Requisito de atarazana y comercio marítimo |
+El catálogo es **cerrado**: los diecisiete rasgos están en `paquetes/mundo/src/rasgos.ts` con su
+efecto, y añadir uno obliga a tocar ese archivo, esta tabla y la tarea que lo use.
+
+| Rasgo | Efecto | Comarcas |
+|---|---|---|
+| `salinas-historicas` | Permite salina de nivel alto; +1 al potencial efectivo de sal | 12 |
+| `vena-de-hierro` | Permite ferrería de nivel alto; el hierro se agota la mitad de rápido | 9 |
+| `ferreria-de-agua` | Las ferrerías cuestan un 25 % menos | 12 |
+| `cantera-noble` | Obras mayores un 15 % más baratas y con más prestigio | 17 |
+| `pinar-maderable` | Aserraderos con un nivel máximo más | 25 |
+| `pasto-de-verano` | Válido para rebaños de mayo a septiembre | 75 |
+| `pasto-de-invierno` | Válido para rebaños de octubre a abril | 28 |
+| `dehesa` | Pasto de invierno; el monte se agota a la mitad y roturar cuesta el doble | 32 |
+| `marisma` | Sal y pesca; la labor rinde menos | 27 |
+| `vega-fluvial` | Permite acequia; la estación afecta la mitad al pan | 80 |
+| `ciudad-episcopal` | Requisito de catedral; +10 de lealtad de partida | 59 |
+| `villa-de-feria` | Tiene derecho de feria (§5.6) | 10 |
+| `puerto-de-mar` | Requisito de atarazana y del comercio marítimo | 66 |
+| `camino-de-santiago` | Ingresos por peregrinos y rumores más frecuentes | 23 |
+| `calzada-romana` | Sus tramos empiezan con calidad de camino carretero | 43 |
+| `vinyedo` | Permite bodega; pequeño ingreso en maravedís | 83 |
+| `montado` | Dehesa alentejana: pasto de invierno y monte protegido | 14 |
+
+Las cifras son las del mapa generado el 18-09-2026 y las escribe `informe-atlas.md` en cada
+generación; `puerto-de-mar` no exige terreno de costa, porque una huerta de vega puede tener puerto
+(Valencia, Gandía, Sanlúcar).
 
 ## 5.6 Ferias
 
 Las ferias son citas fijas del calendario. Llegar a tiempo es media estrategia.
 
-| Feria | Comarca | Turnos |
-|---|---|---|
-| Medina del Campo (mayo) | Tierra de Medina | 10–11 |
-| Medina del Campo (octubre) | Tierra de Medina | 19–20 |
-| Villalón | Tierra de Campos | 12 |
-| Burgos | Alfoz de Burgos | 14 |
-| Sevilla | Aljarafe | 6 y 21 |
-| Zafra | Tierra de Barros | 19 |
-| Verín / Chaves | Támega | 16 |
-| Lérida / Lleida | Segrià | 18 |
-| Valencia | L'Horta | 8 |
-| Santiago | Terra de Santiago | 15 |
+| Feria | Comarca | Turnos | Volumen |
+|---|---|---|---|
+| Sevilla | Aljarafe y Sevilla | 6 | grande |
+| València | L'Horta de València | 8 | mediana |
+| Medina del Campo (mayo) | Tierra de Medina | 10–11 | grande |
+| Villalón | Tierra de Villalón | 12 | mediana |
+| Burgos | Alfoz de Burgos | 14 | mediana |
+| Santiago | Terra de Santiago | 15 | mediana |
+| Verín y Chaves | Val de Monterrei | 16 | pequeña |
+| Lleida | Segrià | 18 | mediana |
+| Medina del Campo (octubre) | Tierra de Medina | 19–20 | grande |
+| Zafra (San Miguel) | Zafra y Río Bodión | 19 | mediana |
+| Sevilla (San Miguel) | Aljarafe y Sevilla | 21 | mediana |
+
+Solo hay **tres ferias grandes** y entre dos de ellas median al menos cuatro turnos, para que una
+recua pueda encadenarlas. El volumen multiplica la liquidez del mercado: pequeña ×1, mediana ×3,
+grande ×8. Una comarca puede tener más de una feria (Medina tenía dos).
 
 Las ferias no solo compran y venden: ahí llegan los rumores, se ven los precios de otras plazas y se
 cierran contratos entre jugadores.

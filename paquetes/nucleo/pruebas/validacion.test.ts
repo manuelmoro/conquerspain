@@ -95,15 +95,17 @@ describe('validacion del mundo', () => {
   it('rechaza una feria sin el rasgo de villa de feria', () => {
     const mundo = mundoDeEjemplo();
     const conFeria = dentro(mundo, 'comarcas', 'prueba-llano', {
-      feria: {
-        id: 'feria-prueba',
-        nombre: 'Feria de prueba',
-        turnos: [10],
-        volumen: 'mediana',
-        recursosDestacados: ['lana'],
-      },
+      ferias: [
+        {
+          id: 'feria-prueba',
+          nombre: 'Feria de prueba',
+          turnos: [10],
+          volumen: 'mediana',
+          recursosDestacados: ['lana'],
+        },
+      ],
     });
-    esperarError(validarMundo(conFeria), 'comarcas.prueba-llano.feria', /villa-de-feria/);
+    esperarError(validarMundo(conFeria), 'comarcas.prueba-llano.ferias', /villa-de-feria/);
   });
 
   it('rechaza coordenadas con decimales y campos que faltan', () => {

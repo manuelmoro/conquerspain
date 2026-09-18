@@ -47,7 +47,7 @@ const validarComarca: Validador<ComarcaMundo> = objeto<ComarcaMundo>({
   poblacionInicial: enteroNoNegativo(1000),
   localidades: lista(validarLocalidad, { minimo: 1, maximo: 6 }),
   rasgos: lista(unoDe(RASGOS), { maximo: RASGOS.length }),
-  feria: oNulo(validarFeria),
+  ferias: lista(validarFeria, { maximo: 4 }),
   esOrigen: booleano(),
 });
 
@@ -99,9 +99,9 @@ export function validarMundo(dato: unknown): Resultado<Mundo> {
         mensaje: `la cabecera "${comarca.cabecera}" no coincide con la localidad marcada como cabecera`,
       });
     }
-    if (comarca.feria !== null && !comarca.rasgos.includes('villa-de-feria')) {
+    if (comarca.ferias.length > 0 && !comarca.rasgos.includes('villa-de-feria')) {
       errores.push({
-        ruta: `comarcas.${clave}.feria`,
+        ruta: `comarcas.${clave}.ferias`,
         mensaje: 'una comarca con feria necesita el rasgo "villa-de-feria"',
       });
     }

@@ -10,6 +10,8 @@ import type { ComarcaCatalogo } from './tipos.ts';
 import { validarCatalogoCompleto, validarRegion } from './validarCatalogo.ts';
 import type { CaminosCatalogo } from './validarCaminos.ts';
 import { validarCaminos } from './validarCaminos.ts';
+import type { FeriaDelMapa } from './validarFerias.ts';
+import { validarFerias } from './validarFerias.ts';
 
 /** Lee todas las regiones de un directorio de catalogo, en orden de archivo. */
 export function cargarCatalogo(directorio: string): Resultado<ComarcaCatalogo[]> {
@@ -51,6 +53,19 @@ export function cargarCaminos(directorio: string): Resultado<CaminosCatalogo> {
     return invalidos([{ ruta: donde, mensaje: `no se puede leer: ${lectura.error.mensaje}` }]);
   }
   return validarCaminos(lectura.valor, archivo);
+}
+
+/** Lee las ferias del mapa (`catalogo/ferias.jsonc`). */
+export function cargarFeriasDelMapa(directorio: string): Resultado<FeriaDelMapa[]> {
+  const archivo = 'ferias.jsonc';
+  const texto = readFileSync(join(directorio, archivo), 'utf8');
+  const lectura = leerJsonc(archivo, texto);
+  if (!lectura.ok) {
+    const donde =
+      lectura.error.linea === null ? archivo : `${archivo}:${String(lectura.error.linea)}`;
+    return invalidos([{ ruta: donde, mensaje: `no se puede leer: ${lectura.error.mensaje}` }]);
+  }
+  return validarFerias(lectura.valor, archivo);
 }
 
 /** Carga el mundo ya generado (paquetes/mundo/datos/mundo.vN.json) y lo valida. */

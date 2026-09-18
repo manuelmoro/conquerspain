@@ -4,6 +4,7 @@ import type { Potencial } from '@conquer/nucleo';
 import { POTENCIALES } from '@conquer/nucleo';
 
 import type { ComarcaCatalogo } from './tipos.ts';
+import type { FeriaDelMapa } from './validarFerias.ts';
 
 export interface CoberturaDeRegion {
   readonly region: string;
@@ -23,7 +24,10 @@ export interface InformeCobertura {
   readonly regiones: readonly CoberturaDeRegion[];
 }
 
-export function informeCobertura(comarcas: readonly ComarcaCatalogo[]): InformeCobertura {
+export function informeCobertura(
+  comarcas: readonly ComarcaCatalogo[],
+  ferias: readonly FeriaDelMapa[] = [],
+): InformeCobertura {
   const porRegion = new Map<string, ComarcaCatalogo[]>();
   for (const comarca of comarcas) {
     const lista = porRegion.get(comarca.region) ?? [];
@@ -48,7 +52,8 @@ export function informeCobertura(comarcas: readonly ComarcaCatalogo[]): InformeC
       region,
       comarcas: lista.length,
       origenes: lista.filter((comarca) => comarca.esOrigen).length,
-      ferias: lista.filter((comarca) => comarca.feria !== null).length,
+      ferias: ferias.filter((feria) => lista.some((comarca) => comarca.id === feria.comarca))
+        .length,
       mediaPotencialMil: mediaPotencialMil as Readonly<Record<Potencial, number>>,
       conSal: lista.filter((c) => c.potenciales.sal >= 3).map((c) => c.id),
       conHierro: lista.filter((c) => c.potenciales.hierro >= 3).map((c) => c.id),

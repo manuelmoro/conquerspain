@@ -32,7 +32,7 @@ Generado por `npm run atlas`. No se edita a mano.
 24 puertos, de los cuales 19 se cierran en invierno.
 
 - Portela do Homem: a-limia ↔ terra-de-barroso · cerrado en invierno
-- Coll de Canto: alt-urgell ↔ pallars · cerrado en invierno
+- Coll de Cantó: alt-urgell ↔ pallars · cerrado en invierno
 - Somosierra: ayllon ↔ sierra-norte-de-madrid · cerrado en invierno
 - Puerto de Leitariegos: babia-y-laciana ↔ valle-del-narcea · cerrado en invierno
 - Ports de Beseit: bajo-aragon ↔ terres-de-l-ebre · abierto todo el año
@@ -50,23 +50,59 @@ Generado por `npm run atlas`. No se edita a mano.
 - Puerto de Perales: sierra-de-gata ↔ tierra-de-ciudad-rodrigo · abierto todo el año
 - Puerto de Tornavacas: sierra-de-gredos ↔ valle-del-jerte · cerrado en invierno
 - Puerto del Pico: sierra-de-gredos ↔ valle-del-tietar · cerrado en invierno
-- Alto del Leon: sierra-de-guadarrama ↔ tierra-de-cebreros · cerrado en invierno
+- Alto del León: sierra-de-guadarrama ↔ tierra-de-cebreros · cerrado en invierno
 - Puerto de Navacerrada: sierra-de-guadarrama ↔ tierra-de-segovia · cerrado en invierno
-- Despenyaperros: sierra-morena-de-jaen ↔ valdepenyas · abierto todo el año
+- Despeñaperros: sierra-morena-de-jaen ↔ valdepenyas · abierto todo el año
 - Puerto de Cotos: sierra-norte-de-madrid ↔ tierra-de-segovia · cerrado en invierno
-- Puerto de Bejar: tierra-de-bejar ↔ valle-del-ambroz · abierto todo el año
+- Puerto de Béjar: tierra-de-bejar ↔ valle-del-ambroz · abierto todo el año
 
 ## Cañadas reales
 
-- Canyada Real Conquense: 3 tramos
-- Canyada Real Galiana: 9 tramos
-- Canyada Real Leonesa Occidental: 13 tramos
-- Canyada Real Leonesa Oriental: 11 tramos
-- Canyada Real Riojana: 9 tramos
-- Canyada Real Segoviana: 9 tramos
-- Canyada Real Soriana Occidental: 12 tramos
-- Canyada Real Soriana Oriental: 10 tramos
-- Canyada Real de la Plata: 9 tramos
+- Cañada Real Conquense: 3 tramos
+- Cañada Real Galiana: 9 tramos
+- Cañada Real Leonesa Occidental: 13 tramos
+- Cañada Real Leonesa Oriental: 11 tramos
+- Cañada Real Riojana: 9 tramos
+- Cañada Real Segoviana: 9 tramos
+- Cañada Real Soriana Occidental: 12 tramos
+- Cañada Real Soriana Oriental: 10 tramos
+- Cañada Real de la Plata: 9 tramos
+
+## Ferias
+
+- Feria de Burgos (mediana): alfoz-de-burgos, turnos 14
+- Feria de Lleida (mediana): segria, turnos 18
+- Feria de Mayo de Medina del Campo (grande): tierra-de-medina, turnos 10 y 11
+- Feria de Octubre de Medina del Campo (grande): tierra-de-medina, turnos 19 y 20
+- Feria de Santiago (mediana): terra-de-santiago, turnos 15
+- Feria de San Miguel de Sevilla (mediana): aljarafe, turnos 21
+- Feria de Sevilla (grande): aljarafe, turnos 6
+- Feria de València (mediana): horta-de-valencia, turnos 8
+- Feria de Verín y Chaves (pequenya): val-de-monterrei, turnos 16
+- Feria de Villalón (mediana): tierra-de-villalon, turnos 12
+- Feria de San Miguel de Zafra (mediana): zafra-rio-bodion, turnos 19
+
+## Rasgos
+
+| Rasgo | Comarcas |
+|---|---|
+| calzada-romana | 43 |
+| camino-de-santiago | 23 |
+| cantera-noble | 17 |
+| ciudad-episcopal | 59 |
+| dehesa | 32 |
+| ferreria-de-agua | 12 |
+| marisma | 27 |
+| montado | 14 |
+| pasto-de-invierno | 28 |
+| pasto-de-verano | 75 |
+| pinar-maderable | 26 |
+| puerto-de-mar | 66 |
+| salinas-historicas | 12 |
+| vega-fluvial | 80 |
+| vena-de-hierro | 9 |
+| villa-de-feria | 9 |
+| vinyedo | 83 |
 
 ## Capa histórica
 

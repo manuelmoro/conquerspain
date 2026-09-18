@@ -60,7 +60,7 @@ export function mundoDeEjemplo(): Registro {
     poblacionInicial: 40,
     localidades: [{ nombre: cabecera, coord: [-2879, 41934], cabecera: true }],
     rasgos: [],
-    feria: null,
+    ferias: [],
     esOrigen: true,
   });
 

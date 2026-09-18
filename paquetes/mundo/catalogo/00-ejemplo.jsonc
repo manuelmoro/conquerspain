@@ -3,7 +3,7 @@
 [
   {
     "id": "ejemplo-campina",
-    "nombre": "Campina de Ejemplo",
+    "nombre": "Campiña de Ejemplo",
     "cabecera": "Villaejemplo",
     "region": "00-ejemplo",
     "centro": [-4900, 41300], // milesimas de grado: [longitud, latitud]
@@ -24,7 +24,6 @@
       { "nombre": "Aldea de Abajo", "coord": [-4850, 41260], "cabecera": null },
     ],
     "rasgos": ["vinyedo"],
-    "feria": null,
     "esOrigen": true,
     "nota": null,
   },
@@ -49,7 +48,6 @@
     "poblacionInicial": 30,
     "localidades": [{ "nombre": "Pinarejo", "coord": [-2900, 41900], "cabecera": true }],
     "rasgos": ["pinar-maderable", "pasto-de-verano"],
-    "feria": null,
     "esOrigen": true,
     "nota": null,
   },
@@ -74,13 +72,6 @@
     "poblacionInicial": 35,
     "localidades": [{ "nombre": "Salinilla", "coord": [-3100, 41000], "cabecera": true }],
     "rasgos": ["salinas-historicas", "villa-de-feria"],
-    "feria": {
-      "id": "feria-de-ejemplo",
-      "nombre": "Feria de Salinilla",
-      "turnos": [19],
-      "volumen": "pequenya",
-      "recursosDestacados": ["sal", "lana"],
-    },
     "esOrigen": false,
     "nota": null,
   },

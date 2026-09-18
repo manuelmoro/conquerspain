@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-013)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-014)
 **Fase actual:** Fase 1 · El mundo
 
 ---
@@ -20,12 +20,12 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-014 · Ferias, patrimonio y rasgos de comarca](docs/plan/T-014-ferias-y-patrimonio.md)**
+**[T-016 · Ortografía de las notas del catálogo](docs/plan/T-016-ortografia-de-las-notas.md)**
 
-La última de la fase 1. Cierra el catálogo de rasgos con su efecto, escribe las diez ferias del
-mapa con su calendario y su volumen, y hace la pasada de ortografía de los nombres visibles del
-catálogo (hoy en ASCII: `Logronyo`, `Penyafiel`). Hereda de T-015 una comprobación global:
-exactamente tres ferias grandes.
+La última de la fase 1, nacida al cerrar T-014: las ~450 notas del catálogo siguen en ASCII
+(«la unica tierra de labor»). Se corrigen con una pasada automática para lo inequívoco y otra a
+mano, nota por nota, y se deja una prueba que impida volver atrás. Después, la fase 2 empieza por
+T-030.
 
 ## Cómo continuar (resumen)
 
@@ -79,6 +79,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-014 hecha**: once ferias en su propio archivo (tres grandes: Medina ×2 y Sevilla), los diecisiete rasgos en uso, `ComarcaMundo.ferias` pasa a ser lista y **598 nombres visibles corregidos** (Logroño, Sigüenza, Àger, Guimarães…). Las notas pasan a T-016. 262 tests en verde |
 | 18-09-2026 | **T-013 hecha**: capa histórica de caminos. 24 puertos de montaña (19 se cierran en invierno), 14 vados, 4 calzadas romanas y las 9 cañadas reales sobre el grafo; `jornadasDeTramo` en el núcleo con su tabla de 17 casos; `Camino` gana `cierraEnInvierno`. 251 tests en verde |
 | 18-09-2026 | **T-015 hecha: el catálogo geográfico está completo.** Entrega 10 (centro y sur de Portugal, 41 comarcas) y pasada de remates (36 comarcas repartidas por ocho regiones): **403 comarcas reales, cero provisionales**. Las comprobaciones globales del mapa pasan como test: 12 comarcas con sal, 9 con hierro en cuatro focos, 78 con `labor >= 4`, 69 orígenes y 3,5 jornadas de distancia media. 222 tests en verde |
 | 18-09-2026 | **T-015, entrega 9 hecha**: Andalucía, 43 comarcas. Cinco con `labor 5` en el valle del Guadalquivir, la sal de la bahía de Cádiz con `sal 5`, el cobre y el hierro de Riotinto y el mármol de Macael (`piedra 5`, único del mapa). 332 comarcas reales de 398. 211 tests en verde |
@@ -107,4 +108,4 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | La complejidad puede crecer por encima de lo divertido | Cada mecánica nueva debe justificar qué decisión añade; si no añade decisión, se descarta |
 | Determinismo roto sin darse cuenta | Tests de reproducción con huella de estado desde T-002 |
 | ~~El atlas se planta si el mapa pasa de 380 comarcas~~ **resuelto el 18-09-2026**: la horquilla es 300–430 mientras quede relleno y 320–380 cuando el catálogo esté completo | Si al terminar T-015 el mapa se pasa de 380, se recortan comarcas en las regiones más densas, no se sube el límite |
-| Los nombres del catálogo se escriben en ASCII (`Logronyo`, `Penyafiel`), como el resto del código, pero la interfaz tendrá que enseñarlos con tildes y eñes | Una pasada de ortografía sobre los nombres visibles antes de T-081, anotada como pendiente en T-014 |
+| ~~Los nombres del catálogo en ASCII~~ **resuelto en T-014**; quedan las notas | T-016 corrige las notas antes de que la interfaz las enseñe (T-082) |

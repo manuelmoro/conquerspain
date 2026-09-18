@@ -154,7 +154,7 @@ function comarcaDeMundo(plantilla: Plantilla, indice: number): Registro {
     poblacionInicial: 40,
     localidades: [{ nombre: plantilla.nombre, coord: [lon, lat], cabecera: true }],
     rasgos,
-    feria: null,
+    ferias: [],
     esOrigen: plantilla.labor >= 3,
   };
 }

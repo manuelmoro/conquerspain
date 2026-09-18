@@ -2,7 +2,7 @@
 // escribe a mano region por region: mas vale que avise aqui, con la comarca y el campo, que
 // descubrir en la partida que Soria tiene salinas.
 import type { NivelPotencial, Potencial, Terreno } from '@conquer/nucleo';
-import { POTENCIALES, TERRENOS, VOLUMENES_FERIA } from '@conquer/nucleo';
+import { POTENCIALES, TERRENOS } from '@conquer/nucleo';
 import type { ErrorValidacion, Resultado, Validador } from '@conquer/nucleo';
 import {
   booleano,
@@ -19,7 +19,7 @@ import {
 } from '@conquer/nucleo';
 
 import { esRasgo } from './rasgos.ts';
-import type { ComarcaCatalogo, FeriaCatalogo, LocalidadCatalogo } from './tipos.ts';
+import type { ComarcaCatalogo, LocalidadCatalogo } from './tipos.ts';
 
 const RECUADRO = { lonMin: -9600, lonMax: 3450, latMin: 35850, latMax: 43900 };
 const KM_POR_GRADO = 111.32;
@@ -52,14 +52,6 @@ const validarLocalidad: Validador<LocalidadCatalogo> = objeto<LocalidadCatalogo>
   cabecera: oNulo(booleano()),
 });
 
-const validarFeria: Validador<FeriaCatalogo> = objeto<FeriaCatalogo>({
-  id: identificador(),
-  nombre: texto({ minimo: 3, maximo: 80 }),
-  turnos: lista(entero({ minimo: 1, maximo: 24 }), { minimo: 1, maximo: 2 }),
-  volumen: unoDe(VOLUMENES_FERIA),
-  recursosDestacados: lista(texto({ minimo: 3 }), { maximo: 7 }),
-});
-
 const validarComarca: Validador<ComarcaCatalogo> = objeto<ComarcaCatalogo>({
   id: identificador(),
   nombre: texto({ minimo: 2, maximo: 80 }),
@@ -72,7 +64,6 @@ const validarComarca: Validador<ComarcaCatalogo> = objeto<ComarcaCatalogo>({
   poblacionInicial: entero({ minimo: 20, maximo: 120 }),
   localidades: lista(validarLocalidad, { minimo: 1, maximo: 6 }),
   rasgos: lista(texto({ minimo: 3 }), { maximo: 8 }),
-  feria: oNulo(validarFeria),
   esOrigen: booleano(),
   nota: oNulo(texto({ maximo: 400 })),
 });
@@ -191,12 +182,6 @@ function comprobarCoherencia(comarca: ComarcaCatalogo, errores: ErrorValidacion[
       });
     }
   }
-  if (comarca.feria !== null && !rasgos.has('villa-de-feria')) {
-    errores.push({
-      ruta: ruta('feria'),
-      mensaje: 'una comarca con feria necesita el rasgo "villa-de-feria"',
-    });
-  }
 
   const fuera: string[] = [];
   for (const potencial of POTENCIALES) {
@@ -230,7 +215,6 @@ export function validarRegion(datos: unknown, archivo: string): Resultado<Comarc
 export function validarCatalogoCompleto(comarcas: readonly ComarcaCatalogo[]): ErrorValidacion[] {
   const errores: ErrorValidacion[] = [];
   const vistas = new Map<string, string>();
-  const ferias = new Map<string, string>();
   for (const comarca of comarcas) {
     const anterior = vistas.get(comarca.id);
     if (anterior !== undefined) {
@@ -240,16 +224,6 @@ export function validarCatalogoCompleto(comarcas: readonly ComarcaCatalogo[]): E
       });
     }
     vistas.set(comarca.id, comarca.region);
-    if (comarca.feria !== null) {
-      const duenya = ferias.get(comarca.feria.id);
-      if (duenya !== undefined) {
-        errores.push({
-          ruta: `${comarca.id}.feria`,
-          mensaje: `la feria "${comarca.feria.id}" ya esta en ${duenya}`,
-        });
-      }
-      ferias.set(comarca.feria.id, comarca.id);
-    }
   }
   return errores;
 }

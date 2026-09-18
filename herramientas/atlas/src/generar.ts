@@ -11,7 +11,16 @@ import { Delaunay } from 'd3-delaunay';
 import type { Camino, ComarcaMundo, IdComarca, Mundo, Terreno } from '@conquer/nucleo';
 import { azarDeTexto, canonico, comparar, explicar, validarMundo } from '@conquer/nucleo';
 import type { ComarcaCatalogo } from '@conquer/mundo';
-import { cargarCaminos, cargarCatalogoOFallar, comprobarCaminos, esRasgo } from '@conquer/mundo';
+import type { FeriaDelMapa } from '@conquer/mundo';
+import {
+  cargarCaminos,
+  cargarCatalogoOFallar,
+  cargarFeriasDelMapa,
+  comprobarCaminos,
+  comprobarFerias,
+  comprobarRasgos,
+  esRasgo,
+} from '@conquer/mundo';
 import { aplicarCaminos, comarcasAisladasEnInvierno, comarcasIncomunicadas } from './caminos.ts';
 import { obtener, fuentes } from './descargar.ts';
 import { idComarca, idFeria } from './identificadores.ts';
@@ -173,14 +182,19 @@ function comarcaProvisional(
     poblacionInicial: 30,
     localidades: [{ nombre, coord: centroMil, cabecera: true }],
     rasgos: [],
-    feria: null,
+    ferias: [],
     esOrigen: false,
   };
 }
 
-function comarcaDelCatalogo(semilla: Semilla, poligono: Punto[]): ComarcaMundo {
+function comarcaDelCatalogo(
+  semilla: Semilla,
+  poligono: Punto[],
+  ferias: ReadonlyMap<string, readonly FeriaDelMapa[]>,
+): ComarcaMundo {
   const ficha = semilla.catalogo;
   if (ficha === null) throw new Error('semilla sin ficha');
+  const suyas = ferias.get(ficha.id) ?? [];
   return {
     id: idComarca(ficha.id),
     nombre: ficha.nombre,
@@ -198,16 +212,13 @@ function comarcaDelCatalogo(semilla: Semilla, poligono: Punto[]): ComarcaMundo {
       cabecera: localidad.cabecera === true,
     })),
     rasgos: ficha.rasgos.filter(esRasgo),
-    feria:
-      ficha.feria === null
-        ? null
-        : {
-            id: idFeria(ficha.feria.id),
-            nombre: ficha.feria.nombre,
-            turnos: ficha.feria.turnos,
-            volumen: ficha.feria.volumen,
-            recursosDestacados: ficha.feria.recursosDestacados,
-          },
+    ferias: suyas.map((feria) => ({
+      id: idFeria(feria.id),
+      nombre: feria.nombre,
+      turnos: feria.turnos,
+      volumen: feria.volumen,
+      recursosDestacados: feria.recursosDestacados,
+    })),
     esOrigen: ficha.esOrigen,
   };
 }
@@ -221,6 +232,22 @@ export interface ResultadoGeneracion {
 export async function generarMundo(): Promise<ResultadoGeneracion> {
   const { anillos: tierra, sinSimplificar } = await tierraPeninsular();
   const relieve = cargarRelieve();
+
+  const fichas = cargarCatalogoOFallar(CATALOGO).filter(
+    (comarca) => !comarca.region.startsWith('00-'),
+  );
+  const lectura = cargarFeriasDelMapa(CATALOGO);
+  if (!lectura.ok) throw new Error(`Las ferias no validan:\n${explicar(lectura.errores)}`);
+  const problemasDeFerias = [...comprobarFerias(lectura.valor, fichas), ...comprobarRasgos(fichas)];
+  if (problemasDeFerias.length > 0) {
+    throw new Error(`Las ferias no cuadran con el catalogo:\n${explicar(problemasDeFerias)}`);
+  }
+  const feriasPorComarca = new Map<string, FeriaDelMapa[]>();
+  for (const feria of lectura.valor) {
+    const suyas = feriasPorComarca.get(feria.comarca);
+    if (suyas === undefined) feriasPorComarca.set(feria.comarca, [feria]);
+    else suyas.push(feria);
+  }
 
   const delCatalogo = semillasDelCatalogo();
   const relleno = semillasDeRelleno(sinSimplificar, delCatalogo);
@@ -264,7 +291,7 @@ export async function generarMundo(): Promise<ResultadoGeneracion> {
     comarcas[semilla.id] =
       semilla.catalogo === null
         ? comarcaProvisional(semilla, poligono, relieve.zonas)
-        : comarcaDelCatalogo(semilla, poligono);
+        : comarcaDelCatalogo(semilla, poligono, feriasPorComarca);
   });
 
   // Vecindad: la de Voronoi, filtrando los pares que solo se tocan cruzando el mar.
@@ -481,6 +508,29 @@ function informeDe(mundo: Mundo, avisos: readonly string[]): string {
     lineas.push('', '## Cañadas reales', '');
     for (const nombre of [...canyadas.keys()].sort(comparar)) {
       lineas.push(`- ${nombre}: ${String(canyadas.get(nombre) ?? 0)} tramos`);
+    }
+  }
+
+  const ferias = Object.values(mundo.comarcas).flatMap((comarca) =>
+    comarca.ferias.map((feria) => ({ comarca: comarca.id, feria })),
+  );
+  if (ferias.length > 0) {
+    lineas.push('', '## Ferias', '');
+    for (const { comarca, feria } of [...ferias].sort((a, b) => comparar(a.feria.id, b.feria.id))) {
+      lineas.push(
+        `- ${feria.nombre} (${feria.volumen}): ${comarca}, turnos ${feria.turnos.join(' y ')}`,
+      );
+    }
+  }
+
+  const rasgos = new Map<string, number>();
+  for (const comarca of Object.values(mundo.comarcas)) {
+    for (const rasgo of comarca.rasgos) rasgos.set(rasgo, (rasgos.get(rasgo) ?? 0) + 1);
+  }
+  if (rasgos.size > 0) {
+    lineas.push('', '## Rasgos', '', '| Rasgo | Comarcas |', '|---|---|');
+    for (const rasgo of [...rasgos.keys()].sort(comparar)) {
+      lineas.push(`| ${rasgo} | ${String(rasgos.get(rasgo) ?? 0)} |`);
     }
   }
 

@@ -40,7 +40,6 @@ function comarca(cambios: Record<string, unknown> = {}): Record<string, unknown>
     poblacionInicial: 60,
     localidades: [{ nombre: 'Villaejemplo', coord: [-4900, 41300], cabecera: true }],
     rasgos: [],
-    feria: null,
     esOrigen: true,
     nota: null,
     ...cambios,
@@ -268,7 +267,8 @@ describe('informe de cobertura', () => {
     const region = informe.regiones.find((candidata) => candidata.region === '00-ejemplo');
     expect(region?.comarcas).toBe(3);
     expect(region?.origenes).toBe(2);
-    expect(region?.ferias).toBe(1);
+    // Las ferias ya no viven en la ficha de la comarca, sino en `ferias.jsonc` (T-014).
+    expect(region?.ferias).toBe(0);
     expect(region?.conSal).toEqual(['ejemplo-salinas']);
     expect(region?.conHierro).toEqual([]);
     expect(region?.mediaPotencialMil.monte).toBe(2667);

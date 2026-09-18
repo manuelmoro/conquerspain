@@ -61,8 +61,8 @@ describe('catalogo de caminos', () => {
     expect(caminos.calzadas.map((c) => c.nombre).sort()).toEqual([
       'Calzada de Braga a Astorga',
       'Calzada del Duero',
-      'Via Augusta',
-      'Via de la Plata',
+      'Vía Augusta',
+      'Vía de la Plata',
     ]);
     expect(caminos.puertos.length).toBeGreaterThanOrEqual(21);
     expect(caminos.vados.length).toBeGreaterThanOrEqual(10);
@@ -72,7 +72,7 @@ describe('catalogo de caminos', () => {
       'Puerto de Piqueras',
       'Somosierra',
       'Puerto de Pajares',
-      'Despenyaperros',
+      'Despeñaperros',
       'Puerto del Pico',
       'Serra da Estrela',
       'Portela do Homem',

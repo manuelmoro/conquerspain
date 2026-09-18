@@ -1,6 +1,6 @@
 # T-014 · Ferias, patrimonio y rasgos de comarca
 
-**Fase:** 1 · El mundo · **Depende de:** T-015 · **Estado:** pendiente
+**Fase:** 1 · El mundo · **Depende de:** T-015 · **Estado:** **hecha** (18-09-2026)
 
 > **Dependencia corregida el 18-09-2026.** De las diez ferias de `docs/05` §5.6, nueve están en
 > comarcas que escribe T-015 (Medina, Villalón, Sevilla, Zafra, Verín, Lleida, Valencia, Santiago).
@@ -139,3 +139,39 @@ npx vitest run paquetes/mundo
 1. Índice: T-014 `hecha`; `ESTADO.md`: siguiente T-015.
 2. Actualiza `docs/05-geografia.md` §5.5 con el catálogo definitivo de rasgos si ha cambiado.
 3. Commit: `T-014: rasgos de comarca y ferias`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 262 tests en verde. El mapa tiene sus **once ferias** —tres grandes: las dos de
+Medina del Campo y la de Sevilla— repartidas por nueve comarcas y ocho regiones, y los
+**diecisiete rasgos** del catálogo cerrado están todos en uso.
+
+Entregado:
+
+- `paquetes/mundo/catalogo/ferias.jsonc` y `paquetes/mundo/src/validarFerias.ts`: las ferias con
+  su calendario, su volumen y su nota, y las seis reglas de §4.3 con un test cada una
+  (`paquetes/mundo/src/ferias.test.ts`).
+- Rasgo `villa-de-feria` en las nueve comarcas con feria y `pinar-maderable` en la Serranía de
+  Ayllón, que faltaba de §4.4.
+- El informe del atlas lista las ferias y cuenta los rasgos por tipo; `docs/05` §5.5 y §5.6
+  recogen las tablas definitivas.
+- **Pasada de ortografía de los nombres visibles**: 598 sustituciones en nombres de comarca,
+  cabeceras, localidades, ferias, puertos, calzadas y cañadas (Logroño, Sigüenza, Ávila, Àger,
+  Guimarães, Setúbal…), cada una en la lengua de su tierra. Los `id` siguen en ASCII.
+
+Decisiones tomadas al implementar:
+
+- **Las ferias salen de la ficha de la comarca** a su propio archivo. `ComarcaCatalogo` pierde el
+  campo `feria`, y en el mundo generado `ComarcaMundo.feria` pasa a ser `ferias`, una lista: Medina
+  del Campo y Sevilla tuvieron dos ferias al año, y con un solo hueco una de ellas se perdía.
+- **Sevilla se parte en dos ferias** (primavera, grande; San Miguel, mediana), porque la regla 2
+  impide que una feria dure más de dos turnos seguidos y los turnos 6 y 21 no lo son.
+- **`puerto-de-mar` no exige terreno de costa**: es la solución que se dio en T-015 a las huertas
+  con puerto (València, Gandia, Sanlúcar), y la regla 6 no la contradice.
+- **Las notas del catálogo quedan en ASCII** y pasan a una tarea propia,
+  [T-016](T-016-ortografia-de-las-notas.md). Son unas 450 notas en prosa, y una corrección
+  automática deja errores sistemáticos (los pretéritos: «fundo» por «fundó», «bajo» por «bajó»)
+  que solo se evitan revisándolas una a una. Los nombres, que son lo que la interfaz enseña en el
+  atlas, sí quedan corregidos.
