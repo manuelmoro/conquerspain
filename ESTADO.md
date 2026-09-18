@@ -3,17 +3,14 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar la entrega 9 de T-015)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-015: el catálogo geográfico está completo)
 **Fase actual:** Fase 1 · El mundo
 
 ---
 
 ## Tarea en curso
 
-**[T-015 · Catálogo · regiones 2 a 10](docs/plan/T-015-catalogo-resto-de-regiones.md)** · hechas
-las entregas 2 a 9; queda la **entrega 10: centro y sur de Portugal** (`10-portugal-sur.jsonc`),
-con las Beiras, la Serra da Estrela, Rio Maior, la Lezíria do Tejo, el Alentejo y el Algarve. Con
-ella se cierra T-015 y la fase 1.
+Ninguna.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -23,7 +20,15 @@ ella se cierra T-015 y la fase 1.
 
 ## Siguiente tarea
 
-Las entregas 3 a 10 de T-015, en orden, y después T-013 y T-014.
+**[T-013 · Caminos, puertos, vados y cañadas reales](docs/plan/T-013-caminos-y-canyadas.md)**
+
+Ya se puede: el catálogo cubre la península con 403 comarcas reales y nombres estables. Toca
+enriquecer el grafo con los puertos de montaña (Piqueras, Pajares, Somosierra, Despeñaperros…),
+los vados, las calzadas romanas y las nueve cañadas reales, y añadir `jornadasDeTramo` al núcleo.
+Hereda además una comprobación global de T-015: cada comarca con `pasto-de-verano` tiene que
+quedar unida por cañada a un pasto de invierno.
+
+Después, T-014 (ferias y patrimonio) y con ella se cierra la fase 1.
 
 ## Cómo continuar (resumen)
 
@@ -52,8 +57,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
 | Motor | `resolverTurno` recorre las doce fases (todavía vacías), registra sucesos y firma el turno con su huella |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
-| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura y **nueve regiones escritas**: 01 Sistema Ibérico (35), 02 Meseta norte (36), 03 cornisa cantábrica (35), 04 Galicia y Minho (38), 05 Sistema Central y Extremadura (37), 06 Meseta sur (35), 07 Ebro y Pirineo (42), 08 Levante y Murcia (31) y 09 Andalucía (43) |
-| Mapa generado | `npm run atlas` produce `mundo.v1.json` (398 comarcas —332 reales y 66 provisionales—, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
+| Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
+| Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
@@ -77,6 +82,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-015 hecha: el catálogo geográfico está completo.** Entrega 10 (centro y sur de Portugal, 41 comarcas) y pasada de remates (36 comarcas repartidas por ocho regiones): **403 comarcas reales, cero provisionales**. Las comprobaciones globales del mapa pasan como test: 12 comarcas con sal, 9 con hierro en cuatro focos, 78 con `labor >= 4`, 69 orígenes y 3,5 jornadas de distancia media. 222 tests en verde |
 | 18-09-2026 | **T-015, entrega 9 hecha**: Andalucía, 43 comarcas. Cinco con `labor 5` en el valle del Guadalquivir, la sal de la bahía de Cádiz con `sal 5`, el cobre y el hierro de Riotinto y el mármol de Macael (`piedra 5`, único del mapa). 332 comarcas reales de 398. 211 tests en verde |
 | 18-09-2026 | **T-015, entrega 8 hecha**: Levante y Murcia, 31 comarcas. Las cuatro huertas de `labor 5` (València, la Ribera, la Vega Baja y Murcia), diez puertos de mar y la sal de La Mata y San Pedro del Pinatar. 289 comarcas reales de 398. 202 tests en verde |
 | 18-09-2026 | **T-015, entrega 7 hecha**: Ebro, Pirineo y Cataluña, 42 comarcas. La montaña de sal de Cardona (`sal 5`), el hierro de la farga en el Ripollès, las vegas de Tudela y Lleida con `labor 5` y las Bardenas y los Monegros como pasto de invierno. 258 comarcas reales de 386. 195 tests en verde |
@@ -98,7 +104,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Riesgo | Mitigación prevista |
 |---|---|
-| El catálogo geográfico es mucho trabajo manual | Se parte en diez regiones, cada una con su tarea y su validación automática |
+| ~~El catálogo geográfico es mucho trabajo manual~~ **resuelto el 18-09-2026**: las diez regiones están escritas y validadas | Lo que queda es afinarlo con el banco de pruebas (T-046) y la pasada de ortografía de los nombres visibles (T-014) |
 | El equilibrio entre ocho casas puede irse de las manos | Banco de pruebas con robots por casa desde la fase 2 (T-046) y criterios numéricos en `docs/04` §4.4 |
 | La complejidad puede crecer por encima de lo divertido | Cada mecánica nueva debe justificar qué decisión añade; si no añade decisión, se descarta |
 | Determinismo roto sin darse cuenta | Tests de reproducción con huella de estado desde T-002 |

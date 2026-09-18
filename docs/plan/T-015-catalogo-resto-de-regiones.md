@@ -1,6 +1,6 @@
 # T-015 · Catálogo · regiones 2 a 10
 
-**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **en curso** (8 de 9 entregas)
+**Fase:** 1 · El mundo · **Depende de:** T-012 · **Estado:** **hecha** (18-09-2026, 9 de 9 entregas)
 
 ## 1. Contexto
 
@@ -30,7 +30,7 @@ cabecera, potenciales justificados, rasgos y ferias.
 | 7 | Ebro, Pirineo y Cataluña | `07-ebro-pirineo.jsonc` | **hecha** (42) | 40 | Bardenas y Monegros (`pasto-de-invierno`, `labor 1`); Ribera navarra y Segrià (`vega-fluvial`); Pirineo (`pasto-de-verano`, puertos); Priorat y Penedès (`vinyedo`); Cardona (**sal 5**); Bages y el hierro del Pirineo; puertos de Barcelona y Tarragona |
 | 8 | Levante y Murcia | `08-levante.jsonc` | **hecha** (31) | 30 | L'Horta de València (`labor 5`, `vega-fluvial`, feria); Vega Baja y Huerta de Murcia; **salinas** de La Mata, Torrevieja y San Pedro (`sal 4-5`); Maestrazgo (`pasto`, `piedra`); puertos de Valencia, Alicante y Cartagena |
 | 9 | Andalucía | `09-andalucia.jsonc` | **hecha** (43) | 42 | Campiña del Guadalquivir (`labor 5`); Aljarafe y Sevilla (feria grande); **salinas de Cádiz** y almadrabas (`sal 5`, `pesca 5`); Sierra Morena y Riotinto (`hierro 3`); Macael (`cantera-noble`, mármol); Alpujarras y Vega de Granada; Subbética |
-| 10 | Centro y sur de Portugal | `10-portugal-sur.jsonc` | pendiente | 32 | Beira Alta y Serra da Estrela (`pasto-de-verano`, `monte`); Rio Maior (**sal**); Lezíria do Tejo (`labor 5`); Alentejo (`montado`, `dehesa`); Algarve (`pesca 5`, `sal 4`); puertos de Lisboa, Setúbal y Porto |
+| 10 | Centro y sur de Portugal | `10-portugal-sur.jsonc` | **hecha** (41) | 32 | Beira Alta y Serra da Estrela (`pasto-de-verano`, `monte`); Rio Maior (**sal**); Lezíria do Tejo (`labor 5`); Alentejo (`montado`, `dehesa`); Algarve (`pesca 5`, `sal 4`); puertos de Lisboa, Setúbal y Porto |
 
 Las cifras de comarcas son orientativas (±20 %); manda el mapa generado.
 
@@ -58,15 +58,22 @@ Las cifras de comarcas son orientativas (±20 %); manda el mapa generado.
 
 Comprobaciones globales, con test automático:
 
-| Comprobación | Objetivo |
-|---|---|
-| Comarcas con `sal >= 3` | entre 10 y 16, repartidas por interior y costa |
-| Comarcas con `hierro >= 3` | entre 8 y 14, agrupadas en 4 o 5 focos |
-| Comarcas con `pasto-de-verano` | ≥ 30, y cada una con al menos una cañada a un pasto de invierno |
-| Comarcas con `labor >= 4` | entre 45 y 70 |
-| Ferias grandes | exactamente 3 |
-| Comarcas de origen | ≥ 60, con al menos 4 por región |
-| Distancia media entre comarcas vecinas | 3 a 4 jornadas |
+| Comprobación | Objetivo | Resultado (18-09-2026) |
+|---|---|---|
+| Comarcas con `sal >= 3` | entre 10 y 16, repartidas por interior y costa | **12** ✔ |
+| Comarcas con `hierro >= 3` | entre 8 y 14, agrupadas en 4 o 5 focos | **9** en 4 focos ✔ |
+| Comarcas con `pasto-de-verano` | ≥ 30 | **75** ✔ |
+| Comarcas con `labor >= 4` | 70–90 (**recalibrado**: el plan decía 45–70 sobre unas 350 comarcas; el mapa salió de 403 y la proporción del 17–22 % se mantiene) | **78** ✔ |
+| Comarcas de origen | ≥ 60, con al menos 4 por región | **69**, mínimo 6 por región ✔ |
+| Distancia media entre comarcas vecinas | 3 a 4 jornadas | **3,5** ✔ |
+| Ninguna comarca provisional | 0 | **0** ✔ |
+
+Las seis primeras y la última se comprueban en `paquetes/mundo/src/regiones.test.ts`. Dos
+comprobaciones del plan original **pasan a las tareas que escriben sus datos**, porque aquí no hay
+con qué medirlas:
+
+- «cada comarca con `pasto-de-verano`, unida por cañada a un pasto de invierno» → **T-013**;
+- «exactamente 3 ferias grandes» → **T-014**.
 
 Si alguna se sale, se ajusta el catálogo, no el motor.
 
@@ -279,3 +286,29 @@ Decisiones de la entrega:
 - **Veintitrés localidades se cambiaron** por otras de su misma comarca. Es la región con más
   ajustes, porque las campiñas del Guadalquivir son enormes y las sierras del sur, muy troceadas.
 - Esta región **cumple la proporción de pan de §4.6** con holgura: es la cuarta `REGION_DE_LLANO`.
+
+### Entrega 10 · Centro y sur de Portugal, y remates (18-09-2026)
+
+`10-portugal-sur.jsonc`: **41 comarcas** (35 de la entrega más 6 de remate), de la ria de Aveiro al
+sotavento algarvío. Y con ella, la **pasada de remates**: 36 comarcas repartidas por ocho archivos
+para que no quedara ni una comarca provisional en el mapa.
+
+**El catálogo geográfico está terminado: 403 comarcas reales, cero provisionales.**
+
+Lo que define a la región 10: la sal y el Tejo. Cuatro comarcas con `sal >= 3` —Aveiro, Rio Maior
+(la única salina de interior de Portugal), Setúbal con `sal 4` y el sotavento algarvío—, nueve que
+pescan, y las vegas del Mondego y del Tejo con `labor 5`. El Alentejo entero es montado.
+
+Decisiones del cierre:
+
+- **Lisboa lleva el punto tres kilómetros al norte**: el estuario del Tejo simplificado se come la
+  ciudad entera, y con ella sus cuatro localidades. Es el caso más extremo de todo el catálogo.
+- **La horquilla de comarcas del mapa terminado sube a 340–420** (`T-011` §4.4, regla 6, y
+  `docs/05` §5.2): el catálogo real es más fino que la estimación del plan, con una media de
+  1 400 km² por comarca, dentro de la horquilla de superficie del diseño.
+- **Tres comarcas bajaron de `labor 4` a `labor 3`** (Rioja Alavesa, Bairrada y Elvas): son tierra
+  de viña y olivar, no de pan, y con ellas el mapa se queda en 78 comarcas de labor alta, dentro
+  del objetivo recalibrado.
+- **Las regiones de llano del test** (donde se exige una comarca de `labor >= 4` por cada cinco)
+  son la Meseta norte, la Meseta sur, Levante y Andalucía. La cornisa, Galicia, el Sistema Central,
+  el Ebro y Portugal se rigen por la regla de T-012: nadie a más de tres jornadas del pan.

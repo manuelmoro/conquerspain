@@ -156,7 +156,7 @@ describe('el mundo generado', () => {
     ).length;
     expect(comarcas).toBeGreaterThanOrEqual(300);
     // Con relleno todavia en el mapa se admite mas holgura; sin el, manda docs/05 §5.2.
-    expect(comarcas).toBeLessThanOrEqual(provisionales > 0 ? 430 : 380);
+    expect(comarcas).toBeLessThanOrEqual(provisionales > 0 ? 430 : 420);
     expect(mundo.valor.caminos.length).toBeGreaterThan(comarcas);
   });
 

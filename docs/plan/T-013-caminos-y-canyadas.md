@@ -133,6 +133,8 @@ paquetes/nucleo/src/reglas/jornadas.test.ts
 ## 6. Criterios de aceptación
 
 1. Las nueve cañadas están trazadas y cumplen las tres condiciones de §4.2 (test).
+1bis. **Heredado de T-015 §5:** cada comarca con `pasto-de-verano` (75 en el mapa) queda unida
+   por cañada a alguna comarca con `pasto-de-invierno` o `dehesa` (48 en el mapa). Con test.
 2. Están los puertos de §4.3, cada uno entre dos comarcas que existen y son vecinas.
 3. `jornadasDeTramo` pasa una tabla de al menos 12 casos escritos a mano.
 4. En invierno, el grafo sigue conexo usando solo tramos abiertos (test).

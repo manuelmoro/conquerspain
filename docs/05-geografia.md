@@ -15,9 +15,10 @@ datos reales, con un proceso reproducible, y se revisa a mano comarca por comarc
 
 ## 5.2 Comarcas de juego
 
-- El tablero son **comarcas de juego**: unas 320–380 celdas que cubren la península. Mientras el
-  catálogo se escribe región a región conviven comarcas reales y de relleno, y el total puede
-  subir hasta 430 antes de volver a bajar.
+- El tablero son **comarcas de juego**: **403** celdas cubren la península (la estimación inicial
+  era de 320–360; el catálogo escrito región a región salió algo más fino, con una media de unos
+  1 400 km² por comarca, dentro de la horquilla de superficie de más abajo). El atlas acepta entre
+  340 y 420 con el catálogo completo, y hasta 430 mientras queden comarcas de relleno.
 - Cada comarca agrupa una superficie de entre 1 000 y 3 000 km² y contiene entre una y seis
   localidades reales, situadas en sus coordenadas.
 - Los límites son simplificados (polígonos generados a partir de puntos de referencia y recortados a

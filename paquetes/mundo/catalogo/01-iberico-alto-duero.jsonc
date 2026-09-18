@@ -601,7 +601,7 @@
     "centro": [-2600, 42550],
     "terreno": "llano",
     "potenciales": {
-      "labor": 4,
+      "labor": 3,
       "monte": 1,
       "pasto": 2,
       "piedra": 1,

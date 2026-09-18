@@ -33,6 +33,9 @@ asignación a las comarcas de la región 1 (las demás regiones los asignan en T
 
 **No entra:** la mecánica de mercado (T-037) ni la interfaz de ferias (T-084).
 
+> **Heredado de T-015 §5 (18-09-2026).** La comprobación global «exactamente 3 ferias grandes»
+> se mide en esta tarea, que es la que escribe las ferias, y se deja como test.
+
 ## 4. Diseño detallado
 
 ### 4.1 Catálogo de rasgos

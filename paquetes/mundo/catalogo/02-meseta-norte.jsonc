@@ -1039,4 +1039,33 @@
     "esOrigen": false,
     "nota": "El Campo de Vitigudino, entre los arribes del Duero y la raya: dehesa, castros y canteras de granito; el pan nunca dio para exportar.",
   },
+
+  {
+    "id": "sanabria",
+    "nombre": "Sanabria",
+    "cabecera": "Puebla de Sanabria",
+    "region": "02-meseta-norte",
+    "centro": [-6590, 42140],
+    "terreno": "sierra",
+    "potenciales": {
+      "labor": 1,
+      "monte": 4,
+      "pasto": 4,
+      "piedra": 2,
+      "hierro": 0,
+      "sal": 0,
+      "pesca": 0,
+    },
+    "solares": 6,
+    "poblacionInicial": 30,
+    "localidades": [
+      { "nombre": "Puebla de Sanabria", "coord": [-6632, 42056], "cabecera": true },
+      { "nombre": "Ribadelago", "coord": [-6762, 42122], "cabecera": null },
+      { "nombre": "Lubian", "coord": [-6866, 42027], "cabecera": null },
+    ],
+    "rasgos": ["pasto-de-verano"],
+    "feria": null,
+    "esOrigen": false,
+    "nota": "El lago glaciar y las sierras de la Culebra y Segundera, en la raya con Portugal y Galicia: centeno, castanya y ganado; tierra de arriería.",
+  },
 ]
