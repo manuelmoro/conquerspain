@@ -244,7 +244,6 @@ const validarTerritorio: Validador<DatosTerritorio> = objeto<DatosTerritorio>({
 });
 
 const validarMercado: Validador<DatosMercado> = objeto<DatosMercado>({
-  comisionMil: milesimas(0, 500),
   comisionFeriaMil: milesimas(0, 500),
   movimientoMaximoPorTurnoMil: milesimas(0, 1000),
   regresionAlBaseMil: milesimas(0, 1000),
@@ -253,6 +252,7 @@ const validarMercado: Validador<DatosMercado> = objeto<DatosMercado>({
   volumenBase: entero({ minimo: 1, maximo: 10000 }),
   multiplicadorVolumen: registro(entero({ minimo: 1, maximo: 100 })),
   liquidezMercaderesMenoresMil: milesimas(0, 5000),
+  margenMercaderesMenoresMil: milesimas(0, 900),
 });
 
 const validarInfluencia: Validador<DatosInfluencia> = objeto<DatosInfluencia>({

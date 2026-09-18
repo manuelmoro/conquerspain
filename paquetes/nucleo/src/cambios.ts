@@ -5,11 +5,12 @@ import type { Contexto } from './contexto.ts';
 import { comoBorrador } from './contexto.ts';
 import { ErrorDeMotor } from './errores.ts';
 import { registrarSuceso } from './sucesos.ts';
-import type { IdComarca, IdJugador, IdObra, IdOrden, IdRecua } from './tipos/ids.ts';
+import type { IdComarca, IdJugador, IdMercado, IdObra, IdOrden, IdRecua } from './tipos/ids.ts';
 import type { EstadoDeOrden, Orden, ParadaDeRuta } from './tipos/ordenes.ts';
 import type {
   Cometido,
   Conocimiento,
+  EstadoMercado,
   EstadoTramo,
   Fuero,
   CargaFiscal,
@@ -24,7 +25,7 @@ import type { TipoObraMayor } from './tipos/reglas.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
-import { limitar } from './utiles/enteros.ts';
+import { limitar, multiplicarFactores } from './utiles/enteros.ts';
 
 export type Cambio =
   | {
@@ -267,6 +268,25 @@ export type Cambio =
       readonly tipo: 'tramo';
       readonly clave: string;
       readonly tramo: EstadoTramo;
+    }
+  | {
+      /** Nace un mercado: la primera vez que se abre su plaza. */
+      readonly tipo: 'mercado-alta';
+      readonly mercado: EstadoMercado;
+    }
+  | {
+      /** Precio de un recurso en un mercado y lo que se comercio en el ultimo turno. */
+      readonly tipo: 'mercado-precio';
+      readonly mercado: IdMercado;
+      readonly recurso: Recurso;
+      readonly precioMil: number;
+      readonly volumen: number;
+    }
+  | {
+      /** Lo que le falta por casar a una orden de mercado que sigue vigente. */
+      readonly tipo: 'orden-cantidad';
+      readonly orden: IdOrden;
+      readonly cantidad: number;
     };
 
 function jugadorDe(
@@ -342,6 +362,17 @@ function obraDe(ctx: Contexto, id: IdObra): NonNullable<Contexto['estado']['obra
     throw new ErrorDeMotor('entidad-desconocida', `No hay ninguna obra "${id}" en la partida.`);
   }
   return obra;
+}
+
+function mercadoDe(
+  ctx: Contexto,
+  id: IdMercado,
+): NonNullable<Contexto['estado']['mercados'][string]> {
+  const mercado = ctx.estado.mercados[id];
+  if (mercado === undefined) {
+    throw new ErrorDeMotor('entidad-desconocida', `No hay ningun mercado "${id}" en la partida.`);
+  }
+  return mercado;
 }
 
 function ordenDe(ctx: Contexto, id: IdOrden): NonNullable<Contexto['estado']['ordenes'][number]> {
@@ -1108,6 +1139,63 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         calidad: cambio.tramo.calidad,
         puente: cambio.tramo.puente ? 1 : 0,
       });
+      return;
+    }
+
+    case 'mercado-alta': {
+      if (ctx.estado.mercados[cambio.mercado.id] !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Ya hay un mercado con el identificador "${cambio.mercado.id}".`,
+          { mercado: cambio.mercado.id },
+        );
+      }
+      comarcaDe(ctx, cambio.mercado.comarca);
+      ctx.estado.mercados[cambio.mercado.id] = comoBorrador(cambio.mercado);
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'mercado.abre',
+        { mercado: cambio.mercado.id, clase: cambio.mercado.tipo, volumen: cambio.mercado.volumen },
+        { comarca: cambio.mercado.comarca },
+      );
+      return;
+    }
+
+    case 'mercado-precio': {
+      const mercado = mercadoDe(ctx, cambio.mercado);
+      const base = ctx.reglas.recursos[cambio.recurso].precioBaseMil;
+      const suelo = Math.max(1, multiplicarFactores(base, [ctx.reglas.mercado.sueloMil]));
+      const techo = multiplicarFactores(base, [ctx.reglas.mercado.techoMil]);
+      if (
+        cambio.recurso === 'maravedis' ||
+        !Number.isSafeInteger(cambio.precioMil) ||
+        cambio.precioMil < suelo ||
+        cambio.precioMil > techo ||
+        !Number.isSafeInteger(cambio.volumen) ||
+        cambio.volumen < 0
+      ) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `El precio de ${cambio.recurso} en ${cambio.mercado} quedaria en ${String(cambio.precioMil)} (volumen ${String(cambio.volumen)}) y tiene que estar entre ${String(suelo)} y ${String(techo)}.`,
+          { mercado: cambio.mercado, recurso: cambio.recurso },
+        );
+      }
+      mercado.preciosMil[cambio.recurso] = cambio.precioMil;
+      mercado.ultimoVolumen[cambio.recurso] = cambio.volumen;
+      return;
+    }
+
+    case 'orden-cantidad': {
+      const orden = ordenDe(ctx, cambio.orden);
+      if (orden.tipo !== 'mercado' || cambio.cantidad < 0 || cambio.cantidad > orden.cantidad) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La orden "${cambio.orden}" no puede quedar en ${String(cambio.cantidad)} de cantidad.`,
+          { orden: cambio.orden },
+        );
+      }
+      orden.cantidad = cambio.cantidad;
       return;
     }
 

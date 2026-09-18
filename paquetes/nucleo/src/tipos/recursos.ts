@@ -8,6 +8,9 @@ export type Recurso = (typeof RECURSOS)[number];
 /** Cantidades enteras de cada recurso. Nunca negativas en el almacen. */
 export type Recursos = Readonly<Record<Recurso, number>>;
 
+/** Los que tienen precio y plaza: los maravedis son la moneda y no se comercian. */
+export const RECURSOS_COMERCIABLES: readonly Recurso[] = RECURSOS.filter((r) => r !== 'maravedis');
+
 /** Los recursos que se echan a perder si no se conservan (docs/03-economia.md §3.1). */
 export const RECURSOS_PERECEDEROS = ['pan'] as const;
 

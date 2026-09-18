@@ -23,6 +23,12 @@ textos (plantillas) de los sucesos.
 
 **No entra:** la presentación (T-085), el espionaje entre jugadores (T-102).
 
+**Heredado de T-037.** Los sucesos del mercado son `mercado.abre`, `mercado.trato`,
+`mercado.precio`, `mercado.sin-casar` (con su `motivo`), `mercado.sin-plaza` y
+`mercado.orden-caduca`; las órdenes de mercado que esperan traen su `motivoEspera`. Los rumores de
+feria y los precios conocidos de otras plazas (`DatosConocidos.preciosMil`) los pone esta tarea:
+la fase 7 solo actualiza `EstadoMercado`, no toca el conocimiento de nadie.
+
 ## 4. Diseño detallado
 
 ### 4.1 Vista de jugador

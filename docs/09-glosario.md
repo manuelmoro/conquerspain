@@ -27,9 +27,11 @@ lista manda sobre cualquier otra forma que aparezca en textos antiguos del repos
 | Lealtad | `lealtad` | Apego de una comarca a su señor (0–100) |
 | Maravedí | `maravedi` | Moneda del juego |
 | Mayordomo | `mayordomo` | Conjunto de reglas permanentes que actúan en ausencia del jugador |
+| Menor (mercader menor) | `mercader_menor` | Agente sintético que da liquidez a una plaza; sus compras y ventas desaparecen con el comercio entre jugadores |
 | Merma | `merma` | Pérdida de pan almacenado por turno |
 | Obra mayor | `obra_mayor` | Proyecto de decenas de turnos con efecto permanente |
 | Pan | `pan` | Recurso alimentario |
+| Plaza | `plaza` | Mercado abierto este turno: un mercado local o una feria en sus fechas |
 | Portazgo | `portazgo` | Peaje que cobra el dueño de un camino |
 | Potencial | `potencial` | Aptitud fija de una comarca para un recurso (0–5) |
 | Prestigio | `prestigio` | Puntuación pública del jugador |
@@ -38,6 +40,7 @@ lista manda sobre cualquier otra forma que aparezca en textos antiguos del repos
 | Rebaño | `rebanyo` | Unidad móvil de ganado trashumante |
 | Recua | `recua` | Unidad móvil de transporte y expedición |
 | Solar | `solar` | Hueco de edificación en una comarca |
+| Tratar | `tratar` | Cometido de una recua quieta en una plaza: comprar y vender allí con precio límite |
 | Tradición | `tradicion` | Rama de desarrollo que elige una casa al alcanzar un hito |
 | Vecino | `vecino` | Unidad de población (una familia) |
 

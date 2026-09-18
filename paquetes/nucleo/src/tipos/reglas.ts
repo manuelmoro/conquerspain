@@ -345,8 +345,9 @@ export interface DatosFuero {
   readonly crecimientoMil: number;
 }
 
+/** Mercados, ferias y precios (docs/03-economia.md §3.10; ficha T-037). */
 export interface DatosMercado {
-  readonly comisionMil: number;
+  /** Tope de la comision en feria; en el mercado local manda la de cada casa. */
   readonly comisionFeriaMil: number;
   readonly movimientoMaximoPorTurnoMil: number;
   readonly regresionAlBaseMil: number;
@@ -354,7 +355,10 @@ export interface DatosMercado {
   readonly techoMil: number;
   readonly volumenBase: number;
   readonly multiplicadorVolumen: Readonly<Record<string, number>>;
+  /** Cupo de los mercaderes menores como parte del tope de volumen (1000 = todo el tope). */
   readonly liquidezMercaderesMenoresMil: number;
+  /** Los menores compran hasta base × (1 + margen) y venden desde base × (1 - margen). */
+  readonly margenMercaderesMenoresMil: number;
 }
 
 export interface DatosInfluencia {

@@ -138,6 +138,8 @@ export interface OrdenIncorporar extends OrdenBase {
 export interface OrdenMercado extends OrdenBase {
   readonly tipo: 'mercado';
   readonly mercado: IdMercado;
+  /** Recua que comercia: quieta en la comarca de la plaza y con cometido `tratar`. */
+  readonly recua: IdRecua;
   readonly recurso: Recurso;
   readonly operacion: 'comprar' | 'vender';
   readonly cantidad: number;

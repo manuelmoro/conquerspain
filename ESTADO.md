@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-036)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-037)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,11 +20,12 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-037 · Fase 7: mercados, ferias y formación de precios](docs/plan/T-037-mercado.md)**
+**[T-038 · Fase 8: influencia e incorporación de comarcas](docs/plan/T-038-influencia.md)**
 
-Mercados locales y ferias con órdenes de precio límite, casación con reparto proporcional y
-precios que se mueven. Lee el apartado «Heredado de T-033 y T-034» de la ficha: las recuas
-detenidas en una parada traen sus `vender` y `comprar`, y el cometido `tratar` se cumple aquí.
+Acumulación y pérdida de influencia, orden `incorporar` con sus requisitos y resolución de
+disputas. Lee los apartados «Heredado» de la ficha: la vuelta a neutral de la comarca desleal ya
+está hecha (T-036), la presencia de una recua es `estaPresente` (T-034) y la influencia por comercio
+se lee de los sucesos `mercado.trato` (T-037).
 
 ## Cómo continuar (resumen)
 
@@ -51,7 +52,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
-| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios), 3 consumo, merma y escasez, 4 movimiento de recuas, 5 cometidos, 6 obras, 8 territorio (lealtad, fueros, corte) y 9 población. Ciclo de vida de las órdenes en `src/ordenes.ts` |
+| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios), 3 consumo, merma y escasez, 4 movimiento de recuas, 5 cometidos, 6 obras, 7 mercado (plazas, casación, precios y menores), 8 territorio (lealtad, fueros, corte) y 9 población. Ciclo de vida de las órdenes en `src/ordenes.ts` |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
 | Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
@@ -76,6 +77,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 18-09-2026 | **T-037 hecha**: el mercado funciona. Plazas locales y de feria que nacen al abrirse, órdenes con precio límite que ejecuta una recua quieta que trata (y las paradas de ruta), casación entre jugadores con reparto proporcional y desempate por mérito y huella, mercaderes menores como dos líneas del libro cuyo cupo se apaga con el comercio humano, precios con impulso, regresión al base y recorte del 15 %, comisión del 2 % (1 % en feria) y sucesos `mercado.*` para la crónica. Tablas reales de precios base. Escenario: 300 de lana en una feria grande hunden el precio a 43 250 (−13,5 %) y los menores lo devuelven a 49 737 al turno siguiente; sin menores tarda más de diez turnos. 499 tests en verde |
 | 18-09-2026 | **T-036 hecha**: la gente crece y la lealtad manda. Crecimiento con sus cuatro condiciones y su motivo, lealtad con todas sus fuentes, cuenta atrás y vuelta a neutral de la comarca desleal, política de fueros, carga fiscal y dehesa, deuda de administración acumulada, distancias por el mejor camino conocido en verano y traslado de la corte. Escenario de 100 turnos: sin fueros ni caminos, 98 turnos en deuda y el dominio se deshace; con ellos, ninguno. 428 tests en verde |
 | 18-09-2026 | **T-035 hecha**: se construye. Edificios con cuadrillas y solares, frenazo invernal (piedra al doble, madera +50 %), derribar, roturar, y las siete obras mayores pagadas a plazos según avanzan, con parada por falta de material, abandono con deterioro y sus efectos (puentes y calzadas en el estado de los caminos, monasterio, catedral, muralla, atarazana y acequia). 410 tests en verde |
 | 18-09-2026 | **T-034 hecha**: las recuas hacen cosas al llegar. Explorar (con fecha, vecinas oídas y hallazgos de aldeas o noticias de rivales), portear, poblar sin pasar de la capacidad, fundar puebla (influencia ≥ 40, 10 vecinos, dos turnos, desempate por influencia y huella), estar presente, disolver, y paradas de ruta que detienen a la recua para cargar, descargar o tratar. 389 tests en verde |
@@ -115,4 +117,5 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | La complejidad puede crecer por encima de lo divertido | Cada mecánica nueva debe justificar qué decisión añade; si no añade decisión, se descarta |
 | Determinismo roto sin darse cuenta | Tests de reproducción con huella de estado desde T-002 |
 | ~~El atlas se planta si el mapa pasa de 380 comarcas~~ **resuelto el 18-09-2026**: la horquilla es 300–430 mientras quede relleno y 320–380 cuando el catálogo esté completo | Si al terminar T-015 el mapa se pasa de 380, se recortan comarcas en las regiones más densas, no se sube el límite |
+| Con la liquidez de los menores al máximo (solitario), cualquier venta hasta el tope de la plaza se absorbe y el precio se recupera en un turno: el mercader de ferias podría quedarse sin arbitraje | Banco de pruebas (T-046) y ajuste de `liquidezMercaderesMenoresMil`, del margen y de los precios base en T-047 |
 | ~~Los nombres y las notas del catálogo en ASCII~~ **resuelto en T-014 y T-016** | Una guarda en `catalogo.test.ts` impide volver atrás |

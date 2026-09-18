@@ -32,5 +32,23 @@ export type {
   ModificadorDeClima,
 } from './reglas/calendario.ts';
 export type { CosteDeTramo, OpcionesDeTramo } from './reglas/jornadas.ts';
+export { casarPlaza } from './reglas/mercado.ts';
+export type {
+  EntradaDePlaza,
+  LineaDePlaza,
+  MotivoSinCasar,
+  OperacionDeMercado,
+  ResultadoDeLinea,
+  ResultadoDePlaza,
+} from './reglas/mercado.ts';
+export { cupoDeMenores, limitesDeMenores } from './reglas/mercaderesMenores.ts';
+export { catalogoDePlazas } from './reglas/plazas.ts';
+export type { CatalogoDePlazas, Plaza, SituacionDePlaza } from './reglas/plazas.ts';
+export {
+  desequilibrioMil,
+  limitesDePrecio,
+  nuevoPrecioMil,
+  topeDeVolumen,
+} from './reglas/precios.ts';
 export { FASES, resolverTurno } from './resolver.ts';
 export type { Fase, ResultadoTurno } from './resolver.ts';

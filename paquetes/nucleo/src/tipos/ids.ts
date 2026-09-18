@@ -24,3 +24,13 @@ export type IdContrato = Id<'contrato'>;
 export function nuevoId<M extends string>(prefijo: M, numero: number): Id<M> {
   return `${prefijo}-${String(numero)}` as Id<M>;
 }
+
+/** Identificador del mercado local de una comarca con edificio de mercado. */
+export function idDeMercadoLocal(comarca: IdComarca): IdMercado {
+  return `local-${comarca}` as IdMercado;
+}
+
+/** Identificador del mercado de una feria. Cada feria tiene el suyo, aunque compartan comarca. */
+export function idDeMercadoDeFeria(feria: IdFeria): IdMercado {
+  return `feria-${feria}` as IdMercado;
+}

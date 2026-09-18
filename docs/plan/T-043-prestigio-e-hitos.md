@@ -23,6 +23,11 @@ Calcular el prestigio de cada jugador cada turno, con desglose por capítulos, r
 **Heredado de T-035.** Al terminar una obra mayor la fase 6 emite `hito.obra-mayor` con el tipo;
 las terminadas quedan en `EstadoComarca.obrasMayores` y, las de tramo, en `EstadoPartida.caminos`.
 
+**Heredado de T-037.** El volumen propio en una feria (`porFeriaDestacada`) se suma de los sucesos
+`mercado.trato` del turno cuyo `mercado` empieza por `feria-`: traen `cantidad` e `importe`, y cada
+jugador aparece una vez por trato. `EstadoMercado.ultimoVolumen` es el volumen de la plaza, no el
+de un jugador.
+
 ## 4. Diseño detallado
 
 ### 4.1 Prestigio por capítulos

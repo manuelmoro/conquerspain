@@ -258,7 +258,7 @@ partida.
 |---|---|---|
 | **Explorar** | Revela terreno, población, potenciales y edificios de la comarca de destino, con fecha, y el nombre de las vecinas. Volver a explorar refresca la noticia | 1 turno en destino |
 | **Portear** | Al llegar a una comarca propia descarga todo en el almacén | — |
-| **Tratar** | Comprar o vender en el mercado o feria de destino, con precio límite | Comisión 2 % |
+| **Tratar** | Comprar o vender en el mercado o feria de destino, con precio límite | Comisión 2 % (1 % en feria) |
 | **Poblar** | Deja vecinos en una comarca propia (sin pasar de la capacidad) o funda puebla en una neutral con influencia ≥ 40 y 10 vecinos | 2 turnos |
 | **Estar presente** | Se queda: genera 2 de influencia por turno en una comarca neutral | Bastimento de una jornada por turno |
 | **Disolver** | En comarca propia: devuelve la gente y los arrieros, la carga y la mitad de los maravedís de formarla | 1 turno |
@@ -323,31 +323,69 @@ corte itinerante— al problema de un dominio alargado.
 
 ### 3.10.1 Dónde se comercia
 
-- **Mercado local**: en comarcas con edificio de mercado. Volumen pequeño, precios peores.
+Una **plaza** es un mercado abierto este turno:
+
+- **Mercado local**: en comarcas con edificio de mercado, de cualquier dueño y abierto todos los
+  turnos. Volumen pequeño, precios peores.
 - **Ferias**: en comarcas con derecho de feria, solo en sus turnos de calendario. Volumen grande,
   mejores precios, y son el punto de encuentro (y de rumores) entre jugadores.
 
+Toda la mercancía viaja en recuas: **no se compra ni se vende desde el almacén**. Lo vendido sale de
+la carga de la recua, lo comprado entra en ella y los maravedís se cobran y se pagan de la carga (no
+ocupan porte). Para comprar hay que llevar los maravedís cargados. Una comarca con mercado local y
+feria a la vez comercia en la feria mientras esté abierta. Los maravedís son la moneda y no se
+comercian.
+
 ### 3.10.2 Formación de precios
 
-Cada mercado tiene un precio por recurso que se mueve por oferta y demanda de ese turno:
+Cada mercado guarda un precio por recurso. Cada turno, y para cada recurso de cada plaza abierta:
 
 ```
-precio_nuevo = precio_base × (1000 + elasticidad × (demanda − oferta) / max(1, demanda + oferta)) / 1000
+desequilibrio = 1000 × (demanda − oferta) / max(1, demanda + oferta)      (de −1000 a 1000)
+impulso       = elasticidad × desequilibrio, recortado al 15 % del precio de partida
+precio_nuevo  = precio + impulso + 10 % de la distancia al precio base,
+                sin moverse más del 15 % en el turno
+                y siempre entre el 40 % y el 250 % del precio base
 ```
 
-- El precio se mueve como mucho un 15 % por turno y vuelve poco a poco al base (10 % por turno).
+- La **demanda** y la **oferta** son las líneas de compra y de venta cuyo precio límite admite el
+  precio de hoy, más las de los mercaderes menores.
+- El precio nuevo es **el precio al que se cierran los tratos de ese turno**: quien vende mucho lo
+  hunde antes de cobrar. Con la plaza cerrada (una feria fuera de fecha, un mercado derribado) solo
+  actúa la vuelta al base, así que los precios se recuperan solos.
 - La elasticidad es propia de cada recurso: pan 400, sal 600, hierro 700, lana 500, madera 300,
-  piedra 250 (en milésimas de punto porcentual).
-- En partidas en solitario hay **mercaderes menores**: agentes sintéticos deterministas que dan
-  liquidez y hacen que el mercado se comporte como si hubiera mundo alrededor.
-- En multijugador, la oferta y la demanda son las órdenes reales de los jugadores más la de los
-  mercaderes menores, cuya cuota baja a medida que crece el volumen humano.
+  piedra 250 (milésimas del desequilibrio).
+- Precios base de partida, en maravedís por carga: pan 3, madera 4, piedra 6, sal 14, hierro 24,
+  lana 50. Son cifras de arranque para el banco de pruebas (T-046).
+- **Mercaderes menores**: agentes sintéticos deterministas que dan liquidez y hacen que el mercado
+  se comporte como si hubiera mundo alrededor. Compran hasta un 10 % por encima del precio base y
+  venden desde un 10 % por debajo: dentro de esa banda son contraparte de los dos lados; fuera, solo
+  del que sujeta el precio. Su cupo por turno es el tope de la plaza menos lo que los jugadores ya se
+  comercian entre sí, así que en multijugador, con mucho comercio entre jugadores, casi desaparecen.
+  No tienen almacén ni memoria y nunca casan entre ellos.
 
 ### 3.10.3 Órdenes de mercado
 
-Se envían con **precio límite** y cantidad: «vender hasta 40 de lana a no menos de 55 mrs». Se casan
-en la fase 7 con reparto proporcional (§2.4.4). Lo que no se casa, se anuncia en la crónica y puede
-quedar vigente los turnos siguientes.
+Se envían con **precio límite** y cantidad: «vender hasta 40 de lana a no menos de 55 mrs». Las
+ejecuta una recua **quieta en la comarca de la plaza y con el cometido `tratar`**, y valen de 1 a 24
+turnos. Las recuas detenidas en una parada de su ruta comercian además lo que dice la parada, ese
+turno solo. Se casan en la fase 7:
+
+1. Entre jugadores primero, al precio de la plaza. El lado que sobra se reparte **en proporción a lo
+   pedido**; el sobrante de los redondeos va al que ofrece mejor precio y, a igualdad, al de menor
+   `hash(partida, turno, plaza, jugador)`.
+2. Lo que queda se lo compran o se lo venden los mercaderes menores, dentro de su cupo.
+3. Ninguna plaza mueve más de su **tope de volumen** por recurso y turno: la base de 40 cargas por
+   el volumen de la plaza (pequeña ×1, mediana ×3, grande ×8).
+
+**Comisión**: la paga quien vende y quien compra, sobre el importe, y desaparece. En el mercado
+local es la de la casa (2 % de partida); en feria, como mucho el 1 %. El que vende cobra el importe
+redondeado a la baja y el que compra paga redondeado al alza.
+
+Lo que no se casa, se anuncia en la crónica con su motivo (precio límite, fondos, volumen de la plaza,
+sin contraparte, sin carga o sin espacio) y una orden puede quedar vigente los turnos siguientes con
+lo que falta. Si su recua no puede comerciar, la orden espera (la feria no está abierta, la recua está
+lejos o de ruta o no trata) y arranca sola en cuanto pueda.
 
 ## 3.11 Obras mayores
 

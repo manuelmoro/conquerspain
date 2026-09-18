@@ -29,6 +29,10 @@ lealtad que le quedaba. La influencia se añade a esa misma fase, después de la
 (`reglas/presencia.ts`): quieta en una comarca neutral con cometido `presencia` y que ha podido
 pagar su bastimento este turno. Esa es la condición de los +2 de influencia por presencia.
 
+**Heredado de T-037.** La influencia por comercio (`porComercioPorCadaCincuenta`) se lee de los
+sucesos `mercado.trato` del turno: cada uno trae el `jugador`, la `comarca` de la plaza y el
+`importe` en maravedís. La fase 7 corre antes que la 8, así que ya están todos en `ctx.sucesos`.
+
 ## 4. Diseño detallado
 
 ### 4.1 Cálculo por turno

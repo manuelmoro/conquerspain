@@ -32,8 +32,9 @@ import type {
   ParadaDeRuta,
   ReglaDeMayordomo,
 } from '../tipos/ordenes.ts';
+import { TURNOS_POR_ANYO } from '../reglas/calendario.ts';
 import { ESTADOS_DE_ORDEN } from '../tipos/ordenes.ts';
-import { RECURSOS } from '../tipos/recursos.ts';
+import { RECURSOS, RECURSOS_COMERCIABLES } from '../tipos/recursos.ts';
 import { TIPOS_DE_EDIFICIO, TIPOS_DE_OBRA_MAYOR } from '../tipos/reglas.ts';
 import { recursos, recursosParciales } from './comunes.ts';
 import type { CamposDe, ErrorValidacion, Resultado, Validador } from './validador.ts';
@@ -79,8 +80,8 @@ export const validarParada: Validador<ParadaDeRuta> = objeto<ParadaDeRuta>({
   comarca: identificador<IdComarca>(),
   cargar: recursosParciales(),
   descargar: recursosParciales(),
-  vender: registro(validarOferta, unoDe(RECURSOS)),
-  comprar: registro(validarDemanda, unoDe(RECURSOS)),
+  vender: registro(validarOferta, unoDe(RECURSOS_COMERCIABLES)),
+  comprar: registro(validarDemanda, unoDe(RECURSOS_COMERCIABLES)),
 });
 
 const validarValorDeParametro: Validador<number | string> = (dato, ruta) =>
@@ -171,9 +172,12 @@ const incorporar: Validador<OrdenIncorporar> = objeto<OrdenIncorporar>({
 
 const mercado: Validador<OrdenMercado> = objeto<OrdenMercado>({
   ...camposBase,
+  // Una orden de mercado vale como mucho un anyo: lo que no se casa en tanto tiempo ya no interesa.
+  turnosTotales: entero({ minimo: 1, maximo: TURNOS_POR_ANYO }),
   tipo: unoDe(['mercado'] as const),
   mercado: identificador<IdMercado>(),
-  recurso: unoDe(RECURSOS),
+  recua: identificador<IdRecua>(),
+  recurso: unoDe(RECURSOS_COMERCIABLES),
   operacion: unoDe(['comprar', 'vender'] as const),
   cantidad: entero({ minimo: 1 }),
   precioLimiteMil: enteroNoNegativo(),
@@ -242,6 +246,15 @@ export function validarOrdenEntrante(dato: unknown): Resultado<Orden> {
   if (orden.tipo === 'ruta' && orden.recua === null && orden.rebanyo === null) {
     return invalidos([
       { ruta: 'recua', mensaje: 'una ruta es de una recua o de un rebanyo, y aqui no hay ninguno' },
+    ]);
+  }
+  if (orden.tipo === 'mercado' && RECURSOS.some((r) => orden.coste[r] > 0)) {
+    return invalidos([
+      {
+        ruta: 'coste',
+        mensaje:
+          'una orden de mercado no reserva nada en el almacen: comercia con lo que lleva la recua, asi que su coste es cero',
+      },
     ]);
   }
   return valido(orden);

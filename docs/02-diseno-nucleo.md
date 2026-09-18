@@ -98,7 +98,7 @@ interface Orden {
 | Recua | `cargar` / `descargar` | Mover recursos y vecinos entre almacén y recua |
 | Recua | `cometido` | Explorar, poblar, tratar, establecer presencia, disolver |
 | Territorio | `incorporar` | Sumar al dominio una comarca donde ya tienes influencia mayoritaria |
-| Mercado | `vender` / `comprar` | Órdenes con precio límite, ejecutables en feria o mercado local |
+| Mercado | `vender` / `comprar` | Órdenes con precio límite, ejecutables en feria o mercado local por una recua quieta que trata |
 | Obra | `obra mayor` | Iniciar o financiar una obra monumental de varias decenas de turnos |
 | Casa | `tradicion` | Elegir una vía de desarrollo al alcanzar un hito |
 | Gestión | `mayordomo` | Alta o baja de una regla permanente (ver §2.5) |

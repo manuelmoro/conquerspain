@@ -7,10 +7,12 @@ import { ARRANQUE } from '../src/datos/arranque.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
+import { MERCADO } from '../src/datos/mercado.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
 import { OBRAS, OBRAS_MAYORES } from '../src/datos/obras.ts';
 import { POBLACION } from '../src/datos/poblacion.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
+import { DATOS_DE_RECURSOS } from '../src/datos/recursos.ts';
 import { TERRITORIO } from '../src/datos/territorio.ts';
 import { CASAS, VERSION_REGLAS } from '../src/tipos/reglas.ts';
 
@@ -190,15 +192,7 @@ export function estadoDeEjemplo(): Registro {
 }
 
 export function tablasDeEjemplo(): Registro {
-  const recursos: Registro = {};
-  for (const recurso of RECURSOS) {
-    recursos[recurso] = {
-      precioBaseMil: 10000,
-      elasticidadMil: 400,
-      mermaPorTurnoMil: recurso === 'pan' ? 40 : 0,
-      perecedero: recurso === 'pan',
-    };
-  }
+  const recursos = JSON.parse(JSON.stringify(DATOS_DE_RECURSOS)) as Registro;
 
   // Los edificios y la cadena de produccion son las tablas reales del juego (src/datos).
   const edificios = JSON.parse(JSON.stringify(EDIFICIOS)) as Registro;
@@ -298,17 +292,7 @@ export function tablasDeEjemplo(): Registro {
     obrasMayores: JSON.parse(JSON.stringify(OBRAS_MAYORES)) as Registro,
     poblacion: JSON.parse(JSON.stringify(POBLACION)) as Registro,
     territorio: JSON.parse(JSON.stringify(TERRITORIO)) as Registro,
-    mercado: {
-      comisionMil: 20,
-      comisionFeriaMil: 10,
-      movimientoMaximoPorTurnoMil: 150,
-      regresionAlBaseMil: 100,
-      sueloMil: 400,
-      techoMil: 2500,
-      volumenBase: 40,
-      multiplicadorVolumen: { pequenya: 1, mediana: 3, grande: 8 },
-      liquidezMercaderesMenoresMil: 1000,
-    },
+    mercado: JSON.parse(JSON.stringify(MERCADO)) as Registro,
     influencia: {
       porPresencia: 2,
       porComarcaVecina: 1,

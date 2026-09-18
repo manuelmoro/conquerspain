@@ -26,6 +26,10 @@ producción menor; privilegio de la Mesta enganchado (detalle en T-041).
 toma las de recua) y queda pendiente hasta esta tarea. Se reutilizan `rutaMasCorta`, `avanzar` y el
 ciclo de vida de `src/ordenes.ts`.
 
+**Heredado de T-037.** La lana del esquileo entra en el almacén, no en una recua: para venderla hay
+que cargarla (`cargar` en una parada de comarca propia o la orden `carga`) y llevarla a una plaza.
+Precio base de la lana: 50 mrs por saca (`src/datos/recursos.ts`).
+
 ## 4. Diseño detallado
 
 ### 4.1 Unidad
