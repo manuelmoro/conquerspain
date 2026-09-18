@@ -15,6 +15,7 @@ import {
   siguienteAgotamiento,
   vecinosNecesarios,
 } from '../reglas/produccion.ts';
+import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import type { Fuero } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
@@ -104,6 +105,9 @@ export function faseProduccion(ctx: Contexto): void {
           region,
           estacion: ctx.estacional.estacion,
           clima: ctx.clima,
+          acontecimientos: ctx.estado.acontecimientos,
+          turno: ctx.turno,
+          terreno: ctx.mundo.comarcas[id]?.terreno,
           casaMil,
           nivelesActivos: nivelesActivos.get(id) ?? {},
         },
@@ -137,7 +141,13 @@ export function faseProduccion(ctx: Contexto): void {
         producido[explotacion.recurso] += explotacion.resultado;
       }
 
-      const maravedis = maravedisDe(comarca, fueroImpuestos, ctx.reglas);
+      const ingresosMil = factorDeAcontecimientos(
+        ctx.estado.acontecimientos,
+        ctx.turno,
+        'ingresos',
+        { region, comarca: comarca.id },
+      );
+      const maravedis = maravedisDe(comarca, fueroImpuestos, ctx.reglas, ingresosMil);
       if (maravedis.total > 0) {
         registrarSuceso(
           ctx.sucesos,

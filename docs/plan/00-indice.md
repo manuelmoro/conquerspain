@@ -51,7 +51,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-036](T-036-poblacion-y-lealtad.md) | Fases 8–9: población, lealtad, fueros y administración | **hecha** | T-032 |
 | [T-037](T-037-mercado.md) | Fase 7: mercados, ferias y formación de precios | **hecha** | T-032 |
 | [T-038](T-038-influencia.md) | Fase 8: influencia e incorporación de comarcas | **hecha** | T-034 |
-| [T-039](T-039-acontecimientos.md) | Fase 10: acontecimientos anunciados | pendiente | T-030 |
+| [T-039](T-039-acontecimientos.md) | Fase 10: acontecimientos anunciados | **hecha** | T-030 |
 | [T-040](T-040-rebanyos.md) | Rebaños, pastos y trashumancia | pendiente | T-033, T-037 |
 | [T-041](T-041-casas.md) | Casas: privilegios y herramientas | pendiente | T-035, T-037 |
 | [T-042](T-042-tradiciones.md) | Tradiciones y ramas de desarrollo | pendiente | T-041 |

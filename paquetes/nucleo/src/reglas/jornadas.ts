@@ -20,6 +20,10 @@ export interface OpcionesDeTramo {
    * asi que lo decide quien llama: el resolutor lo sabe, esta funcion no.
    */
   readonly barro?: boolean;
+  /** Unas nieves tempranas han cerrado ya el puerto de este tramo (ficha T-039). */
+  readonly nieveTemprana?: boolean;
+  /** Una riada tiene cortado el vado de este tramo, salvo que lleve puente (ficha T-039). */
+  readonly crecida?: boolean;
 }
 
 /** Lo que cuesta cruzar un tramo, o `cerrado` si el puerto esta cerrado por nieve. */
@@ -52,7 +56,11 @@ export function jornadasDeTramoMil(
   const esPuerto = camino.puertoDeMontanya !== null;
   const hayCalzada = camino.calzadaRomana || calidad === 'calzada';
 
-  if (camino.cierraEnInvierno && estacion === 'invierno' && !hayCalzada) return 'cerrado';
+  const nieva = estacion === 'invierno' || opciones.nieveTemprana === true;
+  if (camino.cierraEnInvierno && nieva && !hayCalzada) return 'cerrado';
+  if (opciones.crecida === true && camino.vado && !llevaPuente(camino, calidad, opciones)) {
+    return 'cerrado';
+  }
 
   const base = esPuerto
     ? JORNADAS_DE_PUERTO

@@ -9,7 +9,7 @@ import {
   TURNOS_POR_ANYO,
   climaDelAnyo,
   estacionDe,
-  puertosCerradosEn,
+  estadoEstacionalDe,
 } from '../reglas/calendario.ts';
 import { registrarSuceso } from '../sucesos.ts';
 
@@ -45,7 +45,10 @@ export function faseCalendario(ctx: Contexto): void {
   }
 
   const cerradosAntes = new Set(
-    anterior === null || recienCreada ? [] : puertosCerradosEn(anterior, ctx.mundo),
+    anterior === null || recienCreada
+      ? []
+      : estadoEstacionalDe(turno - 1, ctx.mundo, ctx.reglas, ctx.estado.acontecimientos)
+          .puertosCerrados,
   );
   const cerradosAhora = new Set(estacional.puertosCerrados);
   for (const puerto of estacional.puertosCerrados) {

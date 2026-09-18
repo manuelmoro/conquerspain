@@ -192,7 +192,8 @@ El azar existe (rendimiento de una cosecha, hallazgos de una exploración), pero
 - Procede de un generador con semilla: `semilla = hash(semillaPartida, turno, ambito, id)`.
 - Su horquilla es **estrecha** (típicamente ±10 %) y siempre está acotada y visible en la interfaz.
 - Ningún acontecimiento grave (sequía, peste, incendio) es sorpresa: se **anuncia con dos turnos**
-  de antelación en la crónica y el mapa.
+  de antelación en la crónica y el mapa, y el **calendario del año entero** se publica el primer
+  turno del año (ver [03-economia.md](03-economia.md) §3.13).
 
 ## 2.5 Jugar sin estar: mayordomo y planes
 

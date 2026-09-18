@@ -8,6 +8,7 @@ import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
+import { factorDeAcontecimientos, precioBaseEfectivo } from '../reglas/acontecimientos.ts';
 import type { ResultadoDeLinea } from '../reglas/mercado.ts';
 import { casarPlaza } from '../reglas/mercado.ts';
 import type { CatalogoDePlazas, Plaza } from '../reglas/plazas.ts';
@@ -17,7 +18,9 @@ import type { Solicitud, SolicitudConLinea } from '../reglas/solicitudes.ts';
 import { lineasDeSolicitudes } from '../reglas/solicitudes.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import type { EstadoMercado } from '../tipos/estado.ts';
-import type { IdJugador } from '../tipos/ids.ts';
+import type { IdComarca, IdJugador } from '../tipos/ids.ts';
+import type { DatosRecurso } from '../tipos/reglas.ts';
+import { multiplicarFactores } from '../utiles/enteros.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS_COMERCIABLES, recursosSegun } from '../tipos/recursos.ts';
 import { hash32 } from '../utiles/huella.ts';
@@ -202,6 +205,35 @@ function comisionMilDe(ctx: Contexto, jugador: IdJugador, plaza: Plaza): number 
   return plaza.tipo === 'feria' ? Math.min(propia, ctx.reglas.mercado.comisionFeriaMil) : propia;
 }
 
+/**
+ * Lo que el catalogo dice de un recurso, con el precio base que le dan los acontecimientos en la
+ * region de la comarca: una carestia de sal sube el base hacia el que regresa la plaza.
+ */
+function recursoEnLaPlaza(ctx: Contexto, comarca: IdComarca, recurso: Recurso): DatosRecurso {
+  const datos = ctx.reglas.recursos[recurso];
+  const lugar = { region: ctx.mundo.comarcas[comarca]?.region ?? '', comarca };
+  return {
+    ...datos,
+    precioBaseMil: precioBaseEfectivo(
+      datos.precioBaseMil,
+      ctx.estado.acontecimientos,
+      ctx.turno,
+      lugar,
+      recurso,
+    ),
+  };
+}
+
+/** El tope de la plaza, con el buen anyo de feria si lo hay. */
+function topeDeLaPlaza(ctx: Contexto, plaza: Plaza): number {
+  const tope = topeDeVolumen(plaza.volumen, ctx.reglas.mercado);
+  if (plaza.tipo !== 'feria') return tope;
+  const lugar = { region: ctx.mundo.comarcas[plaza.comarca]?.region ?? '', comarca: plaza.comarca };
+  return multiplicarFactores(tope, [
+    factorDeAcontecimientos(ctx.estado.acontecimientos, ctx.turno, 'volumen', lugar),
+  ]);
+}
+
 function casar(
   ctx: Contexto,
   plaza: Plaza,
@@ -215,8 +247,8 @@ function casar(
   );
   const resultado = casarPlaza({
     precioMil: mercado.preciosMil[recurso],
-    recurso: ctx.reglas.recursos[recurso],
-    tope: topeDeVolumen(plaza.volumen, tabla),
+    recurso: recursoEnLaPlaza(ctx, plaza.comarca, recurso),
+    tope: topeDeLaPlaza(ctx, plaza),
     lineas: lineas.map((l) => l.linea),
     tabla,
     desempate: (jugador) =>
@@ -258,7 +290,8 @@ function casar(
 /** Sin plaza abierta no se casa nada: el precio solo vuelve hacia el base. */
 function dejarVolverAlBase(ctx: Contexto, mercado: EstadoMercado, recurso: Recurso): void {
   const antes = mercado.preciosMil[recurso];
-  const despues = nuevoPrecioMil(antes, 0, ctx.reglas.recursos[recurso], ctx.reglas.mercado);
+  const datos = recursoEnLaPlaza(ctx, mercado.comarca, recurso);
+  const despues = nuevoPrecioMil(antes, 0, datos, ctx.reglas.mercado);
   if (despues === antes && mercado.ultimoVolumen[recurso] === 0) return;
   aplicar(ctx, {
     tipo: 'mercado-precio',

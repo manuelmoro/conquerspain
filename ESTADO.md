@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-038)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-039)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,10 +20,12 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-039 · Fase 10: acontecimientos anunciados](docs/plan/T-039-acontecimientos.md)**
+**[T-040 · Rebaños, pastos y trashumanza](docs/plan/T-040-rebanyos.md)**
 
-Catálogo de acontecimientos regionales, sorteo determinista, anuncio con dos turnos de antelación,
-aplicación acotada y caducidad. Ninguno es sorpresa y todos admiten una respuesta del jugador.
+La unidad rebaño, su movimiento por cañadas, los pastos estacionales, la calidad, el esquileo y la
+producción menor. Lee los apartados «Heredado» de la ficha: la orden `ruta` con `rebanyo` la espera
+la fase 4 (T-033), la lana entra en el almacén y se vende con una recua (T-037) y la peste de
+ganado (T-039) se aplica con `factorDeAcontecimientos(..., 'lana', ...)`.
 
 ## Cómo continuar (resumen)
 
@@ -50,7 +52,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
-| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios), 3 consumo, merma y escasez, 4 movimiento de recuas, 5 cometidos, 6 obras, 7 mercado (plazas, casación, precios y menores), 8 territorio (lealtad, fueros, corte, influencia e incorporación de comarcas) y 9 población. Ciclo de vida de las órdenes en `src/ordenes.ts` |
+| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios), 3 consumo, merma y escasez, 4 movimiento de recuas, 5 cometidos, 6 obras, 7 mercado (plazas, casación, precios y menores), 8 territorio (lealtad, fueros, corte, influencia e incorporación de comarcas), 9 población y 10 acontecimientos. Ciclo de vida de las órdenes en `src/ordenes.ts` |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
 | Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
@@ -75,6 +77,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 18-09-2026 | **T-039 hecha**: pasan cosas, pero avisadas. Diez acontecimientos (lluvias, sequía, nieves tempranas, riada, peste de ganado, buen año de feria, carestía de sal, romería, incendio y maestros) sorteados de la semilla con las reglas de la ficha (2 a 4 al año, uno bueno como mínimo, uno malo por región como mucho), calendario del año publicado el primer turno y anuncio exacto a dos turnos; solo lo anunciado ocurre. Los efectos son modificadores que ya consultan producción, obras, mercado, calendario y movimiento (nieves tempranas, riadas). 599 tests en verde |
 | 18-09-2026 | **T-038 hecha**: la tierra se gana. Influencia en cada comarca neutral con sus siete fuentes (presencia, vecinas, mercado, comercio, monasterio, camino y regalo) y su desgaste, desglosada en un suceso; orden `regalo` con enfriamiento de cuatro turnos; orden `incorporar` con los cuatro requisitos y motivo, tres turnos, devolución del coste y disputa por influencia, presencia seguida y huella; `previsionIncorporar` que coincide con la fase real. `EstadoComarca` gana `presenciaSeguida`, `ultimoRegalo` y `exDuenyo` (las huellas de `humo-01` y `humo-02` cambian a propósito; comprobado con el commit anterior que solo cambian esos campos). 557 tests en verde |
 | 18-09-2026 | **T-037 hecha**: el mercado funciona. Plazas locales y de feria que nacen al abrirse, órdenes con precio límite que ejecuta una recua quieta que trata (y las paradas de ruta), casación entre jugadores con reparto proporcional y desempate por mérito y huella, mercaderes menores como dos líneas del libro cuyo cupo se apaga con el comercio humano, precios con impulso, regresión al base y recorte del 15 %, comisión del 2 % (1 % en feria) y sucesos `mercado.*` para la crónica. Tablas reales de precios base. Escenario: 300 de lana en una feria grande hunden el precio a 43 250 (−13,5 %) y los menores lo devuelven a 49 737 al turno siguiente; sin menores tarda más de diez turnos. 499 tests en verde |
 | 18-09-2026 | **T-036 hecha**: la gente crece y la lealtad manda. Crecimiento con sus cuatro condiciones y su motivo, lealtad con todas sus fuentes, cuenta atrás y vuelta a neutral de la comarca desleal, política de fueros, carga fiscal y dehesa, deuda de administración acumulada, distancias por el mejor camino conocido en verano y traslado de la corte. Escenario de 100 turnos: sin fueros ni caminos, 98 turnos en deuda y el dominio se deshace; con ellos, ninguno. 428 tests en verde |

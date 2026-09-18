@@ -5,9 +5,18 @@ import type { Contexto } from './contexto.ts';
 import { comoBorrador } from './contexto.ts';
 import { ErrorDeMotor } from './errores.ts';
 import { registrarSuceso } from './sucesos.ts';
-import type { IdComarca, IdJugador, IdMercado, IdObra, IdOrden, IdRecua } from './tipos/ids.ts';
+import type {
+  IdAcontecimiento,
+  IdComarca,
+  IdJugador,
+  IdMercado,
+  IdObra,
+  IdOrden,
+  IdRecua,
+} from './tipos/ids.ts';
 import type { EstadoDeOrden, Orden, ParadaDeRuta } from './tipos/ordenes.ts';
 import type {
+  Acontecimiento,
   Cometido,
   Conocimiento,
   EstadoMercado,
@@ -25,6 +34,7 @@ import type { TipoObraMayor } from './tipos/reglas.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
+import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
 import { limitar, multiplicarFactores } from './utiles/enteros.ts';
 
 export type Cambio =
@@ -281,6 +291,16 @@ export type Cambio =
       readonly tipo: 'tramo';
       readonly clave: string;
       readonly tramo: EstadoTramo;
+    }
+  | {
+      /** Un acontecimiento se anuncia: entra en el estado dos turnos antes de empezar. */
+      readonly tipo: 'acontecimiento-alta';
+      readonly acontecimiento: Acontecimiento;
+    }
+  | {
+      /** Un acontecimiento ha terminado y sale del estado. */
+      readonly tipo: 'acontecimiento-baja';
+      readonly acontecimiento: IdAcontecimiento;
     }
   | {
       /** Nace un mercado: la primera vez que se abre su plaza. */
@@ -1204,6 +1224,41 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       return;
     }
 
+    case 'acontecimiento-alta': {
+      const { acontecimiento } = cambio;
+      if (ctx.estado.acontecimientos.some((otro) => otro.id === acontecimiento.id)) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Ya hay un acontecimiento con el identificador "${acontecimiento.id}".`,
+          { acontecimiento: acontecimiento.id },
+        );
+      }
+      const aviso = ctx.reglas.acontecimientos.sorteo.turnosDeAviso;
+      if (acontecimiento.turnoInicio - acontecimiento.turnoAnuncio !== aviso) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `El acontecimiento "${acontecimiento.id}" se anunciaria ${String(acontecimiento.turnoInicio - acontecimiento.turnoAnuncio)} turnos antes de empezar y tienen que ser ${String(aviso)}.`,
+          { acontecimiento: acontecimiento.id },
+        );
+      }
+      ctx.estado.acontecimientos.push(comoBorrador(acontecimiento));
+      return;
+    }
+
+    case 'acontecimiento-baja': {
+      const indice = ctx.estado.acontecimientos.findIndex(
+        (otro) => otro.id === cambio.acontecimiento,
+      );
+      if (indice < 0) {
+        throw new ErrorDeMotor(
+          'entidad-desconocida',
+          `No hay ningun acontecimiento "${cambio.acontecimiento}" en la partida.`,
+        );
+      }
+      ctx.estado.acontecimientos.splice(indice, 1);
+      return;
+    }
+
     case 'mercado-alta': {
       if (ctx.estado.mercados[cambio.mercado.id] !== undefined) {
         throw new ErrorDeMotor(
@@ -1226,7 +1281,17 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'mercado-precio': {
       const mercado = mercadoDe(ctx, cambio.mercado);
-      const base = ctx.reglas.recursos[cambio.recurso].precioBaseMil;
+      // Una carestia mueve el precio base de la plaza; el suelo y el techo se miden sobre el efectivo.
+      const base = precioBaseEfectivo(
+        ctx.reglas.recursos[cambio.recurso].precioBaseMil,
+        ctx.estado.acontecimientos,
+        ctx.turno,
+        {
+          region: ctx.mundo.comarcas[mercado.comarca]?.region ?? '',
+          comarca: mercado.comarca,
+        },
+        cambio.recurso,
+      );
       const suelo = Math.max(1, multiplicarFactores(base, [ctx.reglas.mercado.sueloMil]));
       const techo = multiplicarFactores(base, [ctx.reglas.mercado.techoMil]);
       if (

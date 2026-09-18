@@ -30,6 +30,11 @@ ciclo de vida de `src/ordenes.ts`.
 que cargarla (`cargar` en una parada de comarca propia o la orden `carga`) y llevarla a una plaza.
 Precio base de la lana: 50 mrs por saca (`src/datos/recursos.ts`).
 
+**Heredado de T-039.** La peste de ganado dura hasta el turno del esquileo y trae un efecto `lana`
+de ×750 en su región: el reparto de la lana tiene que multiplicar lo que da cada rebaño por
+`factorDeAcontecimientos(estado.acontecimientos, turno, 'lana', { region, comarca }, 'lana')`
+(`reglas/acontecimientos.ts`). Hoy nadie lo consulta porque todavía no hay esquileo.
+
 ## 4. Diseño detallado
 
 ### 4.1 Unidad

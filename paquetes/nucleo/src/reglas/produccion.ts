@@ -3,8 +3,8 @@
 // Cada factor se calcula aparte y viaja con su nombre, porque la interfaz tiene que poder
 // desplegar la cuenta entera: «20 = 12 base × 125 % × 160 % × …». El truncado ocurre una sola vez.
 import type { ClimaAnual } from './calendario.ts';
-import type { CargaFiscal, EstadoComarca, Fuero } from '../tipos/estado.ts';
-import type { NivelPotencial } from '../tipos/mundo.ts';
+import type { Acontecimiento, CargaFiscal, EstadoComarca, Fuero } from '../tipos/estado.ts';
+import type { NivelPotencial, Terreno } from '../tipos/mundo.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import type { Estacion, TablasDeReglas, TipoEdificio } from '../tipos/reglas.ts';
 import { TIPOS_DE_EDIFICIO } from '../tipos/reglas.ts';
@@ -12,6 +12,7 @@ import { RECURSOS_AGOTABLES } from '../tipos/estado.ts';
 import type { RecursoAgotable } from '../tipos/estado.ts';
 import type { Milesimas } from '../utiles/enteros.ts';
 import { MIL, limitar, multiplicarFactores } from '../utiles/enteros.ts';
+import { factorDeAcontecimientos } from './acontecimientos.ts';
 
 /** Un factor de la cadena, con nombre para poder explicarlo. */
 export interface Factor {
@@ -19,6 +20,7 @@ export interface Factor {
     | 'potencial'
     | 'estacion'
     | 'clima'
+    | 'acontecimiento'
     | 'molino'
     | 'aperos'
     | 'lealtad'
@@ -48,6 +50,10 @@ export interface DatosDeComarcaParaProducir {
   readonly casaMil: Readonly<Partial<Record<Recurso, number>>>;
   /** Niveles que trabajan este turno si no son todos los construidos (insumos, T-032). */
   readonly nivelesActivos?: Readonly<Partial<Record<TipoEdificio, number>>>;
+  /** Acontecimientos anunciados, el turno en que se produce y el terreno de la comarca (T-039). */
+  readonly acontecimientos?: readonly Acontecimiento[];
+  readonly turno?: number;
+  readonly terreno?: Terreno | undefined;
 }
 
 export function multiplicadorPotencial(nivel: NivelPotencial, reglas: TablasDeReglas): Milesimas {
@@ -131,6 +137,20 @@ export function explotacionesDe(
       const regada =
         edificio.potencial === 'labor' && comarca.obrasMayores.includes('acequia-mayor');
       if (regada) factores.push({ nombre: 'acequia', mil: reglas.obras.laborPorAcequiaMil });
+      // Un acontecimiento activo en la region (sequia, buenas lluvias) o sobre la labor de un terreno
+      // (la riada en las vegas) entra como un factor mas, para que se vea en el desglose.
+      const lugar = { region: datos.region, comarca: comarca.id, terreno: datos.terreno ?? null };
+      const deLaRegion = (que: 'pan' | 'labor'): Milesimas =>
+        factorDeAcontecimientos(datos.acontecimientos ?? [], datos.turno ?? 0, que, lugar);
+      const acontecimientoMil = multiplicarFactores(MIL, [
+        recurso === 'pan' && produccion.edificiosEstacionales.includes(tipo)
+          ? deLaRegion('pan')
+          : MIL,
+        recurso === 'pan' && edificio.potencial === 'labor' ? deLaRegion('labor') : MIL,
+      ]);
+      if (acontecimientoMil !== MIL) {
+        factores.push({ nombre: 'acontecimiento', mil: acontecimientoMil });
+      }
       if (recurso === 'pan' && produccion.edificiosEstacionales.includes(tipo)) {
         if (!regada) {
           factores.push({
@@ -193,12 +213,16 @@ export function maravedisDe(
   comarca: EstadoComarca,
   fueroImpuestosMil: Readonly<Record<Fuero, number>>,
   reglas: TablasDeReglas,
+  /** Lo que multiplican los acontecimientos (una romeria): 1000 si nada. */
+  ingresosMil: Milesimas = MIL,
 ): IngresoDeMaravedis {
   const datos = reglas.produccion.maravedis;
-  const mercado = (comarca.edificios['mercado'] ?? 0) * datos.porNivelMercado;
+  const mercado = multiplicarFactores((comarca.edificios['mercado'] ?? 0) * datos.porNivelMercado, [
+    ingresosMil,
+  ]);
   const carga: CargaFiscal = comarca.cargaFiscal;
   const brutos = Math.floor(comarca.poblacion / datos.vecinosPorPunto) * datos.cargaFiscal[carga];
-  const impuestos = multiplicarFactores(brutos, [fueroImpuestosMil[comarca.fuero]]);
+  const impuestos = multiplicarFactores(brutos, [fueroImpuestosMil[comarca.fuero], ingresosMil]);
   return { mercado, impuestos, total: mercado + impuestos };
 }
 

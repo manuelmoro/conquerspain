@@ -49,9 +49,12 @@ export function costeDeTramoMil(
   reglas: TablasDeReglas,
   mejoras: Mejoras,
 ): CosteDeTramoMil {
+  const clave = claveDeTramo(camino.desde, camino.hasta);
   return jornadasDeTramoMil(camino, estacional.estacion, calidadDeTramo(camino, mejoras), reglas, {
     barro: estacional.barro,
     puente: tienePuente(camino, mejoras),
+    nieveTemprana: estacional.tramosConNieveTemprana.has(clave),
+    crecida: estacional.tramosEnCrecida.has(clave),
   });
 }
 

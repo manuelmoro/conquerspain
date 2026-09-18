@@ -2,12 +2,15 @@
 //
 // Todo lo de aqui es funcion pura del numero de turno, del mundo, de las tablas y de la semilla:
 // nada se guarda en el estado, porque lo derivado que se guarda acaba desfasado.
+import type { Acontecimiento } from '../tipos/estado.ts';
 import type { IdFeria } from '../tipos/ids.ts';
 import type { Mundo } from '../tipos/mundo.ts';
 import type { Estacion, TablasDeReglas } from '../tipos/reglas.ts';
 import type { Milesimas } from '../utiles/enteros.ts';
 import { azarDe } from '../utiles/azar.ts';
 import { comparar } from '../utiles/orden.ts';
+import { acontecimientosActivos, efectosActivos } from './acontecimientos.ts';
+import { claveDeTramo } from './ruta.ts';
 
 export const TURNOS_POR_ANYO = 24;
 
@@ -45,8 +48,12 @@ export interface Calendario {
 export interface EstadoEstacional {
   readonly estacion: Estacion;
   readonly barro: boolean;
-  /** Nombres de los puertos cerrados por nieve, ordenados. */
+  /** Nombres de los puertos cerrados por nieve, ordenados, con los que cierran antes de tiempo. */
   readonly puertosCerrados: readonly string[];
+  /** Tramos (clave `claveDeTramo`) cuyo puerto cierra antes del invierno por unas nieves tempranas. */
+  readonly tramosConNieveTemprana: ReadonlySet<string>;
+  /** Tramos con vado que una riada tiene cortados, salvo que lleven puente. */
+  readonly tramosEnCrecida: ReadonlySet<string>;
   readonly pastosDeVerano: boolean;
   readonly pastosDeInvierno: boolean;
   readonly factorPanMil: Milesimas;
@@ -139,18 +146,72 @@ export function puertosCerradosEn(estacion: Estacion, mundo: Mundo): string[] {
   return [...nombres].sort(comparar);
 }
 
+interface TramosAfectados {
+  readonly nieve: ReadonlySet<string>;
+  readonly crecida: ReadonlySet<string>;
+  readonly puertos: readonly string[];
+}
+
+/** Los tramos que unas nieves tempranas o una riada activas este turno cortan (ficha T-039 §4.5). */
+function tramosAfectados(
+  turno: number,
+  mundo: Mundo,
+  reglas: TablasDeReglas,
+  acontecimientos: readonly Acontecimiento[],
+): TramosAfectados {
+  const nieve = new Set<string>();
+  const crecida = new Set<string>();
+  const puertos = new Set<string>();
+  if (acontecimientosActivos(acontecimientos, turno).length === 0) {
+    return { nieve, crecida, puertos: [] };
+  }
+  for (const camino of mundo.caminos) {
+    const lugares = [camino.desde, camino.hasta].map((id) => ({
+      region: mundo.comarcas[id]?.region ?? '',
+      comarca: id,
+    }));
+    const clave = claveDeTramo(camino.desde, camino.hasta);
+    if (camino.cierraEnInvierno && camino.puertoDeMontanya !== null) {
+      const adelanto = Math.max(
+        0,
+        ...lugares.flatMap((lugar) =>
+          efectosActivos(acontecimientos, turno, 'puertos', lugar).map((e) => e.cantidad),
+        ),
+      );
+      // Cierra si el invierno esta a menos turnos de los que adelantan las nieves.
+      if (adelanto > 0 && estacionDe(turno + adelanto, reglas) === 'invierno') {
+        nieve.add(clave);
+        puertos.add(camino.puertoDeMontanya);
+      }
+    }
+    if (
+      camino.vado &&
+      lugares.some((lugar) => efectosActivos(acontecimientos, turno, 'vados', lugar).length > 0)
+    ) {
+      crecida.add(clave);
+    }
+  }
+  return { nieve, crecida, puertos: [...puertos].sort(comparar) };
+}
+
 export function estadoEstacionalDe(
   turno: number,
   mundo: Mundo,
   reglas: TablasDeReglas,
+  acontecimientos: readonly Acontecimiento[] = [],
 ): EstadoEstacional {
   const estacion = estacionDe(turno, reglas);
   const delAnyo = turnoDelAnyo(turno);
+  const afectados = tramosAfectados(turno, mundo, reglas, acontecimientos);
   const pastosDeVerano = reglas.estaciones.turnosPastoDeVerano.includes(delAnyo);
   return {
     estacion,
     barro: reglas.estaciones.turnosDeBarro.includes(delAnyo),
-    puertosCerrados: puertosCerradosEn(estacion, mundo),
+    puertosCerrados: [
+      ...new Set([...puertosCerradosEn(estacion, mundo), ...afectados.puertos]),
+    ].sort(comparar),
+    tramosConNieveTemprana: afectados.nieve,
+    tramosEnCrecida: afectados.crecida,
     pastosDeVerano,
     pastosDeInvierno: !pastosDeVerano,
     factorPanMil: reglas.estaciones.factorPanMil[estacion],
@@ -160,7 +221,7 @@ export function estadoEstacionalDe(
 }
 
 /** Regiones del mundo que pueden tener clima propio (el relleno y el ejemplo no cuentan). */
-function regionesConClima(mundo: Mundo): string[] {
+export function regionesConClima(mundo: Mundo): string[] {
   const regiones = new Set<string>();
   for (const comarca of Object.values(mundo.comarcas)) {
     if (comarca.region.startsWith('00-') || comarca.region.startsWith('99-')) continue;

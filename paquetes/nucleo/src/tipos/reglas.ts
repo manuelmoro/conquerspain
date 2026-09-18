@@ -1,6 +1,12 @@
 // Tablas de equilibrio. Ningun numero de estos vive en la logica: todos entran por aqui,
 // desde paquetes/nucleo/datos (docs/07-arquitectura.md §7.9).
-import type { CargaFiscal, Fuero, RecursoAgotable } from './estado.ts';
+import type {
+  CargaFiscal,
+  EfectoAcontecimiento,
+  Fuero,
+  QueDeEfecto,
+  RecursoAgotable,
+} from './estado.ts';
 import type { Potencial } from './mundo.ts';
 import type { Recurso, Recursos } from './recursos.ts';
 
@@ -406,6 +412,63 @@ export interface DatosArranque {
   readonly edificiosDeOrigen: Readonly<Partial<Record<TipoEdificio, number>>>;
 }
 
+/** Los acontecimientos del catalogo (docs/01 §1.3, docs/02 §2.4.5; ficha T-039). */
+export const TIPOS_DE_ACONTECIMIENTO = [
+  'buenas-lluvias',
+  'sequia',
+  'nieves-tempranas',
+  'riada',
+  'peste-de-ganado',
+  'buen-ano-de-feria',
+  'carestia-de-sal',
+  'romeria',
+  'incendio',
+  'maestros',
+] as const;
+export type TipoDeAcontecimiento = (typeof TIPOS_DE_ACONTECIMIENTO)[number];
+
+export type DuracionDeAcontecimiento =
+  | { readonly tipo: 'fija'; readonly turnos: number }
+  /** Desde que empieza hasta el turno del esquileo, incluido. */
+  | { readonly tipo: 'hasta-el-esquileo' }
+  /** Los turnos de la feria elegida. */
+  | { readonly tipo: 'de-la-feria' };
+
+/** A que afecta: a toda una region, a una comarca de ella o a una feria de ella. */
+export type ObjetivoDeAcontecimiento = 'region' | 'comarca' | 'feria';
+
+export interface DatosAcontecimiento {
+  readonly nombre: string;
+  readonly signo: 'positivo' | 'negativo';
+  /** Peso en el sorteo: 1 es lo normal. */
+  readonly peso: number;
+  readonly objetivo: ObjetivoDeAcontecimiento;
+  /** Turnos del anyo en que puede empezar, ambos incluidos; null en los de feria. */
+  readonly inicio: { readonly desde: number; readonly hasta: number } | null;
+  readonly duracion: DuracionDeAcontecimiento;
+  /** Solo en los de comarca: la potencial minimo que tiene que tener para poder elegirla. */
+  readonly potencialMinimo: { readonly potencial: Potencial; readonly nivel: number } | null;
+  readonly efectos: readonly EfectoAcontecimiento[];
+  /** Que puede hacer el jugador: texto de ayuda para la interfaz, no mecanica. */
+  readonly respuestas: readonly string[];
+}
+
+export interface DatosSorteoDeAcontecimientos {
+  readonly minimoPorAnyo: number;
+  readonly maximoPorAnyo: number;
+  /** Turnos de antelacion con que se anuncia cada acontecimiento. */
+  readonly turnosDeAviso: number;
+}
+
+export interface DatosAcontecimientos {
+  readonly sorteo: DatosSorteoDeAcontecimientos;
+  readonly catalogo: Readonly<Record<TipoDeAcontecimiento, DatosAcontecimiento>>;
+  /** Horquilla de cada clase de efecto: sobre `factorMil` si multiplica y sobre `cantidad` si no. */
+  readonly limites: Readonly<
+    Record<QueDeEfecto, { readonly minimo: number; readonly maximo: number }>
+  >;
+}
+
 export interface TablasDeReglas {
   readonly version: number;
   readonly recursos: Readonly<Record<Recurso, DatosRecurso>>;
@@ -425,4 +488,5 @@ export interface TablasDeReglas {
   readonly influencia: DatosInfluencia;
   readonly prestigio: DatosPrestigio;
   readonly arranque: DatosArranque;
+  readonly acontecimientos: DatosAcontecimientos;
 }

@@ -25,6 +25,11 @@ export function nuevoId<M extends string>(prefijo: M, numero: number): Id<M> {
   return `${prefijo}-${String(numero)}` as Id<M>;
 }
 
+/** Identificador de un acontecimiento del calendario de un anyo: `ac-<anyo>-<n>`. */
+export function idDeAcontecimiento(anyo: number, numero: number): IdAcontecimiento {
+  return `ac-${String(anyo)}-${String(numero)}` as IdAcontecimiento;
+}
+
 /** Identificador del mercado local de una comarca con edificio de mercado. */
 export function idDeMercadoLocal(comarca: IdComarca): IdMercado {
   return `local-${comarca}` as IdMercado;

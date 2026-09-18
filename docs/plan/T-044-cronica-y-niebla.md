@@ -36,6 +36,13 @@ presencia, vecinas, mercado, comercio, monasterio, camino, desgaste, escasez, ne
 `incorporar` que esperan traen su `motivoEspera` (`regalo-reciente`, `influencia-baja`,
 `sin-ventaja`, `muy-lejos`, `escasez`).
 
+**Heredado de T-039.** Los sucesos de los acontecimientos son `acontecimiento.calendario` (el
+calendario del año entero, el primer turno del año), `acontecimiento.anuncia` (dos turnos antes),
+`acontecimiento.empieza` y `acontecimiento.termina`, todos con `tipo`, `region`, `turnoInicio` y
+`turnosDuracion`, y la `comarca` del suceso si el acontecimiento es de una comarca. Las respuestas
+sugeridas («Vender el excedente de pan») son texto de la tabla (`ACONTECIMIENTOS.catalogo[tipo]`),
+no de los sucesos: la crónica las pone.
+
 ## 4. Diseño detallado
 
 ### 4.1 Vista de jugador

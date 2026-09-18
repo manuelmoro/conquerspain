@@ -3,6 +3,7 @@
 // rechazan lo que tienen que rechazar.
 import { POTENCIALES } from '../src/tipos/mundo.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
+import { ACONTECIMIENTOS } from '../src/datos/acontecimientos.ts';
 import { ARRANQUE } from '../src/datos/arranque.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
@@ -313,5 +314,6 @@ export function tablasDeEjemplo(): Registro {
       penalizacionPorEscasez: 1,
     },
     arranque: JSON.parse(JSON.stringify(ARRANQUE)) as Registro,
+    acontecimientos: JSON.parse(JSON.stringify(ACONTECIMIENTOS)) as Registro,
   };
 }

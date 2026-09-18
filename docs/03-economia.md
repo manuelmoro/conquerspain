@@ -428,3 +428,31 @@ Cada vía tiene su motor económico, su ritmo y su punto débil. Todas deben pod
 El diseño se considera equilibrado cuando, en partidas de prueba automatizadas de 200 turnos, las
 siete vías quedan dentro de una horquilla del 20 % de prestigio final y ninguna gana siempre en
 mapas distintos.
+
+## 3.13 Acontecimientos
+
+Pasan cosas, pero nunca por sorpresa: cada año sale, de la semilla, un calendario de **2 a 4
+acontecimientos**, con al menos uno bueno y como mucho uno malo por región, y **todos tienen una
+respuesta posible**. El primer turno del año se publica el calendario entero («en septiembre habrá
+sequía en el Duero»), y cada acontecimiento se anuncia otra vez **exactamente dos turnos antes** de
+empezar. Solo ocurre lo que llegó a anunciarse: en una partida que empieza en marzo no cae nada que
+no se pudiera avisar. Empiezan a partir del turno 3 y terminan antes de acabar el año.
+
+| Acontecimiento | Efecto | Empieza (turno) | Dura | Respuesta |
+|---|---|---|---|---|
+| Año de buenas lluvias | +25 % de pan en la región | 5–18 | 6 | Vender el excedente, crecer |
+| Sequía | −30 % de pan (no toca huertas ni pesca) | 9–16 | 6 | Comprar pan, huertas y pesca |
+| Nieves tempranas | Puertos de la región cerrados 2 turnos antes del invierno | 19–20 | 4 | Adelantar la bajada de rebaños |
+| Riada | Vados cortados salvo con puente; −20 % de labor en vegas | 6–9 | 3 | Rodear; el puente lo evita |
+| Peste de ganado | −25 % de lana en el esquileo de la región | 3–9 | hasta el esquileo | Mover los rebaños fuera |
+| Buen año de feria | +20 % de volumen en una feria de la región | con la feria | sus turnos | Llevar mercancía |
+| Carestía de sal | Precio base de la sal +50 % en la región | 13–19 | 5 | Vender sal, comprar antes |
+| Romería | +10 de lealtad al empezar e ingresos +10 % en una comarca | 5–20 | 2 | Nada: es un regalo |
+| Incendio en el monte | +20 de agotamiento de monte en una comarca (la mitad en dehesa) | 12–17 | 1 | Dehesa como prevención |
+| Llegada de maestros | Obras mayores de la región al doble de ritmo | 3–19 | 4 | Empezar la obra antes |
+
+Los efectos son **modificadores**: ninguna fase toca potenciales ni edificios, todas preguntan cuánto
+vale un efecto en su lugar y su turno. La carestía cambia el precio base hacia el que regresa la
+plaza, así que el precio sube en unos turnos y no de golpe; el buen año de feria da profundidad
+(más volumen), no un precio regalado. El efecto sobre la lana lo consulta el esquileo de los rebaños.
+

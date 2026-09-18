@@ -12,7 +12,7 @@ import type {
 } from './ids.ts';
 import type { Recurso, Recursos } from './recursos.ts';
 import type { CalidadCamino, Casa, TipoObraMayor, Tradicion } from './reglas.ts';
-import type { Potencial, NivelPotencial, VolumenFeria } from './mundo.ts';
+import type { Potencial, NivelPotencial, Terreno, VolumenFeria } from './mundo.ts';
 import type { Orden, ParadaDeRuta } from './ordenes.ts';
 
 export const MODOS_DE_PARTIDA = ['solitario', 'vecindad', 'temporada', 'comarcal'] as const;
@@ -232,16 +232,57 @@ export interface EstadoMercado {
 
 // ——— Acontecimientos ————————————————————————————————————————————————————————
 
+/** Lo que puede cambiar un acontecimiento: multiplica una cifra o la altera una vez o mientras dura. */
+export const QUE_DE_EFECTO = [
+  'pan',
+  'labor',
+  'lana',
+  'precio',
+  'volumen',
+  'obra',
+  'ingresos',
+  'puertos',
+  'vados',
+  'lealtad',
+  'monte',
+] as const;
+export type QueDeEfecto = (typeof QUE_DE_EFECTO)[number];
+
+/** Los efectos que multiplican (`factorMil`); los demas usan `cantidad`. */
+export const EFECTOS_QUE_MULTIPLICAN: readonly QueDeEfecto[] = [
+  'pan',
+  'labor',
+  'lana',
+  'precio',
+  'volumen',
+  'obra',
+  'ingresos',
+];
+
 export interface EfectoAcontecimiento {
-  readonly que: 'pan' | 'lana' | 'labor' | 'precio' | 'camino' | 'obra';
+  readonly que: QueDeEfecto;
+  /** Solo para `precio` y `lana`: de que recurso; null si vale para cualquiera. */
   readonly recurso: Recurso | null;
+  /** Solo lo sufren las comarcas de ese terreno (la riada daña las vegas); null: todas. */
+  readonly terreno: Terreno | null;
+  /** 1000 si no multiplica. */
   readonly factorMil: number;
+  /** Turnos de adelanto (`puertos`) o puntos (`lealtad`, `monte`); 0 si no aplica. */
+  readonly cantidad: number;
 }
 
+/**
+ * Un acontecimiento anunciado. Sale del calendario del anyo (`calendarioDeAcontecimientos`) y entra
+ * en el estado exactamente dos turnos antes de empezar; los efectos son una copia del catalogo de
+ * ese momento, para que ajustar el equilibrio no cambie lo ya anunciado.
+ */
 export interface Acontecimiento {
   readonly id: IdAcontecimiento;
+  /** Clave del catalogo (`sequia`, `riada`…). */
   readonly tipo: string;
   readonly region: string;
+  /** La comarca concreta a la que afecta, o null si afecta a toda la region. */
+  readonly comarca: IdComarca | null;
   readonly turnoAnuncio: number;
   readonly turnoInicio: number;
   readonly turnosDuracion: number;

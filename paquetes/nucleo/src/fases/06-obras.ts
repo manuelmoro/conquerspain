@@ -9,6 +9,7 @@ import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ord
 import type { OrdenDe } from '../ordenes.ts';
 import { cuadrillasLibres, turnosHastaCuadrillaLibre } from '../reglas/cuadrillas.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
+import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
 import {
   avanceDelTurnoMil,
   avanceTrasDeterioro,
@@ -29,7 +30,7 @@ import { RECURSOS, recursosSegun } from '../tipos/recursos.ts';
 import type { Recursos } from '../tipos/recursos.ts';
 import { OBRAS_MAYORES_DE_TRAMO, esTipoDeEdificio, esTipoDeObraMayor } from '../tipos/reglas.ts';
 import type { TipoObraMayor } from '../tipos/reglas.ts';
-import { MIL } from '../utiles/enteros.ts';
+import { MIL, multiplicarFactores } from '../utiles/enteros.ts';
 import { comparar, idsEnOrden } from '../utiles/orden.ts';
 
 type OrdenDeObra =
@@ -318,7 +319,14 @@ function avanzarObra(ctx: Contexto, id: string): void {
     obra.tipo === 'derribo' || obra.tipo === 'roturacion'
       ? MIL
       : avanceDelTurnoMil(esDePiedra(ctx, obra), ctx.estacional, casa);
-  if (obra.tipo === 'obra mayor') paso = Math.floor((paso * casa.obraMayorAvanceMil) / MIL);
+  if (obra.tipo === 'obra mayor') {
+    // Los maestros que llegan a la region doblan el avance de sus obras mayores.
+    const maestrosMil = factorDeAcontecimientos(ctx.estado.acontecimientos, ctx.turno, 'obra', {
+      region: ctx.mundo.comarcas[obra.comarca]?.region ?? '',
+      comarca: obra.comarca,
+    });
+    paso = multiplicarFactores(paso, [casa.obraMayorAvanceMil, maestrosMil]);
+  }
   const nuevo = Math.min(obra.avanceNecesarioMil, obra.avanceMil + paso);
 
   let entregado = obra.entregado;

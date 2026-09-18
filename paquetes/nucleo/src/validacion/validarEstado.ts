@@ -4,7 +4,6 @@ import type {
   ConfiguracionPartida,
   Conocimiento,
   DatosConocidos,
-  EfectoAcontecimiento,
   EstadoComarca,
   EstadoJugador,
   EstadoMercado,
@@ -41,7 +40,7 @@ import type { Orden } from '../tipos/ordenes.ts';
 import { POTENCIALES, VOLUMENES_FERIA } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { CALIDADES_CAMINO, CASAS, TIPOS_DE_OBRA_MAYOR, VERSION_REGLAS } from '../tipos/reglas.ts';
-import { milesimas, nivelPotencial, recursos } from './comunes.ts';
+import { efectoDeAcontecimiento, nivelPotencial, recursos } from './comunes.ts';
 import { validarOrdenEntrante, validarParada } from './validarOrden.ts';
 import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
@@ -215,16 +214,13 @@ const validarMercado: Validador<EstadoMercado> = objeto<EstadoMercado>({
   ultimoVolumen: registroCompleto(RECURSOS, enteroNoNegativo()),
 });
 
-const validarEfecto: Validador<EfectoAcontecimiento> = objeto<EfectoAcontecimiento>({
-  que: unoDe(['pan', 'lana', 'labor', 'precio', 'camino', 'obra'] as const),
-  recurso: oNulo(unoDe(RECURSOS)),
-  factorMil: milesimas(0, 5000),
-});
+const validarEfecto = efectoDeAcontecimiento();
 
 const validarAcontecimiento: Validador<Acontecimiento> = objeto<Acontecimiento>({
   id: identificador<IdAcontecimiento>(),
   tipo: texto({ minimo: 1, maximo: 60 }),
   region: texto({ minimo: 1, maximo: 60 }),
+  comarca: oNulo(identificador<IdComarca>()),
   turnoAnuncio: entero({ minimo: 1 }),
   turnoInicio: entero({ minimo: 1 }),
   turnosDuracion: entero({ minimo: 1, maximo: 48 }),
@@ -442,6 +438,14 @@ export function validarEstado(dato: unknown, mundo?: Mundo): Resultado<EstadoPar
     }
   }
 
+  estado.acontecimientos.forEach((acontecimiento, indice) => {
+    if (acontecimiento.comarca !== null && !hayComarca(acontecimiento.comarca)) {
+      errores.push({
+        ruta: `acontecimientos.${String(indice)}.comarca`,
+        mensaje: `la comarca "${acontecimiento.comarca}" no existe`,
+      });
+    }
+  });
   for (const [clave, mercado] of Object.entries(estado.mercados)) {
     if (!hayComarca(mercado.comarca)) {
       errores.push({

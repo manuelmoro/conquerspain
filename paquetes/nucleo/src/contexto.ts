@@ -55,7 +55,7 @@ export function crearContexto(
     turno: estado.turno,
     semilla: estado.semilla,
     calendario: calendarioDe(estado.turno, mundo, reglas),
-    estacional: estadoEstacionalDe(estado.turno, mundo, reglas),
+    estacional: estadoEstacionalDe(estado.turno, mundo, reglas, estado.acontecimientos),
     clima: climaDelAnyo(estado.semilla, calendarioDe(estado.turno, mundo, reglas).anyo, mundo),
     // Copia profunda: el estado que nos entra no se toca jamas.
     estado: clonar(estado) as EstadoBorrador,

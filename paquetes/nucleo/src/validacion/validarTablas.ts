@@ -1,9 +1,20 @@
 // Validacion de las tablas de equilibrio. Si un numero del juego esta mal escrito, se sabe aqui
 // y no tres fases despues, con una produccion imposible.
-import { CARGAS_FISCALES, FUEROS, RECURSOS_AGOTABLES } from '../tipos/estado.ts';
+import {
+  CARGAS_FISCALES,
+  EFECTOS_QUE_MULTIPLICAN,
+  FUEROS,
+  QUE_DE_EFECTO,
+  RECURSOS_AGOTABLES,
+} from '../tipos/estado.ts';
+import type { Potencial } from '../tipos/mundo.ts';
 import { POTENCIALES } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import type {
+  DatosAcontecimiento,
+  DatosAcontecimientos,
+  DatosSorteoDeAcontecimientos,
+  DuracionDeAcontecimiento,
   DatosArranque,
   DatosCasa,
   DatosCometidos,
@@ -31,11 +42,12 @@ import {
   CALIDADES_CAMINO,
   CASAS,
   ESTACIONES,
+  TIPOS_DE_ACONTECIMIENTO,
   TIPOS_DE_EDIFICIO,
   TIPOS_DE_OBRA_MAYOR,
   VERSION_REGLAS,
 } from '../tipos/reglas.ts';
-import { milesimas, recursos, recursosParciales } from './comunes.ts';
+import { efectoDeAcontecimiento, milesimas, recursos, recursosParciales } from './comunes.ts';
 import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
   booleano,
@@ -45,6 +57,7 @@ import {
   lista,
   oNulo,
   objeto,
+  porTipo,
   registro,
   registroCompleto,
   texto,
@@ -277,6 +290,60 @@ const validarInfluencia: Validador<DatosInfluencia> = objeto<DatosInfluencia>({
   turnosIncorporar: entero({ minimo: 1, maximo: 20 }),
 });
 
+const validarDuracion = porTipo<DuracionDeAcontecimiento>({
+  fija: objeto<{ readonly tipo: 'fija'; readonly turnos: number }>({
+    tipo: unoDe(['fija'] as const),
+    turnos: entero({ minimo: 1, maximo: 24 }),
+  }),
+  'hasta-el-esquileo': objeto<{ readonly tipo: 'hasta-el-esquileo' }>({
+    tipo: unoDe(['hasta-el-esquileo'] as const),
+  }),
+  'de-la-feria': objeto<{ readonly tipo: 'de-la-feria' }>({
+    tipo: unoDe(['de-la-feria'] as const),
+  }),
+});
+
+const validarAcontecimiento: Validador<DatosAcontecimiento> = objeto<DatosAcontecimiento>({
+  nombre: texto({ minimo: 1, maximo: 60 }),
+  signo: unoDe(['positivo', 'negativo'] as const),
+  peso: entero({ minimo: 1, maximo: 100 }),
+  objetivo: unoDe(['region', 'comarca', 'feria'] as const),
+  inicio: oNulo(
+    objeto<{ readonly desde: number; readonly hasta: number }>({
+      desde: entero({ minimo: 1, maximo: 24 }),
+      hasta: entero({ minimo: 1, maximo: 24 }),
+    }),
+  ),
+  duracion: validarDuracion,
+  potencialMinimo: oNulo(
+    objeto<{ readonly potencial: Potencial; readonly nivel: number }>({
+      potencial: unoDe(POTENCIALES),
+      nivel: entero({ minimo: 1, maximo: 5 }),
+    }),
+  ),
+  efectos: lista(efectoDeAcontecimiento(), { minimo: 1, maximo: 6 }),
+  respuestas: lista(texto({ minimo: 1, maximo: 120 }), { minimo: 1, maximo: 4 }),
+});
+
+const validarSorteoDeAcontecimientos: Validador<DatosSorteoDeAcontecimientos> =
+  objeto<DatosSorteoDeAcontecimientos>({
+    minimoPorAnyo: entero({ minimo: 1, maximo: 12 }),
+    maximoPorAnyo: entero({ minimo: 1, maximo: 12 }),
+    turnosDeAviso: entero({ minimo: 1, maximo: 6 }),
+  });
+
+const validarAcontecimientos: Validador<DatosAcontecimientos> = objeto<DatosAcontecimientos>({
+  sorteo: validarSorteoDeAcontecimientos,
+  catalogo: registroCompleto(TIPOS_DE_ACONTECIMIENTO, validarAcontecimiento),
+  limites: registroCompleto(
+    QUE_DE_EFECTO,
+    objeto<{ readonly minimo: number; readonly maximo: number }>({
+      minimo: entero({ minimo: 0, maximo: 5000 }),
+      maximo: entero({ minimo: 0, maximo: 5000 }),
+    }),
+  ),
+});
+
 const validarPrestigio: Validador<DatosPrestigio> = objeto<DatosPrestigio>({
   porCadaCincoVecinos: enteroNoNegativo(100),
   porComarca: enteroNoNegativo(500),
@@ -362,6 +429,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   influencia: validarInfluencia,
   prestigio: validarPrestigio,
   arranque: validarArranque,
+  acontecimientos: validarAcontecimientos,
 });
 
 /** Valida las tablas de equilibrio y su coherencia con la version de reglas del motor. */
@@ -416,6 +484,8 @@ export function validarTablas(dato: unknown): Resultado<TablasDeReglas> {
     }
   }
 
+  errores.push(...coherenciaDeAcontecimientos(tablas));
+
   if (tablas.mercado.sueloMil >= tablas.mercado.techoMil) {
     errores.push({
       ruta: 'mercado.sueloMil',
@@ -424,4 +494,98 @@ export function validarTablas(dato: unknown): Resultado<TablasDeReglas> {
   }
 
   return errores.length > 0 ? invalidos(errores) : valido(tablas);
+}
+
+/** Las cifras de los acontecimientos casan con su horquilla, con el calendario y entre si. */
+function coherenciaDeAcontecimientos(tablas: TablasDeReglas): ErrorValidacion[] {
+  const errores: ErrorValidacion[] = [];
+  const { sorteo, catalogo, limites } = tablas.acontecimientos;
+  const anyo = tablas.estaciones.turnosPorAnyo;
+  const aviso = sorteo.turnosDeAviso;
+  const error = (ruta: string, mensaje: string): void => {
+    errores.push({ ruta: `acontecimientos.${ruta}`, mensaje });
+  };
+
+  if (sorteo.minimoPorAnyo > sorteo.maximoPorAnyo) {
+    error('sorteo.minimoPorAnyo', 'el minimo de acontecimientos por anyo pasa del maximo');
+  }
+  for (const clase of QUE_DE_EFECTO) {
+    if (limites[clase].minimo > limites[clase].maximo) {
+      error(`limites.${clase}`, 'el minimo de la horquilla pasa del maximo');
+    }
+  }
+  if (!TIPOS_DE_ACONTECIMIENTO.some((tipo) => catalogo[tipo].signo === 'positivo')) {
+    error(
+      'catalogo',
+      'hace falta al menos un acontecimiento positivo: cada anyo tiene que llevar uno',
+    );
+  }
+
+  for (const tipo of TIPOS_DE_ACONTECIMIENTO) {
+    const datos = catalogo[tipo];
+    const donde = `catalogo.${tipo}`;
+    const esDeFeria = datos.objetivo === 'feria';
+    if (esDeFeria !== (datos.duracion.tipo === 'de-la-feria')) {
+      error(
+        `${donde}.duracion`,
+        'la duracion "de-la-feria" es solo de los acontecimientos de feria y viceversa',
+      );
+    }
+    if (esDeFeria !== (datos.inicio === null)) {
+      error(
+        `${donde}.inicio`,
+        'los de feria empiezan con la feria (sin ventana) y los demas necesitan una',
+      );
+    }
+    if (datos.potencialMinimo !== null && datos.objetivo !== 'comarca') {
+      error(`${donde}.potencialMinimo`, 'solo los acontecimientos de una comarca piden potencial');
+    }
+    if (datos.inicio !== null) {
+      const { desde, hasta } = datos.inicio;
+      if (desde <= aviso || hasta < desde) {
+        error(
+          `${donde}.inicio`,
+          `tiene que empezar despues del turno ${String(aviso)} del anyo (para anunciarse dentro de el) y desde <= hasta`,
+        );
+      }
+      const duracion = datos.duracion;
+      const ultimo =
+        duracion.tipo === 'fija'
+          ? hasta + duracion.turnos - 1
+          : duracion.tipo === 'hasta-el-esquileo'
+            ? Math.max(hasta, tablas.estaciones.turnoDeEsquileo)
+            : hasta;
+      if (ultimo > anyo) {
+        error(
+          `${donde}.duracion`,
+          `terminaria en el turno ${String(ultimo)} y el anyo tiene ${String(anyo)}: ningun acontecimiento cruza de anyo`,
+        );
+      }
+      if (duracion.tipo === 'hasta-el-esquileo' && hasta > tablas.estaciones.turnoDeEsquileo) {
+        error(`${donde}.inicio`, 'la ventana de inicio pasa del esquileo, al que tiene que llegar');
+      }
+    }
+    datos.efectos.forEach((efecto, i) => {
+      const medida = EFECTOS_QUE_MULTIPLICAN.includes(efecto.que)
+        ? efecto.factorMil
+        : efecto.cantidad;
+      const otra = EFECTOS_QUE_MULTIPLICAN.includes(efecto.que)
+        ? efecto.cantidad === 0
+        : efecto.factorMil === 1000;
+      const horquilla = limites[efecto.que];
+      if (medida < horquilla.minimo || medida > horquilla.maximo) {
+        error(
+          `${donde}.efectos.${String(i)}`,
+          `${efecto.que} vale ${String(medida)} y su horquilla va de ${String(horquilla.minimo)} a ${String(horquilla.maximo)}`,
+        );
+      }
+      if (!otra) {
+        error(
+          `${donde}.efectos.${String(i)}`,
+          `${efecto.que} solo usa ${EFECTOS_QUE_MULTIPLICAN.includes(efecto.que) ? 'factorMil' : 'cantidad'}: la otra medida tiene que quedar neutra`,
+        );
+      }
+    });
+  }
+  return errores;
 }

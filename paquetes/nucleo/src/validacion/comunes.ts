@@ -1,5 +1,8 @@
 // Piezas de validacion que comparten el mundo, el estado, las ordenes y las tablas.
+import type { EfectoAcontecimiento } from '../tipos/estado.ts';
+import { QUE_DE_EFECTO } from '../tipos/estado.ts';
 import type { Coordenada, NivelPotencial, Punto } from '../tipos/mundo.ts';
+import { TERRENOS } from '../tipos/mundo.ts';
 import type { Recurso, Recursos } from '../tipos/recursos.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import type { Validador } from './validador.ts';
@@ -8,8 +11,11 @@ import {
   enteroNoNegativo,
   invalido,
   lista,
+  oNulo,
+  objeto,
   registro,
   registroCompleto,
+  unoDe,
   valido,
 } from './validador.ts';
 
@@ -58,4 +64,15 @@ export function recursosParciales(): Validador<Readonly<Partial<Record<Recurso, 
 /** Porcentaje en milesimas, acotado a un rango razonable para el equilibrio. */
 export function milesimas(minimo = 0, maximo = 10000): Validador<number> {
   return entero({ minimo, maximo });
+}
+
+/** Un efecto de acontecimiento; que su medida este en la horquilla lo comprueban las tablas. */
+export function efectoDeAcontecimiento(): Validador<EfectoAcontecimiento> {
+  return objeto<EfectoAcontecimiento>({
+    que: unoDe(QUE_DE_EFECTO),
+    recurso: oNulo(unoDe(RECURSOS)),
+    terreno: oNulo(unoDe(TERRENOS)),
+    factorMil: milesimas(0, 5000),
+    cantidad: entero({ minimo: 0, maximo: 100 }),
+  });
 }
