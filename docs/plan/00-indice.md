@@ -42,7 +42,7 @@ mapa completo; ESTADO.md es la aguja.
 
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
-| [T-030](T-030-fase-calendario.md) | Fase 1: calendario, estaciones y clima conocido | pendiente | T-004 |
+| [T-030](T-030-fase-calendario.md) | Fase 1: calendario, estaciones y clima conocido | **hecha** | T-004 |
 | [T-031](T-031-fase-produccion.md) | Fase 2: producción | pendiente | T-030, T-012 |
 | [T-032](T-032-fase-consumo.md) | Fase 3: consumo, merma y escasez | pendiente | T-031 |
 | [T-033](T-033-movimiento.md) | Fase 4: movimiento de recuas por el grafo | pendiente | T-013 |

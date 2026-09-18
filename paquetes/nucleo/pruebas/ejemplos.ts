@@ -281,6 +281,7 @@ export function tablasDeEjemplo(): Registro {
       turnosPorAnyo: 24,
       estacionPorTurno,
       factorPanMil,
+      factorObraPiedraMil: { primavera: 1000, verano: 1000, otonyo: 1000, invierno: 2000 },
       turnosDeBarro: [5, 21],
       turnoDeEsquileo: 10,
       turnosPastoDeVerano: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],

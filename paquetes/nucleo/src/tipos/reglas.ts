@@ -137,6 +137,8 @@ export interface DatosEstaciones {
   readonly turnosPorAnyo: number;
   readonly estacionPorTurno: readonly Estacion[];
   readonly factorPanMil: Readonly<Record<Estacion, number>>;
+  /** Coste de las obras de canteria por estacion: en invierno la helada estropea la cal. */
+  readonly factorObraPiedraMil: Readonly<Record<Estacion, number>>;
   readonly turnosDeBarro: readonly number[];
   readonly turnoDeEsquileo: number;
   readonly turnosPastoDeVerano: readonly number[];

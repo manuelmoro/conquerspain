@@ -12,6 +12,25 @@ export { ErrorDeMotor } from './errores.ts';
 export type { CodigoDeError } from './errores.ts';
 export { registrarSuceso } from './sucesos.ts';
 export { JORNADAS_DE_PUERTO, jornadasDeTramo } from './reglas/jornadas.ts';
+export {
+  CLIMA,
+  EFECTOS_DE_CLIMA,
+  TURNOS_POR_ANYO,
+  anyoDe,
+  calendarioDe,
+  climaDelAnyo,
+  estacionDe,
+  estadoEstacionalDe,
+  puertosCerradosEn,
+  turnoDelAnyo,
+} from './reglas/calendario.ts';
+export type {
+  Calendario,
+  ClimaAnual,
+  EfectoDeClima,
+  EstadoEstacional,
+  ModificadorDeClima,
+} from './reglas/calendario.ts';
 export type { CosteDeTramo, OpcionesDeTramo } from './reglas/jornadas.ts';
 export { FASES, resolverTurno } from './resolver.ts';
 export type { Fase, ResultadoTurno } from './resolver.ts';

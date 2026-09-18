@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-016: **fase 1 completa**)
+**Última actualización:** 18 de septiembre de 2026 (tras cerrar T-030)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,11 +20,10 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-030 · Fase 1: calendario, estaciones y clima conocido](docs/plan/T-030-fase-calendario.md)**
+**[T-031 · Fase 2: producción](docs/plan/T-031-fase-produccion.md)**
 
-Empieza la fase 2, el motor de reglas. La primera fase del turno: avanzar el calendario, fijar la
-estación de cada quincena y el clima anunciado, que es lo que deciden el barro, la nieve de los
-puertos y el esquileo. El mundo ya está completo: 403 comarcas, sus caminos y sus ferias.
+Lo que produce cada comarca cada quincena según sus potenciales, sus edificios, la estación y el
+clima anunciado, que ya calcula la fase 1.
 
 ## Cómo continuar (resumen)
 
@@ -78,6 +77,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 |---|---|
 | 17-09-2026 | Maqueta visual v0.1 construida y publicada |
 | 17-09-2026 | Diseño completo escrito (visión, núcleo, economía, casas, geografía, competición, arquitectura, interfaz, glosario) y plan de tareas creado |
+| 18-09-2026 | **T-030 hecha**: primera fase real del motor. Calendario, estado estacional (barro, puertos cerrados, pastos, factores) y clima anual reproducible, todo función pura del turno y fuera del estado; la fase 1 publica los cambios como sucesos. 280 tests en verde |
 | 18-09-2026 | **T-016 hecha y fase 1 completa**: las 451 notas del catálogo con su ortografía (pasada automática conservadora con el diccionario `es_ES` y dos pasadas a mano) y una guarda que impide volver atrás. 264 tests en verde |
 | 18-09-2026 | **T-014 hecha**: once ferias en su propio archivo (tres grandes: Medina ×2 y Sevilla), los diecisiete rasgos en uso, `ComarcaMundo.ferias` pasa a ser lista y **598 nombres visibles corregidos** (Logroño, Sigüenza, Àger, Guimarães…). Las notas pasan a T-016. 262 tests en verde |
 | 18-09-2026 | **T-013 hecha**: capa histórica de caminos. 24 puertos de montaña (19 se cierran en invierno), 14 vados, 4 calzadas romanas y las 9 cañadas reales sobre el grafo; `jornadasDeTramo` en el núcleo con su tabla de 17 casos; `Camino` gana `cierraEnInvierno`. 251 tests en verde |

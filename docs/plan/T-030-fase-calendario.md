@@ -1,6 +1,6 @@
 # T-030 · Fase 1: calendario, estaciones y clima conocido
 
-**Fase:** 2 · Motor · **Depende de:** T-004 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-004 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -123,3 +123,33 @@ npx vitest run paquetes/nucleo/src/reglas/calendario.test.ts
 ## 8. Al terminar
 
 Índice y `ESTADO.md` (siguiente T-031). Commit: `T-030: fase de calendario, estaciones y clima`.
+
+---
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 280 tests en verde; las partidas de reproducción siguen dando las mismas huellas.
+
+- `paquetes/nucleo/src/reglas/calendario.ts`: `calendarioDe`, `estadoEstacionalDe`,
+  `puertosCerradosEn` y `climaDelAnyo`, todas puras.
+- `paquetes/nucleo/src/fases/01-calendario.ts`: publica `calendario.estacion`,
+  `calendario.puerto-cerrado`, `calendario.puerto-abierto`, `calendario.feria-abierta` y
+  `calendario.clima-anunciado`.
+- `paquetes/nucleo/pruebas/calendario.test.ts`: los nombres de los turnos 1, 10, 24, 25 y 240,
+  los puertos cerrados exactamente en 23–24 y 1–4, las ferias en sus turnos, el clima
+  reproducible y la propiedad de 500 años.
+
+Decisiones tomadas al implementar:
+
+- **Nada de esto se guarda en el estado.** El calendario, el estado estacional y el clima son
+  función pura del turno, la semilla, el mundo y las tablas: el contexto los calcula al crearse
+  (`ctx.calendario`, `ctx.estacional`, `ctx.clima`) y la fase 1 solo publica lo que cambia. Es la
+  forma estricta de «nunca se guarda información derivada que pueda quedar desfasada».
+- **El clima de un año depende solo de la semilla y del año** (azar de ámbito `clima`), así que
+  anunciarlo un año antes es gratis y reproducirlo, exacto. Se anuncia en el turno 24 de cada año
+  y, además, en el primer turno de una partida recién creada.
+- **Un modificador de clima lleva `regiones` (una o dos)** en vez de una sola `region`, que es como
+  se cumple «ninguno afecta a más de dos regiones» sin repetir modificadores.
+- **`calendarioDe` recibe las tablas** además del mundo: la estación de cada turno, los turnos de
+  barro, el esquileo y los factores estacionales viven en `TablasDeReglas.estaciones`, que gana
+  `factorObraPiedraMil`. No hace falta `datos/estaciones.json`: los números ya están en las tablas.

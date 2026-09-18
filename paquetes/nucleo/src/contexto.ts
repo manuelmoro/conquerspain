@@ -1,4 +1,6 @@
 // El contexto de una resolucion: lo que ven las fases mientras resuelven un turno.
+import type { Calendario, ClimaAnual, EstadoEstacional } from './reglas/calendario.ts';
+import { calendarioDe, climaDelAnyo, estadoEstacionalDe } from './reglas/calendario.ts';
 import type { EstadoPartida } from './tipos/estado.ts';
 import type { Mundo } from './tipos/mundo.ts';
 import type { Orden } from './tipos/ordenes.ts';
@@ -17,6 +19,13 @@ export interface Contexto {
   /** Turno que se esta resolviendo (el que tenia el estado al entrar). */
   readonly turno: number;
   readonly semilla: string;
+  /**
+   * Calendario, estado estacional y clima del turno. Son funcion pura del turno, asi que se
+   * calculan al crear el contexto y no se guardan en el estado; la fase 1 los publica.
+   */
+  readonly calendario: Calendario;
+  readonly estacional: EstadoEstacional;
+  readonly clima: ClimaAnual;
   /** Borrador del estado. Solo se toca a traves de `aplicar` (cambios.ts). */
   estado: EstadoBorrador;
   /** Ordenes nuevas de este turno, ya validadas y ordenadas por identificador. */
@@ -45,6 +54,9 @@ export function crearContexto(
     reglas,
     turno: estado.turno,
     semilla: estado.semilla,
+    calendario: calendarioDe(estado.turno, mundo, reglas),
+    estacional: estadoEstacionalDe(estado.turno, mundo, reglas),
+    clima: climaDelAnyo(estado.semilla, calendarioDe(estado.turno, mundo, reglas).anyo, mundo),
     // Copia profunda: el estado que nos entra no se toca jamas.
     estado: clonar(estado) as EstadoBorrador,
     ordenes: ordenarPor(ordenes, (orden) => orden.id),

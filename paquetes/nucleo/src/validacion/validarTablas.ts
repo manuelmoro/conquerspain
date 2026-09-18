@@ -127,6 +127,7 @@ const validarEstacionesDatos: Validador<DatosEstaciones> = objeto<DatosEstacione
   turnosPorAnyo: entero({ minimo: 1, maximo: 48 }),
   estacionPorTurno: lista(unoDe(ESTACIONES), { minimo: 1, maximo: 48 }),
   factorPanMil: registroCompleto(ESTACIONES, milesimas(0, 3000)),
+  factorObraPiedraMil: registroCompleto(ESTACIONES, milesimas(500, 4000)),
   turnosDeBarro: lista(entero({ minimo: 1, maximo: 48 }), { maximo: 12 }),
   turnoDeEsquileo: entero({ minimo: 1, maximo: 48 }),
   turnosPastoDeVerano: lista(entero({ minimo: 1, maximo: 48 }), { minimo: 1, maximo: 24 }),
