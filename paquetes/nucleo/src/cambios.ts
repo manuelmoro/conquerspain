@@ -6,8 +6,15 @@ import { comoBorrador } from './contexto.ts';
 import { ErrorDeMotor } from './errores.ts';
 import { registrarSuceso } from './sucesos.ts';
 import type { IdComarca, IdJugador, IdOrden, IdRecua } from './tipos/ids.ts';
-import type { EstadoDeOrden, Orden } from './tipos/ordenes.ts';
-import type { Cometido, Recua, RecursoAgotable, SituacionMovil } from './tipos/estado.ts';
+import type { EstadoDeOrden, Orden, ParadaDeRuta } from './tipos/ordenes.ts';
+import type {
+  Cometido,
+  Conocimiento,
+  Fuero,
+  Recua,
+  RecursoAgotable,
+  SituacionMovil,
+} from './tipos/estado.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
@@ -122,12 +129,15 @@ export type Cambio =
       readonly recua: IdRecua;
       readonly situacion: SituacionMovil;
       readonly ruta: readonly IdComarca[];
+      readonly siguienteParada: number;
+      readonly enParada: number | null;
     }
   | {
       readonly tipo: 'recua-ruta';
       readonly recua: IdRecua;
       readonly ruta: readonly IdComarca[];
       readonly circular: boolean;
+      readonly paradas: readonly ParadaDeRuta[];
     }
   | {
       readonly tipo: 'recua-carga';
@@ -159,6 +169,27 @@ export type Cambio =
       readonly tipo: 'recua-cometido';
       readonly recua: IdRecua;
       readonly cometido: Cometido | null;
+    }
+  | {
+      readonly tipo: 'recua-turnos-cometido';
+      readonly recua: IdRecua;
+      readonly turnos: number;
+    }
+  | {
+      /** La recua se disuelve; tiene que llegar vacia: su carga y su gente ya se devolvieron. */
+      readonly tipo: 'recua-baja';
+      readonly recua: IdRecua;
+    }
+  | {
+      readonly tipo: 'conocimiento';
+      readonly jugador: IdJugador;
+      readonly comarca: IdComarca;
+      readonly conocimiento: Conocimiento;
+    }
+  | {
+      readonly tipo: 'fuero';
+      readonly comarca: IdComarca;
+      readonly fuero: Fuero;
     };
 
 function jugadorDe(
@@ -204,6 +235,25 @@ function comprobarRuta(id: string, situacion: SituacionMovil, ruta: readonly IdC
     throw new ErrorDeMotor(
       'invariante-rota',
       `${id} va de camino a ${situacion.hasta} y su ruta no empieza por alli.`,
+      { unidad: id },
+    );
+  }
+}
+
+function comprobarParadas(
+  id: string,
+  paradas: number,
+  siguiente: number,
+  enParada: number | null,
+): void {
+  if (
+    siguiente < 0 ||
+    siguiente > paradas ||
+    (enParada !== null && (enParada < 0 || enParada >= paradas))
+  ) {
+    throw new ErrorDeMotor(
+      'invariante-rota',
+      `${id} tiene ${String(paradas)} paradas y apuntaria a la ${String(siguiente)} (detenida en ${String(enParada)}).`,
       { unidad: id },
     );
   }
@@ -569,8 +619,11 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
     case 'recua-mover': {
       const recua = recuaDe(ctx, cambio.recua);
       comprobarRuta(cambio.recua, cambio.situacion, cambio.ruta);
+      comprobarParadas(cambio.recua, recua.paradas.length, cambio.siguienteParada, cambio.enParada);
       recua.situacion = comoBorrador(cambio.situacion);
       recua.ruta = [...cambio.ruta];
+      recua.siguienteParada = cambio.siguienteParada;
+      recua.enParada = cambio.enParada;
       return;
     }
 
@@ -579,6 +632,9 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       comprobarRuta(cambio.recua, recua.situacion, cambio.ruta);
       recua.ruta = [...cambio.ruta];
       recua.rutaCircular = cambio.circular;
+      recua.paradas = comoBorrador(cambio.paradas);
+      recua.siguienteParada = 0;
+      recua.enParada = null;
       registrarSuceso(
         ctx.sucesos,
         ctx.fase,
@@ -699,6 +755,73 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         'recua.cometido',
         { recua: cambio.recua, cometido: cambio.cometido ?? '' },
         { jugador: recua.jugador },
+      );
+      return;
+    }
+
+    case 'recua-turnos-cometido': {
+      const recua = recuaDe(ctx, cambio.recua);
+      if (!Number.isSafeInteger(cambio.turnos) || cambio.turnos < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Los turnos de cometido de ${cambio.recua} no pueden ser ${String(cambio.turnos)}.`,
+          { recua: cambio.recua },
+        );
+      }
+      recua.turnosDeCometido = cambio.turnos;
+      return;
+    }
+
+    case 'recua-baja': {
+      const recua = recuaDe(ctx, cambio.recua);
+      const lleva = RECURSOS.reduce((total, r) => total + recua.carga[r], 0);
+      if (lleva > 0 || recua.vecinos > 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La recua ${cambio.recua} se disolveria con carga o gente dentro: hay que devolverlas antes.`,
+          { recua: cambio.recua },
+        );
+      }
+      const restantes: typeof ctx.estado.recuas = {};
+      for (const [id, otra] of Object.entries(ctx.estado.recuas)) {
+        if (id !== cambio.recua) restantes[id] = otra;
+      }
+      ctx.estado.recuas = restantes;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'recua.disuelta',
+        { recua: cambio.recua, nombre: recua.nombre },
+        { jugador: recua.jugador },
+      );
+      return;
+    }
+
+    case 'conocimiento': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const antes = jugador.conocimiento[cambio.comarca]?.nivel ?? 'desconocida';
+      jugador.conocimiento[cambio.comarca] = comoBorrador(cambio.conocimiento);
+      if (antes !== cambio.conocimiento.nivel) {
+        registrarSuceso(
+          ctx.sucesos,
+          ctx.fase,
+          'conocimiento.cambio',
+          { antes, despues: cambio.conocimiento.nivel },
+          { jugador: cambio.jugador, comarca: cambio.comarca },
+        );
+      }
+      return;
+    }
+
+    case 'fuero': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      comarca.fuero = cambio.fuero;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'comarca.fuero',
+        { fuero: cambio.fuero },
+        { comarca: cambio.comarca, jugador: comarca.duenyo },
       );
       return;
     }

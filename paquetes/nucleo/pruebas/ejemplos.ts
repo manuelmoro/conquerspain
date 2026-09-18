@@ -4,6 +4,7 @@
 import { POTENCIALES } from '../src/tipos/mundo.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
 import { ARRANQUE } from '../src/datos/arranque.ts';
+import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
@@ -283,6 +284,7 @@ export function tablasDeEjemplo(): Registro {
     produccion: JSON.parse(JSON.stringify(PRODUCCION)) as Registro,
     consumo: JSON.parse(JSON.stringify(CONSUMO)) as Registro,
     movimiento: JSON.parse(JSON.stringify(MOVIMIENTO)) as Registro,
+    cometidos: JSON.parse(JSON.stringify(COMETIDOS_DE_RECUA)) as Registro,
     poblacion: {
       consumoPorVecinoMil: 250,
       vecinosPorCuadrilla: 40,

@@ -75,7 +75,7 @@ const validarDemanda = objeto<{ cantidad: number; precioMaximoMil: number }>({
   precioMaximoMil: enteroNoNegativo(),
 });
 
-const validarParada: Validador<ParadaDeRuta> = objeto<ParadaDeRuta>({
+export const validarParada: Validador<ParadaDeRuta> = objeto<ParadaDeRuta>({
   comarca: identificador<IdComarca>(),
   cargar: recursosParciales(),
   descargar: recursosParciales(),

@@ -97,6 +97,7 @@ export type {
   DatosCasa,
   DatosEdificio,
   DatosArranque,
+  DatosCometidos,
   DatosConsumo,
   DatosFuero,
   DatosEstaciones,

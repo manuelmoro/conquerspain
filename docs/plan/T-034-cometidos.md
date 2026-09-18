@@ -1,6 +1,6 @@
 # T-034 · Fase 5: cometidos de las recuas
 
-**Fase:** 2 · Motor · **Depende de:** T-033 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-033 · **Estado:** **hecha** (18-09-2026)
 
 ## 1. Contexto
 
@@ -105,3 +105,46 @@ npx vitest run paquetes/nucleo/src/reglas/explorar.test.ts paquetes/nucleo/src/r
 ## 8. Al terminar
 
 Índice y `ESTADO.md` (siguiente T-035). Commit: `T-034: cometidos de recuas`.
+
+## 9. Resultado (18-09-2026)
+
+Tarea cerrada. 389 tests en verde; `humo-02` regenerada a propósito (la recua gana tres campos).
+
+- `paquetes/nucleo/src/fases/05-cometidos.ts`: sobre una foto del estado, cada recua atiende la
+  parada en la que se ha detenido y, si está quieta, su cometido; las fundaciones de puebla se
+  reúnen y se resuelven al final por comarca.
+- `paquetes/nucleo/src/reglas/explorar.ts` (foto de lo visto, vecinas por oír, hallazgos),
+  `poblar.ts` (capacidad, impedimentos, ganador por influencia y huella) y `presencia.ts`
+  (`estaPresente`, que usará T-038).
+- `paquetes/nucleo/src/porteo.ts`: cargar y descargar contra el almacén, común a la orden `carga`
+  y a las paradas.
+- `Recua` gana `paradas`, `siguienteParada` y `enParada`; `avanzar` se detiene en las paradas con
+  algo que hacer. Tabla nueva `cometidos` (`src/datos/cometidos.ts`) y cambios nuevos:
+  `conocimiento`, `fuero`, `recua-baja` y `recua-turnos-cometido`.
+- Pruebas en `pruebas/cometidos.test.ts` (17 casos, entre ellos la propiedad de 1 000
+  exploraciones) y ayudantes comunes de recuas en `pruebas/recuas.ts`.
+
+Decisiones tomadas al implementar:
+
+- **Las paradas detienen a la recua.** Para cargar o vender en una parada la recua tiene que estar
+  allí cuando se atienden los cometidos, así que se detiene en cada parada con algo que hacer
+  (aunque le sobre paso) y sigue el turno siguiente. Es predecible y es lo que haría un arriero.
+- **Volver a explorar refresca la noticia.** La información caduca (`docs/02` §2.6) y no había otra
+  forma de ponerla al día; no da hallazgo, no oye vecinas nuevas y no puntúa otra vez. La comarca
+  propia no se explora.
+- **Hallazgos**: `localidad` (una aldea que no es la cabecera) y `noticias` (la foto de hoy de una
+  comarca de un rival). Se elige solo entre los posibles en esa comarca, así que la probabilidad
+  (1 de 5) es la real. «Una vereda mejor» espera a que haya caminos en el estado (anotado en T-035).
+- **Portear** es descargar todo en el almacén al llegar a una comarca propia; cargar y descargar a
+  medio camino se hace con las paradas.
+- **La puebla empieza con la gente que llega** (la ficha: «población inicial igual a los vecinos
+  llevados»), no con la de la comarca neutral más la nueva. Es la diferencia con incorporar una
+  comarca ya poblada; queda a la vista de T-047 por si el equilibrio pide otra cosa.
+- **Varias recuas del mismo jugador en la misma fundación cuentan como una** (la de identificador
+  menor); el desempate entre jugadores es `hash(partida, turno, puebla:comarca, jugador)`.
+- **Estar presente cuesta el bastimento de una jornada por turno**, de la carga; sin él, la recua
+  queda avisada y no cuenta como presente.
+- **Disolver solo en comarca propia**; fuera, el cometido espera. Los arrieros vuelven con la gente
+  y la carga entra en el almacén. Se devuelve la mitad de los maravedís de formar la recua.
+- Enganches anotados en sus fichas: vender y comprar en parada y `tratar` (T-037), presencia
+  (T-038), la puebla de los monjes (T-041) y la vereda como hallazgo (T-035).

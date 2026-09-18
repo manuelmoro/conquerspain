@@ -13,7 +13,7 @@ import type {
 import type { Recurso, Recursos } from './recursos.ts';
 import type { Casa, Tradicion } from './reglas.ts';
 import type { Potencial, NivelPotencial, VolumenFeria } from './mundo.ts';
-import type { Orden } from './ordenes.ts';
+import type { Orden, ParadaDeRuta } from './ordenes.ts';
 
 export const MODOS_DE_PARTIDA = ['solitario', 'vecindad', 'temporada', 'comarcal'] as const;
 export type ModoDePartida = (typeof MODOS_DE_PARTIDA)[number];
@@ -141,6 +141,12 @@ export interface Recua {
   /** Comarcas que quedan por recorrer, en orden. */
   readonly ruta: readonly IdComarca[];
   readonly rutaCircular: boolean;
+  /** Paradas de la ruta con lo que hay que hacer en cada una (orden `ruta`). */
+  readonly paradas: readonly ParadaDeRuta[];
+  /** Indice de la proxima parada a la que llegara. */
+  readonly siguienteParada: number;
+  /** Parada en la que se ha detenido este turno, para que la atiendan los cometidos y el mercado. */
+  readonly enParada: number | null;
   readonly acemilas: number;
   readonly porte: number;
   readonly carga: Recursos;

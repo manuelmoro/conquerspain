@@ -25,6 +25,8 @@ terminar.
 calzada romana → carretero, lo demás vereda. Los caminos y puentes que se construyan tienen que
 guardarse en el estado y entrar en esa función (y en la opción `puente` de `jornadasDeTramoMil`).
 Las órdenes empiezan con `empezarOrden` y esperan con `dejarEnEspera` (`src/ordenes.ts`).
+Cuando haya caminos en el estado, el hallazgo «una vereda mejor» de la exploración (ficha T-034
+§4.1) puede entrar en `HALLAZGOS` (`reglas/explorar.ts`); hoy solo hay `localidad` y `noticias`.
 
 ## 4. Diseño detallado
 

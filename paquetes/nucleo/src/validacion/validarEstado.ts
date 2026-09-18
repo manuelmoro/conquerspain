@@ -40,7 +40,7 @@ import { POTENCIALES, VOLUMENES_FERIA } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { CASAS, VERSION_REGLAS } from '../tipos/reglas.ts';
 import { milesimas, nivelPotencial, recursos } from './comunes.ts';
-import { validarOrdenEntrante } from './validarOrden.ts';
+import { validarOrdenEntrante, validarParada } from './validarOrden.ts';
 import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
   booleano,
@@ -153,6 +153,9 @@ const validarRecua: Validador<Recua> = objeto<Recua>({
   situacion: validarSituacion,
   ruta: lista(identificador<IdComarca>(), { maximo: LONGITUD_MAXIMA_DE_RUTA }),
   rutaCircular: booleano(),
+  paradas: lista(validarParada, { maximo: 12 }),
+  siguienteParada: enteroNoNegativo(12),
+  enParada: oNulo(enteroNoNegativo(11)),
   acemilas: enteroNoNegativo(1000),
   porte: enteroNoNegativo(1000),
   carga: recursos(),
@@ -364,6 +367,18 @@ export function validarEstado(dato: unknown, mundo?: Mundo): Resultado<EstadoPar
   for (const [clave, recua] of Object.entries(estado.recuas)) {
     if (recua.id !== clave) {
       errores.push({ ruta: `recuas.${clave}.id`, mensaje: `no coincide con su clave "${clave}"` });
+    }
+    if (recua.siguienteParada > recua.paradas.length) {
+      errores.push({
+        ruta: `recuas.${clave}.siguienteParada`,
+        mensaje: `apunta a la parada ${String(recua.siguienteParada)} y solo hay ${String(recua.paradas.length)}`,
+      });
+    }
+    if (recua.enParada !== null && recua.enParada >= recua.paradas.length) {
+      errores.push({
+        ruta: `recuas.${clave}.enParada`,
+        mensaje: `dice estar en la parada ${String(recua.enParada)} y solo hay ${String(recua.paradas.length)}`,
+      });
     }
     comprobarUnidad(`recuas.${clave}`, recua.jugador, recua.situacion, recua.ruta);
   }

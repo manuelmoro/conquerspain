@@ -8,10 +8,11 @@ import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { ErrorDeMotor } from '../errores.ts';
 import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ordenes.ts';
+import { cargarDelAlmacen, descargarEnAlmacen } from '../porteo.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { bastimentoDe } from '../reglas/bastimento.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
-import { avanzar, pasoDeRecua, pesoDeLaCarga, porteDe } from '../reglas/movimiento.ts';
+import { avanzar, pasoDeRecua, porteDe } from '../reglas/movimiento.ts';
 import {
   comarcaConocida,
   comarcasTransitables,
@@ -26,6 +27,7 @@ import { LONGITUD_MAXIMA_DE_RUTA } from '../tipos/estado.ts';
 import type { IdComarca, IdRecua } from '../tipos/ids.ts';
 import { nuevoId } from '../tipos/ids.ts';
 import type { Camino } from '../tipos/mundo.ts';
+import type { ParadaDeRuta } from '../tipos/ordenes.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
@@ -111,6 +113,9 @@ function formarRecua(ctx: Contexto, orden: OrdenDe<'formar-recua'>): void {
       situacion: { donde: 'comarca', comarca: orden.comarca },
       ruta: [],
       rutaCircular: false,
+      paradas: [],
+      siguienteParada: 0,
+      enParada: null,
       acemilas: orden.acemilas,
       porte: porteDe(
         orden.acemilas,
@@ -139,56 +144,8 @@ function cargarRecua(ctx: Contexto, orden: OrdenDe<'carga'>): void {
     return;
   }
 
-  for (const recurso of RECURSOS) {
-    const cantidad = Math.min(orden.descargar[recurso] ?? 0, recua.carga[recurso]);
-    if (cantidad <= 0) continue;
-    aplicar(ctx, {
-      tipo: 'recua-carga',
-      recua: recua.id,
-      recurso,
-      delta: -cantidad,
-      motivo: 'descarga en el almacen',
-    });
-    aplicar(ctx, {
-      tipo: 'recurso',
-      jugador: orden.jugador,
-      recurso,
-      delta: cantidad,
-      motivo: `descarga de ${recua.id}`,
-    });
-  }
-
-  for (const recurso of RECURSOS) {
-    const pedido = orden.cargar[recurso] ?? 0;
-    if (pedido <= 0) continue;
-    const libre =
-      recurso === 'maravedis' ? pedido : Math.max(0, recua.porte - pesoDeLaCarga(recua.carga));
-    const cantidad = Math.min(pedido, disponible(jugador, recurso), libre);
-    if (cantidad < pedido) {
-      registrarSuceso(
-        ctx.sucesos,
-        ctx.fase,
-        'recua.carga-recortada',
-        { recua: recua.id, recurso, pedido, cargado: cantidad },
-        { jugador: orden.jugador, comarca: casa },
-      );
-    }
-    if (cantidad <= 0) continue;
-    aplicar(ctx, {
-      tipo: 'recurso',
-      jugador: orden.jugador,
-      recurso,
-      delta: -cantidad,
-      motivo: `carga de ${recua.id}`,
-    });
-    aplicar(ctx, {
-      tipo: 'recua-carga',
-      recua: recua.id,
-      recurso,
-      delta: cantidad,
-      motivo: 'carga del almacen',
-    });
-  }
+  descargarEnAlmacen(ctx, recua.id, orden.descargar);
+  cargarDelAlmacen(ctx, recua.id, orden.cargar, casa);
 
   const comarca = ctx.estado.comarcas[casa];
   const vecinos = Math.min(
@@ -273,7 +230,13 @@ function fijarRuta(ctx: Contexto, orden: OrdenDe<'ruta'>): void {
     cancelarOrden(ctx, orden, 'ruta-demasiado-larga');
     return;
   }
-  aplicar(ctx, { tipo: 'recua-ruta', recua: recua.id, ruta: comarcas, circular: orden.circular });
+  aplicar(ctx, {
+    tipo: 'recua-ruta',
+    recua: recua.id,
+    ruta: comarcas,
+    circular: orden.circular,
+    paradas: orden.paradas,
+  });
   empezarOrden(ctx, orden, 'terminada');
 }
 
@@ -289,10 +252,29 @@ function tramo(ctx: Contexto, desde: IdComarca, hasta: IdComarca): Camino {
   return camino;
 }
 
+/** Hay algo que hacer en la parada: la recua se detiene en ella. */
+function detiene(parada: ParadaDeRuta): boolean {
+  return [parada.cargar, parada.descargar, parada.vender, parada.comprar].some(
+    (acciones) => Object.keys(acciones).length > 0,
+  );
+}
+
 function moverRecua(ctx: Contexto, id: string): void {
   const recua = ctx.estado.recuas[id];
-  const siguiente = recua?.ruta[0];
-  if (recua === undefined || siguiente === undefined) return;
+  if (recua === undefined) return;
+  // La parada del turno pasado ya se atendio.
+  if (recua.enParada !== null) {
+    aplicar(ctx, {
+      tipo: 'recua-mover',
+      recua: recua.id,
+      situacion: recua.situacion,
+      ruta: recua.ruta,
+      siguienteParada: recua.siguienteParada,
+      enParada: null,
+    });
+  }
+  const siguiente = recua.ruta[0];
+  if (siguiente === undefined) return;
   const jugador = ctx.estado.jugadores[recua.jugador];
   if (jugador === undefined) return;
   const donde =
@@ -315,7 +297,18 @@ function moverRecua(ctx: Contexto, id: string): void {
   // Sin bastimento, el primer turno se para y avisa; despues malvive: anda al paso minimo sin
   // pagar y pierde una acemila por turno, para que siempre pueda volver a casa.
   const hambrienta = recua.avisadaSinBastimento;
-  const previsto = avanzar(recua.situacion, recua.ruta, recua.rutaCircular, pasoMil, costeDe);
+  const paradas = {
+    comarcas: recua.paradas.map((p) => ({ comarca: p.comarca, detiene: detiene(p) })),
+    siguiente: recua.siguienteParada,
+  };
+  const previsto = avanzar(
+    recua.situacion,
+    recua.ruta,
+    recua.rutaCircular,
+    pasoMil,
+    costeDe,
+    paradas,
+  );
   const bastimento = bastimentoDe(previsto.andadoMil, ctx.estacional.estacion, ctx.reglas);
   const casa = enCasa(ctx, recua);
   const puedePagar =
@@ -357,6 +350,7 @@ function moverRecua(ctx: Contexto, id: string): void {
       recua.rutaCircular,
       ctx.reglas.movimiento.pasoMinimoMil,
       costeDe,
+      paradas,
     );
   }
 
@@ -365,6 +359,8 @@ function moverRecua(ctx: Contexto, id: string): void {
     recua: idRecua,
     situacion: avance.situacion,
     ruta: avance.ruta,
+    siguienteParada: avance.siguienteParada,
+    enParada: avance.enParada,
   });
   contarAvance(ctx, recua, avance);
 }

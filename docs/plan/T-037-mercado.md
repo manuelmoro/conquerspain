@@ -23,6 +23,12 @@ formación de precios, mercaderes menores, comisión y volumen máximo por plaza
 
 **No entra:** contratos entre jugadores (T-103), transporte (ya hecho en T-033).
 
+**Heredado de T-033 y T-034.** Una recua detenida en una parada de su ruta tiene
+`Recua.enParada` con el índice de `Recua.paradas`: sus `vender` y `comprar` (con precio límite) son
+órdenes de mercado de ese turno en esa plaza, y se pagan de la carga de la recua y entran en ella.
+La fase 5 ya ha hecho antes su `cargar` y `descargar` si la parada es comarca propia. El cometido
+`tratar` de una recua quieta también se cumple aquí (la fase 5 lo deja pasar).
+
 ## 4. Diseño detallado
 
 ### 4.1 Estado de un mercado

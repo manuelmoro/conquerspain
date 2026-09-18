@@ -242,12 +242,17 @@ partida.
 
 | Cometido | Qué hace | Coste |
 |---|---|---|
-| **Explorar** | Revela terreno, localidades y potenciales de la comarca de destino y el nombre de las vecinas | 1 turno en destino |
-| **Portear** | Cargar y descargar en almacenes propios o mercados | — |
+| **Explorar** | Revela terreno, población, potenciales y edificios de la comarca de destino, con fecha, y el nombre de las vecinas. Volver a explorar refresca la noticia | 1 turno en destino |
+| **Portear** | Al llegar a una comarca propia descarga todo en el almacén | — |
 | **Tratar** | Comprar o vender en el mercado o feria de destino, con precio límite | Comisión 2 % |
-| **Poblar** | Deja vecinos en una comarca propia o funda puebla en una neutral con influencia | 2 turnos |
-| **Estar presente** | Se queda: genera 2 de influencia por turno en una comarca neutral | Bastimento |
-| **Disolver** | Devuelve la gente y la mitad del valor | 1 turno |
+| **Poblar** | Deja vecinos en una comarca propia (sin pasar de la capacidad) o funda puebla en una neutral con influencia ≥ 40 y 10 vecinos | 2 turnos |
+| **Estar presente** | Se queda: genera 2 de influencia por turno en una comarca neutral | Bastimento de una jornada por turno |
+| **Disolver** | En comarca propia: devuelve la gente y los arrieros, la carga y la mitad de los maravedís de formarla | 1 turno |
+
+Las **paradas** de una ruta son paradas de verdad: la recua se detiene en cada una donde haya algo
+que hacer (cargar, descargar, vender o comprar) y lo hace ese mismo turno; cargar y descargar, solo
+en comarca propia. Una exploración de cada cinco trae además un **hallazgo**: una aldea que no
+figuraba en el mapa o noticias frescas de una comarca de un rival. Nunca un recurso.
 
 ## 3.8 Los rebaños (la vía trashumante)
 

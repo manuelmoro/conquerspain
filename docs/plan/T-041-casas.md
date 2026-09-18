@@ -22,6 +22,11 @@ límite, y la elección de casa al crear la partida.
 **No entra:** tradiciones (T-042), equilibrio fino (T-047), lo que dependa de mecánicas de conflicto
 (queda desactivado y documentado).
 
+**Heredado de T-034.** Los monjes fundan puebla con la mitad de gente: hoy
+`cometidos.vecinosParaPuebla` (10) es igual para todas las casas y `impedimentoDePuebla`
+(`reglas/poblar.ts`) no consulta la casa; hay que añadir el modificador. `pasoRecuaMil` es aditivo
+(arrieros: +1000) y `porteExtra` ya entra en el porte de las recuas.
+
 ## 4. Diseño detallado
 
 ### 4.1 Cómo se modelan

@@ -45,9 +45,20 @@ export function pasoDeRecua(
   return Math.max(m.pasoMinimoMil, paso);
 }
 
+/** Las paradas de la ruta, en orden, y si la recua tiene que detenerse en cada una. */
+export interface Paradas {
+  readonly comarcas: readonly { readonly comarca: IdComarca; readonly detiene: boolean }[];
+  readonly siguiente: number;
+}
+
+export const SIN_PARADAS: Paradas = { comarcas: [], siguiente: 0 };
+
 export interface Avance {
   readonly situacion: SituacionMovil;
   readonly ruta: readonly IdComarca[];
+  readonly siguienteParada: number;
+  /** Parada en la que se ha detenido, o null. */
+  readonly enParada: number | null;
   /** Jornadas andadas de verdad, en milesimas: sobre esto se paga el bastimento. */
   readonly andadoMil: Milesimas;
   /** Comarcas en las que ha entrado, en orden. */
@@ -69,9 +80,15 @@ export function avanzar(
   circular: boolean,
   pasoMil: Milesimas,
   costeDe: (desde: IdComarca, hasta: IdComarca) => CosteDeTramoMil,
+  paradas: Paradas = SIN_PARADAS,
 ): Avance {
   const pendiente = [...ruta];
   const entradas: IdComarca[] = [];
+  let siguienteParada = paradas.siguiente;
+  const fin = (
+    resto: Omit<Avance, 'siguienteParada' | 'enParada' | 'entradas' | 'ruta'>,
+    enParada: number | null = null,
+  ): Avance => ({ ...resto, ruta: pendiente, entradas, siguienteParada, enParada });
   let donde: IdComarca = situacion.donde === 'comarca' ? situacion.comarca : situacion.desde;
   let hechoMil = situacion.donde === 'camino' ? situacion.jornadasHechasMil : 0;
   let quedaMil = pasoMil;
@@ -80,14 +97,12 @@ export function avanzar(
   if (situacion.donde === 'camino' && siguiente !== undefined) {
     if (costeDe(donde, siguiente) === 'cerrado') {
       // La nieve la pilla a medio puerto: da la vuelta y espera en la comarca de salida.
-      return {
+      return fin({
         situacion: { donde: 'comarca', comarca: donde },
-        ruta: pendiente,
         andadoMil: 0,
-        entradas: [],
         cerrado: { desde: donde, hasta: siguiente },
         retrocede: true,
-      };
+      });
     }
   }
 
@@ -96,30 +111,26 @@ export function avanzar(
     if (proxima === undefined || quedaMil <= 0) break;
     const coste = costeDe(donde, proxima);
     if (coste === 'cerrado') {
-      return {
+      return fin({
         situacion: { donde: 'comarca', comarca: donde },
-        ruta: pendiente,
         andadoMil: pasoMil - quedaMil,
-        entradas,
         cerrado: { desde: donde, hasta: proxima },
         retrocede: false,
-      };
+      });
     }
     const faltaMil = Math.max(0, coste - hechoMil);
     if (quedaMil < faltaMil) {
-      return {
+      return fin({
         situacion: {
           donde: 'camino',
           desde: donde,
           hasta: proxima,
           jornadasHechasMil: hechoMil + quedaMil,
         },
-        ruta: pendiente,
         andadoMil: pasoMil,
-        entradas,
         cerrado: null,
         retrocede: false,
-      };
+      });
     }
     quedaMil -= faltaMil;
     hechoMil = 0;
@@ -127,14 +138,31 @@ export function avanzar(
     if (circular) pendiente.push(proxima);
     entradas.push(proxima);
     donde = proxima;
+
+    // Llegar a la parada que toca: si hay algo que hacer en ella, se detiene hasta el turno que viene.
+    const parada = paradas.comarcas[siguienteParada];
+    if (parada?.comarca === proxima) {
+      const esta = siguienteParada;
+      siguienteParada = circular ? (esta + 1) % paradas.comarcas.length : esta + 1;
+      // La ultima parada de una ruta que no es circular tambien cuenta: alli acaba el viaje.
+      if (parada.detiene || pendiente.length === 0) {
+        return fin(
+          {
+            situacion: { donde: 'comarca', comarca: donde },
+            andadoMil: pasoMil - quedaMil,
+            cerrado: null,
+            retrocede: false,
+          },
+          esta,
+        );
+      }
+    }
   }
 
-  return {
+  return fin({
     situacion: { donde: 'comarca', comarca: donde },
-    ruta: pendiente,
     andadoMil: pasoMil - quedaMil,
-    entradas,
     cerrado: null,
     retrocede: false,
-  };
+  });
 }

@@ -226,6 +226,20 @@ export interface DatosMovimiento {
   readonly factorVeranoMil: number;
 }
 
+/** Cometidos de las recuas (docs/03-economia.md §3.7.3; ficha T-034). */
+export interface DatosCometidos {
+  /** Probabilidad de que una exploracion encuentre algo, en milesimas. */
+  readonly probabilidadHallazgoMil: number;
+  readonly influenciaParaPuebla: number;
+  readonly vecinosParaPuebla: number;
+  readonly turnosParaPuebla: number;
+  readonly lealtadDePuebla: number;
+  /** Jornadas de bastimento que gasta al turno una recua que esta presente, en milesimas. */
+  readonly bastimentoPresenciaMil: number;
+  /** Parte de los maravedis de formacion que se recuperan al disolver. */
+  readonly devolucionAlDisolverMil: number;
+}
+
 export interface DatosPoblacion {
   /**
    * Pan que come cada vecino por turno, en milesimas. El vecino es una familia que vive casi toda
@@ -313,6 +327,7 @@ export interface TablasDeReglas {
   readonly produccion: DatosProduccion;
   readonly consumo: DatosConsumo;
   readonly movimiento: DatosMovimiento;
+  readonly cometidos: DatosCometidos;
   readonly poblacion: DatosPoblacion;
   readonly mercado: DatosMercado;
   readonly influencia: DatosInfluencia;

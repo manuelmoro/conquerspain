@@ -21,6 +21,10 @@ disputas, y el regreso a neutral de comarcas desleales (enganchado con T-036).
 
 **No entra:** fundación de puebla (T-034), amparo del novato (T-105).
 
+**Heredado de T-034.** Una recua cuenta como presente si `estaPresente(recua, comarca)`
+(`reglas/presencia.ts`): quieta en una comarca neutral con cometido `presencia` y que ha podido
+pagar su bastimento este turno. Esa es la condición de los +2 de influencia por presencia.
+
 ## 4. Diseño detallado
 
 ### 4.1 Cálculo por turno

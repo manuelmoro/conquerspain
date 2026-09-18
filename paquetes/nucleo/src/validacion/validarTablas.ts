@@ -6,6 +6,7 @@ import { RECURSOS } from '../tipos/recursos.ts';
 import type {
   DatosArranque,
   DatosCasa,
+  DatosCometidos,
   DatosConsumo,
   DatosFuero,
   DatosEdificio,
@@ -160,6 +161,16 @@ const validarMovimiento: Validador<DatosMovimiento> = objeto<DatosMovimiento>({
   factorVeranoMil: milesimas(500, 3000),
 });
 
+const validarCometidos: Validador<DatosCometidos> = objeto<DatosCometidos>({
+  probabilidadHallazgoMil: milesimas(0, 1000),
+  influenciaParaPuebla: entero({ minimo: 0, maximo: 100 }),
+  vecinosParaPuebla: entero({ minimo: 1, maximo: 200 }),
+  turnosParaPuebla: entero({ minimo: 1, maximo: 20 }),
+  lealtadDePuebla: entero({ minimo: 0, maximo: 100 }),
+  bastimentoPresenciaMil: milesimas(0, 10000),
+  devolucionAlDisolverMil: milesimas(0, 1000),
+});
+
 const validarPoblacion: Validador<DatosPoblacion> = objeto<DatosPoblacion>({
   consumoPorVecinoMil: milesimas(1, 3000),
   vecinosPorCuadrilla: entero({ minimo: 1, maximo: 200 }),
@@ -289,6 +300,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   produccion: validarProduccion,
   consumo: validarConsumo,
   movimiento: validarMovimiento,
+  cometidos: validarCometidos,
   poblacion: validarPoblacion,
   mercado: validarMercado,
   influencia: validarInfluencia,
