@@ -128,6 +128,8 @@ const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
   exDuenyo: oNulo(identificador<IdJugador>()),
   turnosDesleal: enteroNoNegativo(),
   turnosSinMantenimiento: enteroNoNegativo(),
+  turnosDeAbono: enteroNoNegativo(),
+  estiercol: entero({ minimo: 0, maximo: 10 }),
   obrasMayores: lista(unoDe(TIPOS_DE_OBRA_MAYOR), { maximo: TIPOS_DE_OBRA_MAYOR.length }),
   produccionUltimoTurno: recursos(),
 });
@@ -184,10 +186,8 @@ const validarRebanyo: Validador<Rebanyo> = objeto<Rebanyo>({
   nombre: texto({ minimo: 1, maximo: 60 }),
   situacion: validarSituacion,
   ruta: lista(identificador<IdComarca>(), { maximo: LONGITUD_MAXIMA_DE_RUTA }),
-  rutaCircular: booleano(),
   cabezas: enteroNoNegativo(100000),
-  turnosEnPastoCorrecto: enteroNoNegativo(),
-  turnosDelAnyo: enteroNoNegativo(),
+  pastoDelAnyoMil: enteroNoNegativo(100000),
   turnosSinPasto: enteroNoNegativo(),
 });
 

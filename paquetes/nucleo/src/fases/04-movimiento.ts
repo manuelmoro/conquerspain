@@ -32,14 +32,15 @@ import type { ParadaDeRuta } from '../tipos/ordenes.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
+import { movimientoDeRebanyos } from './04-rebanyos.ts';
 
 export function faseMovimiento(ctx: Contexto): void {
   for (const orden of ordenesVivas(ctx, 'formar-recua')) formarRecua(ctx, orden);
   for (const orden of ordenesVivas(ctx, 'carga')) cargarRecua(ctx, orden);
   for (const orden of ordenesVivas(ctx, 'cometido')) fijarCometido(ctx, orden);
-  // Las rutas de rebanyos son de T-040.
   for (const orden of ordenesVivas(ctx, 'ruta')) if (orden.recua !== null) fijarRuta(ctx, orden);
   for (const id of idsEnOrden(ctx.estado.recuas)) moverRecua(ctx, id);
+  movimientoDeRebanyos(ctx);
 }
 
 function disponible(jugador: EstadoJugador, recurso: Recurso): number {

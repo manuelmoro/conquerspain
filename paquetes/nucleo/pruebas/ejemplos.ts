@@ -8,6 +8,7 @@ import { ARRANQUE } from '../src/datos/arranque.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
+import { GANADERIA } from '../src/datos/ganaderia.ts';
 import { INFLUENCIA } from '../src/datos/influencia.ts';
 import { MERCADO } from '../src/datos/mercado.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
@@ -140,6 +141,8 @@ export function estadoDeEjemplo(): Registro {
     exDuenyo: null,
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
+    turnosDeAbono: 0,
+    estiercol: 0,
     obrasMayores: [],
     produccionUltimoTurno: sinRecursos(),
   });
@@ -315,5 +318,6 @@ export function tablasDeEjemplo(): Registro {
     },
     arranque: JSON.parse(JSON.stringify(ARRANQUE)) as Registro,
     acontecimientos: JSON.parse(JSON.stringify(ACONTECIMIENTOS)) as Registro,
+    ganaderia: JSON.parse(JSON.stringify(GANADERIA)) as Registro,
   };
 }

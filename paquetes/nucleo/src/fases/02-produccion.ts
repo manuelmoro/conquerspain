@@ -17,6 +17,7 @@ import {
 } from '../reglas/produccion.ts';
 import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
 import { registrarSuceso } from '../sucesos.ts';
+import { produccionDeRebanyos } from './02-rebanyos.ts';
 import type { Fuero } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
 import type { TipoEdificio } from '../tipos/reglas.ts';
@@ -179,4 +180,5 @@ export function faseProduccion(ctx: Contexto): void {
       valores: siguienteAgotamiento(comarca, ctx.reglas),
     });
   }
+  produccionDeRebanyos(ctx);
 }

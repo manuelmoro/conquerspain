@@ -27,6 +27,12 @@ a quien tuvo la comarca (`EstadoComarca.exDuenyo`), porque una obra mayor no gua
 levantó y solo se levanta en comarca propia. Si el contrato de obra de los canteros o los monjes
 permite obras en comarca ajena o neutral, hay que guardar el autor de la obra y ampliar esa fuente.
 
+**Heredado de T-040.** La Mesta ya tiene efecto de rebaños: `permisos.pasoFrancoPorCanyada` lo lee
+`puedeEntrar` (`reglas/rebanyos.ts`) para cruzar comarcas ajenas por cañada, y
+`modificadores.lanaEsquileoMil` lo multiplica el esquileo (`reglas/esquileo.ts`). Faltan en la tabla
+real de la Mesta el `lanaEsquileoMil` de 1250 y el coste de rebaño a mitad de precio
+(`costeRebanyoMil`, que hoy solo aplica el servidor al reservar el coste de `formar-rebanyo`).
+
 **Heredado de T-034.** Los monjes fundan puebla con la mitad de gente: hoy
 `cometidos.vecinosParaPuebla` (10) es igual para todas las casas y `impedimentoDePuebla`
 (`reglas/poblar.ts`) no consulta la casa; hay que añadir el modificador. `pasoRecuaMil` es aditivo

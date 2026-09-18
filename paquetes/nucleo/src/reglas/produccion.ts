@@ -13,6 +13,7 @@ import type { RecursoAgotable } from '../tipos/estado.ts';
 import type { Milesimas } from '../utiles/enteros.ts';
 import { MIL, limitar, multiplicarFactores } from '../utiles/enteros.ts';
 import { factorDeAcontecimientos } from './acontecimientos.ts';
+import { factorDeEstiercolMil } from './esquileo.ts';
 
 /** Un factor de la cadena, con nombre para poder explicarlo. */
 export interface Factor {
@@ -21,6 +22,7 @@ export interface Factor {
     | 'estacion'
     | 'clima'
     | 'acontecimiento'
+    | 'estiercol'
     | 'molino'
     | 'aperos'
     | 'lealtad'
@@ -150,6 +152,13 @@ export function explotacionesDe(
       ]);
       if (acontecimientoMil !== MIL) {
         factores.push({ nombre: 'acontecimiento', mil: acontecimientoMil });
+      }
+      // El estiercol de los rebanyos que invernan en la comarca abona su labor.
+      if (recurso === 'pan' && edificio.potencial === 'labor' && comarca.estiercol > 0) {
+        factores.push({
+          nombre: 'estiercol',
+          mil: factorDeEstiercolMil(comarca.estiercol, reglas),
+        });
       }
       if (recurso === 'pan' && produccion.edificiosEstacionales.includes(tipo)) {
         if (!regada) {

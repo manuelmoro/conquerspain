@@ -12,6 +12,7 @@ import type { IdComarca } from '../tipos/ids.ts';
 import type { Camino, Mundo } from '../tipos/mundo.ts';
 import type { CalidadCamino, TablasDeReglas } from '../tipos/reglas.ts';
 import type { Milesimas } from '../utiles/enteros.ts';
+import { multiplicarFactores } from '../utiles/enteros.ts';
 import { comparar } from '../utiles/orden.ts';
 
 /** Tramos mejorados por obras (`EstadoPartida.caminos`). */
@@ -118,6 +119,14 @@ interface Etiqueta {
   readonly camino: readonly IdComarca[];
 }
 
+/** Como quien viaja elige camino, ademas de lo que cuesta cada tramo (los rebanyos, T-040). */
+export interface OpcionesDeRuta {
+  /** Un tramo que no puede usar aunque este abierto: tierra ajena sin permiso. */
+  readonly permite?: (camino: Camino, hacia: IdComarca) => boolean;
+  /** Lo que pesa un tramo al elegir camino (1000: lo que cuesta); no cambia lo que cuesta andarlo. */
+  readonly pesoMil?: (camino: Camino) => Milesimas;
+}
+
 /**
  * La ruta mas corta entre dos comarcas este turno, o null si no la hay. Las comarcas intermedias
  * tienen que ser transitables; la de llegada basta con que se conozca (se decide fuera). Los tramos
@@ -131,6 +140,7 @@ export function rutaMasCorta(
   transitables: ReadonlySet<string>,
   reglas: TablasDeReglas,
   mejoras: Mejoras,
+  opciones: OpcionesDeRuta = {},
 ): Ruta | null {
   if (desde === hasta) return { comarcas: [], jornadasMil: 0 };
   const etiquetas = new Map<string, Etiqueta>([[desde, { coste: 0, camino: [] }]]);
@@ -161,9 +171,14 @@ export function rutaMasCorta(
       const vecina = camino.desde === actual ? camino.hasta : camino.desde;
       if (cerradas.has(vecina)) continue;
       if (vecina !== hasta && !transitables.has(vecina)) continue;
+      if (opciones.permite !== undefined && !opciones.permite(camino, vecina)) continue;
       const coste = costeDeTramoMil(camino, estacional, reglas, mejoras);
       if (coste === 'cerrado') continue;
-      const nueva: Etiqueta = { coste: mejor.coste + coste, camino: [...mejor.camino, vecina] };
+      const peso =
+        opciones.pesoMil === undefined
+          ? coste
+          : multiplicarFactores(coste, [opciones.pesoMil(camino)]);
+      const nueva: Etiqueta = { coste: mejor.coste + peso, camino: [...mejor.camino, vecina] };
       const vieja = etiquetas.get(vecina);
       if (
         vieja === undefined ||
@@ -189,13 +204,23 @@ export function rutaPorParadas(
   transitables: ReadonlySet<string>,
   reglas: TablasDeReglas,
   mejoras: Mejoras,
+  opciones: OpcionesDeRuta = {},
 ): Ruta | null {
   const destinos = circular ? [...paradas, desde] : [...paradas];
   const comarcas: IdComarca[] = [];
   let jornadasMil = 0;
   let origen = desde;
   for (const destino of destinos) {
-    const tramo = rutaMasCorta(origen, destino, mundo, estacional, transitables, reglas, mejoras);
+    const tramo = rutaMasCorta(
+      origen,
+      destino,
+      mundo,
+      estacional,
+      transitables,
+      reglas,
+      mejoras,
+      opciones,
+    );
     if (tramo === null) return null;
     comarcas.push(...tramo.comarcas);
     jornadasMil += tramo.jornadasMil;

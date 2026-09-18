@@ -352,6 +352,33 @@ export interface DatosFuero {
 }
 
 /** Mercados, ferias y precios (docs/03-economia.md §3.10; ficha T-037). */
+/** Los rebanyos, sus pastos y el esquileo (docs/03-economia.md §3.8; ficha T-040). */
+export interface DatosGanaderia {
+  readonly cabezasPorRebanyo: number;
+  /** Vecinos que se van con el ganado al formar un rebanyo. */
+  readonly vecinosPorRebanyo: number;
+  /** Jornadas por turno, en milesimas, y lo que suma ir por una canyada. */
+  readonly pasoBaseMil: number;
+  readonly pasoCanyadaMil: number;
+  /** Potencial de pasto minimo para que una comarca sea pasto correcto. */
+  readonly pastoMinimo: number;
+  /** Cabezas que mantiene cada punto de pasto de una comarca. */
+  readonly cabezasPorPuntoDePasto: number;
+  readonly sacasPorRebanyo: number;
+  /** Pan por turno y por cada rebanyo estandar (queso y corderos). */
+  readonly panPorTurno: number;
+  readonly turnosSinPastoParaPerder: number;
+  readonly perdidaPorSinPastoMil: number;
+  /** Turnos de invernada en una comarca propia para ganar un nivel de estiercol. */
+  readonly turnosDeInvernadaParaAbono: number;
+  readonly abonoPorNivelMil: number;
+  readonly nivelesDeAbono: number;
+  /** Turnos de antelacion con que se avisa de un puerto que va a cerrar. */
+  readonly avisoDePuertoTurnos: number;
+  /** Lo que cuesta una canyada al trazar la ruta de un rebanyo (500 = la mitad). */
+  readonly costeCanyadaMil: number;
+}
+
 export interface DatosMercado {
   /** Tope de la comision en feria; en el mercado local manda la de cada casa. */
   readonly comisionFeriaMil: number;
@@ -489,4 +516,5 @@ export interface TablasDeReglas {
   readonly prestigio: DatosPrestigio;
   readonly arranque: DatosArranque;
   readonly acontecimientos: DatosAcontecimientos;
+  readonly ganaderia: DatosGanaderia;
 }

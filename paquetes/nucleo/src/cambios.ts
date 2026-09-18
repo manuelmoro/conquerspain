@@ -12,6 +12,7 @@ import type {
   IdMercado,
   IdObra,
   IdOrden,
+  IdRebanyo,
   IdRecua,
 } from './tipos/ids.ts';
 import type { EstadoDeOrden, Orden, ParadaDeRuta } from './tipos/ordenes.ts';
@@ -24,6 +25,7 @@ import type {
   Fuero,
   CargaFiscal,
   Obra,
+  Rebanyo,
   Recua,
   RecursoAgotable,
   SituacionMovil,
@@ -293,6 +295,41 @@ export type Cambio =
       readonly tramo: EstadoTramo;
     }
   | {
+      readonly tipo: 'rebanyo-alta';
+      readonly rebanyo: Rebanyo;
+    }
+  | {
+      /** El rebanyo se ha quedado sin cabezas: desaparece. */
+      readonly tipo: 'rebanyo-baja';
+      readonly rebanyo: IdRebanyo;
+    }
+  | {
+      readonly tipo: 'rebanyo-mover';
+      readonly rebanyo: IdRebanyo;
+      readonly situacion: SituacionMovil;
+      readonly ruta: readonly IdComarca[];
+    }
+  | {
+      /** Lo pastado en el anyo y los turnos seguidos sin pasto de un rebanyo. */
+      readonly tipo: 'rebanyo-cuentas';
+      readonly rebanyo: IdRebanyo;
+      readonly pastoDelAnyoMil: number;
+      readonly turnosSinPasto: number;
+    }
+  | {
+      readonly tipo: 'rebanyo-cabezas';
+      readonly rebanyo: IdRebanyo;
+      readonly delta: number;
+      readonly motivo: string;
+    }
+  | {
+      /** Turnos de invernada y niveles de estiercol de una comarca. */
+      readonly tipo: 'abono';
+      readonly comarca: IdComarca;
+      readonly turnosDeAbono: number;
+      readonly estiercol: number;
+    }
+  | {
       /** Un acontecimiento se anuncia: entra en el estado dos turnos antes de empezar. */
       readonly tipo: 'acontecimiento-alta';
       readonly acontecimiento: Acontecimiento;
@@ -406,6 +443,17 @@ function mercadoDe(
     throw new ErrorDeMotor('entidad-desconocida', `No hay ningun mercado "${id}" en la partida.`);
   }
   return mercado;
+}
+
+function rebanyoDe(
+  ctx: Contexto,
+  id: IdRebanyo,
+): NonNullable<Contexto['estado']['rebanyos'][string]> {
+  const rebanyo = ctx.estado.rebanyos[id];
+  if (rebanyo === undefined) {
+    throw new ErrorDeMotor('entidad-desconocida', `No hay ningun rebanyo "${id}" en la partida.`);
+  }
+  return rebanyo;
 }
 
 function ordenDe(ctx: Contexto, id: IdOrden): NonNullable<Contexto['estado']['ordenes'][number]> {
@@ -1221,6 +1269,121 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         calidad: cambio.tramo.calidad,
         puente: cambio.tramo.puente ? 1 : 0,
       });
+      return;
+    }
+
+    case 'rebanyo-alta': {
+      if (ctx.estado.rebanyos[cambio.rebanyo.id] !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Ya hay un rebanyo con el identificador "${cambio.rebanyo.id}".`,
+          { rebanyo: cambio.rebanyo.id },
+        );
+      }
+      jugadorDe(ctx, cambio.rebanyo.jugador);
+      comprobarRuta(cambio.rebanyo.id, cambio.rebanyo.situacion, cambio.rebanyo.ruta);
+      ctx.estado.rebanyos[cambio.rebanyo.id] = comoBorrador(cambio.rebanyo);
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'rebanyo.forma',
+        {
+          rebanyo: cambio.rebanyo.id,
+          nombre: cambio.rebanyo.nombre,
+          cabezas: cambio.rebanyo.cabezas,
+        },
+        {
+          jugador: cambio.rebanyo.jugador,
+          comarca:
+            cambio.rebanyo.situacion.donde === 'comarca' ? cambio.rebanyo.situacion.comarca : null,
+        },
+      );
+      return;
+    }
+
+    case 'rebanyo-baja': {
+      const rebanyo = rebanyoDe(ctx, cambio.rebanyo);
+      const restantes: typeof ctx.estado.rebanyos = {};
+      for (const [id, otro] of Object.entries(ctx.estado.rebanyos)) {
+        if (id !== cambio.rebanyo) restantes[id] = otro;
+      }
+      ctx.estado.rebanyos = restantes;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'rebanyo.desaparece',
+        { rebanyo: cambio.rebanyo, nombre: rebanyo.nombre },
+        { jugador: rebanyo.jugador },
+      );
+      return;
+    }
+
+    case 'rebanyo-mover': {
+      const rebanyo = rebanyoDe(ctx, cambio.rebanyo);
+      comprobarRuta(cambio.rebanyo, cambio.situacion, cambio.ruta);
+      rebanyo.situacion = comoBorrador(cambio.situacion);
+      rebanyo.ruta = [...cambio.ruta];
+      return;
+    }
+
+    case 'rebanyo-cuentas': {
+      const rebanyo = rebanyoDe(ctx, cambio.rebanyo);
+      if (
+        !Number.isSafeInteger(cambio.pastoDelAnyoMil) ||
+        cambio.pastoDelAnyoMil < 0 ||
+        !Number.isSafeInteger(cambio.turnosSinPasto) ||
+        cambio.turnosSinPasto < 0
+      ) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Las cuentas de ${cambio.rebanyo} quedarian en ${String(cambio.pastoDelAnyoMil)} de pasto y ${String(cambio.turnosSinPasto)} turnos sin pasto.`,
+          { rebanyo: cambio.rebanyo },
+        );
+      }
+      rebanyo.pastoDelAnyoMil = cambio.pastoDelAnyoMil;
+      rebanyo.turnosSinPasto = cambio.turnosSinPasto;
+      return;
+    }
+
+    case 'rebanyo-cabezas': {
+      const rebanyo = rebanyoDe(ctx, cambio.rebanyo);
+      const despues = rebanyo.cabezas + cambio.delta;
+      if (despues < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `El rebanyo ${cambio.rebanyo} se quedaria con ${String(despues)} cabezas.`,
+          { rebanyo: cambio.rebanyo },
+        );
+      }
+      rebanyo.cabezas = despues;
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'rebanyo.cabezas',
+        { rebanyo: cambio.rebanyo, delta: cambio.delta, total: despues, motivo: cambio.motivo },
+        { jugador: rebanyo.jugador },
+      );
+      return;
+    }
+
+    case 'abono': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      const tope = ctx.reglas.ganaderia.nivelesDeAbono;
+      if (
+        !Number.isSafeInteger(cambio.turnosDeAbono) ||
+        cambio.turnosDeAbono < 0 ||
+        !Number.isSafeInteger(cambio.estiercol) ||
+        cambio.estiercol < 0 ||
+        cambio.estiercol > tope
+      ) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `El estiercol de ${cambio.comarca} quedaria en ${String(cambio.estiercol)} (tope ${String(tope)}) con ${String(cambio.turnosDeAbono)} turnos de abono.`,
+          { comarca: cambio.comarca },
+        );
+      }
+      comarca.turnosDeAbono = cambio.turnosDeAbono;
+      comarca.estiercol = cambio.estiercol;
       return;
     }
 

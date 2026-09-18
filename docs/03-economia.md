@@ -272,16 +272,31 @@ figuraba en el mapa o noticias frescas de una comarca de un rival. Nunca un recu
 
 Un **rebaño** es una unidad móvil como la recua, pero de ganado:
 
-- Coste: 60 mrs y 2 vecinos. Tamaño: 1 000 cabezas.
-- Come pasto, no pan: necesita estar en una comarca con `pasto ≥ 2` **adecuada a la estación**
-  (pastos de verano en sierra de mayo a septiembre; de invierno en dehesa y vega de octubre a abril).
-- Si pasa un turno sin pasto adecuado, pierde el 10 % de su producción anual de lana.
-- **Esquileo** en la segunda quincena de mayo: el rebaño entrega `12 sacas × calidad` de lana, donde
-  la calidad es el porcentaje de turnos del año en pasto correcto.
-- Además produce 2 pan por turno (queso, corderos) y 1 de estiércol equivalente a +5 % de labor en
-  la comarca donde inverna.
-- Moverse por **cañadas reales** (aristas marcadas en el mapa) no cuesta portazgo ni permiso; fuera
-  de ellas, cruzar tierras ajenas exige pagar o tener acuerdo.
+- Coste: 60 mrs y 2 vecinos (los pastores, que se van con él). Tamaño: 1 000 cabezas.
+- Come pasto, no pan: necesita estar en una comarca con `pasto ≥ 2` **adecuada a la estación**.
+  Los pastos de verano (rasgo `pasto-de-verano`, sierra) valen del turno 9 al 18; los de invierno
+  (`pasto-de-invierno`, `dehesa` y `montado`, vegas y dehesas del sur) el resto del año.
+- Cada comarca mantiene `pasto × 1 000` cabezas; si hay más ganado, de quien sea, se reparte la
+  hierba **en proporción a las cabezas** y todos pastan a medias ese turno.
+- **Esquileo** en la segunda quincena de mayo (turno 10): `12 sacas × (cabezas / 1 000) × calidad`,
+  donde la calidad es lo pastado desde el esquileo anterior sobre el año entero de 24 turnos. Un
+  rebaño que hace el ciclo entero da 12 sacas; uno que se queda quieto en la sierra, unas 4. La lana
+  entra en el almacén: para venderla hay que cargarla y llevarla a una plaza.
+- Sin pasto en absoluto **dos turnos seguidos**, pierde un 5 % de las cabezas cada turno desde el
+  segundo (y desaparece si se queda sin ninguna).
+- Además produce 2 pan por turno por cada mil cabezas (queso y corderos) y **estiércol**: cada
+  invierno que pasta en una comarca propia suma turnos de abono; si llegan a 10 el esquileo sube un
+  nivel de estiércol (hasta 3) y cada nivel da +5 % al pan de la labor; sin invernada, baja uno.
+- Anda **2 jornadas por turno**, una más por cañada. En camino pasta entero si va por una **cañada**
+  (también si el turno acaba en una comarca del camino) y nada si va por otro camino.
+- Su ruta **no es circular**: la subida y la bajada son dos órdenes al año.
+- **Tierra ajena.** Un rebaño entra por cualquier camino en comarcas propias o neutrales; en la de
+  otro jugador, solo por una cañada real y solo si su casa tiene **paso franco** (la Mesta). Hasta
+  que haya portazgos y acuerdos entre jugadores esa es toda la regla; al trazar la ruta las
+  cañadas pesan la mitad.
+- Un puerto que va a cerrar **dentro de exactamente dos turnos** se avisa a los rebaños que lo
+  tienen por delante; si llegan y está cerrado, esperan; si la nieve los pilla a medio puerto,
+  vuelven.
 
 La trashumancia es un plan anual completo: subir en primavera, esquilar, bajar en otoño, invernar.
 Quien lo borda tiene el mayor ingreso en metálico del juego; quien lo improvisa, pierde el año.

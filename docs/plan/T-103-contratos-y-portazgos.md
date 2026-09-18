@@ -23,6 +23,10 @@ Contratos verificables, portazgos sobre caminos propios y una reputación mecán
 
 **No entra:** diplomacia formal (T-123).
 
+**Heredado de T-040.** Hoy un rebaño entra en tierra ajena solo por cañada y solo con el paso franco de
+la Mesta (`puedeEntrar`, `reglas/rebanyos.ts`), porque no hay portazgos ni acuerdos. Esta tarea
+debe sustituir esa prohibición por el pago o el acuerdo, sin quitarle a la Mesta su privilegio.
+
 ## 4. Puntos que hay que resolver al detallar
 
 - Forma de un contrato: partes, entrega, plazo, pago, penalización. Todo verificable por el motor.

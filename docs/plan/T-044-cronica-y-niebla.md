@@ -43,6 +43,13 @@ calendario del año entero, el primer turno del año), `acontecimiento.anuncia` 
 sugeridas («Vender el excedente de pan») son texto de la tabla (`ACONTECIMIENTOS.catalogo[tipo]`),
 no de los sucesos: la crónica las pone.
 
+**Heredado de T-040.** Los sucesos de los rebaños son `rebanyo.forma`, `rebanyo.llega`,
+`rebanyo.detenido` (con `motivo`: `camino-cerrado` o `tierra-ajena`), `rebanyo.vuelve-por-nieve`,
+`rebanyo.aviso-puerto` (dos turnos antes), `rebanyo.sin-pasto` (con `motivo`: `estacion`,
+`sin-pasto`, `saturado`, `camino`), `rebanyo.cabezas` (pérdidas por falta de pasto),
+`rebanyo.desaparece`, `rebanyo.esquileo` (con `lana`, `calidadMil` y el factor de acontecimientos) y
+`comarca.estiercol`.
+
 ## 4. Diseño detallado
 
 ### 4.1 Vista de jugador

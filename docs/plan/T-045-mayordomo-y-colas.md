@@ -23,6 +23,12 @@ condicionales, plan de temporada de hasta seis turnos y su interacción con la v
 
 **No entra:** interfaz (T-082) ni notificaciones (T-064).
 
+**Heredado de T-040.** Las rutas de un rebaño **no son circulares** (la orden se cancela con
+`ruta-circular-de-rebanyo`): la trashumancia son dos órdenes al año, subir en primavera y bajar en
+otoño. Programarlas es tarea del plan de temporada y del mayordomo de esta tarea, con la fecha
+adecuada (el último turno de verano para bajar; el último de invierno para subir) y con el aviso de
+puertos (`rebanyo.aviso-puerto`, dos turnos antes) como condición natural.
+
 **Heredado de T-033.** Las rutas circulares ya existen (un circuito que empieza y acaba donde está
 la recua; al entrar en cada comarca, esta vuelve al final de `Recua.ruta`). Falta que una recua en
 ruta permanente reponga su bastimento al pasar por comarca propia: hoy solo come del almacén si

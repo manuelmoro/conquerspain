@@ -126,6 +126,10 @@ export interface EstadoComarca {
   /** Obras mayores terminadas en la comarca (las de tramo se guardan en `EstadoPartida.caminos`). */
   readonly obrasMayores: readonly TipoObraMayor[];
   readonly produccionUltimoTurno: Recursos;
+  /** Turnos de invernada de rebanyos propios este anyo, para el estiercol. */
+  readonly turnosDeAbono: number;
+  /** Niveles de estiercol de la labor, de 0 al tope de la tabla. */
+  readonly estiercol: number;
 }
 
 // ——— Unidades moviles ——————————————————————————————————————————————————————
@@ -181,12 +185,12 @@ export interface Rebanyo {
   readonly jugador: IdJugador;
   readonly nombre: string;
   readonly situacion: SituacionMovil;
+  /** Comarcas que quedan por recorrer. Un rebanyo no lleva ruta circular: la ida y la vuelta son dos ordenes. */
   readonly ruta: readonly IdComarca[];
-  readonly rutaCircular: boolean;
   readonly cabezas: number;
-  /** Turnos del anyo en curso pasados en pasto adecuado, y turnos contados. */
-  readonly turnosEnPastoCorrecto: number;
-  readonly turnosDelAnyo: number;
+  /** Lo pastado en el anyo en curso, en milesimas de turno: 1000 es un turno entero de pasto. */
+  readonly pastoDelAnyoMil: number;
+  /** Turnos seguidos sin nada que comer. */
   readonly turnosSinPasto: number;
 }
 

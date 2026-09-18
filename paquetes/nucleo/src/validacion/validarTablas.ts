@@ -22,6 +22,7 @@ import type {
   DatosObras,
   DatosConsumo,
   DatosFuero,
+  DatosGanaderia,
   DatosEdificio,
   DatosEstaciones,
   DatosInfluencia,
@@ -256,6 +257,24 @@ const validarTerritorio: Validador<DatosTerritorio> = objeto<DatosTerritorio>({
   recargoAdministracionTrasladoMil: milesimas(0, 2000),
 });
 
+const validarGanaderia: Validador<DatosGanaderia> = objeto<DatosGanaderia>({
+  cabezasPorRebanyo: entero({ minimo: 1, maximo: 100000 }),
+  vecinosPorRebanyo: entero({ minimo: 0, maximo: 50 }),
+  pasoBaseMil: entero({ minimo: 1, maximo: 20000 }),
+  pasoCanyadaMil: enteroNoNegativo(20000),
+  pastoMinimo: entero({ minimo: 0, maximo: 5 }),
+  cabezasPorPuntoDePasto: entero({ minimo: 1, maximo: 100000 }),
+  sacasPorRebanyo: enteroNoNegativo(1000),
+  panPorTurno: enteroNoNegativo(1000),
+  turnosSinPastoParaPerder: entero({ minimo: 1, maximo: 24 }),
+  perdidaPorSinPastoMil: milesimas(0, 1000),
+  turnosDeInvernadaParaAbono: entero({ minimo: 1, maximo: 240 }),
+  abonoPorNivelMil: milesimas(0, 500),
+  nivelesDeAbono: enteroNoNegativo(10),
+  avisoDePuertoTurnos: entero({ minimo: 1, maximo: 12 }),
+  costeCanyadaMil: milesimas(1, 2000),
+});
+
 const validarMercado: Validador<DatosMercado> = objeto<DatosMercado>({
   comisionFeriaMil: milesimas(0, 500),
   movimientoMaximoPorTurnoMil: milesimas(0, 1000),
@@ -430,6 +449,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   prestigio: validarPrestigio,
   arranque: validarArranque,
   acontecimientos: validarAcontecimientos,
+  ganaderia: validarGanaderia,
 });
 
 /** Valida las tablas de equilibrio y su coherencia con la version de reglas del motor. */
