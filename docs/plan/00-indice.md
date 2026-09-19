@@ -58,7 +58,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-043](T-043-prestigio-e-hitos.md) | Fase 11: prestigio, hitos y clasificación | **hecha** | T-036 |
 | [T-044](T-044-cronica-y-niebla.md) | Fase 12: crónica, niebla e información fechada | **hecha** | T-034 |
 | [T-045](T-045-mayordomo-y-colas.md) | Colas, rutas permanentes, mayordomo y plan de temporada | **hecha** | T-044 |
-| [T-046](T-046-banco-de-pruebas.md) | Banco de pruebas: robots por casa e informes | pendiente | T-045 |
+| [T-046](T-046-banco-de-pruebas.md) | Banco de pruebas: robots por casa e informes | **hecha** | T-045 |
 | [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | pendiente | T-046 |
 
 ## Fase 3 · Servidor autoritativo

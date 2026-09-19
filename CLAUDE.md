@@ -60,7 +60,8 @@ ConquerSpain/
 │  ├─ servidor/            autoridad: persistencia, reloj de turnos, API
 │  └─ cliente/             interfaz de juego (atlas, panel de órdenes, crónica)
 ├─ herramientas/
-│  └─ atlas/               generación del mapa desde fuentes abiertas (Natural Earth)
+│  ├─ atlas/               generación del mapa desde fuentes abiertas (Natural Earth)
+│  └─ banco/               banco de pruebas: robots por casa, partidas automáticas e informes
 └─ maqueta/                maqueta visual v0.1, congelada como referencia de dirección de arte
 ```
 
@@ -99,9 +100,13 @@ npm run formato        # Prettier en modo comprobacion (formato:escribir para ar
 npm test               # Vitest sobre paquetes/ y herramientas/
 npm run cobertura      # Vitest con cobertura (umbral informativo)
 npm run partidas       # Recalcula las huellas de las partidas de reproduccion (escribe con --confirmo)
+npm run banco          # Banco de pruebas: partidas automaticas con un robot por casa e informe
+npm run banco:comparar # Compara dos informes del banco (sus .csv)
+npm run atlas          # Genera paquetes/mundo/datos/mundo.v1.json desde el catalogo
+npm run atlas:comprobar # Comprueba que el mundo generado sigue siendo el mismo (va en verificar)
 ```
 
-Pendientes de crear en sus tareas: `npm run atlas` (T-011) y `npm run dev` (T-080).
+Pendiente de crear en su tarea: `npm run dev` (T-080).
 
 Notas del montaje:
 

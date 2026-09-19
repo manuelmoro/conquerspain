@@ -38,6 +38,13 @@ sorteados y persistidos.
   ajustar los edificios de origen a la población y a la labor (o a la vía de la casa, como la
   lonja del pescador) y comprobarlo con el banco de pruebas: nadie empieza condenado.
 
+- **Sustituir el alta provisional del banco** (añadido al cerrar T-046):
+  `herramientas/banco/src/partida.ts` reparte hoy las capitales por la península entera con el sorteo
+  por casa, la elección entre los tres orígenes y seis jornadas entre capitales, pero no recorta el
+  mapa ni ajusta el arranque al origen. El banco tiene que pasar a usar el alta de verdad, y el
+  informe de T-046 dice por qué hace falta: 235 de 403 comarcas no las toca nadie en 200 turnos, y
+  los orígenes de `labor 1` (Molina, Bilbao) empiezan condenados al hambre con dos granjas.
+
 ## 5. Criterios de aceptación provisionales
 
 1. Con la misma semilla, el recorte y el sorteo son idénticos.

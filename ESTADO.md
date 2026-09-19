@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 19 de septiembre de 2026 (tras cerrar T-045)
+**Última actualización:** 19 de septiembre de 2026 (tras cerrar T-046)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,11 +20,14 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-046 · Banco de pruebas: robots por casa e informes](docs/plan/T-046-banco-de-pruebas.md)**
+**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)**
 
-Partidas automáticas con un robot por casa, métricas e informes. Lee el apartado «Heredado de T-045»
-de la ficha: ya hay un primer escenario (`herramientas/banco/src/escenarios/ausencia.ts`) y el núcleo
-exporta los costes de las órdenes.
+El instrumento ya existe: `npm run banco` mide tres partidas de 200 turnos con las ocho casas y saca
+su informe. Lee el apartado «Heredado de T-046» de la ficha, que trae los cinco problemas que el
+banco ya ha encontrado, y el informe de referencia
+[`herramientas/banco/informes/2026-09-19-1492.md`](herramientas/banco/informes/2026-09-19-1492.md).
+Se ajusta **un grupo de valores cada vez**, se vuelve a medir con las mismas semillas y se comparan
+los informes (`npm run banco:comparar`).
 
 ## Cómo continuar (resumen)
 
@@ -44,8 +47,8 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | Espacio de trabajo montado: `nucleo`, `mundo`, `servidor` y `cliente`, vacíos salvo su versión |
-| `herramientas/` | `atlas` y `banco` creados, vacíos; su contenido llega en T-011 y T-046 |
+| `paquetes/` | `nucleo` y `mundo` completos para la fase 2; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `herramientas/` | `atlas` (T-011) y `banco` (T-046), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
 | Jugar sin estar | Fase 0 (mayordomo) antes del calendario: plan de temporada de seis turnos, colas de obra y de recua que no reservan hasta empezar, reglas del mayordomo con condiciones y acciones cerradas (3 a 6 activas) y rutas permanentes que se detienen solas y reponen en casa. Test de ausencia: 0,0 % de diferencia al turno 100 |
@@ -59,6 +62,9 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios), 3 consumo, merma y escasez, 4 movimiento de recuas, 5 cometidos, 6 obras, 7 mercado (plazas, casación, precios y menores), 8 territorio (lealtad, fueros, corte, influencia e incorporación de comarcas), 9 población, 10 acontecimientos y 11 prestigio (registro, hitos, primicias, recuento, clasificación y tradiciones) y 12 crónica (lo que ven las recuas, corresponsales y rumores), con los rebaños en las fases 2 y 4. La crónica de cada jugador se compone con plantillas y `vistaDeJugador` filtra el estado Ciclo de vida de las órdenes en `src/ordenes.ts` |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
+| Banco de pruebas | `npm run banco`: partidas automáticas con un robot por casa (estrategias escritas a mano que solo miran la vista de su jugador, con un test que se lo comprueba manipulando mundo y estado), métricas por jugador y turno, informe en Markdown y CSV con las cinco alertas de salud, la tabla «¿juega su vía?» y la comparación de entrar cada turno o cada seis; `npm run banco:comparar` enseña qué cambia entre dos informes. Escenarios `normal` y `hambre`. Informe de referencia guardado: `herramientas/banco/informes/2026-09-19-1492.md` |
+| Alta de partida (provisional) | El banco reparte capitales por la península con el sorteo de orígenes de cada casa, la elección entre los tres y seis jornadas entre capitales; **no recorta el mapa ni ajusta el arranque al origen**: eso lo sustituye T-065 |
+| Tablas del juego | `TABLAS_DEL_JUEGO` en `nucleo/src/datos/index.ts`: las tablas reales montadas (con las casas de verdad), más `datos/estaciones.ts`. Hasta ahora solo existían montadas en las pruebas |
 | Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
@@ -81,6 +87,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 19-09-2026 | **T-046 hecha**: el banco de pruebas. Ocho robots (uno por casa) sobre tres piezas comunes —el tablero que filtra el mundo por lo que el jugador conoce, la fábrica de órdenes con los costes del núcleo y los impulsos con sus prioridades— más la vía propia de cada casa; cada robot elige su origen entre los tres sorteados como lo haría un jugador. Ejecutor determinista (mismo informe byte a byte), métricas por jugador y turno, informe con las cinco alertas de salud y `comparar`. **Una partida de 200 turnos con las ocho casas tarda unos 8 s (el criterio pedía menos de 2 minutos).** Seis de las ocho vías salen en el informe de referencia; la de la Mesta y la del mercader no, y el banco dice por qué: con porte 10 no se llega a ninguna feria ni a una segunda plaza. Cinco hallazgos anotados en T-046 §8 para T-047. 899 tests en verde |
 | 19-09-2026 | **T-045 hecha**: jugar sin estar. Plan de temporada y colas como campos de toda orden, con los estados `programada` y `en cola`, que no reservan hasta empezar. La cola de obras salta lo que no se puede pagar; la de recua va de una en una. Orden `cola` para reordenar. Mayordomo con ocho condiciones y cuatro acciones cerradas, su límite y su orden por prioridad, y marcado en la crónica. Rutas circulares que se detienen por bastimento o por tres fallos de precio, y que reponen en casa (`humo-02` recorre ahora su medio año entero). **Test de ausencia (§4.5): la misma estrategia cada turno y cada seis turnos da 175 y 175 de prestigio al turno 100, un 0,0 % de diferencia.** 840 tests en verde |
 | 19-09-2026 | **T-044 hecha**: la niebla y el parte. `vistaDeJugador` con las diez reglas de §4.1, probadas una a una, y una prueba de fuga que busca identificadores, cifras y la semilla en la vista serializada. Crónica compuesta por plantillas con voz de cronista, con nombres en lugar de identificadores, fecha, resumen económico, clasificación y acción sugerida; un test lee el código fuente y exige plantilla para cada suceso y dato para cada hueco. Precios fechados por plaza (visita, corresponsal, rumor); los corresponsales de los mercaderes funcionan. Rumores por feria, Camino y venta, deterministas y redondeados a dos cifras (±5 %). Las huellas cambian; los sucesos de las fases 1 a 11, idénticos. 816 tests en verde |
 | 19-09-2026 | **T-043 hecha**: el marcador. Prestigio recalculado entero cada turno en nueve capítulos (población, territorio, obras, caminos, comercio, exploración, ganadería, industria e hitos) menos penalizaciones, con tres escenarios comprobados a mano (49, 853 y −45). Registro del jugador con lo que no se deduce del estado; doce hitos en su umbral exacto (Buen nombre, desactivado hasta T-103); primicia única con desempate por mérito y hash; clasificación estable guardada con el puesto anterior. Las huellas cambian, pero los sucesos de las fases 1 a 10 son idénticos a los del commit anterior. 778 tests en verde |
@@ -125,9 +132,11 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Riesgo | Mitigación prevista |
 |---|---|
 | ~~El catálogo geográfico es mucho trabajo manual~~ **resuelto el 18-09-2026**: las diez regiones están escritas y validadas | Lo que queda es afinarlo con el banco de pruebas (T-046) y la pasada de ortografía de los nombres visibles (T-014) |
-| El equilibrio entre ocho casas puede irse de las manos | Banco de pruebas con robots por casa desde la fase 2 (T-046) y criterios numéricos en `docs/04` §4.4 |
+| El equilibrio entre ocho casas puede irse de las manos | El banco ya mide: en la partida de referencia la horquilla va del 25 % al 168 % de la mediana, lejos del 80 %–120 % que pide `docs/04` §4.4. Es el trabajo de T-047 |
 | La complejidad puede crecer por encima de lo divertido | Cada mecánica nueva debe justificar qué decisión añade; si no añade decisión, se descarta |
 | Determinismo roto sin darse cuenta | Tests de reproducción con huella de estado desde T-002 |
 | ~~El atlas se planta si el mapa pasa de 380 comarcas~~ **resuelto el 18-09-2026**: la horquilla es 300–430 mientras quede relleno y 320–380 cuando el catálogo esté completo | Si al terminar T-015 el mapa se pasa de 380, se recortan comarcas en las regiones más densas, no se sube el límite |
-| Con la liquidez de los menores al máximo (solitario), cualquier venta hasta el tope de la plaza se absorbe y el precio se recupera en un turno: el mercader de ferias podría quedarse sin arbitraje | Banco de pruebas (T-046) y ajuste de `liquidezMercaderesMenoresMil`, del margen y de los precios base en T-047 |
+| ~~Con la liquidez de los menores al máximo (solitario), el mercader de ferias podría quedarse sin arbitraje~~ **confirmado el 19-09-2026 por el banco**: los menores devuelven cualquier precio a su base en tres o cuatro turnos y el mercader no arbitra en la partida de referencia | Ajuste de `liquidezMercaderesMenoresMil`, del margen y de los precios base en T-047 |
+| **Nuevo (19-09-2026):** el porte de la recua (10 cargas, 2 de pan por jornada) deja a cualquier casa a tres o cuatro jornadas de su tierra, y las ferias están a 5–14 jornadas de casi todos los orígenes: la Mesta no puede vender lana en feria | Es el primer asunto de T-047 (T-046 §8): porte, bastimento y densidad de ferias |
+| **Nuevo (19-09-2026):** hay orígenes condenados (`labor 1`): dos granjas no alimentan a su población y los seis solares no dan para la cadena de la casa y el mercado | El alta (T-065) tiene que ajustar el arranque al origen, y el banco es donde se comprueba |
 | ~~Los nombres y las notas del catálogo en ASCII~~ **resuelto en T-014 y T-016** | Una guarda en `catalogo.test.ts` impide volver atrás |

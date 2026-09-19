@@ -21,6 +21,8 @@
     "cobertura": "vitest run --coverage",
     "verificar": "npm run tipos && npm run lint && npm run formato && npm run test && npm run atlas:comprobar",
     "partidas": "tsx herramientas/banco/src/regenerar-partidas.ts",
+    "banco": "tsx herramientas/banco/src/ejecutar.ts",
+    "banco:comparar": "tsx herramientas/banco/src/comparar.ts",
     "atlas": "tsx herramientas/atlas/src/atlas.ts",
     "atlas:comprobar": "tsx herramientas/atlas/src/atlas.ts --comprobar"
   },

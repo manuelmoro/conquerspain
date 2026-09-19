@@ -11,3 +11,5 @@ docs/
 # El mundo se genera en forma canonica (una sola linea, claves ordenadas): darle formato
 # romperia la comprobacion de que nadie lo edita a mano.
 paquetes/mundo/datos/
+# Los informes del banco los escribe el propio banco, byte a byte: no se reformatean.
+herramientas/banco/informes/

@@ -4,6 +4,7 @@ export const VERSION_NUCLEO = '0.1.0';
 export * from './utiles/index.ts';
 export * from './tipos/index.ts';
 export * from './validacion/index.ts';
+export { TABLAS_DEL_JUEGO } from './datos/index.ts';
 export { aplicar } from './cambios.ts';
 export type { Cambio } from './cambios.ts';
 export { crearContexto } from './contexto.ts';
@@ -81,4 +82,17 @@ export {
   costeDeRebanyo,
   costeDeRecua,
 } from './reglas/casas/costes.ts';
-export { modificadoresDe, permisosDe, prohibicionesDe } from './reglas/casas/index.ts';
+export {
+  modificadoresDe,
+  modificadoresDelJugador,
+  permisosDe,
+  permisosDelJugador,
+  prohibicionesDe,
+  prohibicionesDelJugador,
+} from './reglas/casas/index.ts';
+export { impedimentoDeConstruir, solaresDe, solaresOcupados } from './reglas/obras.ts';
+export type { MotivoSinConstruir } from './reglas/obras.ts';
+export { cuadrillasDe } from './reglas/cuadrillas.ts';
+export { capacidadDe } from './reglas/poblar.ts';
+export { calidadDeTramo, claveDeTramo, tienePuente } from './reglas/ruta.ts';
+export { origenesPosibles, perfilDe, sortearOrigenes } from './reglas/casas/origenes.ts';

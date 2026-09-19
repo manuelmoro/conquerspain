@@ -13,6 +13,7 @@ export type {
   IdRebanyo,
   IdRecua,
 } from './ids.ts';
+export { idDeMercadoDeFeria, idDeMercadoLocal } from './ids.ts';
 export { RECURSOS, RECURSOS_PERECEDEROS } from './recursos.ts';
 export type { Recurso, Recursos } from './recursos.ts';
 export { POTENCIALES, RASGOS, TERRENOS, VOLUMENES_FERIA } from './mundo.ts';
@@ -68,6 +69,8 @@ export type {
 } from './estado.ts';
 export { ESTADOS_DE_ORDEN, TIPOS_DE_ORDEN } from './ordenes.ts';
 export type {
+  AccionDeMayordomo,
+  CondicionDeMayordomo,
   EstadoDeOrden,
   Orden,
   OrdenBase,
@@ -134,6 +137,7 @@ export type {
   RondaDeTradicion,
   TablasDeReglas,
   TipoEdificio,
+  TipoObraMayor,
   Tradicion,
 } from './reglas.ts';
 export { NOMBRES_DE_FASE, SECCIONES_DE_CRONICA } from './cronica.ts';

@@ -9,6 +9,7 @@ import { MODIFICADORES_NEUTROS } from '../src/datos/casas.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
+import { ESTACIONES } from '../src/datos/estaciones.ts';
 import { GANADERIA } from '../src/datos/ganaderia.ts';
 import { INFLUENCIA } from '../src/datos/influencia.ts';
 import { MAYORDOMO } from '../src/datos/mayordomo.ts';
@@ -257,18 +258,6 @@ export function tablasDeEjemplo(): Registro {
     };
   }
 
-  const estacionPorTurno: string[] = [];
-  for (let turno = 1; turno <= 24; turno += 1) {
-    const mes = Math.floor((turno - 1) / 2) + 1;
-    estacionPorTurno.push(
-      mes <= 2 || mes === 12 ? 'invierno' : mes <= 5 ? 'primavera' : mes <= 8 ? 'verano' : 'otonyo',
-    );
-  }
-
-  const factorPanMil: Registro = {};
-  // El pan sigue la estacion: el verano llena el granero y el invierno lo vacia (docs/03 §3.4).
-  Object.assign(factorPanMil, { primavera: 800, verano: 1600, otonyo: 1000, invierno: 600 });
-
   return {
     version: VERSION_REGLAS,
     recursos,
@@ -277,16 +266,7 @@ export function tablasDeEjemplo(): Registro {
     // Las tradiciones y las rondas son las reales (src/datos/tradiciones.ts).
     tradiciones: JSON.parse(JSON.stringify(TRADICIONES)) as Registro,
     rondas: JSON.parse(JSON.stringify(RONDAS)) as Registro,
-    estaciones: {
-      turnosPorAnyo: 24,
-      estacionPorTurno,
-      factorPanMil,
-      factorObraPiedraMil: { primavera: 1000, verano: 1000, otonyo: 1000, invierno: 2000 },
-      factorObraMaderaMil: { primavera: 1000, verano: 1000, otonyo: 1000, invierno: 1500 },
-      turnosDeBarro: [5, 21],
-      turnoDeEsquileo: 10,
-      turnosPastoDeVerano: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-    },
+    estaciones: JSON.parse(JSON.stringify(ESTACIONES)) as Registro,
     produccion: JSON.parse(JSON.stringify(PRODUCCION)) as Registro,
     consumo: JSON.parse(JSON.stringify(CONSUMO)) as Registro,
     movimiento: JSON.parse(JSON.stringify(MOVIMIENTO)) as Registro,

@@ -162,13 +162,26 @@ cerrar cualquier tarea.
 ## 7.7 Jugadores artificiales (banco de pruebas)
 
 No son una IA rival del juego: son **robots de prueba** que juegan cada casa con una estrategia
-escrita a mano y sirven para medir el equilibrio y detectar bloqueos.
+escrita a mano y sirven para medir el equilibrio y detectar bloqueos (T-046).
 
-- Uno por casa, con su plan (trashumante, ferrón, cantero…).
-- Deterministas: mismo mapa y misma semilla, misma partida.
-- Producen un informe: prestigio por turno, población, maravedís, comarcas, turnos con escasez,
-  turnos sin decisiones disponibles.
-- El informe se guarda y se compara entre versiones para ver el efecto de un cambio de equilibrio.
+- Uno por casa, con su plan (trashumante, ferrón, cantero…), escrito con prioridades legibles.
+- **Juegan limpio**: deciden solo con la vista de su jugador. El mundo lo miran a través de un
+  tablero que lo filtra por lo que conocen, y hay un test que les cambia el mundo y el estado justo
+  donde el jugador no mira y exige las mismas órdenes.
+- Deterministas: mismo mapa y misma semilla, misma partida; y mismo informe, byte a byte.
+- Usan colas, plan de temporada y mayordomo, así que la misma estrategia vale entrando cada turno o
+  cada seis: el informe compara las dos cadencias por casa (docs/02 §2.5).
+- Producen un informe (`herramientas/banco/informes/<fecha>-<semilla>.md`): prestigio por turno y por
+  capítulos, población, maravedís, comarcas, producción por recurso y por edificio, comercio, obras,
+  jornadas, turnos con escasez y turnos sin decisión útil; más cinco alertas de salud del juego y una
+  tabla de si cada casa juega su vía.
+- El informe se guarda y se compara entre versiones (`npm run banco:comparar`) para ver el efecto de
+  un cambio de equilibrio.
+
+```bash
+npm run banco -- --semilla 1492 --turnos 200 --casas todas --repeticiones 3 [--escenario hambre]
+npm run banco:comparar -- informes/antes.csv informes/despues.csv
+```
 
 ## 7.8 Despliegue (cuando toque)
 

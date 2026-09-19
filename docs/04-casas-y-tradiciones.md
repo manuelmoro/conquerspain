@@ -265,7 +265,9 @@ crecimiento, *Azud mayor* lleva el agua fuera de la vega en lugar de regar comar
 ## 4.4 Cómo se mantiene esto equilibrado
 
 - Cada casa se prueba con una partida automática de 200 turnos contra las demás en tres mapas
-  distintos. Se registran prestigio final, población, maravedís y comarcas.
+  distintos. Se registran prestigio final, población, maravedís y comarcas. Lo hace el banco de
+  pruebas (`npm run banco`, T-046), que además dice si cada casa **ha jugado su vía**: no basta con
+  que empate en prestigio si el ferrón no ha sacado hierro o la Mesta no ha vendido lana.
 - Criterio de aceptación del equilibrio: ninguna casa por encima del 120 % ni por debajo del 80 % de
   la mediana de prestigio, y ninguna que gane en los tres mapas.
 - Si una casa necesita un ajuste, se ajusta **su tabla de datos**, nunca la lógica del motor.

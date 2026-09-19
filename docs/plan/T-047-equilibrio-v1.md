@@ -30,11 +30,27 @@ de la Mesta y los mercaderes (−30 % y −25 %), el coste del monasterio de los
 gratis (hoy un fuero no cuesta nada, así que ese privilegio no tiene efecto) y si los salineros
 tierra adentro quedan de verdad «en el montón».
 
+**Heredado de T-046.** El banco ya ha medido tres partidas de 200 turnos con las ocho casas
+(`herramientas/banco/informes/2026-09-19-1492.md`). Lo que hay que atacar, por orden de tamaño, está
+en [T-046 §8](T-046-banco-de-pruebas.md); en resumen:
+
+1. **El porte manda sobre el mapa**: 10 cargas y 2 de pan por jornada dejan a una recua a tres o
+   cuatro jornadas de casa, y las ferias están a 5–14 de casi todos los orígenes. Por eso la Mesta no
+   lleva su lana a ninguna feria y el mercader no alcanza una segunda plaza: son dos de las ocho vías
+   sin jugar. Mirar `movimiento.portePorAcemila`, `bastimentoPorJornada` y la densidad de ferias.
+2. **Los mercaderes menores borran el arbitraje**: devuelven cualquier precio a su base en tres o
+   cuatro turnos (`liquidezMercaderesMenoresMil`, `margenMercaderesMenoresMil`).
+3. **Hay orígenes condenados**: con `labor 1`, dos granjas no alimentan a la población inicial y los
+   seis solares no dan para la cadena de la casa y el mercado. El arranque tiene que depender del
+   origen (T-065 §4).
+4. **Tierra muerta**: 235 de 403 comarcas sin tocar en 200 turnos; el recorte de mapa es de T-065.
+5. **Jugar sin estar** todavía cuesta más de un 5 % de prestigio en varias casas.
+
 ## 4. Procedimiento
 
 Ciclo, repetido hasta cumplir los criterios:
 
-1. Ejecutar el banco: 3 semillas × 200 turnos × 8 casas.
+1. Ejecutar el banco: 3 semillas × 200 turnos × 8 casas (`npm run banco`).
 2. Leer el informe y quedarse con **el problema más grande**, no con todos a la vez.
 3. Formular la hipótesis en una frase («el ferrón gana siempre porque los aperos rinden más de lo que
    cuestan a partir del turno 60»).
@@ -76,9 +92,10 @@ herramientas/banco/informes/            (informes de referencia)
 ## 7. Verificación
 
 ```bash
-npx tsx herramientas/banco/src/ejecutar.ts --semilla 1492 --turnos 200 --casas todas
-npx tsx herramientas/banco/src/ejecutar.ts --semilla 1085 --turnos 200 --casas todas
-npx tsx herramientas/banco/src/ejecutar.ts --semilla 1212 --turnos 200 --casas todas
+npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3
+npm run banco -- --semilla 1085 --turnos 200 --repeticiones 3
+npm run banco -- --semilla 1212 --turnos 200 --repeticiones 3
+npm run banco:comparar -- informes/<antes>.csv informes/<despues>.csv
 npm run verificar
 ```
 
