@@ -59,7 +59,18 @@ mapa completo; ESTADO.md es la aguja.
 | [T-044](T-044-cronica-y-niebla.md) | Fase 12: crónica, niebla e información fechada | **hecha** | T-034 |
 | [T-045](T-045-mayordomo-y-colas.md) | Colas, rutas permanentes, mayordomo y plan de temporada | **hecha** | T-044 |
 | [T-046](T-046-banco-de-pruebas.md) | Banco de pruebas: robots por casa e informes | **hecha** | T-045 |
-| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | pendiente | T-046 |
+| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | bloqueada | T-048, T-049, T-050, T-051 |
+| [T-048](T-048-auditoria-del-banco.md) | Métricas auditables del banco | pendiente | T-046 |
+| [T-049](T-049-preparacion-pura-de-partidas.md) | Preparación de partidas sin servidor | pendiente | T-048 |
+| [T-050](T-050-robots-viables.md) | Robots que ejecutan sus vías | pendiente | T-048, T-049 |
+| [T-051](T-051-ausencia-equivalente.md) | Ausencia con planes equivalentes | pendiente | T-050 |
+
+> **19-09-2026 · revisión del plan solicitada por el usuario.** Antes de seguir construyendo,
+> corregir el diagnóstico del equilibrio: **T-048 → T-049 → T-050 → T-051 → T-047 → T-060**.
+> Las fichas nuevas son trabajo pendiente, no implementaciones. T-049 extrae de T-065 el recorte y
+> arranque sin servidor, rompiendo su dependencia circular con T-047. Los hallazgos y ensayos
+> descartados están en [bitacora-equilibrio.md](bitacora-equilibrio.md). T-046 conserva su cierre
+> histórico; T-048 y T-050 corrigen las limitaciones detectadas sin ocultarlas.
 
 ## Fase 3 · Servidor autoritativo
 
@@ -70,7 +81,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-062](T-062-api.md) | API de partida, órdenes y vista por jugador | pendiente | T-061 |
 | [T-063](T-063-cuentas.md) | Cuentas, sesiones y seguridad | pendiente | T-062 |
 | [T-064](T-064-avisos.md) | Avisos de resolución (SSE y correo) | pendiente | T-062 |
-| [T-065](T-065-alta-de-partida.md) | Alta de partida: casa, sorteo de orígenes y recorte de mapa | pendiente | T-062 |
+| [T-065](T-065-alta-de-partida.md) | Alta de partida: casa, sorteo de orígenes y recorte de mapa | pendiente | T-062, T-049 |
 
 ## Fase 4 · Cliente
 

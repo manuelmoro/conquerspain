@@ -160,6 +160,13 @@ herramientas/banco/src/escenarios/ausencia.ts    (+ ausencia.test.ts)
   mayordomo da **175 y 175 de prestigio al turno 100 (0,0 %)**. El jugador diligente sigue la misma
   regla que la cola: la primera obra que puede pagar.
 
+### Alcance de la evidencia (revisión del 19-09-2026)
+
+El 175/175 anterior corresponde solo al escenario descrito, no a las ocho vías ni a la economía
+completa. [T-051](T-051-ausencia-equivalente.md) ampliará la prueba con planes equivalentes;
+comparar el mismo robot consultado cada uno o seis turnos sin programar lo mismo no aísla una
+carencia de automatización. Se conserva esta regresión y no se generaliza su resultado.
+
 ## 6. Criterios de aceptación
 
 1. Colas de obra y de recua funcionan y explican por qué esperan cuando esperan.

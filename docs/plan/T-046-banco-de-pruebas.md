@@ -10,6 +10,15 @@ medirlas y comparar versiones. Este es el instrumento con el que se afinará el 
 Lee antes: [docs/07-arquitectura.md](../07-arquitectura.md) §7.7,
 [docs/06-competicion.md](../06-competicion.md) §6.8.
 
+### Alcance de las pruebas tras la revisión del 19-09-2026
+
+El cierre histórico demuestra determinismo, instrumentación inicial y capacidad de rutinas en
+escenarios preparados. **No demuestra todavía** que las ocho vías sean viables en una partida
+normal, que una orden propuesta sea una decisión útil ni que los planes de ambas cadencias sean
+equivalentes. La afirmación de §6.3 y §8 de que los fallos «no son del robot» fue prematura:
+T-050 debe discriminar causas. Las métricas se completan en T-048, el arranque en T-049 y la
+comparación de ausencia en T-051. Véase [la revisión con evidencia](bitacora-equilibrio.md).
+
 ## 2. Objetivo
 
 `herramientas/banco`: lanzar partidas automáticas deterministas con un robot por casa, recoger
@@ -143,8 +152,7 @@ paquetes/nucleo/src/datos/{estaciones,index}.ts           las tablas reales del 
 
 **El alta del banco es provisional.** `partida.ts` reparte las capitales por la península entera con
 las reglas que tendrá el alta de verdad (sorteo por casa, elección entre los tres y seis jornadas
-entre capitales), pero no recorta el mapa ni ajusta el arranque a cada origen: eso es **T-065**, que
-tiene que sustituirlo.
+entre capitales), pero no recorta el mapa ni ajusta el arranque a cada origen: eso pasa a **T-049**; T-065 persistirá su resultado.
 
 ## 6. Criterios de aceptación
 
@@ -154,7 +162,7 @@ tiene que sustituirlo.
 3. ✔ Los ocho robots juegan su vía de verdad. Se comprueba de dos maneras: el informe trae la tabla
    «¿juega su vía?» y `vias.test.ts` juega cada casa sola en un origen donde su vía es posible y
    exige la cifra que la prueba. En el informe de referencia salen seis de ocho: la Mesta y el
-   mercader no, y **no es cosa del robot sino del equilibrio** (§8).
+   mercader no, y **la causa no está aislada** (véase la revisión anterior).
 4. ✔ Ningún robot usa información que su jugador no ve: `robots/robots.test.ts` les pasa el mundo y
    el estado manipulados justo donde el jugador no mira y exige las mismas órdenes; un robot tramposo
    de control demuestra que la prueba sabe ver una trampa.
@@ -184,9 +192,9 @@ tamaño:
 3. **Hay orígenes condenados.** Con `labor 1` (Molina, Bilbao) dos granjas no dan de comer a la
    población inicial, y los seis solares de la capital no llegan para la cadena de la casa (carbonera
    + ferrería + madera + piedra) *y* el mercado con el que comprar el pan. El arranque tiene que
-   depender del origen: ya está anotado en **T-065** §4, y el banco es donde se comprueba.
+   depender del origen: pasa a **T-049**; T-065 lo integrará, y el banco lo comprueba.
 4. **Tierra muerta:** 235 de 403 comarcas no las toca nadie en 200 turnos. Ocho casas no llenan la
-   península: el recorte de mapa de T-065 y la horquilla de comarcas por jugador son la respuesta.
+   península: el recorte de mapa pasa a T-049, con su horquilla de comarcas por jugador.
 5. **Jugar sin estar todavía cuesta.** La diferencia entre entrar cada turno y cada seis es grande en
    varias casas. Parte es del robot (decide menos veces) y parte del juego; hay que mirarlo con el
    criterio de T-047 (< 5 %).

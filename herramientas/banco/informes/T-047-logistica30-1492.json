@@ -1,0 +1,23 @@
+{
+  "estado": "descartado",
+  "revisionBase": "8a30026894b8bb9aa432f4ffd9cf9391cfa2288f",
+  "archivoModificado": "paquetes/nucleo/src/datos/movimiento.ts",
+  "valoresSustituidos": {
+    "portePorAcemila": 3,
+    "bastimentoPorJornada": 1
+  },
+  "semillas": [
+    "1492",
+    "1492-2",
+    "1492-3"
+  ],
+  "turnos": 200,
+  "cadencias": [
+    1,
+    6
+  ],
+  "mundo": "v1 completo, 403 comarcas",
+  "robots": "los de la revision base, sin cambios",
+  "tablasFinales": "restauradas a la revision base",
+  "nota": "Manifiesto manual de la revision del plan; T-048 automatizara la procedencia."
+}

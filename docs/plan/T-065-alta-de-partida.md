@@ -1,6 +1,6 @@
 # T-065 · Alta de partida: casa, sorteo de orígenes y recorte de mapa
 
-**Fase:** 3 · Servidor · **Depende de:** T-062 · **Estado:** pendiente (ficha **esbozada**)
+**Fase:** 3 · Servidor · **Depende de:** T-062, T-049 · **Estado:** pendiente (ficha **esbozada**)
 
 > Esta ficha está esbozada a propósito. **Detallarla es la primera mitad de la tarea**: antes de
 > escribir código, complétala al nivel de las fichas de las fases 0 a 2 (diseño detallado con
@@ -13,6 +13,14 @@ justo, reproducible y guardado.
 
 Lee antes: [docs/04-casas-y-tradiciones.md](../04-casas-y-tradiciones.md) §4.2 y [docs/05-geografia.md](../05-geografia.md) §5.7.
 
+### Separación de responsabilidades (19-09-2026)
+
+El recorte, las ofertas de origen y el arranque puro se implementan **antes del equilibrio** en
+[T-049](T-049-preparacion-pura-de-partidas.md). Esta ficha consume ese contrato, persiste las
+ofertas y elecciones y permite crear/unirse a partidas. No debe mantener otro algoritmo de
+recorte o una copia de las tablas de arranque. Los puntos heredados de abajo explican los
+requisitos que motivaron la extracción; no duplican el trabajo de T-049.
+
 ## 2. Objetivo
 
 Crear partidas con su semilla, su recorte de mapa, su casa elegida y sus tres orígenes
@@ -20,7 +28,7 @@ sorteados y persistidos.
 
 ## 3. Alcance
 
-**Entra:** creación, recorte del mapa según número de plazas, sorteo filtrado por casa, elección y fundación de la capital, unión de jugadores a una partida.
+**Entra:** creación y unión de participantes, persistencia de ofertas y elecciones, y consumo del preparador de T-049 para recorte y fundación de capitales.
 
 **No entra:** emparejamiento automático ni partidas públicas (más adelante).
 
@@ -30,7 +38,9 @@ sorteados y persistidos.
 - Sorteo: tres orígenes de perfiles distintos, filtrados por las necesidades de la casa, separados entre sí una distancia mínima si hay varios jugadores.
 - Persistencia del sorteo: recargar no vuelve a sortear.
 - Distancia mínima entre capitales de jugadores distintos (propuesta: 6 jornadas) y comprobación de que todos tienen espacio neutral alrededor.
-- Semilla de partida visible: parte de la transparencia competitiva.
+- **Semilla privada:** no sale por la API ni por las ofertas de origen, como exige docs/02 §2.6
+  y prueba T-044. La antigua propuesta de hacerla visible contradecía la niebla. Cualquier
+  publicación posterior requerirá una política de final de partida explícita; no se añade aquí.
 - **Economía de arranque** (añadido al cerrar T-032): la tabla `arranque` de las reglas
   (`paquetes/nucleo/src/datos/arranque.ts`: almacén inicial y edificios de origen) la aplica el
   alta. Dos granjas alimentan un origen típico (labor 3, 75 vecinos) sin escasez el primer año;

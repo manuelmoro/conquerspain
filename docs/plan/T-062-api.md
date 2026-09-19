@@ -38,7 +38,11 @@ dehesa y el monasterio). Las obras mayores no reservan nada: se pagan a plazos e
 
 - Rutas de [docs/07-arquitectura.md](../07-arquitectura.md) §7.4 y sus códigos de error en español.
 - Toda respuesta de estado pasa por `vistaDeJugador`: ninguna ruta devuelve el estado completo.
-- Las órdenes entrantes se validan con `validarOrdenEntrante` y luego con las reglas del motor; se rechaza cualquier campo extra.
+- Separar el DTO público de intención de la orden interna. `validarOrdenEntrante` comprueba la
+  estructura, no sustituye autorización ni validación semántica. El servidor fija autor, turno,
+  coste con los modificadores efectivos, estado, progreso y marcas de mayordomo; el cliente no
+  puede elegir esos campos internos. Probar coste falsificado, recurso ajeno, turno cerrado y
+  campos extra. El banco deberá distinguir esta validación estructural de ejecución legal (T-048).
 - Idempotencia en el alta de órdenes (un reintento del cliente no duplica la orden).
 - Límite de órdenes por turno y por jugador para evitar abusos, con un número generoso y documentado.
 - Versión de reglas en cada respuesta, para que el cliente sepa si debe recargar.
