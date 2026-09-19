@@ -2,6 +2,7 @@
 //
 // Funciones puras: el paso, por donde puede ir, cuantas cabezas pierde y de que puertos hay que
 // avisarle. La fase 4 las aplica.
+import { permisosDelJugador } from './casas/index.ts';
 import type { EstadoComarca, EstadoJugador, Rebanyo } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
 import type { Camino, Mundo } from '../tipos/mundo.ts';
@@ -39,7 +40,7 @@ export function puedeEntrar(
 ): boolean {
   if (destino === undefined || destino.duenyo === null || destino.duenyo === jugador.id)
     return true;
-  return camino.canyada !== null && reglas.casas[jugador.casa].permisos.pasoFrancoPorCanyada;
+  return camino.canyada !== null && permisosDelJugador(jugador, reglas).pasoFrancoPorCanyada;
 }
 
 /** Como elige camino un rebanyo: sin tierra ajena prohibida y prefiriendo las canyadas. */

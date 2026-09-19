@@ -11,6 +11,7 @@ import type { Potencial } from '../tipos/mundo.ts';
 import { POTENCIALES, RASGOS, TERRENOS } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import type {
+  CondicionDeRonda,
   CriterioDeOrigen,
   DatosAcontecimiento,
   DatosAcontecimientos,
@@ -42,16 +43,20 @@ import type {
 } from '../tipos/reglas.ts';
 import {
   CALIDADES_CAMINO,
+  COMPOSICION_DE_MODIFICADORES,
+  CRITERIOS_DE_TRADICION,
   NOMBRES_DE_PERMISO,
   CASAS,
   ESTACIONES,
+  RONDAS_DE_TRADICION,
   TIPOS_DE_ACONTECIMIENTO,
   TIPOS_DE_EDIFICIO,
   TIPOS_DE_OBRA_MAYOR,
   VERSION_REGLAS,
 } from '../tipos/reglas.ts';
+import { comparar } from '../utiles/orden.ts';
 import { efectoDeAcontecimiento, milesimas, recursos, recursosParciales } from './comunes.ts';
-import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
+import type { CamposDe, ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
   booleano,
   entero,
@@ -60,6 +65,7 @@ import {
   lista,
   oNulo,
   objeto,
+  objetoParcial,
   porTipo,
   registro,
   registroCompleto,
@@ -90,14 +96,15 @@ const validarEdificio: Validador<DatosEdificio> = objeto<DatosEdificio>({
   exigePermiso: oNulo(unoDe(NOMBRES_DE_PERMISO)),
 });
 
-const validarModificadores: Validador<Modificadores> = objeto<Modificadores>({
+const camposDeModificadores: CamposDe<Modificadores> = {
   produccionMil: recursosParciales(),
   costeEdificioMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_EDIFICIO)),
   nivelMaximoEdificio: registro(entero({ minimo: 0, maximo: 10 }), unoDe(TIPOS_DE_EDIFICIO)),
   potencialMinimoEdificio: registro(entero({ minimo: 0, maximo: 5 }), unoDe(TIPOS_DE_EDIFICIO)),
   solaresExtra: entero({ minimo: -4, maximo: 4 }),
   aperosMaximo: entero({ minimo: 0, maximo: 6 }),
-  pasoRecuaMil: milesimas(0, 5000),
+  // Es un sumando: una tradicion puede restar paso (la carreta de bueyes).
+  pasoRecuaMil: entero({ minimo: -2000, maximo: 5000 }),
   costeRecuaMil: milesimas(0, 5000),
   porteExtra: entero({ minimo: -20, maximo: 60 }),
   obraMayorCosteMil: milesimas(0, 5000),
@@ -108,7 +115,7 @@ const validarModificadores: Validador<Modificadores> = objeto<Modificadores>({
   lanaEsquileoMil: milesimas(0, 5000),
   costeRebanyoMil: milesimas(0, 5000),
   lealtadMinima: entero({ minimo: 0, maximo: 100 }),
-  agotamientoMonteMil: milesimas(0, 5000),
+  agotamientoMil: registro(milesimas(0, 5000), unoDe(RECURSOS_AGOTABLES)),
   crecimientoMil: milesimas(0, 5000),
   produccionEdificioMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_EDIFICIO)),
   produccionEdificioEnVegaMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_EDIFICIO)),
@@ -117,9 +124,16 @@ const validarModificadores: Validador<Modificadores> = objeto<Modificadores>({
   costeObraMayorMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_OBRA_MAYOR)),
   capacidadPorCasasExtra: entero({ minimo: -30, maximo: 30 }),
   vecinosParaPueblaMil: milesimas(0, 5000),
-});
+  avanceObraMayorMil: registro(milesimas(0, 5000), unoDe(TIPOS_DE_OBRA_MAYOR)),
+  cuadrillasExtra: entero({ minimo: -3, maximo: 3 }),
+  efectoAperosMil: milesimas(0, 5000),
+  administracionMil: milesimas(0, 5000),
+  influenciaMil: milesimas(0, 5000),
+  bastimentoMil: milesimas(0, 5000),
+};
+const validarModificadores = objeto<Modificadores>(camposDeModificadores);
 
-const validarPermisos: Validador<Permisos> = objeto<Permisos>({
+const camposDePermisos: CamposDe<Permisos> = {
   pasoFrancoPorCanyada: booleano(),
   obraEnComarcaAjena: booleano(),
   letraDeCambio: booleano(),
@@ -127,14 +141,16 @@ const validarPermisos: Validador<Permisos> = objeto<Permisos>({
   venderAperos: booleano(),
   acequiaMenor: booleano(),
   cartaPuebla: booleano(),
-});
+};
+const validarPermisos = objeto<Permisos>(camposDePermisos);
 
-const validarProhibiciones: Validador<Prohibiciones> = objeto<Prohibiciones>({
+const camposDeProhibiciones: CamposDe<Prohibiciones> = {
   roturar: booleano(),
   cargaFiscalDura: booleano(),
   catedral: booleano(),
   cobrarPortazgo: booleano(),
-});
+};
+const validarProhibiciones = objeto<Prohibiciones>(camposDeProhibiciones);
 
 const validarCriterioDeOrigen: Validador<CriterioDeOrigen> = objeto<CriterioDeOrigen>({
   potenciales: registro(entero({ minimo: 1, maximo: 5 }), unoDe(POTENCIALES)),
@@ -161,12 +177,25 @@ const validarCasa: Validador<DatosCasa> = objeto<DatosCasa>({
 
 const validarTradicion: Validador<DatosTradicion> = objeto<DatosTradicion>({
   casa: unoDe(CASAS),
-  ronda: unoDe(['renombre', 'fama', 'linaje'] as const),
+  ronda: unoDe(RONDAS_DE_TRADICION),
+  criterio: unoDe(CRITERIOS_DE_TRADICION),
   nombre: texto({ minimo: 1, maximo: 60 }),
-  descripcion: texto({ minimo: 1, maximo: 300 }),
-  nota: texto({ maximo: 300 }),
-  modificadores: validarModificadores,
+  descripcion: texto({ minimo: 1, maximo: 200 }),
+  nota: texto({ minimo: 1, maximo: 400 }),
+  modificadores: objetoParcial<Modificadores>(camposDeModificadores),
+  permisos: objetoParcial<Permisos>(camposDePermisos),
+  prohibiciones: objetoParcial<Prohibiciones>(camposDeProhibiciones),
   desactivada: booleano(),
+  pendienteDe: oNulo(texto({ minimo: 1, maximo: 20 })),
+});
+
+const umbral = oNulo(entero({ minimo: 1 }));
+const validarCondicionDeRonda: Validador<CondicionDeRonda> = objeto<CondicionDeRonda>({
+  comarcas: umbral,
+  vecinos: umbral,
+  obraMayorTerminada: booleano(),
+  prestigio: umbral,
+  turno: umbral,
 });
 
 const validarEstacionesDatos: Validador<DatosEstaciones> = objeto<DatosEstaciones>({
@@ -460,6 +489,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   edificios: registroCompleto(TIPOS_DE_EDIFICIO, validarEdificio),
   casas: registroCompleto(CASAS, validarCasa),
   tradiciones: registro(validarTradicion),
+  rondas: registroCompleto(RONDAS_DE_TRADICION, validarCondicionDeRonda),
   estaciones: validarEstacionesDatos,
   produccion: validarProduccion,
   consumo: validarConsumo,
@@ -520,14 +550,7 @@ export function validarTablas(dato: unknown): Resultado<TablasDeReglas> {
     }
   }
 
-  for (const [clave, tradicion] of Object.entries(tablas.tradiciones)) {
-    if (!clave.startsWith(`${tradicion.casa}-`)) {
-      errores.push({
-        ruta: `tradiciones.${clave}`,
-        mensaje: `una tradicion se identifica como "<casa>-<nombre>" y esta es de la casa "${tradicion.casa}"`,
-      });
-    }
-  }
+  errores.push(...coherenciaDeTradiciones(tablas));
 
   errores.push(...coherenciaDeAcontecimientos(tablas));
 
@@ -542,6 +565,65 @@ export function validarTablas(dato: unknown): Resultado<TablasDeReglas> {
 }
 
 /** Las cifras de los acontecimientos casan con su horquilla, con el calendario y entre si. */
+/**
+ * Lo que cada tradicion fija (un valor fijo, un permiso, una prohibicion), con la clave con que
+ * choca: `modificadores.aperosMaximo`, `modificadores.nivelMaximoEdificio.huerta`, `permisos.x`…
+ */
+function loQueFija(tradicion: DatosTradicion): string[] {
+  const composicion = new Map<string, string>(Object.entries(COMPOSICION_DE_MODIFICADORES));
+  const claves: string[] = [];
+  for (const [campo, valor] of Object.entries(tradicion.modificadores)) {
+    if (composicion.get(campo) !== 'fija') continue;
+    if (typeof valor === 'object') {
+      for (const clave of Object.keys(valor)) claves.push(`modificadores.${campo}.${clave}`);
+    } else {
+      claves.push(`modificadores.${campo}`);
+    }
+  }
+  for (const campo of Object.keys(tradicion.permisos)) claves.push(`permisos.${campo}`);
+  for (const campo of Object.keys(tradicion.prohibiciones)) claves.push(`prohibiciones.${campo}`);
+  return claves;
+}
+
+/**
+ * Cada tradicion es de su casa, dice por que esta desactivada, y ninguna fija lo que ya fija
+ * otra de su casa: asi el orden en que se eligen no cambia el resultado.
+ */
+function coherenciaDeTradiciones(tablas: TablasDeReglas): ErrorValidacion[] {
+  const errores: ErrorValidacion[] = [];
+  const fijadoPor = new Map<string, string>();
+  for (const clave of Object.keys(tablas.tradiciones).sort(comparar)) {
+    const tradicion = tablas.tradiciones[clave];
+    if (tradicion === undefined) continue;
+    const ruta = `tradiciones.${clave}`;
+    if (!clave.startsWith(`${tradicion.casa}-`)) {
+      errores.push({
+        ruta,
+        mensaje: `una tradicion se identifica como "<casa>-<nombre>" y esta es de la casa "${tradicion.casa}"`,
+      });
+    }
+    if (tradicion.desactivada !== (tradicion.pendienteDe !== null)) {
+      errores.push({
+        ruta: `${ruta}.pendienteDe`,
+        mensaje:
+          'una tradicion desactivada dice de que tarea depende, y una activa lleva pendienteDe null',
+      });
+    }
+    for (const fija of loQueFija(tradicion)) {
+      const otra = fijadoPor.get(`${tradicion.casa}|${fija}`);
+      if (otra !== undefined) {
+        errores.push({
+          ruta: `${ruta}.${fija}`,
+          mensaje: `"${otra}" ya fija este valor para su casa; dos tradiciones no pueden fijar lo mismo`,
+        });
+      } else {
+        fijadoPor.set(`${tradicion.casa}|${fija}`, clave);
+      }
+    }
+  }
+  return errores;
+}
+
 function coherenciaDeAcontecimientos(tablas: TablasDeReglas): ErrorValidacion[] {
   const errores: ErrorValidacion[] = [];
   const { sorteo, catalogo, limites } = tablas.acontecimientos;

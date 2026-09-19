@@ -39,7 +39,13 @@ import type { Mundo } from '../tipos/mundo.ts';
 import type { Orden } from '../tipos/ordenes.ts';
 import { POTENCIALES, VOLUMENES_FERIA } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
-import { CALIDADES_CAMINO, CASAS, TIPOS_DE_OBRA_MAYOR, VERSION_REGLAS } from '../tipos/reglas.ts';
+import {
+  CALIDADES_CAMINO,
+  CASAS,
+  RONDAS_DE_TRADICION,
+  TIPOS_DE_OBRA_MAYOR,
+  VERSION_REGLAS,
+} from '../tipos/reglas.ts';
 import { efectoDeAcontecimiento, nivelPotencial, recursos } from './comunes.ts';
 import { validarOrdenEntrante, validarParada } from './validarOrden.ts';
 import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
@@ -89,6 +95,7 @@ const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
   nombre: texto({ minimo: 1, maximo: 60 }),
   casa: unoDe(CASAS),
   tradiciones: lista(texto({ minimo: 1, maximo: 60 }), { maximo: 3 }),
+  rondas: registro(entero({ minimo: 1 }), unoDe(RONDAS_DE_TRADICION)),
   capital: identificador<IdComarca>(),
   almacen: recursos(),
   reservado: recursos(),

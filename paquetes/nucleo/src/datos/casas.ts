@@ -32,7 +32,7 @@ export const MODIFICADORES_NEUTROS: Modificadores = {
   lanaEsquileoMil: 1000,
   costeRebanyoMil: 1000,
   lealtadMinima: 0,
-  agotamientoMonteMil: 1000,
+  agotamientoMil: {},
   crecimientoMil: 1000,
   produccionEdificioMil: {},
   produccionEdificioEnVegaMil: {},
@@ -41,6 +41,12 @@ export const MODIFICADORES_NEUTROS: Modificadores = {
   costeObraMayorMil: {},
   capacidadPorCasasExtra: 0,
   vecinosParaPueblaMil: 1000,
+  avanceObraMayorMil: {},
+  cuadrillasExtra: 0,
+  efectoAperosMil: 1000,
+  administracionMil: 1000,
+  influenciaMil: 1000,
+  bastimentoMil: 1000,
 };
 
 export const SIN_PERMISOS: Permisos = {
@@ -108,7 +114,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
       potencialMinimoEdificio: { ferreria: 1 },
       edificiosPorRequisito: { ferreria: 2 },
       aperosMaximo: 4,
-      agotamientoMonteMil: 1500,
+      agotamientoMil: { monte: 1500 },
     },
     permisos: { venderAperos: true },
     origenes: [

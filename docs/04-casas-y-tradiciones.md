@@ -125,6 +125,10 @@ necesita.
 | Arrieros | recua −40 %, +1 jornada, +5 de porte, −1 vecino por nivel de casas, sin catedral | **portazgo propio** (T-103) |
 | Hortelanos | acequia menor (el pan sin factor de estación), huerta de nivel 4 y +50 % en vega, labor −25 % fuera de vega o río | — |
 
+Las fases nunca leen la tabla de casas directamente: piden los modificadores, permisos y
+prohibiciones a `reglas/casas`, que devuelve los de la casa **compuestos con las tradiciones
+elegidas** (§4.3.1); un test lo vigila.
+
 Lo desactivado tiene su permiso en la tabla, pero ninguna fase lo lee: hay un test que lo comprueba,
 y quien lo active tiene que actualizar esta tabla. Todas las prohibiciones se comprueban al empezar
 la orden y la cancelan con el motivo `prohibido-por-la-casa`.
@@ -142,33 +146,121 @@ empieza con la misma partida que su vecino.
 
 ## 4.3 Tradiciones: la rama que eliges a mitad de camino
 
-Cada casa tiene **tres tradiciones**; se elige una al alcanzar el hito correspondiente y no se puede
-cambiar. Son la segunda capa de asimetría: dos partidas con la misma casa no se parecen.
+Cada casa tiene **tres tradiciones por ronda**; en cada ronda se elige una y no se puede cambiar.
+Son la segunda capa de asimetría: dos partidas con la misma casa no se parecen.
 
-| Hito | Cuándo | Qué se elige |
+| Ronda | Se abre al… | Qué se elige |
 |---|---|---|
-| **Renombre** | Al alcanzar 3 comarcas o 150 vecinos | Primera tradición |
-| **Fama** | Al terminar la primera obra mayor o llegar a 400 de prestigio | Segunda tradición |
-| **Linaje** | Turno 150 o 1 000 de prestigio | Tercera tradición |
+| **Renombre** | tener 3 comarcas o 150 vecinos en el dominio | Primera tradición |
+| **Fama** | terminar una obra mayor o llegar a 400 de prestigio | Segunda tradición |
+| **Linaje** | llegar al turno 150 o a 1 000 de prestigio | Tercera tradición |
 
-Ejemplos (el catálogo completo vive en los datos del núcleo):
+### 4.3.1 Reglas
 
-- **Mesta** — *Lanas finas* (+lana, precio superior) · *Concejo fuerte* (influencia en comarcas por
-  donde pasan tus cañadas) · *Ganado mayor* (vacuno: menos lana, más pan y cuero).
-- **Ferrones** — *Vena profunda* (menos agotamiento) · *Armas* (habilita milicia temprana en la fase
-  de conflicto) · *Maestros de forja* (aperos vendidos rinden más y pagan más renta).
-- **Canteros** — *Cimborrio* (catedrales en la mitad de tiempo) · *Ingenieros* (calzadas y puentes
-  dobles de efecto) · *Gremio* (cuadrillas extra y contratos simultáneos).
-- **Mercaderes** — *Banca* (prestar maravedís a otros jugadores con interés) · *Consulado*
-  (comisión cero en dos ferias) · *Flota* (comercio marítimo anticipado).
-- **Monjes** — *Scriptorium* (prestigio por conocimiento; revela el mapa más rápido) ·
-  *Granjas monásticas* (producción propia alta) · *Hospitalidad* (ingresos por peregrinos).
-- **Salineros** — *Almadraba* (pesca mayor) · *Salazón de exportación* (pan conservado vendible) ·
-  *Alfolí* (monopolio: fija el precio de la sal en sus mercados).
-- **Arrieros** — *Ventas reales* (red de posadas que también da información) · *Carretería* (porte
-  enorme) · *Correo* (vende información a otros jugadores).
-- **Hortelanos** — *Azud mayor* (regadío a comarcas vecinas) · *Morera y seda* (bien de lujo) ·
-  *Tribunal de aguas* (reparte agua: bonus a aliados, penaliza a rivales de la misma cuenca).
+- Las rondas se miran al final de cada turno (fase 11). Al abrirse, la crónica lo anuncia con las
+  cartas de la casa, y la ronda **ya no se cierra** aunque se pierda el hito. La obra mayor tiene que
+  terminarla el jugador; heredarla al incorporar una comarca no cuenta.
+- La orden `tradicion` no cuesta nada. En la fase 11 **primero se elige y después se abren rondas**:
+  solo se puede elegir en una ronda que ya estaba abierta, así que siempre se han visto las cartas
+  antes de elegir. Lo elegido rige desde el turno siguiente.
+- Pensárselo no penaliza, pero las rondas no se acumulan: una por ronda, y para siempre.
+- Dos órdenes del mismo jugador para la misma ronda en el mismo turno se cancelan las dos
+  (`eleccion-ambigua`): nunca decide el orden de llegada. Los demás rechazos son `ronda-cerrada`,
+  `ronda-ya-elegida`, `tradicion-de-otra-casa`, `tradicion-desactivada`, `tradicion-desconocida` y
+  `coste-incoherente`. La regla vive en un solo sitio (`impedimentoDeTradicion`), que también usará
+  el servidor al dar la orden.
+- Una tradición usa los mismos modificadores, permisos y prohibiciones que una casa, pero solo dice
+  lo que cambia. Se compone con la casa según la tabla `COMPOSICION_DE_MODIFICADORES`: **los factores
+  se multiplican, los sumandos se suman y los valores fijos** (niveles máximos, tasas, mínimos,
+  permisos) **los pone la tradición**. Dos tradiciones de una casa no pueden fijar lo mismo (lo
+  vigila el validador de tablas), y los factores se componen siempre en el orden de las rondas, así
+  que el resultado no depende del orden en que se eligieron.
+- Cada casa y ronda tiene una carta de cada criterio: **profundizar** en lo suyo con un coste,
+  **compensar** su límite sin quitarle identidad y **abrir** una vía inesperada.
+- Las que necesitan otro jugador o el conflicto están escritas pero desactivadas (⏸) con la tarea
+  que las activará; no se ofrecen. Cada ronda ofrece al menos dos cartas activas.
+
+T-042 añadió siete puntos de extensión genéricos que las tradiciones necesitaban: agotamiento por
+recurso (antes solo el monte), avance de obra mayor por tipo, cuadrillas extra, efecto de los
+aperos, coste de administración, influencia (cada fuente y el regalo, no el desgaste) y bastimento
+de las recuas en el camino. Además, el modificador de maravedís de la casa pesa ahora sobre el
+mercado y los impuestos de sus comarcas.
+
+### 4.3.2 Catálogo
+
+Los números son de primera mano; los ajusta T-047. Cada carta lleva además su nota histórica, en
+`nucleo/src/datos/tradiciones.ts`.
+
+Respecto a los primeros esbozos, la ronda Renombre reformula lo que pedía mecánicas que no existen:
+*Scriptorium* abarata la administración (los cartularios), *Hospitalidad* da maravedís y
+crecimiento, *Azud mayor* lleva el agua fuera de la vega en lugar de regar comarcas vecinas,
+*Morera y seda* da maravedís en vez de un bien de lujo, *Ventas reales* alimenta a las recuas y
+*Flota* abarata la atarazana y mejora las lonjas. *Tribunal de las aguas*, *Maestros de forja* y
+*Gremio* funcionan ya para uno mismo y ganarán su parte entre jugadores con T-103.
+
+#### La Mesta
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Lanas finas**: Merinas de vellón corto: un 30 % más de lana, y cada rebaño cuesta un 20 % más. | **Ganado mayor**: Bueyes y vacas de labor: puedes roturar y tu pan rinde un 30 % más, pero la lana baja un 30 %. | **Concejo fuerte**: Los alcaldes de la Mesta pesan en los concejos: tu influencia rinde un 40 % más. |
+| Fama | **Gran cabaña**: Rebaños un 20 % más baratos y un 10 % más de lana, pero administrar cada comarca cuesta un 15 % más. | **Pósitos**: Graneros concejiles: el pan del almacén se pierde a la mitad de ritmo. | **Cabaña de carreteros**: Tus recuas cuestan un 15 % menos y cargan cuatro más: la cañada también es camino. |
+| Linaje | **Lana para Flandes**: Un 25 % más de lana, pero tu gente crece un 10 % más despacio. | **Corredores de lana**: Tus corredores compran y venden en cualquier plaza a mitad de comisión. | **Pañeros de Segovia**: Mercados e impuestos dan un 30 % más de maravedís, pero la lana del esquileo baja un 15 %. |
+
+#### Ferrones de Vizcaya
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Maestros de forja**: Tus aperos rinden un 30 % más, pero tu pan un 10 % menos; con T-103, los vendidos pagan más renta. | **Vena profunda**: El hierro se agota a la mitad y el monte un 20 % más despacio; las ferrerías cuestan un 25 % más. | **Armas** ⏸ (T-120): Espadas, lanzas y corazas: con la fase de conflicto, milicia temprana y más barata. |
+| Fama | **Ferrería mayor**: Tus ferrerías rinden un 30 % más, pero cada carbonera cuesta un 30 % más. | **Trasmochos**: Se corta la rama y no el tronco: el monte se te agota un 30 % más despacio. | **Anclas y clavazón**: Mercados e impuestos dan un 20 % más de maravedís y la atarazana te cuesta un 40 % menos. |
+| Linaje | **Hierro de Vizcaya**: Un 30 % más de hierro, pero administrar cada comarca cuesta un 10 % más. | **Martinetes**: El mazo de agua aprovecha el carbón: cada carbonera sostiene tres niveles de ferrería. | **Hidalguía universal**: La lealtad de tus comarcas no baja de 30 y administrarlas cuesta un 15 % menos. |
+
+#### Canteros trasmeranos
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Cimborrio**: Tus catedrales se levantan en la mitad de tiempo, y cuestan un 10 % más. | **Gremio**: Una cuadrilla más en cada comarca; con T-103, además, contratos de obra simultáneos. | **Ingenieros**: Puentes y calzadas un 40 % más baratos y otro 40 % más rápidos. |
+| Fama | **Maestro mayor**: Todas tus obras mayores avanzan un 20 % más, pero tu pan rinde un 10 % menos. | **Bancales**: Muros de piedra seca ganan tierra a la ladera: recuperas el solar que te faltaba. | **Cal y canto**: Casas, cercas, ventas y mercados te cuestan un 30 % menos. |
+| Linaje | **Escuela de Trasmiera**: Obras mayores un 10 % más baratas, pero administrar cada comarca cuesta un 10 % más. | **Casas de piedra**: Cada nivel de casas aloja dos vecinos más. | **Villas muradas**: La muralla te cuesta la mitad y la lealtad de tus comarcas no baja de 25. |
+
+#### Mercaderes de feria
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Consulado**: El consulado negocia por ti: no pagas comisión en ninguna plaza, pero administrar cuesta un 10 % más. | **Flota**: La atarazana te cuesta la mitad y tus lonjas rinden un 30 % más. | **Banca** ⏸ (T-103): Prestar maravedís a otros jugadores con interés, con contrato que el motor cumple. |
+| Fama | **Compañía**: Tus recuas cuestan un 20 % menos y cargan tres más, pero tu gente crece un 5 % más despacio. | **Censos**: Compras rentas sobre tierras ajenas: tu pan rinde un 20 % más. | **Asentistas**: Adelantas dinero y material: tus obras mayores cuestan un 20 % menos. |
+| Linaje | **Ferias de pagos**: Mercados e impuestos dan un 30 % más de maravedís, y administrar cuesta otro 10 % más. | **Alhóndigas**: El pan del almacén se pierde a menos de la mitad de ritmo. | **Mecenazgo**: Catedrales y monasterios te cuestan un 30 % menos. |
+
+#### Monjes repobladores
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Granjas monásticas**: Tu pan rinde un 25 % más, pero cada granja cuesta un 20 % más. | **Hospitalidad**: Peregrinos que dejan limosna y a veces se quedan: un 25 % más de maravedís y un 10 % más de crecimiento. | **Scriptorium**: Cartularios y deslindes: administrar cada comarca te cuesta un 30 % menos. |
+| Fama | **Reforma**: La lealtad de tus comarcas no baja de 60, pero mercados e impuestos rinden un 10 % menos. | **Señorío abacial**: El abad es señor: puedes fijar una carga fiscal dura. | **Puentes del Camino**: Puentes un 40 % y calzadas un 30 % más baratos. |
+| Linaje | **Císter**: Tus pueblas nacen con un 20 % menos de gente y tu gente crece un 15 % más, pero tu pan rinde un 10 % menos. | **Granja franca**: Lo que vendes de tus granjas paga la mitad de comisión. | **Estudio general**: Tus letrados pesan en los concejos: tu influencia rinde un 30 % más. |
+
+#### Salineros y almadraberos
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Almadraba**: Pesca mayor: tus lonjas rinden un 30 % más, y cuestan otro 30 % más. | **Salazón de exportación**: Pescado salado para el camino: tus recuas comen un 30 % menos y ganas un 10 % más de maravedís. | **Alfolí** ⏸ (T-102): Monopolio: fijas el precio de la sal en las plazas donde vendes. |
+| Fama | **Eras de sal**: Tus salinas rinden un 25 % más, pero la sal se te agota un 30 % más deprisa. | **Salinas de interior**: Granjas, aserraderos y canteras vuelven a llegar a nivel 3. | **Sal para el ganado**: Tus rebaños cuestan un 30 % menos y dan un 10 % más de lana. |
+| Linaje | **Regalía de la sal**: Un 30 % más de sal, pero tu gente crece un 5 % más despacio. | **Caminos de la sal**: Tus recuas cuestan un 20 % menos y andan media jornada más. | **Hermandad de las Marismas**: Una liga de puertos con voz propia: tu influencia rinde un 30 % más. |
+
+#### Arrieros maragatos
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Carretería**: Carretas de bueyes: diez de porte más por recua, pero media jornada menos de paso. | **Ventas reales**: Tus recuas comen un 30 % menos en el camino y tus ventas cuestan un 30 % menos; con T-102, dan noticias. | **Correo** ⏸ (T-102): Vendes información a otros jugadores, con precio y fecha. |
+| Fama | **Mulas de tiro**: Recuas un 20 % más baratas y con tres más de porte, pero tu pan rinde un 10 % menos. | **Casa solariega**: Tu gente echa raíces: recuperas el vecino por nivel de casas. | **Abastecedores**: Compras y vendes por tu cuenta: pagas la mitad de comisión en cualquier plaza. |
+| Linaje | **Arriería mayor**: Media jornada más de paso y recuas un 10 % más baratas, pero tu gente crece un 10 % más despacio. | **Mesones**: Donde paran tus recuas nacen mesones: tu gente crece un 15 % más. | **Santa Hermandad**: Caminos seguros: tu influencia rinde un 30 % más y la lealtad de tus comarcas no baja de 20. |
+
+#### Hortelanos de la vega
+
+| Ronda | Profundizar | Compensar | Abrir |
+|---|---|---|---|
+| Renombre | **Tribunal de las aguas**: El riego repartido con justicia: huertas y granjas de vega rinden un 20 % más. Con T-103, también a tus aliados. | **Azud mayor**: El agua llega más lejos: tu labor ya no pierde nada fuera de la vega. | **Morera y seda**: Un lujo que se paga: un 30 % más de maravedís, pero tu pan rinde un 10 % menos. |
+| Fama | **Norias**: Tus huertas llegan a nivel 5, y cada huerta cuesta un 20 % más. | **Aljibes**: Balsas y aljibes guardan el agua: fuera de la vega tu labor rinde un 15 % más. | **Alquerías**: Aldeas de huerta siguiendo la acequia: pueblas con un 30 % menos de gente y un 10 % más de crecimiento. |
+| Linaje | **Marjales**: Tu pan rinde un 20 % más, pero administrar cada comarca cuesta un 10 % más. | **Comunidad de regantes**: El agua hace comunidad: la lealtad de tus comarcas no baja de 30. | **Arrozales**: Granjas de vega un 30 % más y un 20 % más de maravedís, pero tu gente crece un 10 % más despacio. |
 
 ## 4.4 Cómo se mantiene esto equilibrado
 

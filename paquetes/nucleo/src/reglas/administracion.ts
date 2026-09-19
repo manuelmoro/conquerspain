@@ -4,6 +4,7 @@
 // Las jornadas a la capital se miden por el mejor camino **conocido** y **en verano**, con los
 // puentes y calzadas construidos: asi el coste no oscila con la estacion y un camino bueno abarata
 // gobernar lo que queda lejos.
+import { modificadoresDelJugador } from './casas/index.ts';
 import { jornadasDeTramoMil } from './jornadas.ts';
 import type { Mejoras } from './ruta.ts';
 import { calidadDeTramo, comarcasTransitables, tienePuente } from './ruta.ts';
@@ -118,8 +119,8 @@ export interface CosteDeAdministracion extends Cercania {
 }
 
 /**
- * Lo que cuesta administrar cada comarca, `(4 + 2 × jornadas a la capital) × fuero`, en el orden
- * en que se paga. Mientras la corte se traslada, todo cuesta un 25 % mas.
+ * Lo que cuesta administrar cada comarca, `(4 + 2 × jornadas a la capital) × fuero × casa`, en el
+ * orden en que se paga. Mientras la corte se traslada, todo cuesta un 25 % mas.
  */
 export function costesDeAdministracion(
   comarcas: readonly EstadoComarca[],
@@ -131,12 +132,16 @@ export function costesDeAdministracion(
   const fueroDe = new Map(comarcas.map((c) => [c.id, c.fuero]));
   const trasladoMil =
     jugador.traslado === null ? MIL : MIL + reglas.territorio.recargoAdministracionTrasladoMil;
+  const casaMil = modificadoresDelJugador(jugador, reglas).administracionMil;
   return comarcasPorCercania(comarcas, jugador, mundo, reglas, mejoras).map((cercania) => {
     const bruto =
       reglas.consumo.administracionBase +
       multiplicarFactores(reglas.consumo.administracionPorJornada, [cercania.jornadasMil]);
     const fuero = fueroDe.get(cercania.comarca) ?? 'ninguno';
     const fueroMil = reglas.poblacion.fueros[fuero].administracionMil;
-    return { ...cercania, coste: multiplicarFactores(bruto, [fueroMil, trasladoMil]) };
+    return {
+      ...cercania,
+      coste: multiplicarFactores(bruto, [fueroMil, trasladoMil, casaMil]),
+    };
   });
 }

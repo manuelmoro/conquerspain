@@ -17,9 +17,11 @@ export function bastimentoDe(
   andadoMil: Milesimas,
   estacion: Estacion,
   reglas: TablasDeReglas,
+  /** Lo que come en el camino una recua de la casa: 1000 si nada (las ventas la alimentan). */
+  bastimentoMil: Milesimas = MIL,
 ): Bastimento {
   const m = reglas.movimiento;
-  const pan = multiplicarFactores(m.bastimentoPorJornada, [andadoMil]);
+  const pan = multiplicarFactores(m.bastimentoPorJornada, [andadoMil, bastimentoMil]);
   const tramoDeSal = m.jornadasPorSalEnVerano * MIL;
   const sal = estacion === 'verano' ? Math.ceil(andadoMil / tramoDeSal) : 0;
   return { pan, sal };

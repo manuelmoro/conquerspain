@@ -103,7 +103,7 @@ interface Orden {
 | Territorio | `regalo` | 50 mrs al concejo de una comarca neutral: +5 de influencia, una vez cada 4 turnos |
 | Mercado | `vender` / `comprar` | Órdenes con precio límite, ejecutables en feria o mercado local por una recua quieta que trata |
 | Obra | `obra mayor` | Iniciar o financiar una obra monumental de varias decenas de turnos |
-| Casa | `tradicion` | Elegir una vía de desarrollo al alcanzar un hito |
+| Casa | `tradicion` | Elegir una tradición en una ronda abierta: gratis, irreversible y vigente desde el turno siguiente (docs/04 §4.3) |
 | Gestión | `mayordomo` | Alta o baja de una regla permanente (ver §2.5) |
 
 Cada familia se detalla en el documento de la mecánica correspondiente. El catálogo crece con las
@@ -152,7 +152,7 @@ del orden en que se recibieron las órdenes ni del orden de los jugadores.
 | 8 | **Territorio** | Incorporaciones, cambios de lealtad, fueros que entran en vigor |
 | 9 | **Población** | Crecimiento, mermas por hambre prolongada, migraciones internas |
 | 10 | **Acontecimientos** | Se aplican los anunciados y se anuncian los de los turnos siguientes |
-| 11 | **Prestigio y hitos** | Recuento de prestigio, hitos alcanzados, clasificación |
+| 11 | **Prestigio y hitos** | Tradiciones (se elige y luego se abren rondas), recuento de prestigio, hitos alcanzados, clasificación |
 | 12 | **Crónica** | Se compone el parte del turno de cada jugador con lo que ese jugador puede saber |
 
 ### 2.4.2 Reglas de simultaneidad

@@ -5,8 +5,15 @@ import type { TablasDeReglas } from '../tipos/reglas.ts';
 import { MIL } from '../utiles/enteros.ts';
 import { comparar } from '../utiles/orden.ts';
 
-/** `1 + floor(vecinos / 40)`, con su maximo; el fuero y el monasterio dan una mas cada uno. */
-export function cuadrillasDe(comarca: EstadoComarca, reglas: TablasDeReglas): number {
+/**
+ * `1 + floor(vecinos / 40)`, con su maximo; el fuero y el monasterio dan una mas cada uno, y la
+ * casa del duenyo suma (o resta) las suyas, sin bajar de una.
+ */
+export function cuadrillasDe(
+  comarca: EstadoComarca,
+  reglas: TablasDeReglas,
+  cuadrillasExtra = 0,
+): number {
   const p = reglas.poblacion;
   let cuadrillas = Math.min(
     p.cuadrillasMaximas,
@@ -15,7 +22,7 @@ export function cuadrillasDe(comarca: EstadoComarca, reglas: TablasDeReglas): nu
   if (comarca.fuero === 'fuero') cuadrillas += reglas.obras.cuadrillasPorFuero;
   if (comarca.obrasMayores.includes('monasterio'))
     cuadrillas += reglas.obras.cuadrillasPorMonasterio;
-  return cuadrillas;
+  return Math.max(1, cuadrillas + cuadrillasExtra);
 }
 
 /** Obras que ocupan una cuadrilla de la comarca: todas las que no estan abandonadas. */
@@ -29,8 +36,9 @@ export function cuadrillasLibres(
   estado: EstadoPartida,
   comarca: EstadoComarca,
   reglas: TablasDeReglas,
+  cuadrillasExtra = 0,
 ): number {
-  return cuadrillasDe(comarca, reglas) - obrasQueOcupan(estado, comarca.id).length;
+  return cuadrillasDe(comarca, reglas, cuadrillasExtra) - obrasQueOcupan(estado, comarca.id).length;
 }
 
 /**

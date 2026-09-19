@@ -14,6 +14,7 @@ import {
   ordenesVivas,
 } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
+import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { actividadDeMercado, fuentesDeInfluencia } from '../reglas/influencia.ts';
 import type { CandidatoAIncorporar } from '../reglas/incorporar.ts';
 import { ganadorDeIncorporacion, impedimentoDeIncorporar } from '../reglas/incorporar.ts';
@@ -22,6 +23,7 @@ import type { EstadoPartida } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { clonar } from '../utiles/clonar.ts';
+import { multiplicarFactores } from '../utiles/enteros.ts';
 import { comparar, idsEnOrden } from '../utiles/orden.ts';
 
 // ——— Regalos ————————————————————————————————————————————————————————————————
@@ -54,7 +56,9 @@ function regalo(ctx: Contexto, orden: OrdenDe<'regalo'>): void {
     tipo: 'influencia',
     comarca: comarca.id,
     jugador: orden.jugador,
-    delta: t.porRegalo,
+    delta: multiplicarFactores(t.porRegalo, [
+      modificadoresDelJugador(jugador, ctx.reglas).influenciaMil,
+    ]),
     motivo: 'regalo al concejo',
   });
   aplicar(ctx, { tipo: 'regalo', comarca: comarca.id, jugador: orden.jugador });

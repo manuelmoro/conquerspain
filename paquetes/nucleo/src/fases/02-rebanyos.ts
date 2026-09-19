@@ -3,6 +3,7 @@
 // El esquileo es el turno 10 del anyo (segunda quincena de mayo): cada rebanyo entrega su lana al
 // almacen del dueño segun lo pastado desde el esquileo anterior y vuelve a empezar. Ese mismo turno
 // se cuenta el anyo de estiercol de cada comarca.
+import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
@@ -51,7 +52,7 @@ function esquilar(ctx: Contexto, rebanyo: Rebanyo): void {
   );
   const lana = lanaDelEsquileo(
     rebanyo,
-    ctx.reglas.casas[jugador.casa].modificadores.lanaEsquileoMil,
+    modificadoresDelJugador(jugador, ctx.reglas).lanaEsquileoMil,
     acontecimientosMil,
     ctx.reglas,
   );

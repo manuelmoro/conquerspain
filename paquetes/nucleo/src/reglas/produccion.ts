@@ -77,8 +77,13 @@ export function factorAgotamiento(agotamiento: number, reglas: TablasDeReglas): 
   return Math.max(datos.sueloMil, MIL - agotamiento * datos.factorPorPuntoMil);
 }
 
-export function factorAperos(aperos: number, reglas: TablasDeReglas): Milesimas {
-  return MIL + aperos * reglas.produccion.aperoMil;
+export function factorAperos(
+  aperos: number,
+  reglas: TablasDeReglas,
+  /** Lo que rinden los aperos de la casa: 1000 si nada. */
+  efectoMil: Milesimas = MIL,
+): Milesimas {
+  return MIL + multiplicarFactores(aperos * reglas.produccion.aperoMil, [efectoMil]);
 }
 
 /** Vecinos que hacen falta para trabajar todas las explotaciones de la comarca. */
@@ -115,7 +120,10 @@ export function explotacionesDe(
   const { comarca } = datos;
   const produccion = reglas.produccion;
   const comunes: Factor[] = [
-    { nombre: 'aperos', mil: factorAperos(comarca.aperos, reglas) },
+    {
+      nombre: 'aperos',
+      mil: factorAperos(comarca.aperos, reglas, datos.casa?.efectoAperosMil),
+    },
     { nombre: 'lealtad', mil: factorLealtad(comarca.lealtad, reglas) },
     { nombre: 'mano-de-obra', mil: factorManoDeObra(comarca, reglas) },
   ];
@@ -254,8 +262,8 @@ export function maravedisDe(
 export function siguienteAgotamiento(
   comarca: EstadoComarca,
   reglas: TablasDeReglas,
-  /** Lo deprisa que se le agota el monte a la casa del duenyo: 1000 si nada. */
-  agotamientoMonteMil: Milesimas = MIL,
+  /** Lo deprisa que se agota cada recurso a la casa del duenyo: 1000 si nada. */
+  agotamientoMil: Readonly<Partial<Record<RecursoAgotable, Milesimas>>> = {},
 ): Record<RecursoAgotable, number> {
   const datos = reglas.produccion.agotamiento;
   const niveles: Record<RecursoAgotable, number> = { monte: 0, piedra: 0, hierro: 0, sal: 0 };
@@ -268,11 +276,12 @@ export function siguienteAgotamiento(
   }
   const siguiente: Record<RecursoAgotable, number> = { monte: 0, piedra: 0, hierro: 0, sal: 0 };
   for (const recurso of RECURSOS_AGOTABLES) {
-    let sube = datos.porNivel * niveles[recurso];
-    if (recurso === 'monte') {
-      const dehesaMil = comarca.dehesa ? reglas.produccion.dehesa.agotamientoMonteMil : MIL;
-      sube = multiplicarFactores(sube, [dehesaMil, agotamientoMonteMil]);
-    }
+    const dehesaMil =
+      recurso === 'monte' && comarca.dehesa ? reglas.produccion.dehesa.agotamientoMonteMil : MIL;
+    const sube = multiplicarFactores(datos.porNivel * niveles[recurso], [
+      dehesaMil,
+      agotamientoMil[recurso] ?? MIL,
+    ]);
     siguiente[recurso] = limitar(
       comarca.agotamiento[recurso] + sube - datos.regeneracion[recurso],
       0,

@@ -1,6 +1,6 @@
 # T-042 · Tradiciones y ramas de desarrollo
 
-**Fase:** 2 · Motor · **Depende de:** T-041 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-041 · **Estado:** hecha
 
 ## 1. Contexto
 
@@ -82,10 +82,36 @@ nota es contenido, no relleno: es lo que hace que el jugador recuerde qué es un
 ## 5. Archivos
 
 ```
-paquetes/nucleo/src/reglas/tradiciones.ts
-paquetes/nucleo/src/reglas/tradiciones.test.ts
-paquetes/nucleo/datos/tradiciones.json
+paquetes/nucleo/src/datos/tradiciones.ts        catalogo (72) y condiciones de las rondas
+paquetes/nucleo/src/reglas/tradiciones.ts       rondas, cartas y por que se rechaza una eleccion
+paquetes/nucleo/src/fases/11-tradiciones.ts     la orden y la apertura de rondas, en la fase 11
+paquetes/nucleo/src/reglas/casas/index.ts       composicion casa + tradiciones
+paquetes/nucleo/pruebas/tradiciones.test.ts
 ```
+
+## 5.1 Lo que cambió al implementarla
+
+- **Datos en TypeScript, no en JSON.** Como las casas (`src/datos/casas.ts`), el catálogo vive en
+  `src/datos/tradiciones.ts` y las pruebas en `pruebas/`, que es la convención del paquete.
+- **Sin `desbloquea`.** Lo que una tradición abre se expresa con `permisos` y `prohibiciones`
+  parciales (Ganado mayor quita la prohibición de roturar; Señorío abacial, la de la carga dura), que
+  se comprueban en el mismo sitio que los de la casa. Ninguna tradición necesitó una orden nueva.
+- **Composición.** Tabla `COMPOSICION_DE_MODIFICADORES`: factores que se multiplican, sumandos que se
+  suman y valores fijos que pone la tradición. El validador impide que dos tradiciones de una casa
+  fijen lo mismo, y los factores se componen en el orden de las rondas, porque el redondeo a cada paso
+  haría que el orden de elección cambiara una milésima (lo destapó el test de permutaciones).
+- **Condición de Fama.** `obraMayorTerminada` es un sí o un no leído de los sucesos `hito.obra-mayor`
+  del turno: el estado no guarda cuántas obras terminó cada jugador (ese registro es de T-043). La
+  ronda abierta queda en `EstadoJugador.rondas` (campo nuevo; las huellas de `humo-01` y `humo-02`
+  cambian solo por eso: sus 233 sucesos son idénticos a los del commit anterior).
+- **Siete puntos de extensión nuevos** (agotamiento por recurso, avance de obra mayor por tipo,
+  cuadrillas, aperos, administración, influencia y bastimento) y el modificador de maravedís
+  aplicado al mercado y los impuestos. Todas las lecturas directas de `reglas.casas[…]` en las fases
+  pasan ahora por `reglas/casas`, y un test lo vigila.
+- **Reformulaciones del esbozo de Renombre** documentadas en docs/04 §4.3.2. Desactivadas:
+  Armas (T-120), Banca (T-103), Alfolí y Correo (T-102).
+- La prueba de propiedad de consumo (10 000 estados) rozaba los 5 s con la batería en paralelo;
+  lleva ahora un límite explícito de 30 s.
 
 ## 6. Criterios de aceptación
 

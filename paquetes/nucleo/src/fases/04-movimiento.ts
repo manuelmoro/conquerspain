@@ -4,6 +4,7 @@
 // de identificador; despues anda cada recua por su ruta, pagando el bastimento de lo que anda. Las
 // recuas no se estorban entre si: el orden en que se mueven solo decide, dentro de un mismo
 // jugador, quien come primero si el pan no llega para todas, y es el de su identificador.
+import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { ErrorDeMotor } from '../errores.ts';
@@ -126,7 +127,7 @@ function formarRecua(ctx: Contexto, orden: OrdenDe<'formar-recua'>): void {
       acemilas: orden.acemilas,
       porte: porteDe(
         orden.acemilas,
-        ctx.reglas.casas[jugador.casa].modificadores.porteExtra,
+        modificadoresDelJugador(jugador, ctx.reglas).porteExtra,
         ctx.reglas,
       ),
       carga: Object.fromEntries(RECURSOS.map((r) => [r, 0])) as Record<Recurso, number>,
@@ -295,7 +296,7 @@ function moverRecua(ctx: Contexto, id: string): void {
     {
       barro: ctx.estacional.barro,
       calzada: tieneCalzada(primerTramo, ctx.estado.caminos),
-      pasoCasaMil: ctx.reglas.casas[jugador.casa].modificadores.pasoRecuaMil,
+      pasoCasaMil: modificadoresDelJugador(jugador, ctx.reglas).pasoRecuaMil,
     },
     ctx.reglas,
   );
@@ -317,7 +318,12 @@ function moverRecua(ctx: Contexto, id: string): void {
     costeDe,
     paradas,
   );
-  const bastimento = bastimentoDe(previsto.andadoMil, ctx.estacional.estacion, ctx.reglas);
+  const bastimento = bastimentoDe(
+    previsto.andadoMil,
+    ctx.estacional.estacion,
+    ctx.reglas,
+    modificadoresDelJugador(jugador, ctx.reglas).bastimentoMil,
+  );
   const casa = enCasa(ctx, recua);
   const puedePagar =
     casa !== null
@@ -346,7 +352,7 @@ function moverRecua(ctx: Contexto, id: string): void {
         delta: -1,
         porte: porteDe(
           recua.acemilas - 1,
-          ctx.reglas.casas[jugador.casa].modificadores.porteExtra,
+          modificadoresDelJugador(jugador, ctx.reglas).porteExtra,
           ctx.reglas,
         ),
         motivo: 'sin bastimento',

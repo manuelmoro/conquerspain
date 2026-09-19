@@ -6,6 +6,8 @@ import type { Suceso } from '../tipos/cronica.ts';
 import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { Mundo } from '../tipos/mundo.ts';
 import type { TablasDeReglas } from '../tipos/reglas.ts';
+import { multiplicarFactores } from '../utiles/enteros.ts';
+import { modificadoresDelJugador } from './casas/index.ts';
 import { claveDeTramo } from './ruta.ts';
 import { estaPresente } from './presencia.ts';
 
@@ -112,15 +114,21 @@ export function fuentesDeInfluencia(
 
   const desgaste = !presente && importe === 0 ? t.desgastePorTurno : 0;
   const escasez = actividad.vaciaronElPan.has(clave) ? t.desgastePorEscasez : 0;
-  const aportes = presencia + vecinas + mercado + comercio + monasterio + camino;
+  // La casa escala cada fuente por separado, para que el desglose siga sumando lo que se aporta.
+  const casaMil = modificadoresDelJugador(jugador, reglas).influenciaMil;
+  const escalar = (puntos: number): number => multiplicarFactores(puntos, [casaMil]);
+  const fuentes = {
+    presencia: escalar(presencia),
+    vecinas: escalar(vecinas),
+    mercado: escalar(mercado),
+    comercio: escalar(comercio),
+    monasterio: escalar(monasterio),
+    camino: escalar(camino),
+  };
+  const aportes = Object.values(fuentes).reduce((total, puntos) => total + puntos, 0);
   return {
     presente,
-    presencia,
-    vecinas,
-    mercado,
-    comercio,
-    monasterio,
-    camino,
+    ...fuentes,
     desgaste,
     escasez,
     neto: aportes - desgaste - escasez,

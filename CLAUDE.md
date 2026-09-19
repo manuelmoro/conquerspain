@@ -22,11 +22,12 @@ cualquier otra) y acabas de llegar, lee esto entero y después [ESTADO.md](ESTAD
    - actualiza [ESTADO.md](ESTADO.md) (tarea en curso, siguiente, bitácora con fecha);
    - si el diseño ha cambiado durante el trabajo, actualiza el documento de diseño afectado;
    - deja el repositorio limpio: sin código muerto, sin ficheros a medias, sin `TODO` sueltos.
-7. Haz un commit con el formato `T-0xx: resumen en una línea`.
+7. Haz un commit con el formato `T-0xx: resumen en una línea` y **súbelo** (`git push`): el
+   remoto es la memoria compartida, y cualquier otra sesión u otra IA retoma desde ahí.
 
 **Nunca** dejes una tarea a medias para empezar otra. **Nunca** cierres una tarea cuyos criterios
 de aceptación no se cumplan de verdad: si no da tiempo, deja la tarea abierta y anota en ESTADO.md
-exactamente por dónde va, con los archivos tocados y lo que falta.
+exactamente por dónde va, con los archivos tocados y lo que falta, y haz commit y push igualmente.
 
 Regla de oro del proyecto: **preferimos tardar y que quede perfecto**. No se aceptan atajos que
 haya que rehacer después; si un atajo es inevitable, se documenta en la ficha de la tarea y se crea

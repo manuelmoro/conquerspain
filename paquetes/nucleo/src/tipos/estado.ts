@@ -11,7 +11,7 @@ import type {
   IdRecua,
 } from './ids.ts';
 import type { Recurso, Recursos } from './recursos.ts';
-import type { CalidadCamino, Casa, TipoObraMayor, Tradicion } from './reglas.ts';
+import type { CalidadCamino, Casa, RondaDeTradicion, TipoObraMayor, Tradicion } from './reglas.ts';
 import type { Potencial, NivelPotencial, Terreno, VolumenFeria } from './mundo.ts';
 import type { Orden, ParadaDeRuta } from './ordenes.ts';
 
@@ -62,7 +62,10 @@ export interface EstadoJugador {
   readonly id: IdJugador;
   readonly nombre: string;
   readonly casa: Casa;
+  /** Una por ronda como mucho, en el orden en que se eligieron. */
   readonly tradiciones: readonly Tradicion[];
+  /** Ronda → turno en que se abrio. Una ronda abierta no se cierra aunque se pierda el hito. */
+  readonly rondas: Readonly<Partial<Record<RondaDeTradicion, number>>>;
   readonly capital: IdComarca;
   readonly almacen: Recursos;
   /** Comprometido por ordenes pendientes: no se puede gastar dos veces. */

@@ -700,9 +700,9 @@ describe('lo que ninguna casa puede romper', () => {
     expect(validado.ok, validado.ok ? '' : JSON.stringify(validado.errores)).toBe(true);
   });
 
-  it('ningún archivo del motor nombra una casa fuera de la tabla, el tipo y reglas/casas', () => {
+  it('ningún archivo del motor nombra una casa fuera de las tablas, el tipo y reglas/casas', () => {
     const raiz = fileURLToPath(new URL('../src/', import.meta.url));
-    const permitidos = new Set(['datos/casas.ts', 'tipos/reglas.ts']);
+    const permitidos = new Set(['datos/casas.ts', 'datos/tradiciones.ts', 'tipos/reglas.ts']);
     const nombres =
       /\b(mesta|ferrones|canteros|mercaderes|monjes|salineros|arrieros|hortelanos)\b/i;
     const sinComentarios = (texto: string): string =>

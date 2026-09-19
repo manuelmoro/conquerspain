@@ -4,6 +4,7 @@
 // que falla), para que nadie vea un «no crece» sin explicacion. El balance de pan se mide con la
 // gente nueva de las comarcas ya atendidas del mismo jugador, en orden de identificador. La
 // emigracion por hambre ya la hizo la fase de consumo.
+import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { comarcasDe, panDeLaPoblacion, panDeLasCuadrillas } from '../reglas/consumo.ts';
@@ -28,7 +29,7 @@ function crecer(ctx: Contexto, jugador: EstadoJugador): void {
   const producido = comarcas.reduce((total, c) => total + c.produccionUltimoTurno.pan, 0);
   const cuadrillas = panDeLasCuadrillas(ctx.estado, jugador.id, ctx.reglas);
   const reserva = jugador.almacen.pan - jugador.reservado.pan;
-  const casa = ctx.reglas.casas[jugador.casa].modificadores;
+  const casa = modificadoresDelJugador(jugador, ctx.reglas);
   const casaMil = casa.crecimientoMil;
 
   for (const comarca of comarcas) {

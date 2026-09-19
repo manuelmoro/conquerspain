@@ -6,7 +6,7 @@
 // resuelven al final, todas a la vez, por la regla de influencia y nunca por quien se proceso antes.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
-import { modificadoresDe } from '../reglas/casas/index.ts';
+import { modificadoresDe, modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { cargarDelAlmacen, descargarEnAlmacen, todaLaCarga } from '../porteo.ts';
 import { datosConocidosDe, hallazgoDe, vecinasPorOir } from '../reglas/explorar.ts';
 import type { CandidatoAPuebla } from '../reglas/poblar.ts';
@@ -417,7 +417,7 @@ function disolver(ctx: Contexto, foto: EstadoPartida, recua: Recua, donde: IdCom
     motivo: `vuelven de ${recua.id}`,
   });
   const devolucion = multiplicarFactores(ctx.reglas.movimiento.costeFormarRecua.maravedis, [
-    ctx.reglas.casas[jugador.casa].modificadores.costeRecuaMil,
+    modificadoresDelJugador(jugador, ctx.reglas).costeRecuaMil,
     ctx.reglas.cometidos.devolucionAlDisolverMil,
   ]);
   if (devolucion > 0) {

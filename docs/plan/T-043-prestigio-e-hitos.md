@@ -23,6 +23,13 @@ Calcular el prestigio de cada jugador cada turno, con desglose por capítulos, r
 **Heredado de T-035.** Al terminar una obra mayor la fase 6 emite `hito.obra-mayor` con el tipo;
 las terminadas quedan en `EstadoComarca.obrasMayores` y, las de tramo, en `EstadoPartida.caminos`.
 
+**Heredado de T-042.** La fase 11 ya existe y llama a `tradiciones(ctx)` (`fases/11-tradiciones.ts`):
+elige las tradiciones pedidas y abre las rondas nuevas. Fama y Linaje miran `jugador.prestigio`, así
+que el recuento de prestigio tiene que ir **antes** de `tradiciones(ctx)` dentro de la fase, para
+que una ronda se abra el mismo turno en que se alcanza el umbral. Si se guarda el registro de obras
+mayores terminadas por jugador, `logrosDe` (`reglas/tradiciones.ts`) puede leerlo en lugar de los
+sucesos `hito.obra-mayor` del turno.
+
 **Heredado de T-037.** El volumen propio en una feria (`porFeriaDestacada`) se suma de los sucesos
 `mercado.trato` del turno cuyo `mercado` empieza por `feria-`: traen `cantidad` e `importe`, y cada
 jugador aparece una vez por trato. `EstadoMercado.ultimoVolumen` es el volumen de la plaza, no el

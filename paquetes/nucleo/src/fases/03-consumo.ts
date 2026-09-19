@@ -5,6 +5,7 @@
 // administracion. Lo que no llega tiene su propia consecuencia; nunca se toma de otro recurso.
 // Despues se pierde la merma del pan que queda, se decide la escasez y se avisa de lo que viene.
 // Cada jugador solo toca su almacen y sus comarcas, asi que el orden entre jugadores no importa.
+import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import type { CosteDeAdministracion } from '../reglas/administracion.ts';
@@ -208,7 +209,7 @@ function aplicarMerma(
     disponible(ctx, jugador.id, 'sal'),
     hayGranero(comarcas),
     jugador.conservarConSal,
-    ctx.reglas.casas[jugador.casa].modificadores.mermaPanMil,
+    modificadoresDelJugador(jugador, ctx.reglas).mermaPanMil,
     ctx.reglas,
   );
   gastar(ctx, jugador.id, 'sal', merma.salGastada, 'sal para conservar el pan');

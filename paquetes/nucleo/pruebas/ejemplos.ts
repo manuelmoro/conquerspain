@@ -5,6 +5,7 @@ import { POTENCIALES } from '../src/tipos/mundo.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
 import { ACONTECIMIENTOS } from '../src/datos/acontecimientos.ts';
 import { ARRANQUE } from '../src/datos/arranque.ts';
+import { MODIFICADORES_NEUTROS } from '../src/datos/casas.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
@@ -17,6 +18,7 @@ import { POBLACION } from '../src/datos/poblacion.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
 import { DATOS_DE_RECURSOS } from '../src/datos/recursos.ts';
 import { TERRITORIO } from '../src/datos/territorio.ts';
+import { RONDAS, TRADICIONES } from '../src/datos/tradiciones.ts';
 import { CASAS, VERSION_REGLAS } from '../src/tipos/reglas.ts';
 
 /** Los ejemplos son datos sueltos: los validadores reciben "unknown" y ellos dicen si valen. */
@@ -166,6 +168,7 @@ export function estadoDeEjemplo(): Registro {
         nombre: 'Casa de prueba',
         casa: 'mesta',
         tradiciones: [],
+        rondas: {},
         capital: 'prueba-llano',
         almacen: recursosCon({ pan: 80, madera: 60 }),
         reservado: sinRecursos(),
@@ -205,34 +208,7 @@ export function tablasDeEjemplo(): Registro {
   // Los edificios y la cadena de produccion son las tablas reales del juego (src/datos).
   const edificios = JSON.parse(JSON.stringify(EDIFICIOS)) as Registro;
 
-  const modificadores: Registro = {
-    produccionMil: {},
-    costeEdificioMil: {},
-    nivelMaximoEdificio: {},
-    potencialMinimoEdificio: {},
-    solaresExtra: 0,
-    aperosMaximo: 3,
-    pasoRecuaMil: 0,
-    costeRecuaMil: 1000,
-    porteExtra: 0,
-    obraMayorCosteMil: 1000,
-    obraMayorAvanceMil: 1000,
-    obraSinFrenazoInvernal: false,
-    mermaPanMil: 40,
-    comisionMercadoMil: 20,
-    lanaEsquileoMil: 1000,
-    costeRebanyoMil: 1000,
-    lealtadMinima: 0,
-    agotamientoMonteMil: 1000,
-    crecimientoMil: 1000,
-    produccionEdificioMil: {},
-    produccionEdificioEnVegaMil: {},
-    laborFueraDeVegaMil: 1000,
-    edificiosPorRequisito: {},
-    costeObraMayorMil: {},
-    capacidadPorCasasExtra: 0,
-    vecinosParaPueblaMil: 1000,
-  };
+  const modificadores = JSON.parse(JSON.stringify(MODIFICADORES_NEUTROS)) as Registro;
 
   const casas: Registro = {};
   for (const casa of CASAS) {
@@ -278,17 +254,9 @@ export function tablasDeEjemplo(): Registro {
     recursos,
     edificios,
     casas,
-    tradiciones: {
-      'mesta-lanas-finas': {
-        casa: 'mesta',
-        ronda: 'renombre',
-        nombre: 'Lanas finas',
-        descripcion: 'Merinas de vellon corto.',
-        nota: 'La lana castellana se pagaba por su finura.',
-        modificadores,
-        desactivada: false,
-      },
-    },
+    // Las tradiciones y las rondas son las reales (src/datos/tradiciones.ts).
+    tradiciones: JSON.parse(JSON.stringify(TRADICIONES)) as Registro,
+    rondas: JSON.parse(JSON.stringify(RONDAS)) as Registro,
     estaciones: {
       turnosPorAnyo: 24,
       estacionPorTurno,

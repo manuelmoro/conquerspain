@@ -65,8 +65,8 @@ alguno no se cumple y no vas a poder cumplirlo, **no cierres la tarea**: ve al p
    - una línea nueva en la bitácora con la fecha y lo entregado;
    - actualiza «Qué existe hoy» y «Riesgos abiertos» si han cambiado.
 3. Si el diseño ha cambiado durante el trabajo, actualiza el documento de diseño afectado.
-4. Haz un commit: `T-0xx: resumen en una línea` (y nada más; no toques ramas ni hagas push salvo que
-   el usuario lo pida).
+4. Haz un commit: `T-0xx: resumen en una línea`, y **haz push** a `origin/main` (lo pidió el
+   usuario: el remoto es lo que retoma la siguiente sesión u otra IA). No toques otras ramas.
 5. Termina con un resumen corto para el usuario: qué quedó hecho, qué se verificó, qué viene ahora.
 
 ## 6. Si te quedas sin margen a mitad de tarea
@@ -80,7 +80,7 @@ Es normal y está previsto. Deja el trabajo **recogido**, no a medias en silenci
    - qué archivos tocaste;
    - qué falta exactamente, en pasos concretos;
    - cualquier decisión que tomaste y que no esté ya en la documentación.
-3. Haz un commit `T-0xx (en curso): ...`.
+3. Haz un commit `T-0xx (en curso): ...` y push.
 
 Con eso, otra sesión —o una IA distinta— puede continuar sin preguntarte nada.
 

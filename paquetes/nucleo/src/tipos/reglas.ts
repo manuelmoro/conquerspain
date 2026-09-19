@@ -132,7 +132,8 @@ export interface Modificadores {
   readonly lanaEsquileoMil: number;
   readonly costeRebanyoMil: number;
   readonly lealtadMinima: number;
-  readonly agotamientoMonteMil: number;
+  /** Lo deprisa que se agota cada recurso en las comarcas de la casa: 1000 si nada. */
+  readonly agotamientoMil: Readonly<Partial<Record<RecursoAgotable, number>>>;
   readonly crecimientoMil: number;
   /** Produccion de un edificio concreto (la lonja de quien la trabaja mejor): 1000 si nada. */
   readonly produccionEdificioMil: Readonly<Partial<Record<TipoEdificio, number>>>;
@@ -148,7 +149,62 @@ export interface Modificadores {
   readonly capacidadPorCasasExtra: number;
   /** Gente que hace falta para fundar puebla, sobre la de la tabla: 1000 si nada. */
   readonly vecinosParaPueblaMil: number;
+  /** Avance de una obra mayor concreta (la catedral de quien sabe cerrar cimborrios): 1000 si nada. */
+  readonly avanceObraMayorMil: Readonly<Partial<Record<TipoObraMayor, number>>>;
+  /** Cuadrillas que suma (o resta) cada comarca propia. */
+  readonly cuadrillasExtra: number;
+  /** Lo que rinde cada nivel de aperos, sobre el de la tabla: 1000 si nada. */
+  readonly efectoAperosMil: number;
+  /** Lo que cuesta administrar cada comarca: 1000 si nada. */
+  readonly administracionMil: number;
+  /** Lo que aporta cada fuente de influencia y el regalo (no el desgaste): 1000 si nada. */
+  readonly influenciaMil: number;
+  /** Bastimento que comen las recuas por jornada: 1000 si nada. */
+  readonly bastimentoMil: number;
 }
+
+/**
+ * Como se compone cada modificador de una tradicion con el de la casa: los factores se multiplican,
+ * los sumandos se suman y los valores fijos (niveles, tasas, minimos) los pone la tradicion.
+ */
+export type ComposicionDeModificador = 'factor' | 'suma' | 'fija';
+
+export const COMPOSICION_DE_MODIFICADORES: {
+  readonly [K in keyof Modificadores]-?: ComposicionDeModificador;
+} = {
+  produccionMil: 'factor',
+  costeEdificioMil: 'factor',
+  nivelMaximoEdificio: 'fija',
+  potencialMinimoEdificio: 'fija',
+  solaresExtra: 'suma',
+  aperosMaximo: 'fija',
+  pasoRecuaMil: 'suma',
+  costeRecuaMil: 'factor',
+  porteExtra: 'suma',
+  obraMayorCosteMil: 'factor',
+  obraMayorAvanceMil: 'factor',
+  obraSinFrenazoInvernal: 'fija',
+  mermaPanMil: 'fija',
+  comisionMercadoMil: 'fija',
+  lanaEsquileoMil: 'factor',
+  costeRebanyoMil: 'factor',
+  lealtadMinima: 'fija',
+  agotamientoMil: 'factor',
+  crecimientoMil: 'factor',
+  produccionEdificioMil: 'factor',
+  produccionEdificioEnVegaMil: 'factor',
+  laborFueraDeVegaMil: 'factor',
+  edificiosPorRequisito: 'fija',
+  costeObraMayorMil: 'factor',
+  capacidadPorCasasExtra: 'suma',
+  vecinosParaPueblaMil: 'factor',
+  avanceObraMayorMil: 'factor',
+  cuadrillasExtra: 'suma',
+  efectoAperosMil: 'factor',
+  administracionMil: 'factor',
+  influenciaMil: 'factor',
+  bastimentoMil: 'factor',
+};
 
 /**
  * Una manera de ser buen origen para una casa: cumple todo lo que pida. Los potenciales son
@@ -174,15 +230,49 @@ export interface DatosCasa {
   readonly origenes: readonly CriterioDeOrigen[];
 }
 
+/** Las tres rondas de eleccion, en el orden en que suelen abrirse (docs/04 §4.3). */
+export const RONDAS_DE_TRADICION = ['renombre', 'fama', 'linaje'] as const;
+export type RondaDeTradicion = (typeof RONDAS_DE_TRADICION)[number];
+
+/**
+ * Lo que hace una tradicion con su casa (ficha T-042 §4.3): profundizar en lo suyo con un coste,
+ * compensar su limite sin quitarle identidad, o abrir una via inesperada.
+ */
+export const CRITERIOS_DE_TRADICION = ['profundizar', 'compensar', 'abrir'] as const;
+export type CriterioDeTradicion = (typeof CRITERIOS_DE_TRADICION)[number];
+
 export interface DatosTradicion {
   readonly casa: Casa;
-  readonly ronda: 'renombre' | 'fama' | 'linaje';
+  readonly ronda: RondaDeTradicion;
+  readonly criterio: CriterioDeTradicion;
   readonly nombre: string;
+  /** El efecto en una frase, tal como se ensenya en la carta. */
   readonly descripcion: string;
+  /** La nota historica de la carta: contenido, no relleno. */
   readonly nota: string;
-  readonly modificadores: Modificadores;
-  /** Las tradiciones que dependen de mecanicas aun no implementadas no se ofrecen. */
+  /** Solo lo que cambia; se compone con la casa segun `COMPOSICION_DE_MODIFICADORES`. */
+  readonly modificadores: Readonly<Partial<Modificadores>>;
+  readonly permisos: Readonly<Partial<Permisos>>;
+  readonly prohibiciones: Readonly<Partial<Prohibiciones>>;
+  /** Las que dependen de mecanicas aun no implementadas no se ofrecen. */
   readonly desactivada: boolean;
+  /** La tarea que la activara; null si esta activa. */
+  readonly pendienteDe: string | null;
+}
+
+/**
+ * Cuando se abre una ronda: basta con cumplir una de las condiciones (los umbrales a null no
+ * cuentan). La obra mayor es una que el jugador termina, no una que hereda al incorporar una
+ * comarca.
+ */
+export interface CondicionDeRonda {
+  /** Comarcas propias. */
+  readonly comarcas: number | null;
+  /** Vecinos en todo el dominio. */
+  readonly vecinos: number | null;
+  readonly obraMayorTerminada: boolean;
+  readonly prestigio: number | null;
+  readonly turno: number | null;
 }
 
 export interface DatosEstaciones {
@@ -548,6 +638,7 @@ export interface TablasDeReglas {
   readonly edificios: Readonly<Record<TipoEdificio, DatosEdificio>>;
   readonly casas: Readonly<Record<Casa, DatosCasa>>;
   readonly tradiciones: Readonly<Record<string, DatosTradicion>>;
+  readonly rondas: Readonly<Record<RondaDeTradicion, CondicionDeRonda>>;
   readonly estaciones: DatosEstaciones;
   readonly produccion: DatosProduccion;
   readonly consumo: DatosConsumo;

@@ -10,7 +10,12 @@ import type { OrdenDe } from '../ordenes.ts';
 import { cuadrillasLibres, turnosHastaCuadrillaLibre } from '../reglas/cuadrillas.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
 import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
-import { PROHIBIDO_POR_LA_CASA, prohibicionesDe } from '../reglas/casas/index.ts';
+import {
+  PROHIBIDO_POR_LA_CASA,
+  modificadoresDelJugador,
+  permisosDelJugador,
+  prohibicionesDe,
+} from '../reglas/casas/index.ts';
 import {
   avanceDelTurnoMil,
   avanceTrasDeterioro,
@@ -101,7 +106,9 @@ function puedeEmpezar(ctx: Contexto, orden: Orden, comarca: EstadoComarca): bool
     dejarEnEspera(ctx, orden, 'escasez');
     return false;
   }
-  if (cuadrillasLibres(ctx.estado, comarca, ctx.reglas) <= 0) {
+  const extra =
+    jugador === undefined ? 0 : modificadoresDelJugador(jugador, ctx.reglas).cuadrillasExtra;
+  if (cuadrillasLibres(ctx.estado, comarca, ctx.reglas, extra) <= 0) {
     const turnos = turnosHastaCuadrillaLibre(ctx.estado, comarca.id);
     if (orden.estado !== 'en espera' || orden.motivoEspera !== 'sin-cuadrilla') {
       registrarSuceso(
@@ -157,7 +164,7 @@ function construir(
   comarca: EstadoComarca,
   jugador: EstadoJugador,
 ): void {
-  const casa = ctx.reglas.casas[jugador.casa].modificadores;
+  const casa = modificadoresDelJugador(jugador, ctx.reglas);
   const solares = ctx.mundo.comarcas[comarca.id]?.solares ?? 0;
   const obras = Object.values(ctx.estado.obras);
   const impedimento = impedimentoDeConstruir(
@@ -167,7 +174,7 @@ function construir(
     solares,
     casa,
     ctx.reglas,
-    ctx.reglas.casas[jugador.casa].permisos,
+    permisosDelJugador(jugador, ctx.reglas),
   );
   if (impedimento === 'sin-permiso') {
     cancelarOrden(ctx, orden, PROHIBIDO_POR_LA_CASA);
@@ -219,7 +226,7 @@ function instalarAperos(
   comarca: EstadoComarca,
   jugador: EstadoJugador,
 ): void {
-  if (comarca.aperos >= ctx.reglas.casas[jugador.casa].modificadores.aperosMaximo) {
+  if (comarca.aperos >= modificadoresDelJugador(jugador, ctx.reglas).aperosMaximo) {
     cancelarOrden(ctx, orden, 'nivel-maximo');
     return;
   }
@@ -291,7 +298,7 @@ function obraMayor(
     turnos: ctx.reglas.obrasMayores[orden.obra].turnos,
     costeTotal: costeDeObraMayor(
       orden.obra,
-      ctx.reglas.casas[jugador.casa].modificadores,
+      modificadoresDelJugador(jugador, ctx.reglas),
       ctx.reglas,
     ),
     entregado: SIN_NADA,
@@ -336,7 +343,7 @@ function avanzarObra(ctx: Contexto, id: string): void {
   const obra = ctx.estado.obras[id];
   const jugador = obra === undefined ? undefined : ctx.estado.jugadores[obra.jugador];
   if (obra === undefined || jugador === undefined) return;
-  const casa = ctx.reglas.casas[jugador.casa].modificadores;
+  const casa = modificadoresDelJugador(jugador, ctx.reglas);
 
   if (obra.abandonada) {
     const queda = avanceTrasDeterioro(obra, ctx.reglas);
@@ -362,7 +369,8 @@ function avanzarObra(ctx: Contexto, id: string): void {
       region: ctx.mundo.comarcas[obra.comarca]?.region ?? '',
       comarca: obra.comarca,
     });
-    paso = multiplicarFactores(paso, [casa.obraMayorAvanceMil, maestrosMil]);
+    const tipoMil = esTipoDeObraMayor(obra.que) ? (casa.avanceObraMayorMil[obra.que] ?? MIL) : MIL;
+    paso = multiplicarFactores(paso, [casa.obraMayorAvanceMil, tipoMil, maestrosMil]);
   }
   const nuevo = Math.min(obra.avanceNecesarioMil, obra.avanceMil + paso);
 

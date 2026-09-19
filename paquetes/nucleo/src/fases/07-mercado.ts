@@ -9,6 +9,7 @@ import type { Contexto } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { factorDeAcontecimientos, precioBaseEfectivo } from '../reglas/acontecimientos.ts';
+import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import type { ResultadoDeLinea } from '../reglas/mercado.ts';
 import { casarPlaza } from '../reglas/mercado.ts';
 import type { CatalogoDePlazas, Plaza } from '../reglas/plazas.ts';
@@ -202,8 +203,9 @@ function solicitudDeOrden(
 
 /** Comision de un jugador en una plaza: la de su casa y, en feria, como mucho la de la feria. */
 function comisionMilDe(ctx: Contexto, jugador: IdJugador, plaza: Plaza): number {
-  const casa = ctx.estado.jugadores[jugador]?.casa;
-  const propia = casa === undefined ? 0 : ctx.reglas.casas[casa].modificadores.comisionMercadoMil;
+  const datos = ctx.estado.jugadores[jugador];
+  const propia =
+    datos === undefined ? 0 : modificadoresDelJugador(datos, ctx.reglas).comisionMercadoMil;
   return plaza.tipo === 'feria' ? Math.min(propia, ctx.reglas.mercado.comisionFeriaMil) : propia;
 }
 

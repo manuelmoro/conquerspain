@@ -16,7 +16,7 @@ import {
   vecinosNecesarios,
 } from '../reglas/produccion.ts';
 import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
-import { modificadoresDe } from '../reglas/casas/index.ts';
+import { modificadoresDe, modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import { produccionDeRebanyos } from './02-rebanyos.ts';
 import type { Fuero } from '../tipos/estado.ts';
@@ -24,6 +24,7 @@ import type { IdComarca } from '../tipos/ids.ts';
 import type { TipoEdificio } from '../tipos/reglas.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
+import { MIL, multiplicarFactores } from '../utiles/enteros.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
 
 type NivelesActivos = Readonly<Partial<Record<TipoEdificio, number>>>;
@@ -53,7 +54,7 @@ function pagarInsumos(ctx: Contexto): Map<string, NivelesActivos> {
         comarca,
         disponible,
         ctx.reglas,
-        ctx.reglas.casas[jugador.casa].modificadores.edificiosPorRequisito,
+        modificadoresDelJugador(jugador, ctx.reglas).edificiosPorRequisito,
       );
       activos.set(id, insumos.nivelesActivos);
       for (const recurso of RECURSOS) {
@@ -104,8 +105,7 @@ export function faseProduccion(ctx: Contexto): void {
     if (duenyo !== null) {
       const jugador = ctx.estado.jugadores[duenyo];
       const region = ctx.mundo.comarcas[id]?.region ?? '';
-      const casaMil =
-        jugador === undefined ? {} : ctx.reglas.casas[jugador.casa].modificadores.produccionMil;
+      const casa = jugador === undefined ? undefined : modificadoresDelJugador(jugador, ctx.reglas);
       const explotaciones = explotacionesDe(
         {
           comarca,
@@ -115,8 +115,8 @@ export function faseProduccion(ctx: Contexto): void {
           acontecimientos: ctx.estado.acontecimientos,
           turno: ctx.turno,
           terreno: ctx.mundo.comarcas[id]?.terreno,
-          casaMil,
-          casa: jugador === undefined ? undefined : ctx.reglas.casas[jugador.casa].modificadores,
+          casaMil: casa?.produccionMil ?? {},
+          casa,
           enVega: esVega(ctx, id),
           nivelesActivos: nivelesActivos.get(id) ?? {},
         },
@@ -156,7 +156,14 @@ export function faseProduccion(ctx: Contexto): void {
         'ingresos',
         { region, comarca: comarca.id },
       );
-      const maravedis = maravedisDe(comarca, fueroImpuestos, ctx.reglas, ingresosMil);
+      // El modificador de maravedis de la casa pesa sobre el mercado y los impuestos de la comarca.
+      const casaMaravedisMil = casa?.produccionMil.maravedis ?? MIL;
+      const maravedis = maravedisDe(
+        comarca,
+        fueroImpuestos,
+        ctx.reglas,
+        multiplicarFactores(ingresosMil, [casaMaravedisMil]),
+      );
       if (maravedis.total > 0) {
         registrarSuceso(
           ctx.sucesos,
@@ -188,7 +195,7 @@ export function faseProduccion(ctx: Contexto): void {
       valores: siguienteAgotamiento(
         comarca,
         ctx.reglas,
-        modificadoresDe(ctx.estado, duenyo, ctx.reglas).agotamientoMonteMil,
+        modificadoresDe(ctx.estado, duenyo, ctx.reglas).agotamientoMil,
       ),
     });
   }

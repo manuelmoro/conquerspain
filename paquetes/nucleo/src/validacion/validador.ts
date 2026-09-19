@@ -258,7 +258,23 @@ export function objeto<F extends object>(
   campos: CamposDe<F>,
   opciones: OpcionesObjeto = {},
 ): Validador<F> {
-  const estricto = opciones.estricto ?? true;
+  // Sin `parcial`, cada campo ausente es un error: si no hay errores, estan todos.
+  return camposDe<F, F>(campos, opciones.estricto ?? true, false);
+}
+
+/**
+ * Objeto estricto en el que cada campo puede faltar: lo que no se dice no cambia (los
+ * modificadores de una tradicion, que solo cuentan lo que tocan).
+ */
+export function objetoParcial<F extends object>(campos: CamposDe<F>): Validador<Partial<F>> {
+  return camposDe<F, Partial<F>>(campos, true, true);
+}
+
+function camposDe<F extends object, R>(
+  campos: CamposDe<F>,
+  estricto: boolean,
+  parcial: boolean,
+): Validador<R> {
   // Unico punto del modulo donde se pierde el tipo: el mapa de campos se recorre por nombre.
   // La firma publica sigue siendo segura, porque CamposDe<F> obliga a declararlos todos.
   const validadorDe = (nombre: string): Validador<unknown> | undefined =>
@@ -274,7 +290,7 @@ export function objeto<F extends object>(
       const validador = validadorDe(nombre);
       if (validador === undefined) continue;
       if (!(nombre in dato)) {
-        errores.push({ ruta: unir(ruta, nombre), mensaje: 'falta este campo' });
+        if (!parcial) errores.push({ ruta: unir(ruta, nombre), mensaje: 'falta este campo' });
         continue;
       }
       const resultado = validador(dato[nombre], unir(ruta, nombre));
@@ -288,7 +304,7 @@ export function objeto<F extends object>(
         }
       }
     }
-    return errores.length > 0 ? invalidos(errores) : valido(valores as unknown as F);
+    return errores.length > 0 ? invalidos(errores) : valido(valores as unknown as R);
   };
 }
 

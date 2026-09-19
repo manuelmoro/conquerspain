@@ -379,6 +379,7 @@
           "lana": 0
         },
         "tradiciones": [],
+        "rondas": {},
         "turnosSinOrdenes": 0
       }
     },
@@ -397,17 +398,17 @@
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "8f42e96d6478ad6ee25cf23b5d39d313577cf11b802f67af5aeae6738cd573fe"
+      "huellaEsperada": "f91f5ff7dbc82cb06fa71305973820d059cb484ffa1126e1f922fca276f2e40e"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "42b9dc65073496772847b9a07bbc6b515c46da81d671d2cfe4f66c7c425ca1a1"
+      "huellaEsperada": "a091bdd21bfebb78b992664f1bd948f8ad6c31e33bed098fd93836aed2685a6e"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "ceb6a8d1bb7c494f1c6453275be716f4a500bcc6cbae2aaa436a06a7b677c7de"
+      "huellaEsperada": "8fe4143cc224642c698765e93a9051319bbdc5e412ec37c7d96ff626f35fdaf0"
     }
   ]
 }

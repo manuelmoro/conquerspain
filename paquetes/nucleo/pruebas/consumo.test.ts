@@ -175,7 +175,8 @@ describe('el pan', () => {
         expect(casa.reservado[recurso]).toBe(reservado[recurso]);
       }
     }
-  });
+    // Diez mil turnos de consumo: con toda la bateria en paralelo roza los cinco segundos de serie.
+  }, 30_000);
 });
 
 describe('la merma', () => {

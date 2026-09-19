@@ -261,6 +261,7 @@ export function estadoMini(): EstadoPartida {
         nombre: 'Casa Uno',
         casa: 'mesta',
         tradiciones: [],
+        rondas: {},
         capital: 'prueba-llano',
         almacen: recursos({ pan: 80, madera: 60, piedra: 20, maravedis: 45 }),
         reservado: recursos({}),

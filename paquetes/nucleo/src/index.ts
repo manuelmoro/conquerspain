@@ -52,3 +52,10 @@ export {
 } from './reglas/precios.ts';
 export { FASES, resolverTurno } from './resolver.ts';
 export type { Fase, ResultadoTurno } from './resolver.ts';
+export {
+  MOTIVOS_SIN_TRADICION,
+  elegidaEn,
+  impedimentoDeTradicion,
+  opcionesDeTradicion,
+} from './reglas/tradiciones.ts';
+export type { MotivoSinTradicion } from './reglas/tradiciones.ts';

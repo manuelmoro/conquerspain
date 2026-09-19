@@ -32,12 +32,13 @@ import type {
   TrasladoDeCorte,
 } from './tipos/estado.ts';
 import type { NivelPotencial, Potencial } from './tipos/mundo.ts';
-import type { TipoObraMayor } from './tipos/reglas.ts';
+import type { RondaDeTradicion, TipoObraMayor, Tradicion } from './tipos/reglas.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
 import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
 import { modificadoresDe } from './reglas/casas/index.ts';
+import { impedimentoDeTradicion, opcionesDeTradicion } from './reglas/tradiciones.ts';
 import { limitar, multiplicarFactores } from './utiles/enteros.ts';
 
 export type Cambio =
@@ -358,6 +359,18 @@ export type Cambio =
       readonly tipo: 'orden-cantidad';
       readonly orden: IdOrden;
       readonly cantidad: number;
+    }
+  | {
+      /** Se abre una ronda de tradiciones: desde el turno siguiente se puede elegir. */
+      readonly tipo: 'ronda';
+      readonly jugador: IdJugador;
+      readonly ronda: RondaDeTradicion;
+    }
+  | {
+      /** El jugador elige una tradicion. Es para siempre. */
+      readonly tipo: 'tradicion';
+      readonly jugador: IdJugador;
+      readonly tradicion: Tradicion;
     };
 
 function jugadorDe(
@@ -773,6 +786,53 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       } else {
         comarca.presenciaSeguida[cambio.jugador] = cambio.turnos;
       }
+      return;
+    }
+
+    case 'ronda': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      if (jugador.rondas[cambio.ronda] !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La ronda "${cambio.ronda}" de ${cambio.jugador} ya estaba abierta.`,
+          { jugador: cambio.jugador, ronda: cambio.ronda },
+        );
+      }
+      jugador.rondas = { ...jugador.rondas, [cambio.ronda]: ctx.turno };
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'tradicion.ronda-abierta',
+        {
+          ronda: cambio.ronda,
+          opciones: opcionesDeTradicion(jugador.casa, cambio.ronda, ctx.reglas).join(','),
+        },
+        { jugador: cambio.jugador },
+      );
+      return;
+    }
+
+    case 'tradicion': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const impedimento = impedimentoDeTradicion(jugador, cambio.tradicion, ctx.reglas);
+      if (impedimento !== null) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `${cambio.jugador} no puede tomar la tradicion "${cambio.tradicion}": ${impedimento}.`,
+          { jugador: cambio.jugador, tradicion: cambio.tradicion },
+        );
+      }
+      jugador.tradiciones = [...jugador.tradiciones, cambio.tradicion];
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'tradicion.elegida',
+        {
+          tradicion: cambio.tradicion,
+          ronda: ctx.reglas.tradiciones[cambio.tradicion]?.ronda ?? '',
+        },
+        { jugador: cambio.jugador },
+      );
       return;
     }
 
