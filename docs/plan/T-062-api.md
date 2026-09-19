@@ -23,6 +23,11 @@ API REST con la vista filtrada del estado, alta y baja de órdenes, crónicas y 
 
 **No entra:** cuentas y sesiones (T-063), avisos (T-064).
 
+**Heredado de T-044.** Al jugador solo se le envía `vistaDeJugador(estado, jugador, mundo)` y su
+`Cronica` (la devuelve `resolverTurno`, una por jugador). Nunca el estado ni los sucesos crudos: la
+semilla, los almacenes ajenos y las influencias exactas solo están ahí. La prueba de fuga de
+`pruebas/vista.test.ts` es el modelo para la de la API.
+
 **Heredado de T-032 a T-035.** El motor se fía del `coste` de cada orden y lo reserva al darla de
 alta (si ya no cabe, la cancela con `sin-recursos`). El servidor tiene que calcularlo con las
 reglas: edificios (`reglas.edificios[e].coste` × `costeEdificioMil` de la casa), formar recua

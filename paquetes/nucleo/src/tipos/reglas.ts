@@ -7,7 +7,7 @@ import type {
   QueDeEfecto,
   RecursoAgotable,
 } from './estado.ts';
-import type { Potencial, Rasgo, Terreno } from './mundo.ts';
+import type { Potencial, Rasgo, Terreno, VolumenFeria } from './mundo.ts';
 import type { Recurso, Recursos } from './recursos.ts';
 
 /** Version de las reglas. Sube con cada cambio que altere resultados. */
@@ -93,6 +93,7 @@ export const NOMBRES_DE_PERMISO = [
   'venderAperos',
   'acequiaMenor',
   'cartaPuebla',
+  'corresponsales',
 ] as const;
 
 export interface Permisos {
@@ -103,6 +104,8 @@ export interface Permisos {
   readonly venderAperos: boolean;
   readonly acequiaMenor: boolean;
   readonly cartaPuebla: boolean;
+  /** Recibe cada turno los precios de las plazas que visito alguna vez, y rumores de mas. */
+  readonly corresponsales: boolean;
 }
 
 export interface Prohibiciones {
@@ -554,6 +557,21 @@ export interface DatosInfluencia {
   readonly turnosIncorporar: number;
 }
 
+/** De donde salen los rumores y cuantos (ficha T-044 §4.3). */
+export interface DatosRumores {
+  /** Rumores por cada recua quieta en una feria abierta, segun el volumen de la feria. */
+  readonly porFeria: Readonly<Record<VolumenFeria, number>>;
+  /** Rumores por cada comarca del Camino de Santiago donde hay una recua propia quieta. */
+  readonly porCaminoDeSantiago: number;
+  /** Rumores por cada comarca propia con venta. */
+  readonly porVenta: number;
+  /** Lo que multiplica los rumores quien tiene corresponsales. */
+  readonly corresponsalesMil: number;
+  readonly maximoPorTurno: number;
+  /** De cada mil rumores, cuantos son de precios (los demas, de comarcas por conocer). */
+  readonly dePreciosMil: number;
+}
+
 /** El marcador (docs/06-competicion.md §6.3; ficha T-043). */
 export interface DatosPrestigio {
   readonly porCadaCincoVecinos: number;
@@ -597,6 +615,10 @@ export const HITOS = [
 ] as const;
 export type Hito = (typeof HITOS)[number];
 
+export function esHito(texto: string): texto is Hito {
+  return (HITOS as readonly string[]).includes(texto);
+}
+
 export interface DatosHito {
   readonly nombre: string;
   /** La condicion, tal como se ensenya al jugador. */
@@ -629,6 +651,10 @@ export const TIPOS_DE_ACONTECIMIENTO = [
   'maestros',
 ] as const;
 export type TipoDeAcontecimiento = (typeof TIPOS_DE_ACONTECIMIENTO)[number];
+
+export function esTipoDeAcontecimiento(texto: string): texto is TipoDeAcontecimiento {
+  return (TIPOS_DE_ACONTECIMIENTO as readonly string[]).includes(texto);
+}
 
 export type DuracionDeAcontecimiento =
   | { readonly tipo: 'fija'; readonly turnos: number }
@@ -692,6 +718,7 @@ export interface TablasDeReglas {
   readonly influencia: DatosInfluencia;
   readonly prestigio: DatosPrestigio;
   readonly hitos: Readonly<Record<Hito, DatosHito>>;
+  readonly rumores: DatosRumores;
   readonly arranque: DatosArranque;
   readonly acontecimientos: DatosAcontecimientos;
   readonly ganaderia: DatosGanaderia;

@@ -50,7 +50,6 @@ export interface DatosConocidos {
   readonly terreno: string;
   readonly potenciales: Readonly<Record<Potencial, NivelPotencial>>;
   readonly edificios: Readonly<Record<string, number>>;
-  readonly preciosMil: Readonly<Record<Recurso, number>> | null;
 }
 
 export interface Conocimiento {
@@ -58,6 +57,22 @@ export interface Conocimiento {
   /** Turno en que se supo lo que aqui se guarda. La informacion no se actualiza sola. */
   readonly turnoUltimaNoticia: number;
   readonly datos: DatosConocidos | null;
+}
+
+export const FUENTES_DE_PRECIOS = ['visita', 'corresponsal', 'rumor'] as const;
+export type FuenteDePrecios = (typeof FUENTES_DE_PRECIOS)[number];
+
+/**
+ * Lo que un jugador sabe de los precios de una plaza (ficha T-044 §4.2): los de la ultima vez que
+ * estuvo una recua suya, que le escribio un corresponsal o que le llego un rumor. No se actualiza
+ * solo. Los de rumor van redondeados.
+ */
+export interface PreciosConocidos {
+  readonly turno: number;
+  readonly fuente: FuenteDePrecios;
+  readonly preciosMil: Readonly<Record<Recurso, number>>;
+  /** Alguna recua suya estuvo alguna vez en la plaza: los corresponsales escriben de ella. */
+  readonly visitada: boolean;
 }
 
 export interface TrasladoDeCorte {
@@ -103,6 +118,8 @@ export interface EstadoJugador {
   readonly hitos: Readonly<Partial<Record<Hito, number>>>;
   readonly registro: RegistroDeJugador;
   readonly conocimiento: Readonly<Record<string, Conocimiento>>;
+  /** Plaza → lo que se sabe de sus precios y desde cuando. */
+  readonly plazas: Readonly<Record<string, PreciosConocidos>>;
   readonly escasez: boolean;
   /** Escaseces seguidas: a la tercera empieza la emigracion. */
   readonly escasezSeguidas: number;

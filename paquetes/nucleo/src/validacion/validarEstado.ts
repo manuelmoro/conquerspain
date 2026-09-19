@@ -6,6 +6,7 @@ import type {
   DatosConocidos,
   EstadoComarca,
   EstadoJugador,
+  PreciosConocidos,
   PuestoEnLaClasificacion,
   RegistroDeJugador,
   EstadoMercado,
@@ -20,6 +21,7 @@ import type {
 import {
   CARGAS_FISCALES,
   COMETIDOS,
+  FUENTES_DE_PRECIOS,
   FUEROS,
   LONGITUD_MAXIMA_DE_RUTA,
   MODOS_DE_PARTIDA,
@@ -84,7 +86,13 @@ const validarDatosConocidos: Validador<DatosConocidos> = objeto<DatosConocidos>(
   terreno: texto({ minimo: 1, maximo: 20 }),
   potenciales: registroCompleto(POTENCIALES, nivelPotencial()),
   edificios: registro(enteroNoNegativo(20)),
-  preciosMil: oNulo(registroCompleto(RECURSOS, enteroNoNegativo())),
+});
+
+const validarPreciosConocidos: Validador<PreciosConocidos> = objeto<PreciosConocidos>({
+  turno: entero({ minimo: 1 }),
+  fuente: unoDe(FUENTES_DE_PRECIOS),
+  preciosMil: registroCompleto(RECURSOS, enteroNoNegativo()),
+  visitada: booleano(),
 });
 
 const validarConocimiento: Validador<Conocimiento> = objeto<Conocimiento>({
@@ -124,6 +132,7 @@ const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
   hitos: registro(entero({ minimo: 1 }), unoDe(HITOS)),
   registro: validarRegistro,
   conocimiento: registro(validarConocimiento, identificador()),
+  plazas: registro(validarPreciosConocidos, identificador()),
   escasez: booleano(),
   escasezSeguidas: enteroNoNegativo(),
   conservarConSal: booleano(),

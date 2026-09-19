@@ -77,7 +77,6 @@ describe('explorar', () => {
         terreno: 'ondulado',
         potenciales: estado.comarcas['prueba-monte']?.potenciales,
         edificios: {},
-        preciosMil: null,
       },
     });
     expect(conocimientoDe(despues, UNO, 'prueba-sierra')).toEqual({

@@ -63,3 +63,14 @@ export { CAPITULOS_DE_PRESTIGIO, prestigioDe } from './reglas/prestigio.ts';
 export type { CapituloDePrestigio, Prestigio } from './reglas/prestigio.ts';
 export { clasificacion } from './reglas/clasificacion.ts';
 export type { LineaDeClasificacion } from './reglas/clasificacion.ts';
+export { RUMBOS, rumboEntre, vistaDeJugador } from './reglas/vista.ts';
+export type {
+  CasaPublica,
+  Rumbo,
+  UnidadAjena,
+  VistaComarca,
+  VistaJugador,
+} from './reglas/vista.ts';
+export { componerCronica, fechaDe } from './reglas/cronica.ts';
+export type { FuentesDeCronica } from './reglas/cronica.ts';
+export { redondearDeOido } from './reglas/rumores.ts';

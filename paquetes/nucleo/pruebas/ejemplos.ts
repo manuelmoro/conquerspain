@@ -17,6 +17,7 @@ import { OBRAS, OBRAS_MAYORES } from '../src/datos/obras.ts';
 import { POBLACION } from '../src/datos/poblacion.ts';
 import { DATOS_DE_HITOS, PRESTIGIO } from '../src/datos/prestigio.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
+import { RUMORES } from '../src/datos/rumores.ts';
 import { DATOS_DE_RECURSOS } from '../src/datos/recursos.ts';
 import { TERRITORIO } from '../src/datos/territorio.ts';
 import { RONDAS, TRADICIONES } from '../src/datos/tradiciones.ts';
@@ -188,6 +189,7 @@ export function estadoDeEjemplo(): Registro {
         conocimiento: {
           'prueba-llano': { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },
         },
+        plazas: {},
         escasez: false,
         escasezSeguidas: 0,
         conservarConSal: true,
@@ -238,6 +240,7 @@ export function tablasDeEjemplo(): Registro {
         venderAperos: false,
         acequiaMenor: false,
         cartaPuebla: false,
+        corresponsales: false,
       },
       prohibiciones: {
         roturar: false,
@@ -291,6 +294,7 @@ export function tablasDeEjemplo(): Registro {
     influencia: JSON.parse(JSON.stringify(INFLUENCIA)) as Registro,
     prestigio: JSON.parse(JSON.stringify(PRESTIGIO)) as Registro,
     hitos: JSON.parse(JSON.stringify(DATOS_DE_HITOS)) as Registro,
+    rumores: JSON.parse(JSON.stringify(RUMORES)) as Registro,
     arranque: JSON.parse(JSON.stringify(ARRANQUE)) as Registro,
     acontecimientos: JSON.parse(JSON.stringify(ACONTECIMIENTOS)) as Registro,
     ganaderia: JSON.parse(JSON.stringify(GANADERIA)) as Registro,

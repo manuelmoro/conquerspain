@@ -359,6 +359,7 @@
             "turnoUltimaNoticia": 1
           }
         },
+        "plazas": {},
         "credito": 50,
         "escasez": false,
         "escasezSeguidas": 0,
@@ -409,17 +410,17 @@
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "eddaa949e5924a03c99d33e95bf1a03d410c5175e0a683f4ad1f43081b3792db"
+      "huellaEsperada": "a89443826f74d71b2212dfd140ed9bd471d2d97ab6fe5e85d43234e98dd4982c"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "35556a42faf78acb37edd2a902579bb380ba47b197f25235e4bafc183072b8c6"
+      "huellaEsperada": "68ea7acbf5f7552bee714aabc6f1a7cb36210a67f19abc73f3d1ecfb8da94c68"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "bde9deebe8e8e9d3307240e4b76bee58e43976cae69dfe92255ce422a4963558"
+      "huellaEsperada": "3a24627ef85871102ed10e60416fef170515732c0770523062d6ae77b70ea1f7"
     }
   ]
 }

@@ -8,12 +8,13 @@ import {
   RECURSOS_AGOTABLES,
 } from '../tipos/estado.ts';
 import type { Potencial } from '../tipos/mundo.ts';
-import { POTENCIALES, RASGOS, TERRENOS } from '../tipos/mundo.ts';
+import { POTENCIALES, RASGOS, TERRENOS, VOLUMENES_FERIA } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import type {
   CondicionDeRonda,
   CriterioDeOrigen,
   DatosHito,
+  DatosRumores,
   DatosAcontecimiento,
   DatosAcontecimientos,
   DatosSorteoDeAcontecimientos,
@@ -143,6 +144,7 @@ const camposDePermisos: CamposDe<Permisos> = {
   venderAperos: booleano(),
   acequiaMenor: booleano(),
   cartaPuebla: booleano(),
+  corresponsales: booleano(),
 };
 const validarPermisos = objeto<Permisos>(camposDePermisos);
 
@@ -438,6 +440,15 @@ const validarPrestigio: Validador<DatosPrestigio> = objeto<DatosPrestigio>({
   penalizacionPorEscasez: enteroNoNegativo(100),
 });
 
+const validarRumores: Validador<DatosRumores> = objeto<DatosRumores>({
+  porFeria: registroCompleto(VOLUMENES_FERIA, enteroNoNegativo(10)),
+  porCaminoDeSantiago: enteroNoNegativo(10),
+  porVenta: enteroNoNegativo(10),
+  corresponsalesMil: milesimas(1000, 5000),
+  maximoPorTurno: enteroNoNegativo(50),
+  dePreciosMil: milesimas(0, 1000),
+});
+
 const validarHito: Validador<DatosHito> = objeto<DatosHito>({
   nombre: texto({ minimo: 1, maximo: 60 }),
   condicion: texto({ minimo: 1, maximo: 200 }),
@@ -518,6 +529,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   influencia: validarInfluencia,
   prestigio: validarPrestigio,
   hitos: registroCompleto(HITOS, validarHito),
+  rumores: validarRumores,
   arranque: validarArranque,
   acontecimientos: validarAcontecimientos,
   ganaderia: validarGanaderia,

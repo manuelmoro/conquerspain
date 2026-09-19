@@ -281,6 +281,7 @@ export function estadoMini(): EstadoPartida {
           'prueba-llano': { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },
           'prueba-vega': { nivel: 'oida', turnoUltimaNoticia: 1, datos: null },
         },
+        plazas: {},
         escasez: false,
         escasezSeguidas: 0,
         conservarConSal: true,

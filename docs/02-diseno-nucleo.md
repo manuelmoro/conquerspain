@@ -244,6 +244,24 @@ un calendario y se puede reajustar en cualquier momento antes de su resolución.
 - Los **rumores** llegan por las ferias: cuanto más comercias, más te enteras. Es la manera barata
   de tener información, y una razón más para ir a la feria.
 
+### 2.6.1 Cómo se sabe cada cosa (T-044)
+
+- **Lo que ven las recuas.** Donde hay una recua propia quieta al acabar el turno, se saben los
+  precios exactos de las plazas abiertas y, si la comarca ya estaba explorada, se ve como está hoy.
+- **Los precios** se guardan por plaza, con su turno y su fuente (`visita`, `corresponsal` o
+  `rumor`), en `EstadoJugador.plazas`. No se actualizan solos.
+- **Los rumores** llegan por tres vías: una recua quieta en una feria abierta (1, 2 o 3 según su
+  volumen), una recua en una comarca del Camino de Santiago (1) y cada comarca propia con venta
+  (1), hasta 6 por turno; los corresponsales de los mercaderes doblan lo que se oye. Cada rumor es
+  de precios de una plaza abierta donde el jugador no está (70 %) o de una comarca vecina de lo
+  conocido que aún no conocía, que pasa a oída. Las cifras de oídas van a dos cifras significativas:
+  nunca se apartan más de un 5 % de la verdad, y nunca son falsas.
+- **La vista del jugador** (`vistaDeJugador`) es lo único que sale del servidor: lo propio entero;
+  lo explorado, como se supo; lo oído, solo nombre y región; lo desconocido, nada. Las recuas y los
+  rebaños ajenos se ven en lo propio y donde hay una recua propia, solo con su casa y su rumbo. La
+  influencia ajena en una comarca neutral, solo con presencia allí y en tramos de 10. El prestigio y
+  la clasificación son públicos. La semilla de la partida no sale nunca.
+
 ## 2.7 El parte del turno (la crónica)
 
 Es el equivalente al RST de VGA Planets, y es donde se juega medio juego. Cada turno, cada jugador
@@ -255,6 +273,12 @@ recibe una crónica compuesta por:
    por qué, contratos de mercado sin casar.
 4. **Rumores**: lo que traen los arrieros de otras tierras, fechado y con su fuente.
 5. **Hitos y prestigio**: qué has conseguido y cómo va la clasificación pública.
+
+En el parte que recibe el jugador el orden es el de lo que exige decisión: **avisos**, sucesos
+propios, economía, rumores e hitos. Cada tipo de suceso tiene su plantilla (`datos/plantillas.ts`),
+que dice su sección, su texto, la orden que resolvería lo que cuenta (el botón de la interfaz) y si
+es pública: la primicia, la comarca que se incorpora o se va, el calendario, los puertos y los
+acontecimientos los leen todos los que conocen la comarca, con su propio texto.
 
 La crónica se escribe con voz de cronista, breve y concreta, y siempre explica la causa:
 «La obra del molino se detuvo: no llegó la piedra de Berlanga porque el puerto de Piqueras cerró el

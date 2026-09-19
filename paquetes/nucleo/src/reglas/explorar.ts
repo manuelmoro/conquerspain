@@ -23,7 +23,6 @@ export function datosConocidosDe(comarca: EstadoComarca, geografia: ComarcaMundo
     terreno: geografia.terreno,
     potenciales: { ...comarca.potenciales },
     edificios: { ...comarca.edificios },
-    preciosMil: null,
   };
 }
 

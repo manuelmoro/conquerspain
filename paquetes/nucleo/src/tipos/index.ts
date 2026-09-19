@@ -33,6 +33,7 @@ export type {
 export {
   CARGAS_FISCALES,
   COMETIDOS,
+  FUENTES_DE_PRECIOS,
   FUEROS,
   MODOS_DE_PARTIDA,
   NIVELES_DE_CONOCIMIENTO,
@@ -51,13 +52,17 @@ export type {
   EstadoJugador,
   EstadoMercado,
   EstadoPartida,
+  FuenteDePrecios,
   Fuero,
   ModoDePartida,
   NivelDeConocimiento,
   Obra,
+  PreciosConocidos,
+  PuestoEnLaClasificacion,
   Rebanyo,
   Recua,
   RecursoAgotable,
+  RegistroDeJugador,
   SituacionMovil,
   TipoDeObra,
 } from './estado.ts';
@@ -132,4 +137,12 @@ export type {
   Tradicion,
 } from './reglas.ts';
 export { NOMBRES_DE_FASE, SECCIONES_DE_CRONICA } from './cronica.ts';
-export type { Cronica, EntradaDeCronica, NombreFase, SeccionDeCronica, Suceso } from './cronica.ts';
+export type {
+  Cronica,
+  EntradaDeCronica,
+  NombreFase,
+  Plantilla,
+  PlantillaDeSuceso,
+  SeccionDeCronica,
+  Suceso,
+} from './cronica.ts';

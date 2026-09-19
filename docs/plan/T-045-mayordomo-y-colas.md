@@ -23,6 +23,10 @@ condicionales, plan de temporada de hasta seis turnos y su interacción con la v
 
 **No entra:** interfaz (T-082) ni notificaciones (T-064).
 
+**Heredado de T-044.** Cada entrada de la crónica trae `accionSugerida` (un `TipoDeOrden`): es el
+enganche natural para las reglas del mayordomo («si falta pan, comprar»). Los avisos que exigen
+decisión van en la sección `avisos`, primero.
+
 **Heredado de T-040.** Las rutas de un rebaño **no son circulares** (la orden se cancela con
 `ruta-circular-de-rebanyo`): la trashumancia son dos órdenes al año, subir en primavera y bajar en
 otoño. Programarlas es tarea del plan de temporada y del mayordomo de esta tarea, con la fecha

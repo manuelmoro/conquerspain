@@ -119,7 +119,7 @@ necesita.
 | Mesta | paso franco en tierra ajena por cañada, rebaño a mitad de precio, +25 % de lana, sin roturar, pan −30 % | — |
 | Ferrones | ferrería con hierro 1, una carbonera por dos niveles, aperos de nivel 4, monte +50 % de agotamiento | **vender aperos instalados** a otro jugador (T-103) |
 | Canteros | obras mayores −25 % de coste, +30 % de avance y sin frenazo de invierno, un solar menos | **contrato de obra** en comarca ajena (T-103) |
-| Mercaderes | letra de cambio (3 % y un turno), un solar menos, pan −25 % | **corresponsales** y rumores dobles (T-044) |
+| Mercaderes | letra de cambio (3 % y un turno), corresponsales (precios de hoy de las plazas que visitó) y rumores dobles, un solar menos, pan −25 % | — |
 | Monjes | puebla con la mitad de gente, lealtad mínima 50, monasterio −30 %, sin carga fiscal dura | **portazgos** (T-103); **carta puebla gratis**, que hoy no cuesta nada (T-047) |
 | Salineros | salinas +50 %, pan sin merma, lonja +50 % y nivel 3, explotaciones de tierra un nivel por debajo | transporte sin bastimento extra (no se modela) |
 | Arrieros | recua −40 %, +1 jornada, +5 de porte, −1 vecino por nivel de casas, sin catedral | **portazgo propio** (T-103) |

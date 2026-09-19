@@ -27,6 +27,7 @@ import type { Mundo } from './tipos/mundo.ts';
 import type { Orden } from './tipos/ordenes.ts';
 import type { TablasDeReglas } from './tipos/reglas.ts';
 import { VERSION_REGLAS } from './tipos/reglas.ts';
+import { componerCronica } from './reglas/cronica.ts';
 import { huella } from './utiles/huella.ts';
 import { idsEnOrden } from './utiles/orden.ts';
 
@@ -114,8 +115,9 @@ export function resolverTurno(
   ctx.estado.huellaTurnoAnterior = huella(ctx.estado);
 
   const cronicas: Record<string, Cronica> = {};
+  const fuentes = { estado: ctx.estado, sucesos: ctx.sucesos, turno: ctx.turno, mundo, reglas };
   for (const id of idsEnOrden(ctx.estado.jugadores)) {
-    cronicas[id] = { turno: ctx.turno, jugador: id as IdJugador, entradas: [] };
+    cronicas[id] = componerCronica(id as IdJugador, fuentes);
   }
 
   return { estado: ctx.estado, cronicas, sucesos: ctx.sucesos };

@@ -57,6 +57,7 @@ export const SIN_PERMISOS: Permisos = {
   venderAperos: false,
   acequiaMenor: false,
   cartaPuebla: false,
+  corresponsales: false,
 };
 
 export const SIN_PROHIBICIONES: Prohibiciones = {
@@ -141,10 +142,11 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
   mercaderes: casa({
     nombre: 'Mercaderes de feria',
     privilegio: 'Letra de cambio: pasa maravedís a una recua en otra plaza, con un 3 % y un turno.',
-    herramienta: 'Corresponsales: con T-044, ve los precios de las ferias que ha visitado.',
+    herramienta:
+      'Corresponsales: sabe cada turno los precios de las plazas que visitó, y oye el doble de rumores.',
     limite: 'Poca tierra: un solar menos y un 25 % menos de pan propio; vive de comprar.',
     modificadores: { produccionMil: { pan: 750 }, solaresExtra: -1 },
-    permisos: { letraDeCambio: true },
+    permisos: { letraDeCambio: true, corresponsales: true },
     origenes: [origen({ rasgos: ['villa-de-feria'] }), origen({ rasgos: ['puerto-de-mar'] })],
   }),
   monjes: casa({

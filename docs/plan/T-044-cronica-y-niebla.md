@@ -1,6 +1,6 @@
 # T-044 · Fase 12: crónica, niebla e información fechada
 
-**Fase:** 2 · Motor · **Depende de:** T-034 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-034 · **Estado:** hecha
 
 ## 1. Contexto
 
@@ -133,11 +133,38 @@ jerga de sistema, sin exclamaciones. Las plantillas se revisan leyéndolas en vo
 ## 5. Archivos
 
 ```
-paquetes/nucleo/src/fases/12-cronica.ts
-paquetes/nucleo/src/reglas/{vista,cronica,rumores}.ts
-paquetes/nucleo/src/reglas/*.test.ts
-paquetes/nucleo/datos/plantillas-cronica.json
+paquetes/nucleo/src/fases/12-cronica.ts        lo que ven las recuas, corresponsales y rumores
+paquetes/nucleo/src/reglas/vista.ts            vistaDeJugador
+paquetes/nucleo/src/reglas/cronica.ts          componerCronica (la llama el resolutor)
+paquetes/nucleo/src/reglas/rumores.ts          vias, sorteo y redondeo de oidas
+paquetes/nucleo/src/datos/plantillas.ts        plantillas, motivos y nombres
+paquetes/nucleo/src/datos/rumores.ts           cuantos rumores y por donde
+paquetes/nucleo/pruebas/{vista,cronica,rumores}.test.ts
 ```
+
+## 5.1 Lo que cambió al implementarla
+
+- **Datos en TypeScript** y pruebas en `pruebas/`, como el resto del paquete.
+- **Precios fechados aparte.** `DatosConocidos.preciosMil` desaparece: los precios de cada plaza
+  viven en `EstadoJugador.plazas` con su turno, su fuente y si se visitó alguna vez. Así un rumor de
+  precios no pone fecha nueva a la población o los edificios de una comarca, que no se oyeron.
+- **Corresponsales activados** (permiso nuevo `corresponsales`, de los mercaderes): precios de hoy
+  de las plazas visitadas y rumores dobles.
+- **«Desactualizados»** no es un truco de los rumores: la información se hace vieja sola, porque no
+  se renueva. Los rumores solo redondean, y nunca más de un 5 %.
+- **La crónica no vive en el estado.** Se compone en el resolutor, después de las fases, con los
+  sucesos del turno entero. Lleva `fecha`. Las entradas resumidas (almacén, producción, prestigio)
+  dan un **resumen económico** y una **línea de clasificación** compuestos aparte.
+- **Plantillas:** una por tipo de suceso, aunque sea `null` (va al resumen o es detalle de
+  auditoría), o una por valor de un campo (`segun`). Huecos `{campo}` y `{campo:formato}`, con
+  formatos `mil`, `pct`, `abs`, `fecha` e `infinitivo`; lo que va entre corchetes se calla si su
+  cifra es cero. Los identificadores se traducen siempre a nombres (comarcas, recuas, plazas,
+  edificios con su artículo, regiones, hitos, tradiciones, motivos).
+- **`orden.estado` lleva `clase`** (el tipo de la orden), para contar qué orden quedó en espera
+  aunque ya se haya retirado del estado.
+- **Pruebas estáticas:** el test lee las llamadas a `registrarSuceso` del código fuente y comprueba
+  que cada tipo tiene plantilla, que no sobra ninguna y que ningún hueco pide un dato que el suceso
+  no trae; lo mismo con los motivos de espera y cancelación.
 
 ## 6. Criterios de aceptación
 

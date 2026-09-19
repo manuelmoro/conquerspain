@@ -85,10 +85,14 @@ describe('armazon del resolutor', () => {
     expect(segundo.estado.huellaTurnoAnterior).not.toBe(primero.estado.huellaTurnoAnterior);
   });
 
-  it('da una cronica por jugador, aunque todavia venga vacia', () => {
-    const { cronicas } = resolverTurno(estadoMini(), [], mundoMini(), tablasMini());
+  it('da una cronica por jugador, fechada y con el resumen del turno', () => {
+    const estado = estadoMini();
+    const { cronicas } = resolverTurno(estado, [], mundoMini(), tablasMini());
     expect(Object.keys(cronicas)).toEqual(['casa-uno']);
-    expect(cronicas['casa-uno']?.entradas).toEqual([]);
+    const cronica = cronicas['casa-uno'];
+    expect(cronica?.turno).toBe(estado.turno);
+    expect(cronica?.fecha).toMatch(/^[A-Z].* del año 1$/);
+    expect(cronica?.entradas.some((e) => e.seccion === 'economia')).toBe(true);
   });
 
   it('rechaza una partida de otra version de reglas', () => {

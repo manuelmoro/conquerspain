@@ -25,6 +25,7 @@ import type {
   Fuero,
   CargaFiscal,
   Obra,
+  PreciosConocidos,
   PuestoEnLaClasificacion,
   Rebanyo,
   Recua,
@@ -378,6 +379,13 @@ export type Cambio =
       readonly tipo: 'primicia';
       readonly jugador: IdJugador;
       readonly hito: Hito;
+    }
+  | {
+      /** Lo que el jugador sabe ahora de los precios de una plaza. */
+      readonly tipo: 'plaza-conocida';
+      readonly jugador: IdJugador;
+      readonly mercado: string;
+      readonly precios: PreciosConocidos;
     }
   | {
       readonly tipo: 'clasificacion';
@@ -878,6 +886,20 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       return;
     }
 
+    case 'plaza-conocida': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const antes = jugador.plazas[cambio.mercado];
+      if (antes !== undefined && antes.turno > cambio.precios.turno) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `${cambio.jugador} ya sabia precios mas recientes de ${cambio.mercado}: la informacion no retrocede.`,
+          { jugador: cambio.jugador, mercado: cambio.mercado },
+        );
+      }
+      jugador.plazas[cambio.mercado] = comoBorrador(cambio.precios);
+      return;
+    }
+
     case 'clasificacion': {
       const jugadores = new Set<string>(cambio.puestos.map((p) => p.jugador));
       const esperados = Object.keys(ctx.estado.jugadores);
@@ -1003,7 +1025,12 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         ctx.sucesos,
         ctx.fase,
         'orden.estado',
-        { orden: cambio.orden, estado: cambio.estado, motivo: cambio.motivo ?? '' },
+        {
+          orden: cambio.orden,
+          clase: orden.tipo,
+          estado: cambio.estado,
+          motivo: cambio.motivo ?? '',
+        },
         { jugador: orden.jugador },
       );
       return;

@@ -369,6 +369,7 @@
             "datos": null
           }
         },
+        "plazas": {},
         "conservarConSal": true,
         "deudaAdministracion": 0,
         "traslado": null,
@@ -443,7 +444,7 @@
           "vecinos": 2
         }
       ],
-      "huellaEsperada": "9204dfca2489cb25ed1050945b8c20807e12e6a11320099f25d3610840994d65"
+      "huellaEsperada": "715a566770f0907eb3cc81d28578e0733a026ea78edbd4f8c12757952bfe4078"
     },
     {
       "turno": 8,
@@ -508,57 +509,57 @@
           ]
         }
       ],
-      "huellaEsperada": "9e327d20329aa8e5b2ef847b9f8778e703dcf82b188c8be7918ef3e3e82f3791"
+      "huellaEsperada": "0ab7c192e6167aa2ee2dbf557fc8bdf6f45c1ffe3f4e764b2d99f06e66bccb60"
     },
     {
       "turno": 9,
       "ordenes": [],
-      "huellaEsperada": "82f14f0978381c4791441a1f05a239716fdca481edaacd06cda85d140b6bce82"
+      "huellaEsperada": "7105a3b464a3fbdc44d2b0f0ee3adc3fd5340bf129f8aefc7c100a20bc0ff33e"
     },
     {
       "turno": 10,
       "ordenes": [],
-      "huellaEsperada": "684b988bda2ea242f22ddd8072876174602332e2f5296d97df8f4eb8baf4b603"
+      "huellaEsperada": "58dc33ed9cf9932533166e3d874592ee577090971c7eb2eb2c698210717b8689"
     },
     {
       "turno": 11,
       "ordenes": [],
-      "huellaEsperada": "757dae5e19036d2975ecc97b60b59f2a627e5007120bb7fbbd36e545862a905c"
+      "huellaEsperada": "efe48d7befb28f1c2443b94e559150bb4f16347e2d6b12e8f758cbe5f12c3619"
     },
     {
       "turno": 12,
       "ordenes": [],
-      "huellaEsperada": "c96651e4bf7179381b5ccb5acf8b4b3373142119d55f175a0320b3129e95c54c"
+      "huellaEsperada": "ad84cd5b12422e73beb9b05e4c630a3a8bd7da5110f70483194999439b22b4d4"
     },
     {
       "turno": 13,
       "ordenes": [],
-      "huellaEsperada": "f9ac56f9d05b1ff30b7447a9b5a1d0acaefb27327a9c88929eedd23671a91c15"
+      "huellaEsperada": "abba8606914db2ff57b9441da6868e41acd7845bed164549578faff5d840758e"
     },
     {
       "turno": 14,
       "ordenes": [],
-      "huellaEsperada": "8aefab5fc0dbb6aa16a4309527b1f12c718b68fd3c28feab5dc66a11e5224215"
+      "huellaEsperada": "a8964e2ef399f4950eaa741a1070363ef7f4175c1ff950577aaa547cc382d825"
     },
     {
       "turno": 15,
       "ordenes": [],
-      "huellaEsperada": "031b7d8957e24452e78473efcebdc9dfea9cab575fb65f0c7719d3b14d6ae5c2"
+      "huellaEsperada": "5c32a10d61dd73ba56427bab9665d7ac899612177fe9debcb69a149ad3eb165c"
     },
     {
       "turno": 16,
       "ordenes": [],
-      "huellaEsperada": "c7bd8f00829690210e44aa0522df87c40e1a1977dc468b0b6e9f392e744bb06c"
+      "huellaEsperada": "4dd787421125d98ad12159cf8774967fc1988c14a83406fad12aa482b5993365"
     },
     {
       "turno": 17,
       "ordenes": [],
-      "huellaEsperada": "decf7309524d79e1d31c15cfd0691c76c3aa97c20c19bfaa0b80a97e005c90eb"
+      "huellaEsperada": "4d27729a722f96456dfe0083ef4297684f9fb61847b6c6053d12a6be0b12b7ec"
     },
     {
       "turno": 18,
       "ordenes": [],
-      "huellaEsperada": "0f781b9f22afc5e7b87a2db912ab88f224bb7f153f14a9cddb132ba08b8c68c6"
+      "huellaEsperada": "d2bf8c01e9ae6b4006bd5e648435e0d5186d8c9d0c7ae1875389221606c2b614"
     }
   ]
 }
