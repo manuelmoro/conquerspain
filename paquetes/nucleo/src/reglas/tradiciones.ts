@@ -4,7 +4,6 @@
 // Funciones puras: cuando se abre cada ronda, que cartas se ofrecen y por que se rechaza una
 // eleccion. Las usan la fase 11, los cambios del estado y, al dar la orden, el servidor (T-062):
 // un solo sitio decide si una eleccion vale.
-import type { Suceso } from '../tipos/cronica.ts';
 import type { EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type {
   Casa,
@@ -25,20 +24,17 @@ export interface LogrosDelJugador {
   readonly turno: number;
 }
 
-/** Los logros de un jugador; la obra mayor se lee de los sucesos de la fase de obras del turno. */
+/** Los logros de un jugador; la obra mayor, del registro que apunta la fase 11 (T-043). */
 export function logrosDe(
   estado: EstadoPartida,
   jugador: EstadoJugador,
   turno: number,
-  sucesos: readonly Suceso[],
 ): LogrosDelJugador {
   const propias = Object.values(estado.comarcas).filter((c) => c.duenyo === jugador.id);
   return {
     comarcas: propias.length,
     vecinos: propias.reduce((total, comarca) => total + comarca.poblacion, 0),
-    obraMayorTerminada: sucesos.some(
-      (s) => s.tipo === 'hito.obra-mayor' && s.jugador === jugador.id,
-    ),
+    obraMayorTerminada: Object.values(jugador.registro.obrasMayores).some((n) => n > 0),
     prestigio: jugador.prestigio,
     turno,
   };

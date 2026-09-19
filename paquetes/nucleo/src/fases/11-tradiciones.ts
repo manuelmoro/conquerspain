@@ -60,7 +60,7 @@ function abrirRondas(ctx: Contexto): void {
   for (const id of idsEnOrden(ctx.estado.jugadores)) {
     const jugador = ctx.estado.jugadores[id];
     if (jugador === undefined) continue;
-    const logros = logrosDe(ctx.estado, jugador, ctx.turno, ctx.sucesos);
+    const logros = logrosDe(ctx.estado, jugador, ctx.turno);
     for (const ronda of rondasPorAbrir(jugador, logros, ctx.reglas)) {
       aplicar(ctx, { tipo: 'ronda', jugador: jugador.id, ronda });
     }

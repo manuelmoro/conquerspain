@@ -376,6 +376,15 @@
         "escasez": false,
         "escasezSeguidas": 0,
         "hitos": {},
+        "registro": {
+          "obrasMayores": {},
+          "anyosTrashumantes": 0,
+          "feriasDestacadas": 0,
+          "volumenEnFerias": {},
+          "comarcasPerdidas": 0,
+          "turnosConEscasez": 0,
+          "turnosDeDespensaEstable": 0
+        },
         "id": "casa-uno",
         "nombre": "Casa Uno",
         "prestigio": 0,
@@ -402,7 +411,9 @@
     "semilla": "semilla-mini",
     "siguienteId": 1,
     "turno": 7,
-    "version": 1
+    "version": 1,
+    "primicias": {},
+    "clasificacion": []
   },
   "turnos": [
     {
@@ -432,7 +443,7 @@
           "vecinos": 2
         }
       ],
-      "huellaEsperada": "2bc18c5134c55329fbd0b9c976e5023858609af31375efa4651bd5685b34ec76"
+      "huellaEsperada": "9204dfca2489cb25ed1050945b8c20807e12e6a11320099f25d3610840994d65"
     },
     {
       "turno": 8,
@@ -497,57 +508,57 @@
           ]
         }
       ],
-      "huellaEsperada": "468bf74f643b57a88054e6e5852d62ea14ccdb0a8b34757e9fada7c0a9c5d6a4"
+      "huellaEsperada": "9e327d20329aa8e5b2ef847b9f8778e703dcf82b188c8be7918ef3e3e82f3791"
     },
     {
       "turno": 9,
       "ordenes": [],
-      "huellaEsperada": "223e40ee16e32214210b5f69774c52c568e9015f6f3621a69d599d776e772a77"
+      "huellaEsperada": "82f14f0978381c4791441a1f05a239716fdca481edaacd06cda85d140b6bce82"
     },
     {
       "turno": 10,
       "ordenes": [],
-      "huellaEsperada": "21139070699ebed202ae359d980e65033230f73869c6bc898acd39610a8a44c8"
+      "huellaEsperada": "684b988bda2ea242f22ddd8072876174602332e2f5296d97df8f4eb8baf4b603"
     },
     {
       "turno": 11,
       "ordenes": [],
-      "huellaEsperada": "fd71d92027b2962ea35abfcfe2f6f2734bf0660f72dd31a3d6e3ffbdf5ade698"
+      "huellaEsperada": "757dae5e19036d2975ecc97b60b59f2a627e5007120bb7fbbd36e545862a905c"
     },
     {
       "turno": 12,
       "ordenes": [],
-      "huellaEsperada": "9ea655515d589bd7b9e7a9aa3f85fb89c5f734a32dc852b075056677f1691eee"
+      "huellaEsperada": "c96651e4bf7179381b5ccb5acf8b4b3373142119d55f175a0320b3129e95c54c"
     },
     {
       "turno": 13,
       "ordenes": [],
-      "huellaEsperada": "8f2493b1d2efeb98a9ec776900add7b47c99f74a6ff84e0b6464c90aab72826e"
+      "huellaEsperada": "f9ac56f9d05b1ff30b7447a9b5a1d0acaefb27327a9c88929eedd23671a91c15"
     },
     {
       "turno": 14,
       "ordenes": [],
-      "huellaEsperada": "3de3c52517effb5e9d1f42aa4dc3207a3dc279e51d10dab5a70dfd94c46c9658"
+      "huellaEsperada": "8aefab5fc0dbb6aa16a4309527b1f12c718b68fd3c28feab5dc66a11e5224215"
     },
     {
       "turno": 15,
       "ordenes": [],
-      "huellaEsperada": "f492d92ec9da3937d6e63dd079aa5d4af17dd2efca8a8340a1f2279ced81432d"
+      "huellaEsperada": "031b7d8957e24452e78473efcebdc9dfea9cab575fb65f0c7719d3b14d6ae5c2"
     },
     {
       "turno": 16,
       "ordenes": [],
-      "huellaEsperada": "689711c6511d53f73979bb0676dc518daac16458037758877b8b021e0bce2c18"
+      "huellaEsperada": "c7bd8f00829690210e44aa0522df87c40e1a1977dc468b0b6e9f392e744bb06c"
     },
     {
       "turno": 17,
       "ordenes": [],
-      "huellaEsperada": "2f8bb4368202804282b2405aa6331001baacdf5df6db798e6223ddcb6dd74698"
+      "huellaEsperada": "decf7309524d79e1d31c15cfd0691c76c3aa97c20c19bfaa0b80a97e005c90eb"
     },
     {
       "turno": 18,
       "ordenes": [],
-      "huellaEsperada": "2196d3e63d1ff72e21dcd30c5aa9fdbded70897a7017d307d5808225d073a1d0"
+      "huellaEsperada": "0f781b9f22afc5e7b87a2db912ab88f224bb7f153f14a9cddb132ba08b8c68c6"
     }
   ]
 }

@@ -15,6 +15,7 @@ import { MERCADO } from '../src/datos/mercado.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
 import { OBRAS, OBRAS_MAYORES } from '../src/datos/obras.ts';
 import { POBLACION } from '../src/datos/poblacion.ts';
+import { DATOS_DE_HITOS, PRESTIGIO } from '../src/datos/prestigio.ts';
 import { PRODUCCION } from '../src/datos/produccion.ts';
 import { DATOS_DE_RECURSOS } from '../src/datos/recursos.ts';
 import { TERRITORIO } from '../src/datos/territorio.ts';
@@ -175,6 +176,15 @@ export function estadoDeEjemplo(): Registro {
         prestigio: 0,
         credito: 50,
         hitos: {},
+        registro: {
+          obrasMayores: {},
+          anyosTrashumantes: 0,
+          feriasDestacadas: 0,
+          volumenEnFerias: {},
+          comarcasPerdidas: 0,
+          turnosConEscasez: 0,
+          turnosDeDespensaEstable: 0,
+        },
         conocimiento: {
           'prueba-llano': { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },
         },
@@ -199,6 +209,8 @@ export function estadoDeEjemplo(): Registro {
     ordenes: [],
     siguienteId: 1,
     huellaTurnoAnterior: null,
+    primicias: {},
+    clasificacion: [],
   };
 }
 
@@ -277,20 +289,8 @@ export function tablasDeEjemplo(): Registro {
     territorio: JSON.parse(JSON.stringify(TERRITORIO)) as Registro,
     mercado: JSON.parse(JSON.stringify(MERCADO)) as Registro,
     influencia: JSON.parse(JSON.stringify(INFLUENCIA)) as Registro,
-    prestigio: {
-      porCadaCincoVecinos: 1,
-      porComarca: 20,
-      porComarcaConFuero: 30,
-      porObraMayor: { catedral: 250, calzada: 150, puente: 120 },
-      porTramoDeCamino: 15,
-      porFeriaDestacada: 30,
-      porPrimicia: 50,
-      porComarcaExplorada: 3,
-      porAnyoTrashumante: 10,
-      porAperosAltos: 10,
-      penalizacionPorComarcaPerdida: 20,
-      penalizacionPorEscasez: 1,
-    },
+    prestigio: JSON.parse(JSON.stringify(PRESTIGIO)) as Registro,
+    hitos: JSON.parse(JSON.stringify(DATOS_DE_HITOS)) as Registro,
     arranque: JSON.parse(JSON.stringify(ARRANQUE)) as Registro,
     acontecimientos: JSON.parse(JSON.stringify(ACONTECIMIENTOS)) as Registro,
     ganaderia: JSON.parse(JSON.stringify(GANADERIA)) as Registro,

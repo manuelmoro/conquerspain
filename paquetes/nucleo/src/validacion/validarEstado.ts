@@ -6,6 +6,8 @@ import type {
   DatosConocidos,
   EstadoComarca,
   EstadoJugador,
+  PuestoEnLaClasificacion,
+  RegistroDeJugador,
   EstadoMercado,
   EstadoPartida,
   Obra,
@@ -42,6 +44,7 @@ import { RECURSOS } from '../tipos/recursos.ts';
 import {
   CALIDADES_CAMINO,
   CASAS,
+  HITOS,
   RONDAS_DE_TRADICION,
   TIPOS_DE_OBRA_MAYOR,
   VERSION_REGLAS,
@@ -90,6 +93,23 @@ const validarConocimiento: Validador<Conocimiento> = objeto<Conocimiento>({
   datos: oNulo(validarDatosConocidos),
 });
 
+const validarRegistro: Validador<RegistroDeJugador> = objeto<RegistroDeJugador>({
+  obrasMayores: registro(enteroNoNegativo(), unoDe(TIPOS_DE_OBRA_MAYOR)),
+  anyosTrashumantes: enteroNoNegativo(),
+  feriasDestacadas: enteroNoNegativo(),
+  volumenEnFerias: registro(enteroNoNegativo(), identificador()),
+  comarcasPerdidas: enteroNoNegativo(),
+  turnosConEscasez: enteroNoNegativo(),
+  turnosDeDespensaEstable: enteroNoNegativo(),
+});
+
+const validarPuesto: Validador<PuestoEnLaClasificacion> = objeto<PuestoEnLaClasificacion>({
+  jugador: identificador<IdJugador>(),
+  puesto: entero({ minimo: 1 }),
+  puestoAnterior: oNulo(entero({ minimo: 1 })),
+  prestigio: entero(),
+});
+
 const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
   id: identificador<IdJugador>(),
   nombre: texto({ minimo: 1, maximo: 60 }),
@@ -101,7 +121,8 @@ const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
   reservado: recursos(),
   prestigio: entero(),
   credito: entero({ minimo: 0, maximo: 100 }),
-  hitos: registro(entero({ minimo: 1 })),
+  hitos: registro(entero({ minimo: 1 }), unoDe(HITOS)),
+  registro: validarRegistro,
   conocimiento: registro(validarConocimiento, identificador()),
   escasez: booleano(),
   escasezSeguidas: enteroNoNegativo(),
@@ -268,6 +289,8 @@ const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
   ordenes: lista(validarOrdenGuardada, { maximo: 2000 }),
   siguienteId: enteroNoNegativo(),
   huellaTurnoAnterior: oNulo(texto({ minimo: 64, maximo: 64 })),
+  primicias: registro(identificador<IdJugador>(), unoDe(HITOS)),
+  clasificacion: lista(validarPuesto),
 });
 
 /**
@@ -473,6 +496,24 @@ export function validarEstado(dato: unknown, mundo?: Mundo): Resultado<EstadoPar
       errores.push({
         ruta: `ordenes.${String(indice)}.turnoAlta`,
         mensaje: `la orden se dio en el turno ${String(orden.turnoAlta)} y la partida va por el ${String(estado.turno)}`,
+      });
+    }
+  });
+
+  for (const hito of HITOS) {
+    const jugador = estado.primicias[hito];
+    if (jugador !== undefined && estado.jugadores[jugador]?.hitos[hito] === undefined) {
+      errores.push({
+        ruta: `primicias.${hito}`,
+        mensaje: `"${jugador}" no esta en la partida o no tiene el hito: la primicia es de quien lo logro`,
+      });
+    }
+  }
+  estado.clasificacion.forEach((puesto, i) => {
+    if (!hayJugador(puesto.jugador) || puesto.puesto !== i + 1) {
+      errores.push({
+        ruta: `clasificacion.${String(i)}`,
+        mensaje: 'la clasificacion va del puesto 1 en adelante y solo con jugadores de la partida',
       });
     }
   });

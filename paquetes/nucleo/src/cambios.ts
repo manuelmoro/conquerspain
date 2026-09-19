@@ -25,14 +25,16 @@ import type {
   Fuero,
   CargaFiscal,
   Obra,
+  PuestoEnLaClasificacion,
   Rebanyo,
   Recua,
   RecursoAgotable,
+  RegistroDeJugador,
   SituacionMovil,
   TrasladoDeCorte,
 } from './tipos/estado.ts';
 import type { NivelPotencial, Potencial } from './tipos/mundo.ts';
-import type { RondaDeTradicion, TipoObraMayor, Tradicion } from './tipos/reglas.ts';
+import type { Hito, RondaDeTradicion, TipoObraMayor, Tradicion } from './tipos/reglas.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
@@ -359,6 +361,27 @@ export type Cambio =
       readonly tipo: 'orden-cantidad';
       readonly orden: IdOrden;
       readonly cantidad: number;
+    }
+  | {
+      /** Lo que el prestigio no puede recalcular: lo reescribe entero la fase 11. */
+      readonly tipo: 'registro';
+      readonly jugador: IdJugador;
+      readonly registro: RegistroDeJugador;
+    }
+  | {
+      readonly tipo: 'hito';
+      readonly jugador: IdJugador;
+      readonly hito: Hito;
+    }
+  | {
+      /** El primero de la partida en lograr un hito. Se da una sola vez. */
+      readonly tipo: 'primicia';
+      readonly jugador: IdJugador;
+      readonly hito: Hito;
+    }
+  | {
+      readonly tipo: 'clasificacion';
+      readonly puestos: readonly PuestoEnLaClasificacion[];
     }
   | {
       /** Se abre una ronda de tradiciones: desde el turno siguiente se puede elegir. */
@@ -785,6 +808,103 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         comarca.presenciaSeguida = restantes;
       } else {
         comarca.presenciaSeguida[cambio.jugador] = cambio.turnos;
+      }
+      return;
+    }
+
+    case 'registro': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const numeros = [
+        ...Object.values(cambio.registro.obrasMayores),
+        ...Object.values(cambio.registro.volumenEnFerias),
+        cambio.registro.anyosTrashumantes,
+        cambio.registro.feriasDestacadas,
+        cambio.registro.comarcasPerdidas,
+        cambio.registro.turnosConEscasez,
+        cambio.registro.turnosDeDespensaEstable,
+      ];
+      if (numeros.some((n) => !Number.isSafeInteger(n) || n < 0)) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `El registro de ${cambio.jugador} solo lleva cuentas enteras y no negativas.`,
+          { jugador: cambio.jugador },
+        );
+      }
+      jugador.registro = comoBorrador(cambio.registro);
+      return;
+    }
+
+    case 'hito': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      if (jugador.hitos[cambio.hito] !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `${cambio.jugador} ya logro "${cambio.hito}": un hito no se repite.`,
+          { jugador: cambio.jugador, hito: cambio.hito },
+        );
+      }
+      jugador.hitos = { ...jugador.hitos, [cambio.hito]: ctx.turno };
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'hito.logrado',
+        { hito: cambio.hito, prestigio: ctx.reglas.hitos[cambio.hito].prestigio },
+        { jugador: cambio.jugador },
+      );
+      return;
+    }
+
+    case 'primicia': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      if (
+        ctx.estado.primicias[cambio.hito] !== undefined ||
+        jugador.hitos[cambio.hito] === undefined
+      ) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La primicia de "${cambio.hito}" ya es de otro o ${cambio.jugador} no tiene ese hito.`,
+          { jugador: cambio.jugador, hito: cambio.hito },
+        );
+      }
+      ctx.estado.primicias = { ...ctx.estado.primicias, [cambio.hito]: cambio.jugador };
+      // Se anuncia a todos: la cronica (T-044) la ensenya en el parte de cada jugador.
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'hito.primicia',
+        { hito: cambio.hito, prestigio: ctx.reglas.prestigio.porPrimicia, publico: 1 },
+        { jugador: cambio.jugador },
+      );
+      return;
+    }
+
+    case 'clasificacion': {
+      const jugadores = new Set<string>(cambio.puestos.map((p) => p.jugador));
+      const esperados = Object.keys(ctx.estado.jugadores);
+      if (
+        jugadores.size !== cambio.puestos.length ||
+        jugadores.size !== esperados.length ||
+        esperados.some((id) => !jugadores.has(id)) ||
+        cambio.puestos.some((p, i) => p.puesto !== i + 1)
+      ) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          'La clasificacion tiene que poner a cada jugador una vez, del puesto 1 en adelante.',
+        );
+      }
+      ctx.estado.clasificacion = comoBorrador(cambio.puestos);
+      for (const puesto of cambio.puestos) {
+        registrarSuceso(
+          ctx.sucesos,
+          ctx.fase,
+          'prestigio.clasificacion',
+          {
+            puesto: puesto.puesto,
+            puestoAnterior: puesto.puestoAnterior ?? 0,
+            prestigio: puesto.prestigio,
+          },
+          { jugador: puesto.jugador },
+        );
       }
       return;
     }

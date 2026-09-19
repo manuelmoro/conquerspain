@@ -268,6 +268,15 @@ export function estadoMini(): EstadoPartida {
         prestigio: 0,
         credito: 50,
         hitos: {},
+        registro: {
+          obrasMayores: {},
+          anyosTrashumantes: 0,
+          feriasDestacadas: 0,
+          volumenEnFerias: {},
+          comarcasPerdidas: 0,
+          turnosConEscasez: 0,
+          turnosDeDespensaEstable: 0,
+        },
         conocimiento: {
           'prueba-llano': { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },
           'prueba-vega': { nivel: 'oida', turnoUltimaNoticia: 1, datos: null },
@@ -290,6 +299,8 @@ export function estadoMini(): EstadoPartida {
     ordenes: [],
     siguienteId: 1,
     huellaTurnoAnterior: null,
+    primicias: {},
+    clasificacion: [],
   };
 
   const resultado = validarEstado(estado, mundoMini());

@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 19 de septiembre de 2026 (tras cerrar T-042)
+**Última actualización:** 19 de septiembre de 2026 (tras cerrar T-043)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,11 +20,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-043 · Fase 11: prestigio, hitos y clasificación](docs/plan/T-043-prestigio-e-hitos.md)**
+**[T-044 · Fase 12: crónica, niebla e información fechada](docs/plan/T-044-cronica-y-niebla.md)**
 
-El marcador del juego: prestigio recalculado por capítulos, hitos con primicias y clasificación. Lee
-el apartado «Heredado de T-042» de la ficha: el recuento de prestigio va antes de `tradiciones(ctx)`
-dentro de la fase 11, porque Fama y Linaje se abren por prestigio.
+El parte de cada jugador compuesto desde los sucesos, con lo que ese jugador puede saber, y la vista
+filtrada del estado. Lee los apartados «Heredado» de la ficha: T-037, T-042 y T-043 dejaron dicho
+qué sucesos publican y cuáles son públicos (la primicia va en el parte de todos).
 
 ## Cómo continuar (resumen)
 
@@ -48,12 +48,13 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | `herramientas/` | `atlas` y `banco` creados, vacíos; su contenido llega en T-011 y T-046 |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
+| Marcador | Prestigio recalculado cada turno por nueve capítulos y penalizaciones sobre el estado y el `registro` del jugador; doce hitos (uno desactivado hasta T-103) con su primicia; clasificación guardada con el puesto anterior. Tabla y catálogo en `src/datos/prestigio.ts` |
 | Tradiciones | 72 en `src/datos/tradiciones.ts` (tres por casa y ronda: profundizar, compensar y abrir), cuatro desactivadas hasta T-102, T-103 y T-120. Rondas Renombre, Fama y Linaje que se abren en la fase 11, orden `tradicion` gratuita e irreversible, y composición casa + tradiciones en `reglas/casas` según `COMPOSICION_DE_MODIFICADORES` |
 | Guardas de pureza del núcleo | Dos capas activas: reglas de ESLint y `paquetes/nucleo/pruebas/pureza.test.ts` |
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
 | Validación | `paquetes/nucleo/src/validacion/`: combinadores propios y los cuatro validadores, con ruta del campo y mensaje en español |
-| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios), 3 consumo, merma y escasez, 4 movimiento de recuas, 5 cometidos, 6 obras, 7 mercado (plazas, casación, precios y menores), 8 territorio (lealtad, fueros, corte, influencia e incorporación de comarcas), 9 población, 10 acontecimientos y, de la 11, las tradiciones, con los rebaños en las fases 2 y 4. Ciclo de vida de las órdenes en `src/ordenes.ts` |
+| Motor | `resolverTurno` recorre las doce fases y firma el turno con su huella. Implementadas: 1 calendario, 2 producción (con los insumos de los edificios), 3 consumo, merma y escasez, 4 movimiento de recuas, 5 cometidos, 6 obras, 7 mercado (plazas, casación, precios y menores), 8 territorio (lealtad, fueros, corte, influencia e incorporación de comarcas), 9 población, 10 acontecimientos y 11 prestigio (registro, hitos, primicias, recuento, clasificación y tradiciones), con los rebaños en las fases 2 y 4. Ciclo de vida de las órdenes en `src/ordenes.ts` |
 | Partidas de reproducción | `paquetes/nucleo/pruebas/partidas/` + `npm run partidas`: si una huella cambia, el test lo dice y explica cómo regenerarla |
 | Catálogo geográfico | `paquetes/mundo/`: formato `.jsonc` con comentarios, validador con nueve reglas, informe de cobertura **completo**: las diez regiones escritas, 403 comarcas reales de la península, todas con su nota justificando el criterio |
 | Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
@@ -78,6 +79,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 19-09-2026 | **T-043 hecha**: el marcador. Prestigio recalculado entero cada turno en nueve capítulos (población, territorio, obras, caminos, comercio, exploración, ganadería, industria e hitos) menos penalizaciones, con tres escenarios comprobados a mano (49, 853 y −45). Registro del jugador con lo que no se deduce del estado; doce hitos en su umbral exacto (Buen nombre, desactivado hasta T-103); primicia única con desempate por mérito y hash; clasificación estable guardada con el puesto anterior. Las huellas cambian, pero los sucesos de las fases 1 a 10 son idénticos a los del commit anterior. 778 tests en verde |
 | 19-09-2026 | **T-042 hecha**: tradiciones. 72 cartas con nota histórica (una de cada criterio por casa y ronda), rondas que se abren con sus condiciones y no se cierran, orden `tradicion` con sus siete rechazos (incluida la elección ambigua, que anula las dos) y composición con la casa: factores, sumandos y valores fijos, en el orden de las rondas. Siete puntos de extensión nuevos (agotamiento por recurso, avance por tipo de obra mayor, cuadrillas, aperos, administración, influencia y bastimento) y los maravedís de la casa sobre mercado e impuestos. Todas las fases leen la casa a través de `reglas/casas`. `EstadoJugador` gana `rondas` (huellas de `humo-01` y `humo-02` cambiadas; sus sucesos, idénticos). El test de permutaciones destapó que el redondeo hacía depender del orden de elección. 745 tests en verde |
 | 19-09-2026 | **T-041 hecha**: las ocho casas de oficio. Cada una es una fila de datos con su privilegio, su herramienta y su límite, sobre puntos de extensión genéricos (producción por edificio y por vega, sostén de la ferrería, coste de obra mayor por tipo, capacidad por casas, gente para fundar puebla, suelo de lealtad, permisos y prohibiciones). Nuevas órdenes `aperos` (que nadie instalaba) y `letra-de-cambio`, edificio `acequia`, y sorteo de tres orígenes de perfiles distintos filtrado por casa, probado con el mundo real. Los tests destaparon tres defectos: el monte de los ferrones no se agotaba más deprisa, la ferrería costaba hierro 1 a todos y nadie instalaba aperos. Vender aperos, el contrato de obra y el portazgo quedan desactivados hasta T-103. 706 tests en verde |
 | 19-09-2026 | **T-040 hecha**: la trashumancia funciona. Rebaños que se forman, andan (dos jornadas por turno, una más por cañada) y pastan según la estación y la capacidad de la comarca (reparto proporcional), esquilan en el turno 10 con calidad medida sobre el año entero, pierden ganado a partir del segundo turno sin pasto, abonan la labor de la comarca donde invernan, avisan de los puertos dos turnos antes y solo cruzan tierra ajena por cañada con el paso franco de la Mesta. Año entero de un rebaño: 12 sacas por mil cabezas dando el ciclo completo y menos de 7 quieto en la sierra. `EstadoComarca` gana `turnosDeAbono` y `estiercol` (huellas de `humo-01` y `humo-02` cambiadas a propósito, comprobado con el commit anterior). 644 tests en verde |

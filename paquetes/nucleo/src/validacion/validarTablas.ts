@@ -13,6 +13,7 @@ import { RECURSOS } from '../tipos/recursos.ts';
 import type {
   CondicionDeRonda,
   CriterioDeOrigen,
+  DatosHito,
   DatosAcontecimiento,
   DatosAcontecimientos,
   DatosSorteoDeAcontecimientos,
@@ -48,6 +49,7 @@ import {
   NOMBRES_DE_PERMISO,
   CASAS,
   ESTACIONES,
+  HITOS,
   RONDAS_DE_TRADICION,
   TIPOS_DE_ACONTECIMIENTO,
   TIPOS_DE_EDIFICIO,
@@ -421,15 +423,28 @@ const validarPrestigio: Validador<DatosPrestigio> = objeto<DatosPrestigio>({
   porCadaCincoVecinos: enteroNoNegativo(100),
   porComarca: enteroNoNegativo(500),
   porComarcaConFuero: enteroNoNegativo(500),
-  porObraMayor: registro(enteroNoNegativo(2000)),
+  porObraMayor: registroCompleto(TIPOS_DE_OBRA_MAYOR, enteroNoNegativo(2000)),
   porTramoDeCamino: enteroNoNegativo(200),
   porFeriaDestacada: enteroNoNegativo(500),
+  volumenDeFeriaDestacada: entero({ minimo: 1, maximo: 100_000 }),
   porPrimicia: enteroNoNegativo(500),
   porComarcaExplorada: enteroNoNegativo(100),
   porAnyoTrashumante: enteroNoNegativo(200),
+  calidadDeAnyoTrashumanteMil: milesimas(1, 1000),
   porAperosAltos: enteroNoNegativo(200),
+  nivelDeAperosAltos: entero({ minimo: 1, maximo: 6 }),
+  reservaDeDespensaEstable: enteroNoNegativo(10_000),
   penalizacionPorComarcaPerdida: enteroNoNegativo(500),
   penalizacionPorEscasez: enteroNoNegativo(100),
+});
+
+const validarHito: Validador<DatosHito> = objeto<DatosHito>({
+  nombre: texto({ minimo: 1, maximo: 60 }),
+  condicion: texto({ minimo: 1, maximo: 200 }),
+  umbral: entero({ minimo: 1, maximo: 100_000 }),
+  prestigio: enteroNoNegativo(1000),
+  desactivado: booleano(),
+  pendienteDe: oNulo(texto({ minimo: 1, maximo: 20 })),
 });
 
 const validarProduccion: Validador<DatosProduccion> = objeto<DatosProduccion>({
@@ -502,6 +517,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   mercado: validarMercado,
   influencia: validarInfluencia,
   prestigio: validarPrestigio,
+  hitos: registroCompleto(HITOS, validarHito),
   arranque: validarArranque,
   acontecimientos: validarAcontecimientos,
   ganaderia: validarGanaderia,
@@ -551,6 +567,16 @@ export function validarTablas(dato: unknown): Resultado<TablasDeReglas> {
   }
 
   errores.push(...coherenciaDeTradiciones(tablas));
+  for (const hito of HITOS) {
+    const datos = tablas.hitos[hito];
+    if (datos.desactivado !== (datos.pendienteDe !== null)) {
+      errores.push({
+        ruta: `hitos.${hito}.pendienteDe`,
+        mensaje:
+          'un hito desactivado dice de que tarea depende, y uno activo lleva pendienteDe null',
+      });
+    }
+  }
 
   errores.push(...coherenciaDeAcontecimientos(tablas));
 

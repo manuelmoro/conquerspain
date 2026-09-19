@@ -23,6 +23,13 @@ textos (plantillas) de los sucesos.
 
 **No entra:** la presentación (T-085), el espionaje entre jugadores (T-102).
 
+**Heredado de T-042 y T-043.** La fase 11 publica `tradicion.ronda-abierta` (con `opciones`, los
+identificadores separados por comas), `tradicion.elegida`, `hito.logrado`, `prestigio.desglose`
+(los nueve capítulos, `penalizaciones` y `total`), `prestigio.cambio` y `prestigio.clasificacion`
+(una por jugador, con `puesto` y `puestoAnterior`, 0 si no tenía). `hito.primicia` lleva
+`publico: 1`: va en el parte de **todos** los jugadores, no solo en el del que la logra
+(docs/06 §6.3.1). La clasificación y el desglose son públicos (docs/06 §6.3).
+
 **Heredado de T-037.** Los sucesos del mercado son `mercado.abre`, `mercado.trato`,
 `mercado.precio`, `mercado.sin-casar` (con su `motivo`), `mercado.sin-plaza` y
 `mercado.orden-caduca`; las órdenes de mercado que esperan traen su `motivoEspera`. Los rumores de

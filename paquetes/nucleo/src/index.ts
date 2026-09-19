@@ -59,3 +59,7 @@ export {
   opcionesDeTradicion,
 } from './reglas/tradiciones.ts';
 export type { MotivoSinTradicion } from './reglas/tradiciones.ts';
+export { CAPITULOS_DE_PRESTIGIO, prestigioDe } from './reglas/prestigio.ts';
+export type { CapituloDePrestigio, Prestigio } from './reglas/prestigio.ts';
+export { clasificacion } from './reglas/clasificacion.ts';
+export type { LineaDeClasificacion } from './reglas/clasificacion.ts';

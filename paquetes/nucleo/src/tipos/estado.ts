@@ -11,7 +11,14 @@ import type {
   IdRecua,
 } from './ids.ts';
 import type { Recurso, Recursos } from './recursos.ts';
-import type { CalidadCamino, Casa, RondaDeTradicion, TipoObraMayor, Tradicion } from './reglas.ts';
+import type {
+  CalidadCamino,
+  Casa,
+  Hito,
+  RondaDeTradicion,
+  TipoObraMayor,
+  Tradicion,
+} from './reglas.ts';
 import type { Potencial, NivelPotencial, Terreno, VolumenFeria } from './mundo.ts';
 import type { Orden, ParadaDeRuta } from './ordenes.ts';
 
@@ -58,6 +65,25 @@ export interface TrasladoDeCorte {
   readonly turnosRestantes: number;
 }
 
+/**
+ * Lo que el prestigio no puede recalcular del estado porque ya paso: obras terminadas, anyos
+ * trashumantes, ferias, perdidas y escaseces (ficha T-043 §4.2). Lo apunta la fase 11.
+ */
+export interface RegistroDeJugador {
+  /** Obras mayores terminadas por el jugador, por tipo. */
+  readonly obrasMayores: Readonly<Partial<Record<TipoObraMayor, number>>>;
+  readonly anyosTrashumantes: number;
+  /** Ferias en las que un anyo paso del volumen de feria destacada. */
+  readonly feriasDestacadas: number;
+  /** Volumen propio de este anyo en cada feria; se vacia el primer turno del anyo. */
+  readonly volumenEnFerias: Readonly<Record<string, number>>;
+  /** Comarcas que volvieron a neutral por deslealtad. */
+  readonly comarcasPerdidas: number;
+  readonly turnosConEscasez: number;
+  /** Turnos seguidos sin perder pan y con reserva: para el hito de la despensa. */
+  readonly turnosDeDespensaEstable: number;
+}
+
 export interface EstadoJugador {
   readonly id: IdJugador;
   readonly nombre: string;
@@ -74,7 +100,8 @@ export interface EstadoJugador {
   /** Reputacion mecanica, de 0 a 100 (docs/06-competicion.md §6.5.1). */
   readonly credito: number;
   /** Hito → turno en que se logro. */
-  readonly hitos: Readonly<Record<string, number>>;
+  readonly hitos: Readonly<Partial<Record<Hito, number>>>;
+  readonly registro: RegistroDeJugador;
   readonly conocimiento: Readonly<Record<string, Conocimiento>>;
   readonly escasez: boolean;
   /** Escaseces seguidas: a la tercera empieza la emigracion. */
@@ -320,4 +347,16 @@ export interface EstadoPartida {
   readonly siguienteId: number;
   /** Huella del estado al terminar el turno anterior, o null en la partida recien creada. */
   readonly huellaTurnoAnterior: string | null;
+  /** Hito → jugador que lo logro el primero de la partida. */
+  readonly primicias: Readonly<Partial<Record<Hito, IdJugador>>>;
+  /** La clasificacion del ultimo turno resuelto, del primero al ultimo. */
+  readonly clasificacion: readonly PuestoEnLaClasificacion[];
+}
+
+export interface PuestoEnLaClasificacion {
+  readonly jugador: IdJugador;
+  readonly puesto: number;
+  /** Puesto del turno anterior, o null si es la primera clasificacion del jugador. */
+  readonly puestoAnterior: number | null;
+  readonly prestigio: number;
 }

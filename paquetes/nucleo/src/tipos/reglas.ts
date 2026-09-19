@@ -554,19 +554,59 @@ export interface DatosInfluencia {
   readonly turnosIncorporar: number;
 }
 
+/** El marcador (docs/06-competicion.md §6.3; ficha T-043). */
 export interface DatosPrestigio {
   readonly porCadaCincoVecinos: number;
+  /** Una comarca propia sin fuero; con fuero vale `porComarcaConFuero` en su lugar. */
   readonly porComarca: number;
   readonly porComarcaConFuero: number;
-  readonly porObraMayor: Readonly<Record<string, number>>;
+  readonly porObraMayor: Readonly<Record<TipoObraMayor, number>>;
+  /** Cada tramo de calzada construido por el jugador. */
   readonly porTramoDeCamino: number;
   readonly porFeriaDestacada: number;
+  /** Volumen propio en una feria, en un anyo, para que cuente como destacada. */
+  readonly volumenDeFeriaDestacada: number;
   readonly porPrimicia: number;
   readonly porComarcaExplorada: number;
   readonly porAnyoTrashumante: number;
+  /** Calidad del anyo del rebanyo, en el esquileo, para contar como anyo trashumante. */
+  readonly calidadDeAnyoTrashumanteMil: number;
   readonly porAperosAltos: number;
+  /** Nivel de aperos desde el que una comarca cuenta como industria. */
+  readonly nivelDeAperosAltos: number;
+  /** Pan en el almacen para que un turno sin perder pan cuente como despensa estable. */
+  readonly reservaDeDespensaEstable: number;
   readonly penalizacionPorComarcaPerdida: number;
   readonly penalizacionPorEscasez: number;
+}
+
+/** Los hitos de la partida (ficha T-043 §4.3). Cada uno se logra una vez y guarda su turno. */
+export const HITOS = [
+  'primer-horizonte',
+  'despensa-estable',
+  'villa',
+  'mas-alla-del-origen',
+  'pequenyo-dominio',
+  'anyo-redondo',
+  'maestro-de-obra',
+  'camino-abierto',
+  'buen-nombre',
+  'senyor-de-ferias',
+  'ciudad',
+  'casa-conocida',
+] as const;
+export type Hito = (typeof HITOS)[number];
+
+export interface DatosHito {
+  readonly nombre: string;
+  /** La condicion, tal como se ensenya al jugador. */
+  readonly condicion: string;
+  /** El numero de la condicion: vecinos, comarcas, turnos, milesimas de calidad, maravedis… */
+  readonly umbral: number;
+  readonly prestigio: number;
+  /** Los que dependen de mecanicas aun no implementadas no se miran. */
+  readonly desactivado: boolean;
+  readonly pendienteDe: string | null;
 }
 
 /** Con que empieza una casa en su comarca de origen (lo usa el alta de partida, T-065). */
@@ -651,6 +691,7 @@ export interface TablasDeReglas {
   readonly mercado: DatosMercado;
   readonly influencia: DatosInfluencia;
   readonly prestigio: DatosPrestigio;
+  readonly hitos: Readonly<Record<Hito, DatosHito>>;
   readonly arranque: DatosArranque;
   readonly acontecimientos: DatosAcontecimientos;
   readonly ganaderia: DatosGanaderia;

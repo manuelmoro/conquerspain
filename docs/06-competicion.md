@@ -81,12 +81,49 @@ no lo que acumulas en el almacén.
 | Obra mayor terminada | 120 (catedral 250, calzada 150) |
 | Camino carretero o calzada construida | 15 por tramo |
 | Feria con más de 500 mrs de volumen propio en el año | 30 |
-| Hito alcanzado el primero de la partida | 50 |
+| Hito logrado | lo que diga el hito (10 a 50) |
+| Hito alcanzado el primero de la partida | 50 más |
 | Comarca explorada | 3 |
-| Rebaño que completa un año trashumante | 10 |
+| Rebaño que completa un año trashumante (esquila con calidad del año ≥ 75 %) | 10 |
 | Aperos de nivel 3 o más instalados | 10 por comarca |
 
-Penalizaciones: −20 por comarca perdida por deslealtad; −1 por turno con escasez.
+Penalizaciones: −20 por comarca perdida por deslealtad; −1 por turno con escasez. El prestigio puede
+quedar en negativo.
+
+### 6.3.1 Cómo se lleva la cuenta (T-043)
+
+- El prestigio se **recalcula entero** cada turno en la fase 11, por capítulos: población,
+  territorio, obras, caminos, comercio, exploración, ganadería, industria y hitos, menos las
+  penalizaciones. Lo que ya pasó y no se deduce del estado (obras terminadas, años trashumantes,
+  ferias destacadas, comarcas perdidas, turnos con escasez) se apunta en el **registro** de cada
+  jugador. Así nunca hay derivas por acumular.
+- Solo las calzadas cuentan como camino construido: hoy son la única obra que deja un tramo mejor.
+- Una feria cuenta como destacada el turno en que el volumen propio del año en ella pasa de 500; el
+  año empieza de cero en su primer turno, y cada feria cuenta una vez al año.
+- Los hitos no dan recursos: dan su prestigio y una línea en la crónica, y no se repiten.
+
+| Hito | Condición | Prestigio |
+|---|---|---|
+| Primer horizonte | Explorar la primera comarca | 10 |
+| Despensa estable | Tres turnos seguidos sin perder pan y con 60 o más en el almacén | 15 |
+| Un pueblo que prospera | La capital llega a 150 vecinos | 20 |
+| Más allá del origen | Una comarca más que la de origen | 20 |
+| Un pequeño dominio | Tres comarcas | 30 |
+| Año redondo | Un rebaño esquila con calidad del año del 90 % o más | 30 |
+| Maestro de obra | La primera obra mayor terminada | 40 |
+| Camino abierto | La primera calzada terminada | 30 |
+| Buen nombre | Crédito ≥ 80 con tres contratos cumplidos (⏸ hasta T-103) | 40 |
+| Señor de ferias | 1 000 mrs de volumen propio en ferias en un mismo año | 40 |
+| Ciudad | La capital llega a 260 vecinos | 50 |
+| Casa conocida | 1 000 de prestigio | 50 |
+
+- **Primicia:** el primero de la partida en lograr un hito se lleva 50 más, una sola vez por hito, y
+  la crónica lo anuncia a todos. Si varios lo logran el mismo turno, gana el de más prestigio al
+  empezar el turno y, si empatan, el de menor `hash(partida, turno, primicia:hito, jugador)`.
+- **Clasificación:** por prestigio; los empates, por vecinos, luego por comarcas y por último por
+  `hash(partida, turno, clasificacion, jugador)`. Se guarda cada turno con el puesto anterior de
+  cada uno, para enseñar quién sube. El histórico completo es el de los estados que guarda el
+  servidor turno a turno.
 
 El prestigio es **público**: todos ven la clasificación y el desglose por capítulos. Ver quién sube
 por obras y quién por comercio es parte de la información que se juega.

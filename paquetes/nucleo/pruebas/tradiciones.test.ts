@@ -238,29 +238,25 @@ describe('las rondas se abren exactamente con sus condiciones', () => {
     expect(abre('linaje', { obraMayorTerminada: true, comarcas: 30 })).toBe(false);
   });
 
-  it('los logros se miden sobre el dominio y la obra mayor es la que termina el jugador', () => {
+  it('los logros se miden sobre el dominio y la obra mayor sale del registro del jugador', () => {
     const estado = conComarca(
       conComarca(escenario({ conDos: true }), 'prueba-vega', { duenyo: UNO, poblacion: 60 }),
       'prueba-costa',
       { duenyo: DOS },
     );
-    const hito = (jugador: typeof UNO): Suceso => ({
-      orden: 1,
-      fase: 'obras',
-      tipo: 'hito.obra-mayor',
-      jugador,
-      comarca: c('prueba-llano'),
-      datos: { obra: 'muralla', hacia: '' },
-    });
-    const logros = logrosDe(estado, jugadorDe(estado), 9, [hito(DOS)]);
-    expect(logros).toEqual({
+    expect(logrosDe(estado, jugadorDe(estado), 9)).toEqual({
       comarcas: 2,
       vecinos: 100,
       obraMayorTerminada: false,
       prestigio: 0,
       turno: 9,
     });
-    expect(logrosDe(estado, jugadorDe(estado), 9, [hito(UNO)]).obraMayorTerminada).toBe(true);
+    const jugador = jugadorDe(estado);
+    const conObra = {
+      ...jugador,
+      registro: { ...jugador.registro, obrasMayores: { muralla: 1 } },
+    };
+    expect(logrosDe(estado, conObra, 9).obraMayorTerminada).toBe(true);
   });
 
   it('el motor abre renombre al llegar a 150 vecinos, lo anuncia con sus cartas y no lo repite', () => {

@@ -366,6 +366,15 @@
         "deudaAdministracion": 0,
         "traslado": null,
         "hitos": {},
+        "registro": {
+          "obrasMayores": {},
+          "anyosTrashumantes": 0,
+          "feriasDestacadas": 0,
+          "volumenEnFerias": {},
+          "comarcasPerdidas": 0,
+          "turnosConEscasez": 0,
+          "turnosDeDespensaEstable": 0
+        },
         "id": "casa-uno",
         "nombre": "Casa Uno",
         "prestigio": 0,
@@ -392,23 +401,25 @@
     "semilla": "semilla-mini",
     "siguienteId": 1,
     "turno": 1,
-    "version": 1
+    "version": 1,
+    "primicias": {},
+    "clasificacion": []
   },
   "turnos": [
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "f91f5ff7dbc82cb06fa71305973820d059cb484ffa1126e1f922fca276f2e40e"
+      "huellaEsperada": "eddaa949e5924a03c99d33e95bf1a03d410c5175e0a683f4ad1f43081b3792db"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "a091bdd21bfebb78b992664f1bd948f8ad6c31e33bed098fd93836aed2685a6e"
+      "huellaEsperada": "35556a42faf78acb37edd2a902579bb380ba47b197f25235e4bafc183072b8c6"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "8fe4143cc224642c698765e93a9051319bbdc5e412ec37c7d96ff626f35fdaf0"
+      "huellaEsperada": "bde9deebe8e8e9d3307240e4b76bee58e43976cae69dfe92255ce422a4963558"
     }
   ]
 }

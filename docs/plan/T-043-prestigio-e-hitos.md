@@ -1,6 +1,6 @@
 # T-043 · Fase 11: prestigio, hitos y clasificación
 
-**Fase:** 2 · Motor · **Depende de:** T-036 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-036 · **Estado:** hecha
 
 ## 1. Contexto
 
@@ -101,11 +101,35 @@ variación respecto al turno anterior para poder mostrar quién sube.
 ## 5. Archivos
 
 ```
-paquetes/nucleo/src/fases/11-prestigio.ts
+paquetes/nucleo/src/fases/11-prestigio.ts          registro del turno, hitos, recuento, clasificacion
 paquetes/nucleo/src/reglas/{prestigio,hitos,clasificacion}.ts
-paquetes/nucleo/src/reglas/*.test.ts
-paquetes/nucleo/datos/{prestigio,hitos}.json
+paquetes/nucleo/src/datos/prestigio.ts             tabla de prestigio y catalogo de hitos
+paquetes/nucleo/pruebas/prestigio.test.ts
 ```
+
+## 5.1 Lo que cambió al implementarla
+
+- **Datos en TypeScript** (`src/datos/prestigio.ts`) y pruebas en `pruebas/`, como el resto del
+  paquete.
+- **Registro del jugador** (`EstadoJugador.registro`): obras mayores por tipo, años trashumantes,
+  ferias destacadas y volumen del año por feria, comarcas perdidas, turnos con escasez y turnos de
+  despensa estable. La fase 11 lo apunta leyendo los sucesos del turno (`hito.obra-mayor`,
+  `rebanyo.esquileo`, `mercado.trato`, `comarca.vuelve-neutral`, `almacen.cambio`) y el estado.
+  `EstadoPartida` gana `primicias` y `clasificacion`. Las huellas de `humo-01` y `humo-02` cambian:
+  comprobado con el commit anterior que los sucesos de las fases 1 a 10 son idénticos y que solo se
+  añaden los de la fase 11.
+- **Capítulo `hitos`** además de los ocho de §4.1: cada hito da su prestigio (tabla en docs/06
+  §6.3.1) y cada primicia, 50. La ficha no decía cuánto daba un hito.
+- **Condiciones concretadas:** «Más allá del origen» es tener dos comarcas; «Camino abierto», la
+  primera calzada (la única obra que mejora un tramo); «Año trashumante», esquilar con calidad del
+  año ≥ 750 milésimas (quieto en la sierra se queda en unas 580); «Despensa estable», no perder pan
+  en el turno según los `almacen.cambio` y tener 60 de reserva. «Buen nombre» queda desactivado hasta
+  T-103 (contratos).
+- **Primicias simultáneas:** mérito (prestigio al empezar el turno) y luego hash; nunca el orden.
+- **Clasificación:** se guarda la del último turno con el puesto anterior; `clasificacion()` la
+  devuelve con el desglose y la variación de puestos. El histórico largo es el de los estados.
+- **Orden dentro de la fase 11:** registro, hitos y primicias, recuento, clasificación y, al final,
+  tradiciones. `logrosDe` lee ya la obra mayor del registro.
 
 ## 6. Criterios de aceptación
 
