@@ -14,8 +14,9 @@ const JUGADOR = 'casa-uno' as IdJugador;
 const COMARCA = 'prueba-llano' as IdComarca;
 
 describe('armazon del resolutor', () => {
-  it('recorre las doce fases del turno en el orden del disenyo', () => {
+  it('recorre la fase del mayordomo y las doce del turno en el orden del disenyo', () => {
     expect(FASES.map(([nombre]) => nombre)).toEqual([
+      'mayordomo',
       'calendario',
       'produccion',
       'consumo',
@@ -117,6 +118,8 @@ describe('armazon del resolutor', () => {
       turnosHechos: 0,
       motivoEspera: null,
       delMayordomo: false,
+      turnoProgramado: null,
+      cola: null,
       tipo: 'roturar',
       comarca: COMARCA,
     } as unknown as Orden;

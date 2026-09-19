@@ -41,6 +41,7 @@ export function recua(id: string, cambios: Partial<Recua> = {}): Recua {
     cometido: null,
     turnosDeCometido: 0,
     avisadaSinBastimento: false,
+    fallosDePrecio: 0,
     ...cambios,
   };
 }
@@ -101,6 +102,8 @@ export function base(turno: number, coste: Partial<Recursos> = {}): OrdenBase {
     turnosHechos: 0,
     motivoEspera: null,
     delMayordomo: false,
+    turnoProgramado: null,
+    cola: null,
   };
 }
 

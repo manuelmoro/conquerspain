@@ -231,6 +231,20 @@ jugador no pudiera ordenar**. No es una IA: es un capataz con instrucciones.
 El jugador puede programar hasta seis turnos por adelantado (una temporada). El plan se muestra en
 un calendario y se puede reajustar en cualquier momento antes de su resolución.
 
+### 2.5.5 Cómo funciona en el motor (T-045)
+
+- Toda orden puede llevar `turnoProgramado` (el plan) y `cola`. Mientras espera su turno está
+  `programada`; mientras espera en su cola, `en cola`. Ninguna de las dos reserva recursos: los paga
+  al empezar, si el almacén da para ello en ese momento.
+- La **fase 0 (mayordomo)** va antes del calendario: entran las órdenes del plan cuyo turno llega,
+  se cambian las reglas del mayordomo y el orden de las colas, y el mayordomo mira sus reglas por
+  prioridad sobre el estado con que empieza el turno.
+- El mayordomo tiene 3 reglas activas, una más por nivel de mercado en la capital, hasta 6. Sus
+  condiciones y acciones son una lista cerrada (ficha T-045 §4.3); sus órdenes son órdenes de
+  jugador con las mismas validaciones, y nunca incorpora comarcas.
+- Una ruta circular se detiene sola si falta bastimento o si un precio límite no se cumple tres
+  paradas seguidas; al pasar por comarca propia repone pan y sal para doce jornadas.
+
 ## 2.6 Lo que se sabe: conocimiento y niebla
 
 - El conocimiento es **por jugador**: cada uno tiene su propio mapa de lo que ha visto.

@@ -17,6 +17,7 @@ import { faseTerritorio } from './fases/08-territorio.ts';
 import { fasePoblacion } from './fases/09-poblacion.ts';
 import { faseAcontecimientos } from './fases/10-acontecimientos.ts';
 import { fasePrestigio } from './fases/11-prestigio.ts';
+import { faseMayordomo } from './fases/00-mayordomo.ts';
 import { faseCronica } from './fases/12-cronica.ts';
 import { darDeAltaOrdenesNuevas, retirarOrdenesCerradas } from './ordenes.ts';
 import { registrarSuceso } from './sucesos.ts';
@@ -33,8 +34,9 @@ import { idsEnOrden } from './utiles/orden.ts';
 
 export type Fase = (ctx: Contexto) => void;
 
-/** Las doce fases del turno, en el orden en que se ejecutan. */
+/** Las fases del turno, en el orden en que se ejecutan: la 0 (mayordomo) y las doce. */
 export const FASES: readonly (readonly [NombreFase, Fase])[] = [
+  ['mayordomo', faseMayordomo],
   ['calendario', faseCalendario],
   ['produccion', faseProduccion],
   ['consumo', faseConsumo],

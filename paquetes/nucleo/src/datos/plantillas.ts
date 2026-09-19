@@ -46,8 +46,17 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
       terminada: null,
       'en espera': aviso('La orden de {clase} espera: {motivo}.'),
       cancelada: aviso('Se cancela la orden de {clase}: {motivo}.'),
+      // La orden del plan que aun no ha llegado a su turno no se cuenta hasta que entra.
+      programada: null,
+      'en cola': aviso('La orden de {clase} espera en su cola: {motivo}.'),
     },
   },
+
+  // ——— Jugar sin estar: plan, colas, rutas permanentes y mayordomo ———
+  'plan.entra': suceso('Según el plan de temporada, entra la orden de {clase}.'),
+  'cola.empieza': suceso('De {cola}: empieza la orden de {clase}.'),
+  'mayordomo.ordena': suceso('El mayordomo da una orden de {clase}, por su regla {prioridad}.'),
+  'recua.ruta-detenida': aviso('{recua} deja su ruta permanente: {motivo}.', 'ruta'),
 
   // ——— Calendario ———
   'calendario.estacion': p('sucesos', 'Empieza {estacion}.', { publica: true }),
@@ -399,7 +408,6 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   saturado: 'hay demasiado ganado',
   camino: 'está de camino',
   'volumen-de-plaza': 'la plaza no da para tanto',
-  'precio-limite': 'el precio no llegó al límite puesto',
   'sin-contraparte': 'no hubo con quién tratar',
   'sin-fondos': 'no hay fondos',
   'potencial-insuficiente': 'la tierra no da para eso',
@@ -423,6 +431,16 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'poca-lealtad': 'hay poca lealtad',
   'pocos-vecinos': 'hay pocos vecinos',
   lejania: 'queda lejos',
+  'sin-recursos': 'no hay recursos',
+  'fuera-de-temporada': 'el plan solo llega a seis turnos',
+  'cola-no-admitida': 'esa orden no va en esa cola',
+  'cola-distinta': 'la cola ya no tiene esas órdenes',
+  'detras-en-la-cola': 'hay otra antes en la cola',
+  'recua-ocupada': 'la recua no ha terminado lo anterior',
+  'mayordomo-lleno': 'el mayordomo no admite más reglas',
+  'regla-desconocida': 'el mayordomo no tiene esa regla',
+  'sin-bastimento': 'no le queda bastimento',
+  'precio-limite': 'el precio límite no se cumplió',
 };
 
 /** Las regiones del catalogo, con su nombre. */
@@ -470,6 +488,7 @@ export const NOMBRES_DE_ORDEN: Readonly<Record<string, string>> = {
   tradicion: 'tradición',
   mayordomo: 'mayordomo',
   'trasladar-corte': 'traslado de la corte',
+  cola: 'orden de la cola',
 };
 
 /** Palabras sueltas de los sucesos, por campo y valor. */

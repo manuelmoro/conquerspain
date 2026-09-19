@@ -1,6 +1,6 @@
 {
   "nombre": "humo-02",
-  "descripcion": "Arrieros: se forma una recua, se carga y hace una ruta circular del llano a la costa durante medio anyo.",
+  "descripcion": "Arrieros: se forma una recua, se carga y hace una ruta circular del llano a la costa durante medio anyo, comiendo del almacen cada vez que pasa por casa (T-045).",
   "versionReglas": 1,
   "mundo": "mini",
   "estadoInicial": {
@@ -400,7 +400,9 @@
         },
         "tradiciones": [],
         "rondas": {},
-        "turnosSinOrdenes": 0
+        "turnosSinOrdenes": 0,
+        "mayordomo": [],
+        "colas": {}
       }
     },
     "mercados": {},
@@ -438,13 +440,15 @@
           "turnosHechos": 0,
           "motivoEspera": null,
           "delMayordomo": false,
+          "turnoProgramado": null,
+          "cola": null,
           "tipo": "formar-recua",
           "comarca": "prueba-llano",
           "acemilas": 10,
           "vecinos": 2
         }
       ],
-      "huellaEsperada": "715a566770f0907eb3cc81d28578e0733a026ea78edbd4f8c12757952bfe4078"
+      "huellaEsperada": "38b040f07bc5d6c70495cfd5f068b706d7b169f3c4fc00979984a286782a7ed8"
     },
     {
       "turno": 8,
@@ -467,6 +471,8 @@
           "turnosHechos": 0,
           "motivoEspera": null,
           "delMayordomo": false,
+          "turnoProgramado": null,
+          "cola": null,
           "tipo": "carga",
           "recua": "recua-1",
           "cargar": {
@@ -494,6 +500,8 @@
           "turnosHechos": 0,
           "motivoEspera": null,
           "delMayordomo": false,
+          "turnoProgramado": null,
+          "cola": null,
           "tipo": "ruta",
           "recua": "recua-1",
           "rebanyo": null,
@@ -509,57 +517,57 @@
           ]
         }
       ],
-      "huellaEsperada": "0ab7c192e6167aa2ee2dbf557fc8bdf6f45c1ffe3f4e764b2d99f06e66bccb60"
+      "huellaEsperada": "b3feb96bd423591aa2cd0851eb8abadac3d482ff905097091bb4bcc9a28d96b1"
     },
     {
       "turno": 9,
       "ordenes": [],
-      "huellaEsperada": "7105a3b464a3fbdc44d2b0f0ee3adc3fd5340bf129f8aefc7c100a20bc0ff33e"
+      "huellaEsperada": "1c58ea6a3b876f81a342a4b23783df925f61ef2f39fbe51d23bf3f08d298f8fe"
     },
     {
       "turno": 10,
       "ordenes": [],
-      "huellaEsperada": "58dc33ed9cf9932533166e3d874592ee577090971c7eb2eb2c698210717b8689"
+      "huellaEsperada": "e5c7d9e9b28e93a7f1204d8226586bd937e20994b414cba8180b0797772fb1a4"
     },
     {
       "turno": 11,
       "ordenes": [],
-      "huellaEsperada": "efe48d7befb28f1c2443b94e559150bb4f16347e2d6b12e8f758cbe5f12c3619"
+      "huellaEsperada": "02c5f7b09d04c1fb6dcfc2a7341e13ad47ed5d5658ffd1ace1b0565abadfbd3d"
     },
     {
       "turno": 12,
       "ordenes": [],
-      "huellaEsperada": "ad84cd5b12422e73beb9b05e4c630a3a8bd7da5110f70483194999439b22b4d4"
+      "huellaEsperada": "d38d5b6c780b3fb518c504db1911771db83262f0494722cf7a075d73ef0a6147"
     },
     {
       "turno": 13,
       "ordenes": [],
-      "huellaEsperada": "abba8606914db2ff57b9441da6868e41acd7845bed164549578faff5d840758e"
+      "huellaEsperada": "f3605ff3f7297548efe2ba3172fd6cac23d2285025d33b347f261878d9902887"
     },
     {
       "turno": 14,
       "ordenes": [],
-      "huellaEsperada": "a8964e2ef399f4950eaa741a1070363ef7f4175c1ff950577aaa547cc382d825"
+      "huellaEsperada": "d1acbf2f85e46efdf40db948a59211fbd6f3f35eac442e12b85603e5cb57e3c2"
     },
     {
       "turno": 15,
       "ordenes": [],
-      "huellaEsperada": "5c32a10d61dd73ba56427bab9665d7ac899612177fe9debcb69a149ad3eb165c"
+      "huellaEsperada": "6fc777e282aafc86078be4552f7a42300da4451119f9c9d253941e4c941c7e88"
     },
     {
       "turno": 16,
       "ordenes": [],
-      "huellaEsperada": "4dd787421125d98ad12159cf8774967fc1988c14a83406fad12aa482b5993365"
+      "huellaEsperada": "45e119153cb30c562e44fa5a37fe69d84ab9d2811013499fb846dd978dac7291"
     },
     {
       "turno": 17,
       "ordenes": [],
-      "huellaEsperada": "4d27729a722f96456dfe0083ef4297684f9fb61847b6c6053d12a6be0b12b7ec"
+      "huellaEsperada": "9b540521f0782077e12f53e630747fdb4ecedd8d7eec41d15981b345943436ce"
     },
     {
       "turno": 18,
       "ordenes": [],
-      "huellaEsperada": "d2bf8c01e9ae6b4006bd5e648435e0d5186d8c9d0c7ae1875389221606c2b614"
+      "huellaEsperada": "f312cd4fce92f6bd98f0762a4a5b884d0f5dcc05e6d5237e1f4f479b063a3ac9"
     }
   ]
 }

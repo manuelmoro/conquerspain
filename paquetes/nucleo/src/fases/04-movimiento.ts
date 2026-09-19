@@ -8,13 +8,22 @@ import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { ErrorDeMotor } from '../errores.ts';
-import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ordenes.ts';
+import { detenerRuta } from './04-rutas.ts';
+import {
+  cancelarOrden,
+  dejarEnEspera,
+  empezarOrden,
+  compararOrdenes,
+  esPrimeraDeSuCola,
+  ordenesVivas,
+  puedePagarse,
+} from '../ordenes.ts';
 import { cargarDelAlmacen, descargarEnAlmacen } from '../porteo.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { bastimentoDe } from '../reglas/bastimento.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
 import { esDesleal } from '../reglas/lealtad.ts';
-import { avanzar, pasoDeRecua, porteDe } from '../reglas/movimiento.ts';
+import { avanzar, pasoDeRecua, pesoDeLaCarga, porteDe } from '../reglas/movimiento.ts';
 import {
   comarcaConocida,
   comarcasTransitables,
@@ -24,12 +33,12 @@ import {
   tramoEntre,
 } from '../reglas/ruta.ts';
 import { registrarSuceso } from '../sucesos.ts';
-import type { EstadoJugador, Recua } from '../tipos/estado.ts';
+import type { Cometido, EstadoJugador, Recua } from '../tipos/estado.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from '../tipos/estado.ts';
 import type { IdComarca, IdRecua } from '../tipos/ids.ts';
 import { nuevoId } from '../tipos/ids.ts';
 import type { Camino } from '../tipos/mundo.ts';
-import type { ParadaDeRuta } from '../tipos/ordenes.ts';
+import type { Orden, ParadaDeRuta } from '../tipos/ordenes.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
@@ -37,11 +46,110 @@ import { movimientoDeRebanyos } from './04-rebanyos.ts';
 
 export function faseMovimiento(ctx: Contexto): void {
   for (const orden of ordenesVivas(ctx, 'formar-recua')) formarRecua(ctx, orden);
-  for (const orden of ordenesVivas(ctx, 'carga')) cargarRecua(ctx, orden);
-  for (const orden of ordenesVivas(ctx, 'cometido')) fijarCometido(ctx, orden);
-  for (const orden of ordenesVivas(ctx, 'ruta')) if (orden.recua !== null) fijarRuta(ctx, orden);
+  // Las colas de recua van en su orden, sea cual sea el tipo de cada orden.
+  const deCola = [
+    ...ordenesVivas(ctx, 'carga'),
+    ...ordenesVivas(ctx, 'cometido'),
+    ...ordenesVivas(ctx, 'ruta'),
+  ]
+    .filter(esDeColaDeRecua)
+    .sort(compararOrdenes(ctx));
+  for (const orden of deCola) atenderDeSuCola(ctx, orden);
+  for (const orden of ordenesVivas(ctx, 'carga')) {
+    if (!esDeColaDeRecua(orden)) cargarRecua(ctx, orden);
+  }
+  for (const orden of ordenesVivas(ctx, 'cometido')) {
+    if (!esDeColaDeRecua(orden)) fijarCometido(ctx, orden);
+  }
+  for (const orden of ordenesVivas(ctx, 'ruta')) {
+    if (orden.recua !== null && !esDeColaDeRecua(orden)) fijarRuta(ctx, orden);
+  }
   for (const id of idsEnOrden(ctx.estado.recuas)) moverRecua(ctx, id);
   movimientoDeRebanyos(ctx);
+}
+
+/** Los cometidos que no terminan solos: una orden nueva de la cola los releva. */
+const COMETIDOS_QUE_SE_RELEVAN: readonly (Cometido | null)[] = [null, 'presencia', 'tratar'];
+
+/** La recua ha llegado y no tiene nada a medias: la siguiente orden de su cola puede empezar. */
+export function recuaLibre(recua: Recua): boolean {
+  return (
+    recua.situacion.donde === 'comarca' &&
+    recua.ruta.length === 0 &&
+    COMETIDOS_QUE_SE_RELEVAN.includes(recua.cometido)
+  );
+}
+
+function esDeColaDeRecua(orden: Orden): boolean {
+  return orden.estado === 'en cola' && orden.cola?.startsWith('recua:') === true;
+}
+
+function atenderDeSuCola(
+  ctx: Contexto,
+  orden: OrdenDe<'carga'> | OrdenDe<'cometido'> | OrdenDe<'ruta'>,
+): void {
+  const recuaId = orden.recua;
+  if (recuaId === null || !leTocaEnSuCola(ctx, orden, recuaId)) return;
+  if (orden.tipo === 'carga') cargarRecua(ctx, orden);
+  else if (orden.tipo === 'cometido') fijarCometido(ctx, orden);
+  else fijarRuta(ctx, orden);
+}
+
+/**
+ * Las ordenes de la cola de una recua van de una en una: solo trabaja la primera, y solo cuando la
+ * recua ha terminado lo anterior. Las demas esperan en su cola con el motivo apuntado.
+ */
+function leTocaEnSuCola(ctx: Contexto, orden: Orden, idRecua: IdRecua): boolean {
+  if (orden.estado !== 'en cola') return true;
+  if (!esPrimeraDeSuCola(ctx, orden)) {
+    dejarEnEspera(ctx, orden, 'detras-en-la-cola');
+    return false;
+  }
+  const recua = ctx.estado.recuas[idRecua];
+  if (recua !== undefined && !recuaLibre(recua)) {
+    dejarEnEspera(ctx, orden, 'recua-ocupada');
+    return false;
+  }
+  if (!puedePagarse(ctx, orden)) {
+    dejarEnEspera(ctx, orden, 'sin-recursos');
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Una recua en ruta permanente que pasa por comarca propia carga pan, y la sal del verano, para
+ * unas jornadas mas: asi una ruta larga no acaba malviviendo (ficha T-045, heredado de T-033).
+ * Carga lo que cabe y lo que hay.
+ */
+function reponerBastimento(ctx: Contexto, recua: Recua, jugador: EstadoJugador): void {
+  const m = ctx.reglas.movimiento;
+  const jornadas = ctx.reglas.mayordomo.jornadasDeRepuesto;
+  const quiere: [Recurso, number][] = [
+    ['pan', m.bastimentoPorJornada * jornadas],
+    ['sal', Math.ceil(jornadas / m.jornadasPorSalEnVerano)],
+  ];
+  for (const [recurso, cantidad] of quiere) {
+    const actual = ctx.estado.recuas[recua.id];
+    if (actual === undefined) return;
+    const cabe = Math.max(0, actual.porte - pesoDeLaCarga(actual.carga));
+    const carga = Math.min(cantidad - actual.carga[recurso], cabe, disponible(jugador, recurso));
+    if (carga <= 0) continue;
+    aplicar(ctx, {
+      tipo: 'recurso',
+      jugador: jugador.id,
+      recurso,
+      delta: -carga,
+      motivo: `repuesto de ${recua.id}`,
+    });
+    aplicar(ctx, {
+      tipo: 'recua-carga',
+      recua: recua.id,
+      recurso,
+      delta: carga,
+      motivo: 'repuesto',
+    });
+  }
 }
 
 function disponible(jugador: EstadoJugador, recurso: Recurso): number {
@@ -135,6 +243,7 @@ function formarRecua(ctx: Contexto, orden: OrdenDe<'formar-recua'>): void {
       cometido: null,
       turnosDeCometido: 0,
       avisadaSinBastimento: false,
+      fallosDePrecio: 0,
     },
   });
 }
@@ -324,7 +433,12 @@ function moverRecua(ctx: Contexto, id: string): void {
     ctx.reglas,
     modificadoresDelJugador(jugador, ctx.reglas).bastimentoMil,
   );
-  const casa = enCasa(ctx, recua);
+  // En ruta circular, la recua repone en cualquier comarca propia por la que pase este turno.
+  const casa =
+    enCasa(ctx, recua) ??
+    (recua.rutaCircular
+      ? (previsto.entradas.find((c) => ctx.estado.comarcas[c]?.duenyo === recua.jugador) ?? null)
+      : null);
   const puedePagar =
     casa !== null
       ? disponible(jugador, 'pan') >= bastimento.pan && disponible(jugador, 'sal') >= bastimento.sal
@@ -333,6 +447,7 @@ function moverRecua(ctx: Contexto, id: string): void {
   let avance = previsto;
   if (puedePagar) {
     pagarBastimento(ctx, recua, casa !== null, bastimento.pan, bastimento.sal);
+    if (casa !== null && recua.rutaCircular) reponerBastimento(ctx, recua, jugador);
     if (hambrienta) aplicar(ctx, { tipo: 'recua-bastimento', recua: idRecua, avisada: false });
   } else if (!hambrienta) {
     aplicar(ctx, { tipo: 'recua-bastimento', recua: idRecua, avisada: true });
@@ -343,6 +458,8 @@ function moverRecua(ctx: Contexto, id: string): void {
       { recua: idRecua, pan: bastimento.pan, sal: bastimento.sal },
       { jugador: recua.jugador, comarca: donde },
     );
+    // Una ruta permanente no sigue dando vueltas con hambre: se detiene y lo dice.
+    if (recua.rutaCircular) detenerRuta(ctx, recua, 'sin-bastimento');
     return;
   } else {
     if (recua.acemilas > 1) {

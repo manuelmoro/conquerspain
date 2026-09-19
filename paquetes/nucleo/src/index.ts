@@ -74,3 +74,11 @@ export type {
 export { componerCronica, fechaDe } from './reglas/cronica.ts';
 export type { FuentesDeCronica } from './reglas/cronica.ts';
 export { redondearDeOido } from './reglas/rumores.ts';
+export {
+  costeDeAperos,
+  costeDeEdificio,
+  costeDeObraMayor,
+  costeDeRebanyo,
+  costeDeRecua,
+} from './reglas/casas/costes.ts';
+export { modificadoresDe, permisosDe, prohibicionesDe } from './reglas/casas/index.ts';

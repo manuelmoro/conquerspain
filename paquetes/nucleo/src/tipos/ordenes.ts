@@ -12,7 +12,7 @@ import type {
   IdRecua,
 } from './ids.ts';
 import type { Recurso, Recursos } from './recursos.ts';
-import type { Tradicion, TipoEdificio, TipoObraMayor } from './reglas.ts';
+import type { Estacion, Tradicion, TipoEdificio, TipoObraMayor } from './reglas.ts';
 
 export const ESTADOS_DE_ORDEN = [
   'pendiente',
@@ -20,6 +20,10 @@ export const ESTADOS_DE_ORDEN = [
   'terminada',
   'cancelada',
   'en espera',
+  /** Del plan de temporada: todavia no ha llegado su turno. No reserva nada. */
+  'programada',
+  /** En una cola: espera su vez sin reservar nada (docs/02 §2.5.1). */
+  'en cola',
 ] as const;
 export type EstadoDeOrden = (typeof ESTADOS_DE_ORDEN)[number];
 
@@ -42,6 +46,7 @@ export const TIPOS_DE_ORDEN = [
   'tradicion',
   'mayordomo',
   'trasladar-corte',
+  'cola',
 ] as const;
 export type TipoDeOrden = (typeof TIPOS_DE_ORDEN)[number];
 
@@ -57,6 +62,13 @@ export interface OrdenBase {
   readonly motivoEspera: string | null;
   /** True si la dio el mayordomo y no el jugador (docs/02 §2.5.3). */
   readonly delMayordomo: boolean;
+  /** Plan de temporada: el turno en que entra; null si entra ya (docs/02 §2.5.4). */
+  readonly turnoProgramado: number | null;
+  /**
+   * La cola en la que espera su vez, `comarca:<id>` o `recua:<id>`, o null si no va en cola. Una
+   * orden en cola no reserva nada: empieza cuando puede, en el orden de su cola (docs/02 §2.5.1).
+   */
+  readonly cola: string | null;
 }
 
 export interface OrdenConstruir extends OrdenBase {
@@ -184,17 +196,83 @@ export interface OrdenTradicion extends OrdenBase {
   readonly tradicion: Tradicion;
 }
 
+/** El precio de una plaza, tal como lo sabe el jugador, por debajo o por encima de un umbral. */
+export interface CondicionDePrecio {
+  readonly tipo: 'precio-en-plaza-menor-que' | 'precio-en-plaza-mayor-que';
+  readonly plaza: IdMercado;
+  readonly recurso: Recurso;
+  readonly precioMil: number;
+}
+
+/** Lo que puede mirar el mayordomo (ficha T-045 §4.3): una lista cerrada, no un lenguaje. */
+export type CondicionDeMayordomo =
+  | { readonly tipo: 'pan-disponible-menor-que'; readonly cantidad: number }
+  | {
+      readonly tipo: 'recurso-almacenado-mayor-que';
+      readonly recurso: Recurso;
+      readonly cantidad: number;
+    }
+  | CondicionDePrecio
+  /** No queda ninguna obra en marcha en la comarca: la cuadrilla esta libre. */
+  | { readonly tipo: 'obra-terminada-en'; readonly comarca: IdComarca }
+  | { readonly tipo: 'escasez' }
+  | { readonly tipo: 'estacion-empieza'; readonly estacion: Estacion }
+  | { readonly tipo: 'rebanyo-sin-pasto' };
+
+export const CONDICIONES_DE_MAYORDOMO = [
+  'pan-disponible-menor-que',
+  'recurso-almacenado-mayor-que',
+  'precio-en-plaza-menor-que',
+  'precio-en-plaza-mayor-que',
+  'obra-terminada-en',
+  'escasez',
+  'estacion-empieza',
+  'rebanyo-sin-pasto',
+] as const;
+
+/**
+ * Lo que puede ordenar el mayordomo: un subconjunto seguro de lo que puede ordenar el jugador. Nunca
+ * incorpora comarcas: las decisiones de territorio son del jugador.
+ */
+export type AccionDeMayordomo =
+  | {
+      readonly tipo: 'mercado';
+      readonly recua: IdRecua;
+      readonly mercado: IdMercado;
+      readonly recurso: Recurso;
+      readonly operacion: 'comprar' | 'vender';
+      readonly cantidad: number;
+      readonly precioLimiteMil: number;
+    }
+  | { readonly tipo: 'enviar-recua'; readonly recua: IdRecua; readonly comarca: IdComarca }
+  | { readonly tipo: 'mover-rebanyo'; readonly rebanyo: IdRebanyo; readonly comarca: IdComarca }
+  | { readonly tipo: 'carga-fiscal'; readonly comarca: IdComarca; readonly carga: CargaFiscal };
+
+export const ACCIONES_DE_MAYORDOMO = [
+  'mercado',
+  'enviar-recua',
+  'mover-rebanyo',
+  'carga-fiscal',
+] as const;
+
+/** «Cuando <condicion>, entonces <accion>», con su prioridad: se evaluan de menor a mayor. */
 export interface ReglaDeMayordomo {
-  readonly condicion: string;
-  readonly parametros: Readonly<Record<string, number | string>>;
-  readonly accion: string;
   readonly prioridad: number;
+  readonly condicion: CondicionDeMayordomo;
+  readonly accion: AccionDeMayordomo;
 }
 
 export interface OrdenMayordomo extends OrdenBase {
   readonly tipo: 'mayordomo';
   readonly alta: ReglaDeMayordomo | null;
   readonly bajaPrioridad: number | null;
+}
+
+/** Reordena una cola: la lista tiene que ser exactamente las ordenes que esperan en ella. */
+export interface OrdenCola extends OrdenBase {
+  readonly tipo: 'cola';
+  readonly clave: string;
+  readonly orden: readonly IdOrden[];
 }
 
 export interface OrdenTrasladarCorte extends OrdenBase {
@@ -220,4 +298,5 @@ export type Orden =
   | OrdenObraMayor
   | OrdenTradicion
   | OrdenMayordomo
-  | OrdenTrasladarCorte;
+  | OrdenTrasladarCorte
+  | OrdenCola;

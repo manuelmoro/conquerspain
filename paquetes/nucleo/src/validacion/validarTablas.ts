@@ -14,6 +14,7 @@ import type {
   CondicionDeRonda,
   CriterioDeOrigen,
   DatosHito,
+  DatosMayordomo,
   DatosRumores,
   DatosAcontecimiento,
   DatosAcontecimientos,
@@ -449,6 +450,15 @@ const validarRumores: Validador<DatosRumores> = objeto<DatosRumores>({
   dePreciosMil: milesimas(0, 1000),
 });
 
+const validarMayordomo: Validador<DatosMayordomo> = objeto<DatosMayordomo>({
+  reglasIniciales: entero({ minimo: 0, maximo: 20 }),
+  reglasPorNivelDeMercado: enteroNoNegativo(5),
+  reglasMaximas: entero({ minimo: 0, maximo: 20 }),
+  turnosDePlan: entero({ minimo: 1, maximo: 24 }),
+  jornadasDeRepuesto: enteroNoNegativo(60),
+  fallosDePrecioParaParar: entero({ minimo: 1, maximo: 20 }),
+});
+
 const validarHito: Validador<DatosHito> = objeto<DatosHito>({
   nombre: texto({ minimo: 1, maximo: 60 }),
   condicion: texto({ minimo: 1, maximo: 200 }),
@@ -530,6 +540,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   prestigio: validarPrestigio,
   hitos: registroCompleto(HITOS, validarHito),
   rumores: validarRumores,
+  mayordomo: validarMayordomo,
   arranque: validarArranque,
   acontecimientos: validarAcontecimientos,
   ganaderia: validarGanaderia,

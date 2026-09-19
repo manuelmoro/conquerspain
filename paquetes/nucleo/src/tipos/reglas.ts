@@ -557,6 +557,20 @@ export interface DatosInfluencia {
   readonly turnosIncorporar: number;
 }
 
+/** Los limites de jugar sin estar (docs/02 §2.5; ficha T-045). */
+export interface DatosMayordomo {
+  readonly reglasIniciales: number;
+  /** Reglas de mas por cada nivel de mercado en la capital. */
+  readonly reglasPorNivelDeMercado: number;
+  readonly reglasMaximas: number;
+  /** Cuantos turnos por delante se puede programar una orden. */
+  readonly turnosDePlan: number;
+  /** Jornadas de pan que carga una recua en ruta circular al reponer en comarca propia. */
+  readonly jornadasDeRepuesto: number;
+  /** Paradas seguidas sin cumplir un precio limite tras las que una ruta circular se detiene. */
+  readonly fallosDePrecioParaParar: number;
+}
+
 /** De donde salen los rumores y cuantos (ficha T-044 §4.3). */
 export interface DatosRumores {
   /** Rumores por cada recua quieta en una feria abierta, segun el volumen de la feria. */
@@ -719,6 +733,7 @@ export interface TablasDeReglas {
   readonly prestigio: DatosPrestigio;
   readonly hitos: Readonly<Record<Hito, DatosHito>>;
   readonly rumores: DatosRumores;
+  readonly mayordomo: DatosMayordomo;
   readonly arranque: DatosArranque;
   readonly acontecimientos: DatosAcontecimientos;
   readonly ganaderia: DatosGanaderia;

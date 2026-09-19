@@ -1,6 +1,6 @@
 # T-045 · Colas, rutas permanentes, mayordomo y plan de temporada
 
-**Fase:** 2 · Motor · **Depende de:** T-044 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-044 · **Estado:** hecha
 
 ## 1. Contexto
 
@@ -121,12 +121,44 @@ automatización no es suficiente y hay que ampliarla.
 ## 5. Archivos
 
 ```
-paquetes/nucleo/src/reglas/{colas,rutas,mayordomo,plan}.ts
-paquetes/nucleo/src/reglas/*.test.ts
-paquetes/nucleo/src/fases/00-mayordomo.ts          (se ejecuta antes de la fase 1)
-paquetes/nucleo/datos/mayordomo.json
-herramientas/banco/src/escenarios/ausencia.ts
+paquetes/nucleo/src/ordenes.ts                   ciclo de vida: plan, colas y reservas
+paquetes/nucleo/src/fases/00-mayordomo.ts        fase 0: plan, reglas, colas y mayordomo
+paquetes/nucleo/src/fases/04-rutas.ts            detener una ruta permanente
+paquetes/nucleo/src/reglas/mayordomo.ts          condiciones, limites y ordenes del mayordomo
+paquetes/nucleo/src/datos/mayordomo.ts           limites (reglas, plan, repuesto, fallos)
+paquetes/nucleo/pruebas/mayordomo.test.ts
+herramientas/banco/src/escenarios/ausencia.ts    (+ ausencia.test.ts)
 ```
+
+## 5.1 Lo que cambió al implementarla
+
+- **Plan y colas son campos de toda orden**, no mecanismos aparte: `turnoProgramado` (el plan) y
+  `cola` (`comarca:<id>` o `recua:<id>`), con dos estados nuevos, `programada` y `en cola`. Ninguno
+  de los dos reserva nada: solo reserva lo que está `pendiente` o `en espera`.
+- **Cola de obras:** las fases atienden primero las órdenes sueltas y después las de cola, en su
+  orden. Una de cola empieza cuando hay cuadrilla, cumple sus requisitos y el almacén da para ella
+  en ese momento (`puedePagarse`); si no, espera en su cola con el motivo y la siguiente puede
+  empezar. **Cola de recua:** de una en una, cuando la recua ha llegado y no tiene nada a medias.
+  La orden nueva `cola` reordena una cola; una lista que no sea la de la cola se rechaza.
+- **Plan de temporada:** la orden espera `programada` hasta su turno (como mucho seis por delante;
+  más allá se cancela `fuera-de-temporada`). Al llegar entra como si se diera entonces: reserva o se
+  cancela `sin-recursos`, y así «caduca» con constancia en la crónica. Editar el plan es cancelar y
+  volver a dar la orden, cosa del servidor (T-062).
+- **Rutas permanentes:** se detienen solas al faltar bastimento o tras tres paradas seguidas sin
+  cumplir un precio límite (`Recua.fallosDePrecio`); al pasar por comarca propia comen del almacén
+  y reponen pan y la sal del verano para doce jornadas. La partida `humo-02` recorre ahora su medio
+  año entero.
+- **Mayordomo:** condiciones y acciones con tipos cerrados. «Empezar la siguiente obra de la cola»
+  no es acción: la cola ya lo hace sola. «Obra terminada en» se lee como «no queda obra en marcha en
+  la comarca». Los precios de sus condiciones son los que el jugador sabe. Una regla no repite lo que
+  ya está en marcha. Sus órdenes pasan por la misma alta y las mismas validaciones.
+- **La fase 0** va antes del calendario: plan, reglas, colas y mayordomo.
+- **Crónica:** `plan.entra`, `cola.empieza`, `mayordomo.ordena` y `recua.ruta-detenida` tienen
+  plantilla, y lo que hacen las órdenes del mayordomo va marcado «Por orden del mayordomo».
+- **Test de ausencia (§4.5):** la misma estrategia (obras en la capital, explorar tres comarcas y
+  cambiar la carga fiscal con las estaciones) jugada cada turno y cada seis turnos con colas y
+  mayordomo da **175 y 175 de prestigio al turno 100 (0,0 %)**. El jugador diligente sigue la misma
+  regla que la cola: la primera obra que puede pagar.
 
 ## 6. Criterios de aceptación
 

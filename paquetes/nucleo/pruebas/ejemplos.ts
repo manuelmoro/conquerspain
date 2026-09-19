@@ -11,6 +11,7 @@ import { CONSUMO } from '../src/datos/consumo.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
 import { GANADERIA } from '../src/datos/ganaderia.ts';
 import { INFLUENCIA } from '../src/datos/influencia.ts';
+import { MAYORDOMO } from '../src/datos/mayordomo.ts';
 import { MERCADO } from '../src/datos/mercado.ts';
 import { MOVIMIENTO } from '../src/datos/movimiento.ts';
 import { OBRAS, OBRAS_MAYORES } from '../src/datos/obras.ts';
@@ -119,6 +120,8 @@ export function ordenDeEjemplo(): Registro {
     turnosHechos: 0,
     motivoEspera: null,
     delMayordomo: false,
+    turnoProgramado: null,
+    cola: null,
     tipo: 'construir',
     comarca: 'prueba-llano',
     edificio: 'granja',
@@ -196,6 +199,8 @@ export function estadoDeEjemplo(): Registro {
         deudaAdministracion: 0,
         traslado: null,
         turnosSinOrdenes: 0,
+        mayordomo: [],
+        colas: {},
       },
     },
     comarcas: {
@@ -295,6 +300,7 @@ export function tablasDeEjemplo(): Registro {
     prestigio: JSON.parse(JSON.stringify(PRESTIGIO)) as Registro,
     hitos: JSON.parse(JSON.stringify(DATOS_DE_HITOS)) as Registro,
     rumores: JSON.parse(JSON.stringify(RUMORES)) as Registro,
+    mayordomo: JSON.parse(JSON.stringify(MAYORDOMO)) as Registro,
     arranque: JSON.parse(JSON.stringify(ARRANQUE)) as Registro,
     acontecimientos: JSON.parse(JSON.stringify(ACONTECIMIENTOS)) as Registro,
     ganaderia: JSON.parse(JSON.stringify(GANADERIA)) as Registro,

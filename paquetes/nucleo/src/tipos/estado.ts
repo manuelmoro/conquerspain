@@ -6,6 +6,7 @@ import type {
   IdJugador,
   IdMercado,
   IdObra,
+  IdOrden,
   IdPartida,
   IdRebanyo,
   IdRecua,
@@ -20,7 +21,7 @@ import type {
   Tradicion,
 } from './reglas.ts';
 import type { Potencial, NivelPotencial, Terreno, VolumenFeria } from './mundo.ts';
-import type { Orden, ParadaDeRuta } from './ordenes.ts';
+import type { Orden, ParadaDeRuta, ReglaDeMayordomo } from './ordenes.ts';
 
 export const MODOS_DE_PARTIDA = ['solitario', 'vecindad', 'temporada', 'comarcal'] as const;
 export type ModoDePartida = (typeof MODOS_DE_PARTIDA)[number];
@@ -130,6 +131,10 @@ export interface EstadoJugador {
   /** Traslado de la corte en marcha, o null. */
   readonly traslado: TrasladoDeCorte | null;
   readonly turnosSinOrdenes: number;
+  /** Las reglas del mayordomo, de menor a mayor prioridad (docs/02 §2.5.3). */
+  readonly mayordomo: readonly ReglaDeMayordomo[];
+  /** Cola → ordenes que esperan en ella, en su orden (`comarca:<id>`, `recua:<id>`). */
+  readonly colas: Readonly<Record<string, readonly IdOrden[]>>;
 }
 
 // ——— Comarca ———————————————————————————————————————————————————————————————
@@ -225,6 +230,8 @@ export interface Recua {
   /** Turnos que lleva cumpliendo su cometido en destino. */
   readonly turnosDeCometido: number;
   readonly avisadaSinBastimento: boolean;
+  /** Paradas seguidas de una ruta circular en las que no se cumplio un precio limite. */
+  readonly fallosDePrecio: number;
 }
 
 export interface Rebanyo {

@@ -32,13 +32,17 @@ import type {
   OrdenRuta,
   OrdenTradicion,
   OrdenTrasladarCorte,
+  OrdenCola,
   ParadaDeRuta,
   ReglaDeMayordomo,
+  AccionDeMayordomo,
+  CondicionDeMayordomo,
+  CondicionDePrecio,
 } from '../tipos/ordenes.ts';
 import { TURNOS_POR_ANYO } from '../reglas/calendario.ts';
 import { ESTADOS_DE_ORDEN } from '../tipos/ordenes.ts';
 import { RECURSOS, RECURSOS_COMERCIABLES } from '../tipos/recursos.ts';
-import { TIPOS_DE_EDIFICIO, TIPOS_DE_OBRA_MAYOR } from '../tipos/reglas.ts';
+import { ESTACIONES, TIPOS_DE_EDIFICIO, TIPOS_DE_OBRA_MAYOR } from '../tipos/reglas.ts';
 import { recursos, recursosParciales } from './comunes.ts';
 import type { CamposDe, ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
@@ -67,6 +71,8 @@ const camposBase: CamposDe<OrdenBase> = {
   turnosHechos: enteroNoNegativo(500),
   motivoEspera: oNulo(texto({ maximo: 200 })),
   delMayordomo: booleano(),
+  turnoProgramado: oNulo(entero({ minimo: 1 })),
+  cola: oNulo(texto({ minimo: 1, maximo: 80 })),
 };
 
 const validarOferta = objeto<{ cantidad: number; precioMinimoMil: number }>({
@@ -87,14 +93,74 @@ export const validarParada: Validador<ParadaDeRuta> = objeto<ParadaDeRuta>({
   comprar: registro(validarDemanda, unoDe(RECURSOS_COMERCIABLES)),
 });
 
-const validarValorDeParametro: Validador<number | string> = (dato, ruta) =>
-  typeof dato === 'string' ? valido<number | string>(dato) : entero()(dato, ruta);
+type Condicion<T extends CondicionDeMayordomo['tipo']> = Extract<CondicionDeMayordomo, { tipo: T }>;
+type Accion<T extends AccionDeMayordomo['tipo']> = Extract<AccionDeMayordomo, { tipo: T }>;
 
-const validarReglaDeMayordomo: Validador<ReglaDeMayordomo> = objeto<ReglaDeMayordomo>({
-  condicion: texto({ minimo: 1, maximo: 60 }),
-  parametros: registro(validarValorDeParametro),
-  accion: texto({ minimo: 1, maximo: 60 }),
-  prioridad: entero({ minimo: 1, maximo: 10 }),
+const condicionDePrecio = objeto<CondicionDePrecio>({
+  tipo: unoDe(['precio-en-plaza-menor-que', 'precio-en-plaza-mayor-que'] as const),
+  plaza: identificador<IdMercado>(),
+  recurso: unoDe(RECURSOS_COMERCIABLES),
+  precioMil: enteroNoNegativo(),
+});
+
+const validarCondicion = porTipo<CondicionDeMayordomo>({
+  'pan-disponible-menor-que': objeto<Condicion<'pan-disponible-menor-que'>>({
+    tipo: unoDe(['pan-disponible-menor-que'] as const),
+    cantidad: enteroNoNegativo(),
+  }),
+  'recurso-almacenado-mayor-que': objeto<Condicion<'recurso-almacenado-mayor-que'>>({
+    tipo: unoDe(['recurso-almacenado-mayor-que'] as const),
+    recurso: unoDe(RECURSOS),
+    cantidad: enteroNoNegativo(),
+  }),
+  'precio-en-plaza-menor-que': condicionDePrecio,
+  'precio-en-plaza-mayor-que': condicionDePrecio,
+  'obra-terminada-en': objeto<Condicion<'obra-terminada-en'>>({
+    tipo: unoDe(['obra-terminada-en'] as const),
+    comarca: identificador<IdComarca>(),
+  }),
+  escasez: objeto<Condicion<'escasez'>>({ tipo: unoDe(['escasez'] as const) }),
+  'estacion-empieza': objeto<Condicion<'estacion-empieza'>>({
+    tipo: unoDe(['estacion-empieza'] as const),
+    estacion: unoDe(ESTACIONES),
+  }),
+  'rebanyo-sin-pasto': objeto<Condicion<'rebanyo-sin-pasto'>>({
+    tipo: unoDe(['rebanyo-sin-pasto'] as const),
+  }),
+});
+
+const validarAccion = porTipo<AccionDeMayordomo>({
+  mercado: objeto<Accion<'mercado'>>({
+    tipo: unoDe(['mercado'] as const),
+    recua: identificador<IdRecua>(),
+    mercado: identificador<IdMercado>(),
+    recurso: unoDe(RECURSOS_COMERCIABLES),
+    operacion: unoDe(['comprar', 'vender'] as const),
+    cantidad: entero({ minimo: 1 }),
+    // El precio limite es obligatorio: el mayordomo nunca compra ni vende a cualquier precio.
+    precioLimiteMil: entero({ minimo: 1 }),
+  }),
+  'enviar-recua': objeto<Accion<'enviar-recua'>>({
+    tipo: unoDe(['enviar-recua'] as const),
+    recua: identificador<IdRecua>(),
+    comarca: identificador<IdComarca>(),
+  }),
+  'mover-rebanyo': objeto<Accion<'mover-rebanyo'>>({
+    tipo: unoDe(['mover-rebanyo'] as const),
+    rebanyo: identificador<IdRebanyo>(),
+    comarca: identificador<IdComarca>(),
+  }),
+  'carga-fiscal': objeto<Accion<'carga-fiscal'>>({
+    tipo: unoDe(['carga-fiscal'] as const),
+    comarca: identificador<IdComarca>(),
+    carga: unoDe(CARGAS_FISCALES),
+  }),
+});
+
+export const validarReglaDeMayordomo: Validador<ReglaDeMayordomo> = objeto<ReglaDeMayordomo>({
+  prioridad: entero({ minimo: 1, maximo: 99 }),
+  condicion: validarCondicion,
+  accion: validarAccion,
 });
 
 const construir: Validador<OrdenConstruir> = objeto<OrdenConstruir>({
@@ -225,7 +291,14 @@ const mayordomo: Validador<OrdenMayordomo> = objeto<OrdenMayordomo>({
   ...camposBase,
   tipo: unoDe(['mayordomo'] as const),
   alta: oNulo(validarReglaDeMayordomo),
-  bajaPrioridad: oNulo(entero({ minimo: 1, maximo: 10 })),
+  bajaPrioridad: oNulo(entero({ minimo: 1, maximo: 99 })),
+});
+
+const cola: Validador<OrdenCola> = objeto<OrdenCola>({
+  ...camposBase,
+  tipo: unoDe(['cola'] as const),
+  clave: texto({ minimo: 1, maximo: 80 }),
+  orden: lista(identificador<IdOrden>(), { maximo: 50 }),
 });
 
 const trasladarCorte: Validador<OrdenTrasladarCorte> = objeto<OrdenTrasladarCorte>({
@@ -253,6 +326,7 @@ const validarForma = porTipo<Orden>({
   tradicion,
   mayordomo,
   'trasladar-corte': trasladarCorte,
+  cola,
 });
 
 /** Valida la forma de una orden que llega de fuera. No comprueba si sus referencias existen. */

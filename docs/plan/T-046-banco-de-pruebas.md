@@ -17,6 +17,12 @@ métricas y emitir informes comparables entre versiones.
 
 ## 3. Alcance
 
+**Heredado de T-045.** Ya existe un primer escenario en `herramientas/banco/src/escenarios/ausencia.ts`
+(con su test): juega una estrategia a mano y la misma con colas y mayordomo, y compara el prestigio.
+Los robots de esta tarea deberían usar colas, plan y mayordomo como lo haría un jugador que entra
+poco, y el informe debería repetir esa comparación por casa. Para dar el coste de una orden, el
+núcleo exporta `costeDeEdificio` y compañía y `modificadoresDe`.
+
 **Entra:** robots (uno por casa), ejecutor de partidas, métricas, informes en Markdown y CSV,
 comparación entre ejecuciones.
 

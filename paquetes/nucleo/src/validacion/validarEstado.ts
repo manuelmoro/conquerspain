@@ -35,6 +35,7 @@ import type {
   IdJugador,
   IdMercado,
   IdObra,
+  IdOrden,
   IdPartida,
   IdRebanyo,
   IdRecua,
@@ -52,7 +53,7 @@ import {
   VERSION_REGLAS,
 } from '../tipos/reglas.ts';
 import { efectoDeAcontecimiento, nivelPotencial, recursos } from './comunes.ts';
-import { validarOrdenEntrante, validarParada } from './validarOrden.ts';
+import { validarOrdenEntrante, validarParada, validarReglaDeMayordomo } from './validarOrden.ts';
 import type { ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
   booleano,
@@ -144,6 +145,8 @@ const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
     }),
   ),
   turnosSinOrdenes: enteroNoNegativo(),
+  mayordomo: lista(validarReglaDeMayordomo, { maximo: 20 }),
+  colas: registro(lista(identificador<IdOrden>(), { maximo: 50 })),
 });
 
 const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
@@ -215,6 +218,7 @@ const validarRecua: Validador<Recua> = objeto<Recua>({
   cometido: oNulo(unoDe(COMETIDOS)),
   turnosDeCometido: enteroNoNegativo(),
   avisadaSinBastimento: booleano(),
+  fallosDePrecio: enteroNoNegativo(),
 });
 
 const validarRebanyo: Validador<Rebanyo> = objeto<Rebanyo>({

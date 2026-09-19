@@ -288,6 +288,8 @@ export function estadoMini(): EstadoPartida {
         deudaAdministracion: 0,
         traslado: null,
         turnosSinOrdenes: 0,
+        mayordomo: [],
+        colas: {},
       },
     },
     comarcas,

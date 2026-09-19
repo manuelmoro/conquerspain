@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 19 de septiembre de 2026 (tras cerrar T-044)
+**Última actualización:** 19 de septiembre de 2026 (tras cerrar T-045)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,10 +20,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-045 · Colas, rutas permanentes, mayordomo y plan de temporada](docs/plan/T-045-mayordomo-y-colas.md)**
+**[T-046 · Banco de pruebas: robots por casa e informes](docs/plan/T-046-banco-de-pruebas.md)**
 
-Jugar sin estar: órdenes en cola, rutas que se repiten, reglas del mayordomo y plan de temporada.
-Lee los apartados «Heredado» de la ficha: la crónica ya trae la acción sugerida de cada aviso.
+Partidas automáticas con un robot por casa, métricas e informes. Lee el apartado «Heredado de T-045»
+de la ficha: ya hay un primer escenario (`herramientas/banco/src/escenarios/ausencia.ts`) y el núcleo
+exporta los costes de las órdenes.
 
 ## Cómo continuar (resumen)
 
@@ -47,6 +48,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | `herramientas/` | `atlas` y `banco` creados, vacíos; su contenido llega en T-011 y T-046 |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
+| Jugar sin estar | Fase 0 (mayordomo) antes del calendario: plan de temporada de seis turnos, colas de obra y de recua que no reservan hasta empezar, reglas del mayordomo con condiciones y acciones cerradas (3 a 6 activas) y rutas permanentes que se detienen solas y reponen en casa. Test de ausencia: 0,0 % de diferencia al turno 100 |
 | Niebla y crónica | `vistaDeJugador` (lo único que sale del servidor) con las diez reglas de filtrado y prueba de fuga; crónica por plantillas para los 108 tipos de suceso, en el orden avisos → sucesos → economía → rumores → hitos y con acción sugerida; precios fechados por plaza; rumores deterministas y acotados al 5 % |
 | Marcador | Prestigio recalculado cada turno por nueve capítulos y penalizaciones sobre el estado y el `registro` del jugador; doce hitos (uno desactivado hasta T-103) con su primicia; clasificación guardada con el puesto anterior. Tabla y catálogo en `src/datos/prestigio.ts` |
 | Tradiciones | 72 en `src/datos/tradiciones.ts` (tres por casa y ronda: profundizar, compensar y abrir), cuatro desactivadas hasta T-102, T-103 y T-120. Rondas Renombre, Fama y Linaje que se abren en la fase 11, orden `tradicion` gratuita e irreversible, y composición casa + tradiciones en `reglas/casas` según `COMPOSICION_DE_MODIFICADORES` |
@@ -79,6 +81,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 19-09-2026 | **T-045 hecha**: jugar sin estar. Plan de temporada y colas como campos de toda orden, con los estados `programada` y `en cola`, que no reservan hasta empezar. La cola de obras salta lo que no se puede pagar; la de recua va de una en una. Orden `cola` para reordenar. Mayordomo con ocho condiciones y cuatro acciones cerradas, su límite y su orden por prioridad, y marcado en la crónica. Rutas circulares que se detienen por bastimento o por tres fallos de precio, y que reponen en casa (`humo-02` recorre ahora su medio año entero). **Test de ausencia (§4.5): la misma estrategia cada turno y cada seis turnos da 175 y 175 de prestigio al turno 100, un 0,0 % de diferencia.** 840 tests en verde |
 | 19-09-2026 | **T-044 hecha**: la niebla y el parte. `vistaDeJugador` con las diez reglas de §4.1, probadas una a una, y una prueba de fuga que busca identificadores, cifras y la semilla en la vista serializada. Crónica compuesta por plantillas con voz de cronista, con nombres en lugar de identificadores, fecha, resumen económico, clasificación y acción sugerida; un test lee el código fuente y exige plantilla para cada suceso y dato para cada hueco. Precios fechados por plaza (visita, corresponsal, rumor); los corresponsales de los mercaderes funcionan. Rumores por feria, Camino y venta, deterministas y redondeados a dos cifras (±5 %). Las huellas cambian; los sucesos de las fases 1 a 11, idénticos. 816 tests en verde |
 | 19-09-2026 | **T-043 hecha**: el marcador. Prestigio recalculado entero cada turno en nueve capítulos (población, territorio, obras, caminos, comercio, exploración, ganadería, industria e hitos) menos penalizaciones, con tres escenarios comprobados a mano (49, 853 y −45). Registro del jugador con lo que no se deduce del estado; doce hitos en su umbral exacto (Buen nombre, desactivado hasta T-103); primicia única con desempate por mérito y hash; clasificación estable guardada con el puesto anterior. Las huellas cambian, pero los sucesos de las fases 1 a 10 son idénticos a los del commit anterior. 778 tests en verde |
 | 19-09-2026 | **T-042 hecha**: tradiciones. 72 cartas con nota histórica (una de cada criterio por casa y ronda), rondas que se abren con sus condiciones y no se cierran, orden `tradicion` con sus siete rechazos (incluida la elección ambigua, que anula las dos) y composición con la casa: factores, sumandos y valores fijos, en el orden de las rondas. Siete puntos de extensión nuevos (agotamiento por recurso, avance por tipo de obra mayor, cuadrillas, aperos, administración, influencia y bastimento) y los maravedís de la casa sobre mercado e impuestos. Todas las fases leen la casa a través de `reglas/casas`. `EstadoJugador` gana `rondas` (huellas de `humo-01` y `humo-02` cambiadas; sus sucesos, idénticos). El test de permutaciones destapó que el redondeo hacía depender del orden de elección. 745 tests en verde |

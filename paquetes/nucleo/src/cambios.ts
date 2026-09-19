@@ -15,7 +15,7 @@ import type {
   IdRebanyo,
   IdRecua,
 } from './tipos/ids.ts';
-import type { EstadoDeOrden, Orden, ParadaDeRuta } from './tipos/ordenes.ts';
+import type { EstadoDeOrden, Orden, ParadaDeRuta, ReglaDeMayordomo } from './tipos/ordenes.ts';
 import type {
   Acontecimiento,
   Cometido,
@@ -43,6 +43,7 @@ import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
 import { modificadoresDe } from './reglas/casas/index.ts';
 import { impedimentoDeTradicion, opcionesDeTradicion } from './reglas/tradiciones.ts';
 import { limitar, multiplicarFactores } from './utiles/enteros.ts';
+import { comparar } from './utiles/orden.ts';
 
 export type Cambio =
   | {
@@ -180,6 +181,11 @@ export type Cambio =
       readonly ruta: readonly IdComarca[];
       readonly circular: boolean;
       readonly paradas: readonly ParadaDeRuta[];
+    }
+  | {
+      readonly tipo: 'recua-fallos-de-precio';
+      readonly recua: IdRecua;
+      readonly fallos: number;
     }
   | {
       readonly tipo: 'recua-carga';
@@ -392,6 +398,19 @@ export type Cambio =
       readonly puestos: readonly PuestoEnLaClasificacion[];
     }
   | {
+      /** Las reglas del mayordomo de un jugador, de menor a mayor prioridad. */
+      readonly tipo: 'mayordomo';
+      readonly jugador: IdJugador;
+      readonly reglas: readonly ReglaDeMayordomo[];
+    }
+  | {
+      /** El jugador reordena una cola; tiene que traer exactamente las ordenes que hay en ella. */
+      readonly tipo: 'cola';
+      readonly jugador: IdJugador;
+      readonly clave: string;
+      readonly orden: readonly IdOrden[];
+    }
+  | {
       /** Se abre una ronda de tradiciones: desde el turno siguiente se puede elegir. */
       readonly tipo: 'ronda';
       readonly jugador: IdJugador;
@@ -403,6 +422,32 @@ export type Cambio =
       readonly jugador: IdJugador;
       readonly tradicion: Tradicion;
     };
+
+/** Una orden que entra en su cola va al final. */
+function ponerEnCola(ctx: Contexto, orden: Orden): void {
+  if (orden.cola === null) {
+    throw new ErrorDeMotor('invariante-rota', `La orden "${orden.id}" no dice en que cola va.`, {
+      orden: orden.id,
+    });
+  }
+  const jugador = jugadorDe(ctx, orden.jugador);
+  const lista = jugador.colas[orden.cola] ?? [];
+  if (!lista.includes(orden.id))
+    jugador.colas = { ...jugador.colas, [orden.cola]: [...lista, orden.id] };
+}
+
+/** La que sale de su cola (empieza o se cancela) deja su sitio; una cola vacia desaparece. */
+function sacarDeLaCola(ctx: Contexto, orden: Orden): void {
+  if (orden.cola === null) return;
+  const jugador = jugadorDe(ctx, orden.jugador);
+  const clave = orden.cola;
+  const lista = (jugador.colas[clave] ?? []).filter((id) => id !== orden.id);
+  jugador.colas = Object.fromEntries(
+    Object.entries(jugador.colas)
+      .map(([c, ids]): [string, IdOrden[]] => [c, c === clave ? lista : [...ids]])
+      .filter(([, ids]) => ids.length > 0),
+  );
+}
 
 function jugadorDe(
   ctx: Contexto,
@@ -1007,6 +1052,7 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         );
       }
       ctx.estado.ordenes.push(comoBorrador(cambio.orden));
+      if (cambio.orden.estado === 'en cola') ponerEnCola(ctx, cambio.orden);
       registrarSuceso(
         ctx.sucesos,
         ctx.fase,
@@ -1019,8 +1065,11 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'orden-estado': {
       const orden = ordenDe(ctx, cambio.orden);
+      const antes = orden.estado;
       orden.estado = cambio.estado;
       orden.motivoEspera = cambio.motivo;
+      if (antes === 'en cola' && cambio.estado !== 'en cola') sacarDeLaCola(ctx, orden);
+      if (antes !== 'en cola' && cambio.estado === 'en cola') ponerEnCola(ctx, orden);
       registrarSuceso(
         ctx.sucesos,
         ctx.fase,
@@ -1030,9 +1079,40 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
           clase: orden.tipo,
           estado: cambio.estado,
           motivo: cambio.motivo ?? '',
+          delMayordomo: orden.delMayordomo ? 1 : 0,
         },
         { jugador: orden.jugador },
       );
+      return;
+    }
+
+    case 'mayordomo': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const prioridades = cambio.reglas.map((r) => r.prioridad);
+      const ordenadas = prioridades.every((p, i) => i === 0 || p > (prioridades[i - 1] ?? 0));
+      if (!ordenadas || cambio.reglas.length > ctx.reglas.mayordomo.reglasMaximas) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Las reglas del mayordomo de ${cambio.jugador} van sin repetir prioridad, de menor a mayor, y como mucho ${String(ctx.reglas.mayordomo.reglasMaximas)}.`,
+          { jugador: cambio.jugador },
+        );
+      }
+      jugador.mayordomo = comoBorrador(cambio.reglas);
+      return;
+    }
+
+    case 'cola': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const actual = [...(jugador.colas[cambio.clave] ?? [])].sort(comparar);
+      const nueva = [...cambio.orden].sort(comparar);
+      if (actual.length !== nueva.length || actual.some((id, i) => id !== nueva[i])) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La cola "${cambio.clave}" de ${cambio.jugador} solo se puede reordenar con las mismas ordenes que tiene.`,
+          { jugador: cambio.jugador, cola: cambio.clave },
+        );
+      }
+      jugador.colas = { ...jugador.colas, [cambio.clave]: [...cambio.orden] };
       return;
     }
 
@@ -1119,6 +1199,18 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         },
         { jugador: recua.jugador },
       );
+      return;
+    }
+
+    case 'recua-fallos-de-precio': {
+      const recua = recuaDe(ctx, cambio.recua);
+      if (!Number.isSafeInteger(cambio.fallos) || cambio.fallos < 0) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `Los fallos de precio de ${cambio.recua} no pueden ser ${String(cambio.fallos)}.`,
+        );
+      }
+      recua.fallosDePrecio = cambio.fallos;
       return;
     }
 

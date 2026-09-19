@@ -5,7 +5,14 @@
 // cada obra, y al final se aplican los efectos que las obras mayores terminadas dan cada turno.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
-import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ordenes.ts';
+import {
+  cancelarOrden,
+  compararOrdenes,
+  dejarEnEspera,
+  empezarOrden,
+  ordenesVivas,
+  puedePagarse,
+} from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { cuadrillasLibres, turnosHastaCuadrillaLibre } from '../reglas/cuadrillas.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
@@ -37,7 +44,7 @@ import type { Recursos } from '../tipos/recursos.ts';
 import { OBRAS_MAYORES_DE_TRAMO, esTipoDeEdificio, esTipoDeObraMayor } from '../tipos/reglas.ts';
 import type { TipoObraMayor } from '../tipos/reglas.ts';
 import { MIL, multiplicarFactores } from '../utiles/enteros.ts';
-import { comparar, idsEnOrden } from '../utiles/orden.ts';
+import { idsEnOrden } from '../utiles/orden.ts';
 
 type OrdenDeObra =
   | OrdenDe<'construir'>
@@ -53,7 +60,7 @@ export function faseObras(ctx: Contexto): void {
     ...ordenesVivas(ctx, 'roturar'),
     ...ordenesVivas(ctx, 'obra-mayor'),
     ...ordenesVivas(ctx, 'aperos'),
-  ].sort((a, b) => comparar(a.id, b.id));
+  ].sort(compararOrdenes(ctx));
   for (const orden of ordenes) atenderOrden(ctx, orden);
 
   for (const id of idsEnOrden(ctx.estado.obras)) avanzarObra(ctx, id);
@@ -120,6 +127,11 @@ function puedeEmpezar(ctx: Contexto, orden: Orden, comarca: EstadoComarca): bool
       );
     }
     dejarEnEspera(ctx, orden, 'sin-cuadrilla');
+    return false;
+  }
+  // La que viene de su cola no tenia nada reservado: empieza si el almacen da para ella ahora.
+  if (!puedePagarse(ctx, orden)) {
+    dejarEnEspera(ctx, orden, 'sin-recursos');
     return false;
   }
   return true;
@@ -230,6 +242,10 @@ function instalarAperos(
     cancelarOrden(ctx, orden, 'nivel-maximo');
     return;
   }
+  if (!puedePagarse(ctx, orden)) {
+    dejarEnEspera(ctx, orden, 'sin-recursos');
+    return;
+  }
   empezarOrden(ctx, orden, 'terminada');
   aplicar(ctx, { tipo: 'aperos', comarca: comarca.id, delta: 1, motivo: 'se instalan' });
 }
@@ -316,6 +332,10 @@ function abandonarORetomar(
     return;
   }
   if (orden.abandonar) {
+    if (!puedePagarse(ctx, orden)) {
+      dejarEnEspera(ctx, orden, 'sin-recursos');
+      return;
+    }
     if (!obra.abandonada) aplicar(ctx, { tipo: 'obra-abandono', obra: obra.id, abandonada: true });
     empezarOrden(ctx, orden, 'terminada');
     return;

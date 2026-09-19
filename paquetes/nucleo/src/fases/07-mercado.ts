@@ -18,15 +18,16 @@ import { nuevoPrecioMil, topeDeVolumen } from '../reglas/precios.ts';
 import type { Solicitud, SolicitudConLinea } from '../reglas/solicitudes.ts';
 import { lineasDeSolicitudes } from '../reglas/solicitudes.ts';
 import { registrarSuceso } from '../sucesos.ts';
+import { detenerRuta } from './04-rutas.ts';
 import { letrasDeCambio } from './07-letras.ts';
 import type { EstadoMercado } from '../tipos/estado.ts';
-import type { IdComarca, IdJugador } from '../tipos/ids.ts';
+import type { IdComarca, IdJugador, IdRecua } from '../tipos/ids.ts';
 import type { DatosRecurso } from '../tipos/reglas.ts';
 import { multiplicarFactores } from '../utiles/enteros.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS_COMERCIABLES, recursosSegun } from '../tipos/recursos.ts';
 import { hash32 } from '../utiles/huella.ts';
-import { idsEnOrden } from '../utiles/orden.ts';
+import { comparar, idsEnOrden } from '../utiles/orden.ts';
 
 type Solicitudes = Map<string, Solicitud[]>;
 
@@ -38,6 +39,7 @@ export function faseMercado(ctx: Contexto): void {
   }
   const solicitudes = reunirSolicitudes(ctx, catalogo);
 
+  const deParadas: ResultadoDeParada[] = [];
   for (const id of idsEnOrden(ctx.estado.mercados)) {
     const mercado = ctx.estado.mercados[id];
     if (mercado === undefined) continue;
@@ -46,8 +48,38 @@ export function faseMercado(ctx: Contexto): void {
       if (plaza === null) {
         dejarVolverAlBase(ctx, mercado, recurso);
       } else {
-        casar(ctx, plaza, mercado, recurso, solicitudes.get(`${plaza.id}|${recurso}`) ?? []);
+        const lista = solicitudes.get(`${plaza.id}|${recurso}`) ?? [];
+        deParadas.push(...casar(ctx, plaza, mercado, recurso, lista));
       }
+    }
+  }
+  contarFallosDePrecio(ctx, deParadas);
+}
+
+interface ResultadoDeParada {
+  readonly recua: IdRecua;
+  readonly casada: number;
+  readonly motivo: string | null;
+}
+
+/**
+ * Una ruta circular que no cumple un precio limite en tantas paradas seguidas se detiene: para no
+ * dar vueltas en balde (ficha T-045 §4.2). Un trato sin fallos vuelve la cuenta a cero.
+ */
+function contarFallosDePrecio(ctx: Contexto, resultados: readonly ResultadoDeParada[]): void {
+  const recuas = [...new Set(resultados.map((r) => r.recua))].sort(comparar);
+  for (const id of recuas) {
+    const recua = ctx.estado.recuas[id];
+    if (recua === undefined) continue;
+    const suyos = resultados.filter((r) => r.recua === id);
+    const fallo = suyos.some((r) => r.casada === 0 && r.motivo === 'precio-limite');
+    const exito = suyos.some((r) => r.casada > 0);
+    const fallos = fallo ? recua.fallosDePrecio + 1 : exito ? 0 : recua.fallosDePrecio;
+    if (recua.rutaCircular && fallos >= ctx.reglas.mayordomo.fallosDePrecioParaParar) {
+      detenerRuta(ctx, recua, 'precio-limite');
+      aplicar(ctx, { tipo: 'recua-fallos-de-precio', recua: id, fallos: 0 });
+    } else if (fallos !== recua.fallosDePrecio) {
+      aplicar(ctx, { tipo: 'recua-fallos-de-precio', recua: id, fallos });
     }
   }
 }
@@ -244,7 +276,7 @@ function casar(
   mercado: EstadoMercado,
   recurso: Recurso,
   solicitudes: readonly Solicitud[],
-): void {
+): ResultadoDeParada[] {
   const tabla = ctx.reglas.mercado;
   const lineas = lineasDeSolicitudes(solicitudes, ctx.estado.recuas, (jugador) =>
     comisionMilDe(ctx, jugador, plaza),
@@ -260,9 +292,14 @@ function casar(
   });
 
   const porClave = new Map(lineas.map((l) => [l.solicitud.clave, l]));
+  const deParadas: ResultadoDeParada[] = [];
   for (const linea of resultado.lineas) {
     const origen = porClave.get(linea.clave);
-    if (origen !== undefined) cumplir(ctx, plaza, recurso, resultado.precioMil, origen, linea);
+    if (origen === undefined) continue;
+    cumplir(ctx, plaza, recurso, resultado.precioMil, origen, linea);
+    if (origen.solicitud.via === 'parada') {
+      deParadas.push({ recua: origen.solicitud.recua, casada: linea.casada, motivo: linea.motivo });
+    }
   }
 
   aplicar(ctx, {
@@ -289,6 +326,7 @@ function casar(
       { comarca: plaza.comarca },
     );
   }
+  return deParadas;
 }
 
 /** Sin plaza abierta no se casa nada: el precio solo vuelve hacia el base. */

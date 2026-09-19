@@ -206,6 +206,12 @@ function valorDe(
       return NOMBRES_DE_ORDEN[dato] ?? dato;
     case 'motivo':
       return motivo(dato, lector, fuentes);
+    case 'cola': {
+      const [clase, id = ''] = dato.split(':');
+      return clase === 'recua'
+        ? `la cola de ${conArticulo(fuentes.estado.recuas[id]?.nombre ?? id, 'recua')}`
+        : `la cola de obras de ${nombreDeComarca(id, fuentes)}`;
+    }
     default:
       return dato;
   }
@@ -295,9 +301,14 @@ export function entradaDe(
   const compuesto = rellenar(texto, suceso, lector, fuentes);
   // Una plantilla que es toda opcional y se calla no deja entrada.
   if (compuesto.texto.trim() === '') return null;
+  // Lo que hizo el mayordomo va marcado como suyo (ficha T-045 §4.3).
+  const marcado =
+    suceso.datos['delMayordomo'] === 1 && suceso.tipo !== 'mayordomo.ordena'
+      ? `Por orden del mayordomo: ${compuesto.texto.charAt(0).toLowerCase()}${compuesto.texto.slice(1)}`
+      : compuesto.texto;
   return {
     seccion: plantilla.seccion,
-    texto: compuesto.texto,
+    texto: marcado,
     faltan: compuesto.faltan,
     comarca: suceso.comarca,
     accionSugerida: plantilla.accion,
