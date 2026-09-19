@@ -35,6 +35,13 @@ Cumplir las métricas de salud de partidas con rivales, ajustando solo tablas de
 2. Ninguna casa gana en más de una de las tres semillas.
 3. La correlación entre conexiones y prestigio se queda por debajo de 0,15.
 
+### Checkpoint humano
+
+Para cerrar y pasar a conflicto, realizar **J-04** de
+[checkpoints-jugabilidad.md](checkpoints-jugabilidad.md), tras terminar T-103: piloto humano con
+comercio y varios días de ritmo real. Guardar acta y resolver bloqueos de juego; una simulación
+acelerada no prueba la experiencia de volver a la partida.
+
 ## 6. Verificación
 
 ```bash

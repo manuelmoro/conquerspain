@@ -37,6 +37,13 @@ cancelación.
 2. Todo bloqueo muestra causa y salida.
 3. Reservado, disponible y producido se distinguen visualmente y no se confunden.
 
+### Checkpoint humano
+
+Al terminar la implementación, realizar **J-01** antes de continuar con T-083: comprensión de
+recursos, elección, envío y cancelación de órdenes con la interfaz disponible. Registrar la sesión
+según [checkpoints-jugabilidad.md](checkpoints-jugabilidad.md); si el usuario aún no ha jugado,
+dejar J-01 pendiente en ESTADO. No exigir todavía crónica completa ni mercado.
+
 ## 6. Verificación
 
 ```bash

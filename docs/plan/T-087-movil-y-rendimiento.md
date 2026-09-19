@@ -37,6 +37,13 @@ Cumplir los criterios de móvil, accesibilidad y rendimiento en todas las pantal
 3. 60 fps al desplazar el atlas y arranque por debajo de 1,5 s en gama media.
 4. El recorrido crítico se completa con una mano en menos de dos minutos.
 
+### Checkpoint humano
+
+Para cerrar, realizar **J-02 y J-03** de [checkpoints-jugabilidad.md](checkpoints-jugabilidad.md):
+ciclo completo con casas distintas y prueba con personas ajenas al desarrollo. Requieren T-083,
+T-084 y T-085 terminadas, además del alta de T-086. Conservar actas y corregir los bloqueos del
+recorrido; los tests automáticos no sustituyen esas sesiones.
+
 ## 6. Verificación
 
 ```bash

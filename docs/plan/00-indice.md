@@ -119,6 +119,20 @@ mapa completo; ESTADO.md es la aguja.
 
 ---
 
+## Checkpoints de jugabilidad
+
+[Protocolo y estado de las sesiones humanas](checkpoints-jugabilidad.md). Por decisión del usuario
+(19-09-2026), se espera a la interfaz; no se adelanta una consola ni cambia la siguiente tarea.
+
+- J-01: al terminar T-082, probar comprensión y órdenes antes de continuar con T-083.
+- J-02: tras T-083/T-084/T-085, probar el ciclo completo, casas y ausencia.
+- J-03: tras T-086, probar el recorrido con personas ajenas al desarrollo; junto a J-02, antes
+  de cerrar T-087.
+- J-04: tras T-103, piloto durante varios días; antes de cerrar T-106 y entrar en conflicto.
+
+Las tareas técnicas y los checkpoints tienen estados separados. Un informe de robots no sustituye
+una sesión humana. T-047 puede cerrarse técnicamente sin afirmar que la diversión está validada.
+
 ## Cómo se escribe una ficha
 
 Toda ficha tiene, en este orden:

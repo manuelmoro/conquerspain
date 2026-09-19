@@ -28,6 +28,13 @@ modelo pueda continuar con menos investigación. Las fichas nuevas están escrit
 Orden: **T-048 → T-049 → T-050 → T-051 → T-047 → T-060**. T-047 está **bloqueada** por esas
 correcciones; no retomarla saltándose sus dependencias ni dar la fase 2 por terminada.
 
+### Cuándo probará el usuario
+
+El usuario prefiere **esperar a la interfaz**, sin priorizar una consola. Se mantiene T-048 como
+siguiente tarea. [Checkpoints de jugabilidad](docs/plan/checkpoints-jugabilidad.md): J-01 tras
+T-082; J-02/J-03 antes de cerrar T-087; J-04 antes de cerrar T-106. Todos están pendientes de
+sesiones humanas reales. Hoy el banco solo ofrece simulaciones automáticas e informes.
+
 ### Dónde va T-047
 
 - Referencia de T-046 reproducida exactamente y dos experimentos de logística medidos y
@@ -99,6 +106,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 19-09-2026 | **Checkpoints de jugabilidad añadidos**: primera prueba humana tras T-082, ciclo completo y prueba sin ayuda antes de cerrar T-087, piloto de varios días antes de cerrar T-106. El usuario acepta esperar a la interfaz; no se crea tarea de consola ni se cambia T-048 como siguiente. |
 | 19-09-2026 | **Plan revisado por petición del usuario**: T-047 bloqueada, siguiente T-048. Cuatro fichas para métricas auditables, preparación pura de partidas, robots viables y ausencia equivalente; se elimina el ciclo con T-065. Referencia reproducida y dos ensayos de logística descartados, sin cambios de reglas. Evidencia y criterios en `docs/plan/bitacora-equilibrio.md`; no se declara terminado el equilibrio. |
 | 19-09-2026 | **T-046 hecha**: el banco de pruebas. Ocho robots (uno por casa) sobre tres piezas comunes —el tablero que filtra el mundo por lo que el jugador conoce, la fábrica de órdenes con los costes del núcleo y los impulsos con sus prioridades— más la vía propia de cada casa; cada robot elige su origen entre los tres sorteados como lo haría un jugador. Ejecutor determinista (mismo informe byte a byte), métricas por jugador y turno, informe con las cinco alertas de salud y `comparar`. **Una partida de 200 turnos con las ocho casas tarda unos 8 s (el criterio pedía menos de 2 minutos).** Seis de las ocho vías salen en el informe de referencia; la de la Mesta y la del mercader no, y el banco dice por qué: con porte 10 no se llega a ninguna feria ni a una segunda plaza. Cinco hallazgos anotados en T-046 §8 para T-047. 899 tests en verde |
 | 19-09-2026 | **T-045 hecha**: jugar sin estar. Plan de temporada y colas como campos de toda orden, con los estados `programada` y `en cola`, que no reservan hasta empezar. La cola de obras salta lo que no se puede pagar; la de recua va de una en una. Orden `cola` para reordenar. Mayordomo con ocho condiciones y cuatro acciones cerradas, su límite y su orden por prioridad, y marcado en la crónica. Rutas circulares que se detienen por bastimento o por tres fallos de precio, y que reponen en casa (`humo-02` recorre ahora su medio año entero). **Test de ausencia (§4.5): la misma estrategia cada turno y cada seis turnos da 175 y 175 de prestigio al turno 100, un 0,0 % de diferencia.** 840 tests en verde |
