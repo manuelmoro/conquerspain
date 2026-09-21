@@ -27,6 +27,8 @@ export interface Procedencia {
 export interface PartidaDelManifiesto {
   readonly semilla: string;
   readonly cadencia: number;
+  /** Comarcas del mapa que se jugo de verdad: desde T-049 cada partida lleva su recorte. */
+  readonly comarcas: number;
   readonly huellaFinal: string;
   readonly visitasCompletas: boolean;
 }
@@ -50,6 +52,7 @@ export interface Manifiesto {
     readonly escenario: string;
     readonly cadencias: readonly number[];
   };
+  /** El catalogo entero del que se recorta cada partida, no el mapa que se juega. */
   readonly mundo: { readonly version: string; readonly comarcas: number; readonly huella: string };
   /** Huella de las tablas completas: `VERSION_REGLAS` no distingue un ensayo de otro. */
   readonly reglas: { readonly huella: string };
@@ -67,6 +70,7 @@ export function componerManifiesto(
   const partidas = [...resultado.partidas, ...resultado.ausentes].map((p) => ({
     semilla: p.semilla,
     cadencia: p.cadencia,
+    comarcas: p.comarcasDelMapa.length,
     huellaFinal: p.huellaFinal,
     visitasCompletas: p.visitasCompletas,
   }));

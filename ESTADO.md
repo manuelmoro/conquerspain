@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 21 de septiembre de 2026 (T-048 hecha)
+**Última actualización:** 21 de septiembre de 2026 (T-048 y T-049 hechas)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
@@ -20,12 +20,16 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-049 · Preparación pura de partidas](docs/plan/T-049-preparacion-pura-de-partidas.md)**
+**[T-050 · Robots que ejecutan sus vías](docs/plan/T-050-robots-viables.md)**
 
-Orden: **T-049 → T-050 → T-051 → T-047 → T-060**. T-047 sigue **bloqueada**; no retomarla
-saltándose sus dependencias ni dar la fase 2 por terminada. Ahora el banco ya sabe decir qué
-criterios incumple y cuáles no puede evaluar: `npm run banco -- ... --evaluar` termina con código 2
-mientras quede uno, y la base contra la que comparar es `herramientas/banco/informes/T-048-1492.*`.
+Orden: **T-050 → T-051 → T-047 → T-060**. T-047 sigue **bloqueada**; no retomarla saltándose sus
+dependencias ni dar la fase 2 por terminada. La base contra la que comparar es
+`herramientas/banco/informes/T-049-1492.*` (mapa recortado, 208 comarcas por partida);
+`npm run banco -- ... --evaluar` termina con código 2 mientras quede un criterio sin cerrar.
+
+**Lo que T-049 deja en la mesa para T-050:** el recorte ya no puede bajar más la tierra sin usar
+(66 % de 208 comarcas), porque los ocho robots solo pisan unas 70 en 200 turnos; y la actividad
+empeora en el mapa recortado (canteros y hortelanos con 40–127 turnos sin proponer órdenes).
 
 ### Cuándo probará el usuario
 
@@ -41,8 +45,11 @@ sesiones humanas reales. Hoy el banco solo ofrece simulaciones automáticas e in
   reproducción y el repaso de los criterios. Evita repetir la investigación.
 - **T-048 ya está hecha**: el banco evalúa los nueve criterios por partida y casa, con procedencia.
   Sobre la base nueva, 46 filas cumplen, 87 incumplen y 24 no se pueden evaluar.
-- Falta: T-049 (recorte y arranque por origen), T-050 (robots que juegan su vía y diagnóstico de
-  decisión útil) y T-051 (planes equivalentes de ausencia). Después, base nueva y ajustes de T-047.
+- **T-049 ya está hecha**: mapa recortado por partida y arranque por comarca, compartidos con el
+  futuro servidor. Deja una cifra nueva para ajustar: el cantero termina su primera obra mayor en
+  T61–T72 y el objetivo es T80–T130.
+- Falta: T-050 (robots que juegan su vía y diagnóstico de decisión útil) y T-051 (planes
+  equivalentes de ausencia). Después, base nueva y ajustes de T-047.
 - Decisiones vigentes: eliminar la dependencia circular con T-065; mantener la semilla privada;
   distinguir validación estructural, ejecución legal y decisión útil; no confundir cadencia con
   plan equivalente.
@@ -65,7 +72,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `nucleo` y `mundo` implementados hasta T-046; equilibrio y correcciones T-049–T-051 pendientes; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `nucleo` y `mundo` implementados hasta T-049; equilibrio y correcciones T-050–T-051 pendientes; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046 y T-048), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -83,8 +90,10 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Banco de pruebas | `npm run banco`: partidas automáticas con un robot por casa (estrategias escritas a mano que solo miran la vista de su jugador, con un test que se lo comprueba manipulando mundo y estado), métricas por jugador y turno, e informe en Markdown con su evaluación, procedencia, ritmo, arbitraje trazado, órdenes por motivo y las cinco alertas antiguas como diagnóstico. Escenarios `normal` y `hambre`. `npm run banco:comparar` enseña qué cambia entre dos informes y avisa si no comparten procedencia. Informes de referencia: `2026-09-19-1492.md` (T-046) y **`T-048-1492.md`, la base nueva** |
 | Evaluación del equilibrio | `equilibrio.ts` juzga los nueve criterios de T-047 §5 por partida y casa: cumple, incumple o no evaluable, con observado sin redondear, unidad, ámbito y evidencia; los umbrales viven en `OBJETIVOS` y su huella va en el manifiesto. Un «cumple» que se apoya en una tarea sin terminar no cierra nada. `--evaluar` sale con código 2 mientras quede uno: hoy son 127 filas de 157 |
 | Procedencia de los informes | Manifiesto JSON con revisión, versiones de banco, métricas, robots y reglas, semillas, turnos, cadencias, escenario, huella del mundo, huella de **las tablas completas** y huella de los objetivos, más la huella final y la integridad de visitas de cada partida |
-| Alta de partida (provisional) | El banco reparte capitales por la península con el sorteo de orígenes de cada casa, la elección entre los tres y seis jornadas entre capitales; **no recorta el mapa ni ajusta el arranque al origen**: lo sustituye T-049; T-065 lo integra y persiste |
+| Alta de partida | `paquetes/nucleo/src/partidas/`: `prepararPartida` (recorte del mapa a los que juegan, con sal, hierro, pan, feria y pastos dentro, y tres tarjetas de origen por jugador separadas seis jornadas de las de los demás) y `fundarPartida` (estado del turno 1). Puro, sin E/S, y **el banco ya es solo un adaptador**: no hay dos altas. T-065 le pondrá encima la persistencia y la API |
+| Arranque por origen | `arranqueDe(comarca, casa, reglas)`: granjas hasta cubrir el año (95 %, o 70 % en las casas que viven de comprar), lonja donde la tierra no da y el mar sí, la primera pieza del oficio si la comarca la admite, y maravedís por el pan que falte. Cada nivel pasa por `impedimentoDeConstruir`; ningún edificio regalado come lo que el arranque no entrega. La viabilidad se prueba con una muestra fija: un origen por perfil y casa, un año entero **sin dar una sola orden** |
 | Tablas del juego | `TABLAS_DEL_JUEGO` en `nucleo/src/datos/index.ts`: las tablas reales montadas (con las casas de verdad), más `datos/estaciones.ts`. Hasta ahora solo existían montadas en las pruebas |
+| Mapa jugado | Cada partida se juega en un recorte del catálogo: 26 comarcas por jugador (unas 208 con ocho casas), conexo y con los identificadores y la geografía del mundo original |
 | Mapa generado | `npm run atlas` produce `mundo.v1.json` (**403 comarcas, ninguna provisional**, 1143 tramos, grafo conexo) con la **capa histórica**: 24 puertos, 14 vados, 4 calzadas romanas y las 9 cañadas reales byte a byte igual en cada ejecución; `--comprobar` entra en `npm run verificar` |
 
 La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
@@ -107,6 +116,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 21-09-2026 | **T-049 hecha**: el mapa que se juega y con qué se empieza. Recorte conexo por partida (403 → 208 comarcas con ocho casas) con sal, hierro, pan, feria y los dos pastos dentro, crecido desde un centro sorteado entre los orígenes de la casa que menos sitio tiene; tres tarjetas de origen por jugador, separadas seis jornadas de las de cualquier otro, con el orden de elección por escasez y no por llegada; arranque calculado con la comarca delante, con su prueba de viabilidad de un año **sin dar una sola orden** para un origen de cada perfil y casa. El banco pasa a ser un adaptador del mismo contrato que usará el servidor. Tres hallazgos: quitarle las granjas a quien «vive de comprar» lo condena, una carbonera regalada deja al ferrón sin madera para su ferrería, y el recorte **no** puede cerrar el criterio de tierra (hacen falta robots que anden, T-050). 978 tests en verde |
 | 21-09-2026 | **T-048 hecha**: el banco ya dice la verdad. `equilibrio.ts` juzga los nueve criterios de T-047 por partida y casa (cumple / incumple / no evaluable), con los umbrales en una sola tabla y sus bordes probados uno a uno; manifiesto de procedencia con huella de las tablas completas, del mundo y de los propios objetivos; rachas de precio que se rompen cuando la plaza cierra; visitas de paso contadas (y avisadas si no se pueden reconstruir); arbitraje seguido carga a carga, que destapa **cero negocios reales** en la campaña de referencia; y órdenes propuestas, de alta, terminadas, canceladas y en espera con su motivo. La base nueva `T-048-1492` coincide con lo que la bitácora había leído a mano: dominio T34/T33/T32 y primera obra mayor T88. **Ninguna tabla del juego cambia.** 948 tests en verde |
 | 19-09-2026 | **Checkpoints de jugabilidad añadidos**: primera prueba humana tras T-082, ciclo completo y prueba sin ayuda antes de cerrar T-087, piloto de varios días antes de cerrar T-106. El usuario acepta esperar a la interfaz; no se crea tarea de consola ni se cambia T-048 como siguiente. |
 | 19-09-2026 | **Plan revisado por petición del usuario**: T-047 bloqueada, siguiente T-048. Cuatro fichas para métricas auditables, preparación pura de partidas, robots viables y ausencia equivalente; se elimina el ciclo con T-065. Referencia reproducida y dos ensayos de logística descartados, sin cambios de reglas. Evidencia y criterios en `docs/plan/bitacora-equilibrio.md`; no se declara terminado el equilibrio. |
@@ -160,7 +170,9 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Determinismo roto sin darse cuenta | Tests de reproducción con huella de estado desde T-002 |
 | ~~El atlas se planta si el mapa pasa de 380 comarcas~~ **resuelto el 18-09-2026**: la horquilla es 300–430 mientras quede relleno y 320–380 cuando el catálogo esté completo | Si al terminar T-015 el mapa se pasa de 380, se recortan comarcas en las regiones más densas, no se sube el límite |
 | El mercader no arbitra en la referencia; la liquidez de menores podría borrar oportunidades, pero no se ha aislado del acceso a plazas y del plan del robot | **Medido (21-09-2026):** con la traza de T-048 no hay **ni un** negocio de arbitraje en toda la campaña, en ninguna casa; lo que se vende sin haberlo comprado es producción propia. Falta aislar la causa: T-050 prueba el plan y el acceso a plazas; después, ensayar liquidez, margen y regresión en T-047 |
-| **Nuevo (19-09-2026):** el porte base de 10 cargas con 2 de pan por jornada limita los viajes; la Mesta no vende lana en feria en la referencia, pero no se ha aislado la causa | Los ensayos de porte no bastaron: T-049/T-050 revisan acceso y viajes, antes de ajustar T-047 |
-| **Nuevo (19-09-2026):** hay orígenes condenados (`labor 1`): dos granjas no alimentan a su población y los seis solares no dan para la cadena de la casa y el mercado | T-049 ajusta y prueba el arranque sin servidor; T-065 persiste el resultado |
+| **Nuevo (19-09-2026):** el porte base de 10 cargas con 2 de pan por jornada limita los viajes; la Mesta no vende lana en feria en la referencia, pero no se ha aislado la causa | Los ensayos de porte no bastaron. T-049 acercó las cosas (el mapa jugado es la mitad), pero la causa sigue sin aislar: la revisa T-050 antes de ajustar T-047 |
+| **Nuevo (21-09-2026):** el recorte no puede cerrar el criterio de tierra: ocho capitales a seis jornadas necesitan unas 200 comarcas y los robots solo pisan unas 70 | No se recorta más ni se mueve el umbral: T-050 tiene que hacer que los robots anden; si aun así no llega, se decide el caso expresamente en T-047 |
+| **Nuevo (21-09-2026):** el cantero termina su primera obra mayor en T61–T72 y el objetivo es T80–T130, porque ahora empieza con su cantera | Es una cifra de equilibrio, no un fallo del alta: se ajusta en T-047 con el resto de las tablas |
+| ~~Hay orígenes condenados (`labor 1`)~~ **resuelto en T-049**: el arranque se calcula con la comarca delante y la muestra fija (un origen por perfil y casa) aguanta el primer año sin dar una sola orden | Queda que T-065 persista el resultado. Si mañana se añade una casa o un edificio, la prueba de viabilidad lo vuelve a medir |
 | ~~Los informes no comprueban todos los criterios~~ **resuelto en T-048**: los nueve salen con su veredicto, su unidad y su ámbito, y un «no evaluable» pesa igual que un incumplimiento | Queda la otra mitad: los robots no demuestran planes equivalentes de ausencia (T-050 y T-051). Un test preparado o un semáforo verde no cierran el equilibrio |
 | ~~Los nombres y las notas del catálogo en ASCII~~ **resuelto en T-014 y T-016** | Una guarda en `catalogo.test.ts` impide volver atrás |

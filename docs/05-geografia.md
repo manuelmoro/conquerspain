@@ -156,6 +156,38 @@ cierran contratos entre jugadores.
   queda guardado en la partida: recargar no vuelve a sortear.
 - El origen determina la capital, y la capital da nombre al dominio en la crónica.
 
+### 5.7.1 El recorte del mapa
+
+Una partida no se juega en la península entera: se recorta un trozo del tamaño de los que juegan
+(ficha T-049). El recorte se hace **antes de jugar**, con la semilla de la partida, y nunca mirando
+por dónde anduvo nadie.
+
+- Es **conexo** y conserva identificadores, geografía, tramos, puertos, cañadas y ferias: una
+  comarca recortada es la misma comarca, no una copia distinta.
+- Tiene que traer dentro **sal, hierro, tierra de pan y al menos una feria**, y los dos pastos
+  —el de verano y el de invierno— cuando juegue una casa que busca su origen en el pasto.
+- Crece desde un centro sorteado entre los orígenes de la casa que menos sitio tiene: recortar
+  lejos de los seis orígenes de los canteros sería dejarlos fuera de su propio juego.
+- Las distancias se miden en **jornadas base**, sin estación ni obras: el recorte no puede depender
+  del mes en que se cree la partida.
+- Si un recorte no cumple, se reintenta con otro centro y un objetivo mayor, un número fijo de
+  veces; después se rechaza con un error que dice qué faltó. Nunca se recorta incumpliendo.
+
+El tamaño está medido, no supuesto: **26 comarcas por jugador** dejan unas 210 para ocho casas, que
+es lo que hace falta para que las ocho tengan tres ofertas separadas seis jornadas.
+
+### 5.7.2 Las tres tarjetas y la separación
+
+Las tres ofertas de un jugador están a **seis jornadas o más de las de cualquier otro**, así que
+puede quedarse con cualquiera de las tres sin dejar a nadie sin sitio: entre dos casas siempre hay
+seis jornadas de tierra de nadie. Elige primero quien menos donde elegir tiene, y los empates los
+deshace la semilla, nunca el orden en que llegaron las peticiones.
+
+Si en el recorte no caben tres ofertas para alguien, se le dan las que haya **y se dice**; si no
+cabe ninguna, la partida no se prepara y el error lo explica. Cada tarjeta enseña el perfil de la
+comarca, su ventaja y su limitación en términos de la casa: nada que el jugador no pueda ver en el
+mapa antes de empezar.
+
 ## 5.8 Generación del mapa (proceso reproducible)
 
 `herramientas/atlas/` contiene el proceso completo, ejecutable con un solo comando:

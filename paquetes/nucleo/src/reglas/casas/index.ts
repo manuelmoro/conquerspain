@@ -12,11 +12,13 @@ import { RECURSOS_AGOTABLES } from '../../tipos/estado.ts';
 import type { IdJugador } from '../../tipos/ids.ts';
 import { RECURSOS } from '../../tipos/recursos.ts';
 import type {
+  Casa,
   DatosTradicion,
   Modificadores,
   Permisos,
   Prohibiciones,
   TablasDeReglas,
+  TipoEdificio,
 } from '../../tipos/reglas.ts';
 import { RONDAS_DE_TRADICION, TIPOS_DE_EDIFICIO, TIPOS_DE_OBRA_MAYOR } from '../../tipos/reglas.ts';
 import { MIL, multiplicarFactores } from '../../utiles/enteros.ts';
@@ -219,3 +221,24 @@ export function prohibicionesDe(
 
 /** Motivo con el que se cancela una orden que la casa del jugador tiene prohibida. */
 export const PROHIBIDO_POR_LA_CASA = 'prohibido-por-la-casa';
+
+/**
+ * Lo que trae la casa de salida, sin tradiciones: lo que consulta el alta (ficha T-049 §4.5).
+ * Tambien el alta lee la tabla de casas por aqui, no por su cuenta.
+ */
+export function modificadoresDeCasa(casa: Casa, reglas: TablasDeReglas): Modificadores {
+  return reglas.casas[casa].modificadores;
+}
+
+export function permisosDeCasa(casa: Casa, reglas: TablasDeReglas): Permisos {
+  return reglas.casas[casa].permisos;
+}
+
+/** Como empieza la casa: su primera pieza de oficio y si su pan viene del mercado. */
+export function arranqueDeCasa(
+  casa: Casa,
+  reglas: TablasDeReglas,
+): { readonly edificioDeOrigen: TipoEdificio | null; readonly compraElPan: boolean } {
+  const datos = reglas.casas[casa];
+  return { edificioDeOrigen: datos.edificioDeOrigen, compraElPan: datos.compraElPan };
+}

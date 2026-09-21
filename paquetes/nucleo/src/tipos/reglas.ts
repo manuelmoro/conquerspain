@@ -7,8 +7,9 @@ import type {
   QueDeEfecto,
   RecursoAgotable,
 } from './estado.ts';
-import type { Potencial, Rasgo, Terreno, VolumenFeria } from './mundo.ts';
+import type { NivelPotencial, Potencial, Rasgo, Terreno, VolumenFeria } from './mundo.ts';
 import type { Recurso, Recursos } from './recursos.ts';
+import type { Milesimas } from '../utiles/enteros.ts';
 
 /** Version de las reglas. Sube con cada cambio que altere resultados. */
 export const VERSION_REGLAS = 1;
@@ -231,6 +232,16 @@ export interface DatosCasa {
   readonly prohibiciones: Prohibiciones;
   /** Comarcas que puede ofrecerle el sorteo de origen: basta con cumplir un criterio. */
   readonly origenes: readonly CriterioDeOrigen[];
+  /**
+   * La primera pieza de su oficio, que el alta le levanta en la capital si la comarca la admite;
+   * null si su oficio no empieza por un edificio (ficha T-049 §4.5).
+   */
+  readonly edificioDeOrigen: TipoEdificio | null;
+  /**
+   * Su diseno es comprar el pan, no cultivarlo: el arranque no le exige alimentarse de su tierra
+   * y le da maravedis en su lugar (docs/04 §4.1).
+   */
+  readonly compraElPan: boolean;
 }
 
 /** Las tres rondas de eleccion, en el orden en que suelen abrirse (docs/04 §4.3). */
@@ -648,7 +659,56 @@ export interface DatosHito {
 /** Con que empieza una casa en su comarca de origen (lo usa el alta de partida, T-065). */
 export interface DatosArranque {
   readonly almacen: Recursos;
+  /** Lo que se levanta en toda capital antes de ajustar nada a su comarca: el suelo del arranque. */
   readonly edificiosDeOrigen: Readonly<Partial<Record<TipoEdificio, number>>>;
+  readonly ajuste: DatosAjusteDeArranque;
+  readonly recorte: DatosRecorte;
+}
+
+/** Como se ajusta el arranque a la comarca de origen y a la casa (ficha T-049 §4.5). */
+export interface DatosAjusteDeArranque {
+  /** False deja el arranque plano de `edificiosDeOrigen`: asi son los escenarios de hambre. */
+  readonly activo: boolean;
+  /** Niveles de granja que se pueden llegar a levantar para dar de comer a la capital. */
+  readonly granjasMaximas: number;
+  /**
+   * Parte del pan del anyo que la capital tiene que producir. No se llena de granjas por cubrir el
+   * ultimo cinco por ciento: ese solar vale mas para el oficio, y el resto se compra.
+   */
+  readonly coberturaMinimaMil: Milesimas;
+  /**
+   * Lo mismo para las casas que viven de comprar el pan: siembran menos y guardan el solar para su
+   * oficio, pero tampoco empiezan sin nada que llevarse a la boca.
+   */
+  readonly coberturaDeCompradorMil: Milesimas;
+  /** Con esta labor o menos, y bastante pesca, la capital vive del mar y no del campo. */
+  readonly laborDePescador: NivelPotencial;
+  readonly pescaDeLonja: NivelPotencial;
+  /** Sal del almacen por cada nivel de lonja: sin sal no hay salazon. */
+  readonly salPorLonja: number;
+  /** Tope de los maravedis del arranque, por mucho pan que falte. */
+  readonly maravedisMaximos: number;
+}
+
+/** Como se recorta el mapa a los participantes de una partida (ficha T-049 §4.2). */
+export interface DatosRecorte {
+  readonly comarcasPorJugador: number;
+  readonly minimoDeComarcas: number;
+  /** Jornadas base que tiene que haber entre dos capitales de jugadores distintos. */
+  readonly jornadasEntreCapitales: number;
+  readonly intentosMaximos: number;
+  /** Cuanto crece el objetivo en cada reintento. */
+  readonly crecimientoPorIntentoMil: Milesimas;
+  /** Niveles que hacen que una comarca cuente como fuente de cada cosa. */
+  readonly salMinima: NivelPotencial;
+  readonly hierroMinimo: NivelPotencial;
+  readonly laborAlta: NivelPotencial;
+  readonly pastoAlto: NivelPotencial;
+  /** Comarcas de labor alta y ferias que tiene que haber en el recorte. */
+  readonly laborAltaMinima: number;
+  readonly feriasMinimas: number;
+  /** Origenes posibles que conserva cada casa dentro del recorte. */
+  readonly origenesPorCasa: number;
 }
 
 /** Los acontecimientos del catalogo (docs/01 §1.3, docs/02 §2.4.5; ficha T-039). */

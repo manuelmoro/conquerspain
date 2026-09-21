@@ -255,6 +255,8 @@ export function tablasDeEjemplo(): Registro {
         cobrarPortazgo: false,
       },
       origenes: [],
+      edificioDeOrigen: null,
+      compraElPan: false,
     };
   }
 

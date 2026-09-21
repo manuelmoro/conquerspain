@@ -20,7 +20,9 @@ import type {
   DatosAcontecimientos,
   DatosSorteoDeAcontecimientos,
   DuracionDeAcontecimiento,
+  DatosAjusteDeArranque,
   DatosArranque,
+  DatosRecorte,
   DatosCasa,
   DatosCometidos,
   DatosObraMayor,
@@ -59,7 +61,13 @@ import {
   VERSION_REGLAS,
 } from '../tipos/reglas.ts';
 import { comparar } from '../utiles/orden.ts';
-import { efectoDeAcontecimiento, milesimas, recursos, recursosParciales } from './comunes.ts';
+import {
+  efectoDeAcontecimiento,
+  milesimas,
+  nivelPotencial,
+  recursos,
+  recursosParciales,
+} from './comunes.ts';
 import type { CamposDe, ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
   booleano,
@@ -178,6 +186,8 @@ const validarCasa: Validador<DatosCasa> = objeto<DatosCasa>({
   permisos: validarPermisos,
   prohibiciones: validarProhibiciones,
   origenes: lista(validarCriterioDeOrigen, { maximo: 8 }),
+  edificioDeOrigen: oNulo(unoDe(TIPOS_DE_EDIFICIO)),
+  compraElPan: booleano(),
 });
 
 const validarTradicion: Validador<DatosTradicion> = objeto<DatosTradicion>({
@@ -514,9 +524,37 @@ const validarConsumo: Validador<DatosConsumo> = objeto<DatosConsumo>({
   turnosDeAvisoDeHambre: entero({ minimo: 1, maximo: 24 }),
 });
 
+const validarAjusteDeArranque: Validador<DatosAjusteDeArranque> = objeto<DatosAjusteDeArranque>({
+  activo: booleano(),
+  granjasMaximas: entero({ minimo: 0, maximo: 10 }),
+  coberturaMinimaMil: milesimas(0, 1000),
+  coberturaDeCompradorMil: milesimas(0, 1000),
+  laborDePescador: nivelPotencial(),
+  pescaDeLonja: nivelPotencial(),
+  salPorLonja: enteroNoNegativo(100),
+  maravedisMaximos: enteroNoNegativo(10_000),
+});
+
+const validarRecorte: Validador<DatosRecorte> = objeto<DatosRecorte>({
+  comarcasPorJugador: entero({ minimo: 1, maximo: 200 }),
+  minimoDeComarcas: entero({ minimo: 1, maximo: 1000 }),
+  jornadasEntreCapitales: entero({ minimo: 0, maximo: 60 }),
+  intentosMaximos: entero({ minimo: 1, maximo: 50 }),
+  crecimientoPorIntentoMil: milesimas(1000, 5000),
+  salMinima: nivelPotencial(),
+  hierroMinimo: nivelPotencial(),
+  laborAlta: nivelPotencial(),
+  pastoAlto: nivelPotencial(),
+  laborAltaMinima: enteroNoNegativo(100),
+  feriasMinimas: enteroNoNegativo(100),
+  origenesPorCasa: entero({ minimo: 1, maximo: 10 }),
+});
+
 const validarArranque: Validador<DatosArranque> = objeto<DatosArranque>({
   almacen: recursos(),
   edificiosDeOrigen: registro(entero({ minimo: 1, maximo: 10 }), unoDe(TIPOS_DE_EDIFICIO)),
+  ajuste: validarAjusteDeArranque,
+  recorte: validarRecorte,
 });
 
 const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({

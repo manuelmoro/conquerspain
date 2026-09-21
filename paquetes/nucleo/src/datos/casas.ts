@@ -11,6 +11,7 @@ import type {
   Modificadores,
   Permisos,
   Prohibiciones,
+  TipoEdificio,
 } from '../tipos/reglas.ts';
 
 /** Una casa sin privilegios ni limites: la base sobre la que cada casa cambia lo suyo. */
@@ -81,6 +82,10 @@ function casa(datos: {
   readonly permisos?: Partial<Permisos>;
   readonly prohibiciones?: Partial<Prohibiciones>;
   readonly origenes: readonly CriterioDeOrigen[];
+  /** La primera pieza de su oficio en la capital (ficha T-049 §4.5). */
+  readonly edificioDeOrigen: TipoEdificio | null;
+  /** Su pan viene del mercado, no de su tierra. */
+  readonly compraElPan?: boolean;
 }): DatosCasa {
   return {
     nombre: datos.nombre,
@@ -91,6 +96,8 @@ function casa(datos: {
     permisos: { ...SIN_PERMISOS, ...datos.permisos },
     prohibiciones: { ...SIN_PROHIBICIONES, ...datos.prohibiciones },
     origenes: datos.origenes,
+    edificioDeOrigen: datos.edificioDeOrigen,
+    compraElPan: datos.compraElPan ?? false,
   };
 }
 
@@ -104,6 +111,9 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     permisos: { pasoFrancoPorCanyada: true },
     prohibiciones: { roturar: true },
     origenes: [origen({ potenciales: { pasto: 3 } })],
+    // La majada es el corral del ganado, y su pan de 700 milesimas dice que lo suyo es comprarlo.
+    edificioDeOrigen: 'majada',
+    compraElPan: true,
   }),
   ferrones: casa({
     nombre: 'Ferrones de Vizcaya',
@@ -122,6 +132,10 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
       origen({ potenciales: { hierro: 1 } }),
       origen({ vecinaConPotencial: { potencial: 'hierro', nivel: 2 } }),
     ],
+    // Nada: la ferreria necesita una carbonera, y una carbonera regalada se come la madera del
+    // arranque (4 por turno) antes de que haya con que levantar la ferreria. Su primera decision
+    // es la cadena entera, y para eso empieza con madera y maravedis.
+    edificioDeOrigen: null,
   }),
   canteros: casa({
     nombre: 'Canteros trasmeranos',
@@ -138,6 +152,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     },
     permisos: { obraEnComarcaAjena: true },
     origenes: [origen({ potenciales: { piedra: 3 } })],
+    edificioDeOrigen: 'cantera',
   }),
   mercaderes: casa({
     nombre: 'Mercaderes de feria',
@@ -148,6 +163,8 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     modificadores: { produccionMil: { pan: 750 }, solaresExtra: -1 },
     permisos: { letraDeCambio: true, corresponsales: true },
     origenes: [origen({ rasgos: ['villa-de-feria'] }), origen({ rasgos: ['puerto-de-mar'] })],
+    edificioDeOrigen: 'mercado',
+    compraElPan: true,
   }),
   monjes: casa({
     nombre: 'Monjes repobladores',
@@ -163,6 +180,8 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     permisos: { cartaPuebla: true },
     prohibiciones: { cargaFiscalDura: true, cobrarPortazgo: true },
     origenes: [origen({ potenciales: { labor: 4 } })],
+    // Repoblar es traer gente, y la gente necesita donde vivir.
+    edificioDeOrigen: 'casas',
   }),
   salineros: casa({
     nombre: 'Salineros y almadraberos',
@@ -183,6 +202,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
       },
     },
     origenes: [origen({ potenciales: { sal: 2 } }), origen({ potenciales: { pesca: 3 } })],
+    edificioDeOrigen: 'salina',
   }),
   arrieros: casa({
     nombre: 'Arrieros maragatos',
@@ -198,6 +218,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     permisos: { cobrarPortazgo: true },
     prohibiciones: { catedral: true },
     origenes: [origen({ rasgos: ['camino-de-santiago', 'calzada-romana'] })],
+    edificioDeOrigen: 'venta',
   }),
   hortelanos: casa({
     nombre: 'Hortelanos de la vega',
@@ -211,5 +232,6 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     },
     permisos: { acequiaMenor: true },
     origenes: [origen({ terrenos: ['vega'] }), origen({ rasgos: ['vega-fluvial'] })],
+    edificioDeOrigen: 'huerta',
   }),
 };

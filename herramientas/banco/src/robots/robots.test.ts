@@ -22,7 +22,7 @@ import type {
 } from '@conquer/nucleo';
 
 import { jugarTurno } from '../ejecutar.ts';
-import { mundoPeninsula, partidaInicial } from '../partida.ts';
+import { altaDelBanco } from '../partida.ts';
 import type { Robot } from './index.ts';
 import { origenPreferido, robotDe } from './index.ts';
 import { Pedidos } from './pedidos.ts';
@@ -36,8 +36,14 @@ let mundo: Mundo;
 let estado: EstadoPartida;
 
 beforeAll(() => {
-  mundo = mundoPeninsula();
-  estado = partidaInicial('1492', CASAS, REGLAS, mundo, origenPreferido);
+  const alta = altaDelBanco({
+    semilla: '1492',
+    casas: CASAS,
+    reglas: REGLAS,
+    preferencia: origenPreferido,
+  });
+  mundo = alta.mundo;
+  estado = alta.estado;
   const robots = CASAS.map((casa) => robotDe(casa));
   for (let i = 0; i < TURNOS; i += 1) estado = jugarTurno(estado, robots, mundo, REGLAS).estado;
 }, 60_000);

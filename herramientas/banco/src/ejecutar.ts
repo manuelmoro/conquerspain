@@ -24,6 +24,7 @@ import {
 import type {
   Casa,
   EstadoPartida,
+  IdComarca,
   IdJugador,
   Mundo,
   Orden,
@@ -42,7 +43,7 @@ import {
 import { componerCsv, componerInforme, componerSerieCsv } from './informe.ts';
 import type { MetricasDePartida } from './metricas.ts';
 import { Registro } from './metricas.ts';
-import { mundoPeninsula, partidaInicial } from './partida.ts';
+import { altaDelBanco, mundoPeninsula } from './partida.ts';
 import { componerManifiesto, textoDeManifiesto } from './procedencia.ts';
 import type { Robot } from './robots/index.ts';
 import { origenPreferido, robotDe } from './robots/index.ts';
@@ -63,6 +64,10 @@ export interface OpcionesDePartida {
   readonly mundo: Mundo;
   /** Directorio donde guardar el estado cada 10 turnos; null para no guardarlo. */
   readonly estados: string | null;
+  /** Recortar el mapa a los que juegan (T-049); por defecto, si. */
+  readonly recortar?: boolean;
+  /** Origenes fijados por jugador, para los escenarios de prueba. */
+  readonly origenesFijos?: Readonly<Record<string, IdComarca>>;
 }
 
 /** Un robot que da una orden que el servidor no aceptaria es un robot roto: se para todo. */
@@ -110,10 +115,23 @@ export function jugarTurno(
   return { estado: resultado.estado, sucesos: resultado.sucesos, decisiones };
 }
 
-/** Juega una partida entera y devuelve sus metricas. */
+/**
+ * Juega una partida entera y devuelve sus metricas. El mapa lo recorta el preparador de T-049: el
+ * mundo de las opciones es el catalogo entero, y la partida se juega en el trozo que le toque.
+ */
 export function jugarPartida(opciones: OpcionesDePartida): MetricasDePartida {
-  const { semilla, turnos, casas, cadencia, reglas, mundo } = opciones;
-  let estado: EstadoPartida = partidaInicial(semilla, casas, reglas, mundo, origenPreferido);
+  const { semilla, turnos, casas, cadencia, reglas } = opciones;
+  const alta = altaDelBanco({
+    semilla,
+    casas,
+    reglas,
+    mundo: opciones.mundo,
+    preferencia: origenPreferido,
+    recortar: opciones.recortar,
+    origenesFijos: opciones.origenesFijos,
+  });
+  const mundo = alta.mundo;
+  let estado: EstadoPartida = alta.estado;
   const robots = casas.map((casa) => robotDe(casa, cadencia));
   const registro = new Registro(reglas, mundo, cadencia);
   registro.empezar(estado);

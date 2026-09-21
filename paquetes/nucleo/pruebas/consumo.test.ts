@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { crearContexto } from '../src/contexto.ts';
-import { ARRANQUE } from '../src/datos/arranque.ts';
+import { arranqueDe } from '../src/partidas/arranque.ts';
 import { faseConsumo } from '../src/fases/03-consumo.ts';
 import {
   costesDeAdministracion,
@@ -427,10 +427,14 @@ describe('el aviso de hambre', () => {
 
 describe('un anyo con la economia de arranque', () => {
   it('llena la reserva en verano y la vacia en invierno sin llegar a la escasez', () => {
-    // Un origen tipico del catalogo: labor 3 y 75 vecinos (la mediana de los origenes).
+    // Un origen tipico del catalogo: labor 3 y 75 vecinos (la mediana de los origenes). Desde
+    // T-049 el arranque no es plano: se le pide al preparador lo que le tocaria a esa comarca.
+    const geografia = mundo.comarcas['prueba-llano'];
+    if (geografia === undefined) throw new Error('falta la comarca de prueba');
+    const arranque = arranqueDe({ ...geografia, poblacionInicial: 75 }, 'mesta', reglas);
     let estado = escenario({
-      almacen: ARRANQUE.almacen,
-      llano: { poblacion: 75, edificios: { ...ARRANQUE.edificiosDeOrigen } },
+      almacen: arranque.almacen,
+      llano: { poblacion: 75, edificios: { ...arranque.edificios } },
     });
     const reserva: number[] = [];
     const avisos: string[] = [];

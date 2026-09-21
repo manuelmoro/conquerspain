@@ -20,7 +20,7 @@ import { jugarPartida, jugarTurno } from './ejecutar.ts';
 import { PRUEBA_DE_VIA } from './informe.ts';
 import type { MetricasDePartida } from './metricas.ts';
 import { Registro, resumir } from './metricas.ts';
-import { mundoPeninsula, partidaInicial } from './partida.ts';
+import { altaDelBanco, mundoPeninsula } from './partida.ts';
 import { origenPreferido, robotDe } from './robots/index.ts';
 
 /** Las cifras de un resumen con los nombres que usa `PRUEBA_DE_VIA`. */
@@ -43,34 +43,41 @@ function cifrasDe(partida: MetricasDePartida): Record<string, number> {
   return cifras;
 }
 
-function sola(casa: Casa, semilla: string, turnos: number): MetricasDePartida {
+/**
+ * La casa sola en la peninsula entera, **sin recortar** y en la comarca que se le diga (T-049):
+ * esto prueba que su via es posible donde su via tiene sentido, no que el sorteo se la ponga a
+ * tiro. Que el recorte reparta buenos origenes lo miden los informes del banco.
+ */
+function sola(casa: Casa, origen: string, turnos: number): MetricasDePartida {
   return jugarPartida({
-    semilla,
+    semilla: '1492',
     turnos,
     casas: [casa],
     cadencia: 1,
     reglas: TABLAS_DEL_JUEGO,
     mundo: mundoPeninsula(),
     estados: null,
+    recortar: false,
+    origenesFijos: { [casa]: origen as IdComarca },
   });
 }
 
-/** Casa, semilla (que fija su origen) y turnos para que su via salga. */
+/** Casa, comarca de origen y turnos para que su via salga. */
 const ESCENARIOS: readonly (readonly [Casa, string, number, string])[] = [
-  ['mesta', 'mesta-26', 72, 'en Zafra, con su feria en casa'],
-  ['ferrones', '1492', 96, 'en el señorío de Molina'],
-  ['canteros', '1492', 120, 'en la Tierra de Toledo'],
-  ['monjes', '1492', 72, 'en Évora'],
-  ['salineros', '1492', 72, 'en los Valles Alaveses, con la sal de Añana'],
-  ['arrieros', '1492', 48, 'en El Bierzo'],
-  ['hortelanos', '1492', 48, 'en la Vega de Granada'],
+  ['mesta', 'zafra-rio-bodion', 72, 'en Zafra, con su feria en casa'],
+  ['ferrones', 'senyorio-de-molina', 96, 'en el señorío de Molina'],
+  ['canteros', 'tierra-de-toledo', 120, 'en la Tierra de Toledo'],
+  ['monjes', 'evora', 72, 'en Évora'],
+  ['salineros', 'valles-alaveses', 72, 'en los Valles Alaveses, con la sal de Añana'],
+  ['arrieros', 'o-bierzo', 48, 'en El Bierzo'],
+  ['hortelanos', 'vega-de-granada', 48, 'en la Vega de Granada'],
 ];
 
 describe('cada robot juega su vía', () => {
   it.each(ESCENARIOS)(
-    '%s (semilla %s, %i turnos, %s)',
-    (casa, semilla, turnos) => {
-      const cifras = cifrasDe(sola(casa, semilla, turnos));
+    '%s (origen %s, %i turnos, %s)',
+    (casa, origen, turnos) => {
+      const cifras = cifrasDe(sola(casa, origen, turnos));
       expect(PRUEBA_DE_VIA[casa].cumple(cifras), JSON.stringify(cifras)).toBe(true);
     },
     60_000,
@@ -80,9 +87,16 @@ describe('cada robot juega su vía', () => {
     // En solitario los precios no se mueven (nadie mas comercia) y los mercaderes menores igualan
     // cualquier diferencia en pocos turnos. Se le dan dos plazas propias y una carestia de sal en la
     // vecina, que la mantiene cara: la diferencia dura y el mercader tiene que aprovecharla.
-    const mundo = mundoPeninsula();
     const reglas = TABLAS_DEL_JUEGO;
-    const inicial = partidaInicial('1492', ['mercaderes'], reglas, mundo, origenPreferido);
+    const alta = altaDelBanco({
+      semilla: '1492',
+      casas: ['mercaderes'],
+      reglas,
+      preferencia: origenPreferido,
+      recortar: false,
+    });
+    const mundo = alta.mundo;
+    const inicial = alta.estado;
     const yo = 'mercaderes' as IdJugador;
     const capital = inicial.jugadores[yo]?.capital as IdComarca;
     const vecina = mundo.vecinos[capital]?.[0] as IdComarca;

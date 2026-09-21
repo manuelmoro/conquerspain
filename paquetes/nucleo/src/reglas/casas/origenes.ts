@@ -45,18 +45,17 @@ export function perfilDe(comarca: ComarcaMundo): Potencial {
 }
 
 /**
- * Tres origenes de perfiles distintos para la casa. Se eligen primero de perfil distinto, si no
- * bastan de otra region y, si tampoco, las que haya; nunca se repite una comarca.
+ * Tres origenes de perfiles distintos de entre las candidatas dadas. Se eligen primero de perfil
+ * distinto, si no bastan de otra region y, si tampoco, las que haya; nunca se repite una comarca.
+ * Devuelve menos de `cuantos` solo si no hay mas candidatas.
  */
-export function sortearOrigenes(
-  mundo: Mundo,
+export function elegirOrigenes(
+  candidatas: readonly ComarcaMundo[],
   casa: Casa,
   semilla: string,
-  reglas: TablasDeReglas,
   cuantos = 3,
 ): IdComarca[] {
-  const posibles = origenesPosibles(mundo, casa, reglas);
-  const barajadas = azarDe(semilla, 0, 'origen', casa).barajar(posibles);
+  const barajadas = azarDe(semilla, 0, 'origen', casa).barajar(candidatas);
   const elegidas: ComarcaMundo[] = [];
   const cabe = (comarca: ComarcaMundo): boolean => !elegidas.includes(comarca);
   const pasadas: ((candidata: ComarcaMundo) => boolean)[] = [
@@ -71,4 +70,15 @@ export function sortearOrigenes(
     }
   }
   return elegidas.map((comarca) => comarca.id);
+}
+
+/** Tres origenes de perfiles distintos para la casa, de entre todos los que le sirven. */
+export function sortearOrigenes(
+  mundo: Mundo,
+  casa: Casa,
+  semilla: string,
+  reglas: TablasDeReglas,
+  cuantos = 3,
+): IdComarca[] {
+  return elegirOrigenes(origenesPosibles(mundo, casa, reglas), casa, semilla, cuantos);
 }

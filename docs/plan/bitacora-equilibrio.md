@@ -179,3 +179,51 @@ ausencia, por T-051): no cierran su criterio.
 «No evaluable» sigue siendo el estado de las decisiones útiles (T-050), y las filas de escasez,
 tierra y ausencia que cumplen lo hacen apoyadas en precondiciones de T-049, T-050 y T-051. Por eso
 `--evaluar` devuelve 2 y **el equilibrio sigue abierto**, como estaba previsto en T-048 §7.
+
+## 21-09-2026 · T-049: el mapa que se juega y con qué se empieza
+
+**Encargo:** un recorte y un arranque reproducibles, compartidos por banco y servidor, con orígenes
+viables para cada casa. **Resultado:** hecho. Cambia el escenario de partida, no el balance de
+ninguna casa: las tablas de producción, mercado, prestigio y movimiento están intactas.
+
+### Base nueva
+
+| Dato | Valor |
+|---|---|
+| Informe | [`herramientas/banco/informes/T-049-1492.md`](../../herramientas/banco/informes/T-049-1492.md) |
+| Revisión | `fbf7a33+T-049` (el cierre de T-048 más esta tarea) |
+| Mapa jugado | **208 comarcas** por partida, recortadas de las 403 del catálogo |
+| Veredicto | 42 filas cumplen, 91 incumplen, 24 no evaluables (127 → 130 sin cerrar) |
+
+**No se compara cifra a cifra con `T-048-1492`.** Ha cambiado el escenario entero —otro mapa, otros
+orígenes, otro arranque—, así que una casa que sube o baja no dice nada sobre su balance. Lo que sí
+se puede leer es el criterio de tierra, que es justo lo que esta tarea tenía que mover.
+
+### Lo que mueve el recorte
+
+| Criterio | T-048 (península entera) | T-049 (recorte) |
+|---|---|---|
+| Tierra sin usar | 82 % de 403 comarcas | **66 % de 208** |
+| Prestigio dentro de la horquilla | 4 de 24 | **8 de 24** |
+| Escasez dentro de la horquilla | 10 de 24 | 9 de 24 |
+| Actividad (turnos sin proponer órdenes) | 19 de 24 cumplen | 15 de 24 |
+| Primera obra mayor | T88 en las tres, cumple | **T61, T70 y T72: ahora llega demasiado pronto** |
+
+### Lo que esto enseña, y para quién
+
+1. **El recorte no puede cerrar el criterio de tierra.** Ocho capitales separadas seis jornadas
+   necesitan unas 200 comarcas, y los ocho robots solo pisan unas 70 en 200 turnos. Para bajar del
+   5 % hacen falta **robots que anden** (T-050), no un recorte más pequeño: no existe.
+2. **El cantero llega demasiado pronto a su primera obra mayor** (T61–T72 frente al objetivo
+   T80–T130) porque ahora empieza con su cantera. Es una cifra de equilibrio, para T-047.
+3. **Los orígenes condenados dejan de estarlo.** Con el arranque por comarca, la muestra fija —un
+   origen por perfil y casa, elegido por orden de identificador— aguanta el primer año entera,
+   incluidos los `labor 1` que la bitácora señalaba (Molina, Bahía de Cádiz).
+4. **Dejar sin granjas a quien «vive de comprar» lo condena.** El primer diseño le quitaba las
+   granjas a la Mesta y a los mercaderes: con el tope entero de maravedís no llegaban al final del
+   año (a los mercaderes les faltaban 546 de pan y solo podían comprar 338). Ahora siembran menos
+   —les basta cubrir el 70 % del año— en vez de no sembrar.
+5. **Un edificio regalado puede ser una trampa.** Al ferrón se le daba una carbonera de salida, y su
+   consumo de 4 de madera por turno se comía los 60 del arranque antes de que pudiera levantar la
+   ferrería: dejó de sacar hierro en 96 turnos. Hoy empieza sin ella y hay un test que impide dar
+   ningún edificio que coma algo que el arranque no entrega.

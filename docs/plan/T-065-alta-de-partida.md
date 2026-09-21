@@ -13,13 +13,35 @@ justo, reproducible y guardado.
 
 Lee antes: [docs/04-casas-y-tradiciones.md](../04-casas-y-tradiciones.md) §4.2 y [docs/05-geografia.md](../05-geografia.md) §5.7.
 
-### Separación de responsabilidades (19-09-2026)
+### Separación de responsabilidades (19-09-2026; T-049 hecha el 21-09-2026)
 
-El recorte, las ofertas de origen y el arranque puro se implementan **antes del equilibrio** en
+El recorte, las ofertas de origen y el arranque puro **ya están hechos** en
 [T-049](T-049-preparacion-pura-de-partidas.md). Esta ficha consume ese contrato, persiste las
 ofertas y elecciones y permite crear/unirse a partidas. No debe mantener otro algoritmo de
-recorte o una copia de las tablas de arranque. Los puntos heredados de abajo explican los
-requisitos que motivaron la extracción; no duplican el trabajo de T-049.
+recorte ni una copia de las tablas de arranque.
+
+**El contrato que hay que consumir** (`paquetes/nucleo/src/partidas/`):
+
+```ts
+prepararPartida({ mundo, reglas, semilla, participantes, recortar?, origenesFijos? })
+  → Resultado<{ mundo, ofertas, avisos, comarcas, intentos }>
+fundarPartida({ preparada, reglas, semilla, participantes, elecciones, configuracion, id })
+  → Resultado<EstadoPartida>
+```
+
+Lo que le toca al servidor, y que T-049 deja fuera a propósito:
+
+- **Persistir** el mundo recortado y las ofertas antes de preguntar. `prepararPartida` sortea y no
+  funda justamente para eso: recargar no vuelve a sortear.
+- Enseñar las tarjetas (`ventaja`, `limitacion`, `perfil`) y recoger la elección de cada jugador.
+- Llamar a `fundarPartida` cuando estén todas; sus errores ya vienen con ruta y mensaje en español
+  (elección que no estaba entre las ofertas, jugador sin elegir, capitales demasiado cerca).
+- Publicar los `avisos` (a alguien le cupieron menos de tres ofertas) en el alta, no esconderlos.
+- No tocar `origenesFijos` salvo para escenarios declarados: en una partida normal se sortea.
+
+Los puntos heredados de abajo explican los requisitos que motivaron la extracción; **ya resueltos
+en T-049**: algoritmo de recorte, sorteo con separación, distancia mínima entre capitales y
+economía de arranque por origen. Aquí quedan la persistencia, la unión de participantes y la API.
 
 ## 2. Objetivo
 
@@ -34,26 +56,22 @@ sorteados y persistidos.
 
 ## 4. Puntos que hay que resolver al detallar
 
-- Algoritmo de recorte: región contigua de tamaño proporcional a las plazas, con recursos estratégicos repartidos y sin dejar a nadie sin sal ni hierro alcanzables.
-- Sorteo: tres orígenes de perfiles distintos, filtrados por las necesidades de la casa, separados entre sí una distancia mínima si hay varios jugadores.
-- Persistencia del sorteo: recargar no vuelve a sortear.
-- Distancia mínima entre capitales de jugadores distintos (propuesta: 6 jornadas) y comprobación de que todos tienen espacio neutral alrededor.
+- ~~Algoritmo de recorte~~ **hecho en T-049** (`recortarMundo`): región contigua con sal, hierro,
+  pan, feria y pastos dentro, y su horquilla medida.
+- ~~Sorteo de tres orígenes de perfiles distintos con separación~~ **hecho en T-049**
+  (`ofertasDeOrigen`): cualquier combinación de elecciones respeta las seis jornadas.
+- **Persistencia del sorteo: recargar no vuelve a sortear.** Esto sigue siendo de esta ficha.
+- ~~Distancia mínima entre capitales~~ **hecha en T-049**: 6 jornadas base, en la tabla `recorte`.
 - **Semilla privada:** no sale por la API ni por las ofertas de origen, como exige docs/02 §2.6
   y prueba T-044. La antigua propuesta de hacerla visible contradecía la niebla. Cualquier
   publicación posterior requerirá una política de final de partida explícita; no se añade aquí.
-- **Economía de arranque** (añadido al cerrar T-032): la tabla `arranque` de las reglas
-  (`paquetes/nucleo/src/datos/arranque.ts`: almacén inicial y edificios de origen) la aplica el
-  alta. Dos granjas alimentan un origen típico (labor 3, 75 vecinos) sin escasez el primer año;
-  un origen de 100 vecinos, o de labor 1–2, pasa hambre en la primavera. El alta tiene que
-  ajustar los edificios de origen a la población y a la labor (o a la vía de la casa, como la
-  lonja del pescador) y comprobarlo con el banco de pruebas: nadie empieza condenado.
+- ~~**Economía de arranque**~~ **hecha en T-049** (`arranqueDe`): los edificios se ajustan a la
+  población, a la labor y a la vía de la casa, y hay una prueba de viabilidad por perfil de origen.
+  El alta solo tiene que llamarla a través de `fundarPartida`.
 
-- **Sustituir el alta provisional del banco** (añadido al cerrar T-046):
-  `herramientas/banco/src/partida.ts` reparte hoy las capitales por la península entera con el sorteo
-  por casa, la elección entre los tres orígenes y seis jornadas entre capitales, pero no recorta el
-  mapa ni ajusta el arranque al origen. El banco tiene que pasar a usar el alta de verdad, y el
-  informe de T-046 dice por qué hace falta: 235 de 403 comarcas no las toca nadie en 200 turnos, y
-  los orígenes de `labor 1` (Molina, Bilbao) empiezan condenados al hambre con dos granjas.
+- ~~**Sustituir el alta provisional del banco**~~ **hecho en T-049**: `herramientas/banco/src/partida.ts`
+  es ya un adaptador de `prepararPartida`/`fundarPartida`, con recorte y arranque por origen. El
+  servidor tiene que usar el mismo contrato, no copiarlo.
 
 ## 5. Criterios de aceptación provisionales
 

@@ -33,6 +33,31 @@ Notas de diseño:
 - **Los maravedís no se producen solos**: sin comercio, una casa rica en materias primas puede
   quedarse sin liquidez para pagar la administración. Ese es el freno del expansionista.
 
+### 3.1.1 Con qué se empieza
+
+Nadie empieza condenado, pero tampoco empieza igual: el arranque lo decide la comarca (ficha
+T-049). El orden es siempre el mismo y se puede explicar en una frase: **primero se come, después
+se pone la primera piedra del oficio, y lo que la tierra no da se compra**.
+
+1. **Comer.** Se levantan niveles de granja hasta que la comarca produzca el pan de su gente en la
+   media del año. Con cubrir el 95 % basta: no se llenan los solares de granjas por el último
+   puñado de pan, que vale más el solar. Donde la tierra no da y el mar sí —labor baja y pesca
+   alta—, la primera plaza es una **lonja**, y el almacén trae la sal para salar la pesca.
+2. **El oficio.** Un edificio de la casa, si la comarca lo admite: la salina del salinero, la
+   cantera del cantero, la huerta del hortelano, el mercado del mercader, la majada de la Mesta,
+   las casas del monje, la venta del arriero. Si no cabe, no se da, y el alta dice por qué. Nunca se
+   regala un edificio que las reglas no dejarían construir ahí, ni uno que coma algo que el arranque
+   no le da: por eso el ferrón no empieza con carbonera, que se comería su madera antes de que
+   tenga con qué levantar la ferrería.
+3. **Comprar.** El pan que falte en el año se compensa con maravedís, al precio base del pan y con
+   un tope. Las casas que viven de comprar —la Mesta y los mercaderes, con su pan penalizado— no
+   tienen que alimentarse de su tierra: siembran menos (les basta cubrir el 70 %) y salen con más
+   dinero en la bolsa.
+
+Un origen es **viable** cuando, con eso y sin dar una sola orden, aguanta el primer año: o no pasa
+escasez, o con lo que recauda puede comprar el pan que le falta. Se comprueba con una muestra fija
+—un origen por perfil y casa— y los resultados desfavorables se publican igual.
+
 ## 3.2 La comarca
 
 ```ts

@@ -97,4 +97,10 @@ export type { MotivoSinConstruir } from './reglas/obras.ts';
 export { cuadrillasDe } from './reglas/cuadrillas.ts';
 export { capacidadDe } from './reglas/poblar.ts';
 export { calidadDeTramo, claveDeTramo, tienePuente } from './reglas/ruta.ts';
-export { origenesPosibles, perfilDe, sortearOrigenes } from './reglas/casas/origenes.ts';
+export {
+  elegirOrigenes,
+  origenesPosibles,
+  perfilDe,
+  sortearOrigenes,
+} from './reglas/casas/origenes.ts';
+export * from './partidas/index.ts';

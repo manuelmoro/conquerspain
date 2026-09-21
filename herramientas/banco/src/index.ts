@@ -17,7 +17,8 @@ export { alertasDeSalud, componerCsv, componerInforme, componerSerieCsv } from '
 export { VERSION_METRICAS } from './metricas.ts';
 export type { MetricasDePartida, MetricasDeJugador } from './metricas.ts';
 export { LibroDeNegocios, tratoDeSuceso } from './negocios.ts';
-export { partidaInicial } from './partida.ts';
+export { altaDelBanco, mundoPeninsula } from './partida.ts';
+export type { PartidaDelBanco } from './partida.ts';
 export {
   avisoDeProcedencia,
   componerManifiesto,
