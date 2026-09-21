@@ -1,0 +1,85 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 2,
+    "robots": 1,
+    "reglas": 1
+  },
+  "revision": "bf47da3327a9019ff05cad1717d6100118a5c7b9+T-048",
+  "etiqueta": "T-048-1492",
+  "cambios": "",
+  "campanya": {
+    "semilla": "1492",
+    "semillas": [
+      "1492",
+      "1492-2",
+      "1492-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "4814155cae6e8badfd6f9dc95336a8989f2f194c7fe20c9e2bc6546a3a893ef9"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1492",
+      "cadencia": 1,
+      "huellaFinal": "affa7a63459bdc64c7b1ded177f57e64cda60e5750644e84aa146f0407a36d35",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 1,
+      "huellaFinal": "550b39d6cf18bd325e772477641be556444ef31a43c0c7ef7fc2eedff44789b6",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 1,
+      "huellaFinal": "d67ee7fa0f0775eb07114bfc3bc82e2be448e5f2db42596ec657f7946f21c92e",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492",
+      "cadencia": 6,
+      "huellaFinal": "23b6db798338d29e1cfb1445cbcb498c5723361147333c778c09b0c5e858d940",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 6,
+      "huellaFinal": "5db39a2f1c5296a398eb7cc966c918e4ff4b6cc0935167bb6370a800eb022bb1",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 6,
+      "huellaFinal": "24697943544fdba4db8a842fc5434bb6095f4b8f0e24272bd6e5d011393762a4",
+      "visitasCompletas": true
+    }
+  ]
+}

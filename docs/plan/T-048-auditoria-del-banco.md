@@ -1,6 +1,6 @@
 # T-048 · Métricas auditables del banco
 
-**Fase:** 2 · Motor · **Depende de:** T-046 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-046 · **Estado:** **hecha** (21-09-2026)
 
 ## 1. Contexto
 
@@ -102,3 +102,35 @@ no puede evaluar. En esta tarea ese resultado negativo es esperado y queda docum
 
 Marcar T-048 hecha, actualizar ESTADO y continuar con T-049. Commit y push:
 `T-048: métricas auditables y procedencia del banco`.
+
+## 9. Lo que se entregó (21-09-2026)
+
+**Piezas nuevas del banco.** `equilibrio.ts` es el juez: una función pura que recibe el resultado
+completo y devuelve una fila por criterio, semilla y casa, con observado sin redondear, objetivo,
+unidad, ámbito, veredicto y evidencia. Los objetivos viven en `OBJETIVOS`, una tabla única que
+reproduce T-047 §5. `procedencia.ts` compone el manifiesto (revisión, versiones, semillas, turnos,
+cadencias, escenario, huella del mundo, huella de **las tablas completas** y huella de los propios
+objetivos) y compara dos manifiestos. `negocios.ts` sigue cada carga comprada hasta que se vende.
+`visitas.ts` reconstruye el paso de cada turno. `version.ts` guarda las versiones para que el
+manifiesto no dependa del ejecutor.
+
+**Lo que se corrigió del instrumento.**
+
+- La racha de precio solo cuenta turnos con la plaza abierta: el precio guardado de una feria
+  cerrada ya no suma.
+- Las visitas incluyen las comarcas de paso (sucesos `recua.entra` y consumo de ruta de los
+  rebaños), y la partida dice si alguna no se pudo reconstruir; si no se pudo, un mapa mal usado
+  se declara **no evaluable** en vez de incumplido, porque la cifra es una cota superior.
+- El arbitraje exige traza: compra, venta posterior en otra plaza, cantidades, importes, comisiones
+  y bastimento atribuido. Lo que se vende sin haberlo comprado se publica aparte.
+- «No propuso órdenes» (medible) y «no hubo decisión útil» (no evaluable hasta T-050) son dos
+  criterios distintos, con dos filas distintas.
+- Una fila que cumple **apoyada en una precondición de otra tarea** no cierra el equilibrio:
+  `codigoDeEvaluacion` devuelve 2 igual que con un incumplimiento.
+
+**Lo que dice la campaña de referencia** (`informes/T-048-1492.*`, 1492 ×3, 200 turnos): 46 filas
+cumplen, 87 incumplen y 24 no se pueden evaluar; quedan 127 de 157 sin cerrar. Coincide con lo que
+la bitácora había recogido a mano leyendo snapshots: primer «Un pequeño dominio» en T34/T33/T32 y
+primera obra mayor en T88 en las tres. **Ningún negocio de arbitraje con traza en toda la campaña**,
+aunque el indicio antiguo tampoco los veía. La comparación con el informe de T-046 no cambia ni una
+cifra del juego: solo aparecen y desaparecen métricas.

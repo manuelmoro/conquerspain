@@ -9,6 +9,9 @@ import { ESCENARIOS } from './escenarios/index.ts';
 import { PAN_DE_ARRANQUE_CON_HAMBRE } from './escenarios/hambre.ts';
 import { componerCsv, componerInforme, componerSerieCsv } from './informe.ts';
 import { mundoPeninsula } from './partida.ts';
+import { componerManifiesto, textoDeManifiesto } from './procedencia.ts';
+
+const PROCEDENCIA = { revision: 'prueba', etiqueta: 'prueba', cambios: '' };
 
 const CORTA: OpcionesDelBanco = {
   semilla: '1492',
@@ -25,9 +28,11 @@ describe('el ejecutor del banco', () => {
     const mundo = mundoPeninsula();
     const a = ejecutarBanco(CORTA, mundo);
     const b = ejecutarBanco(CORTA, mundo);
-    expect(componerInforme(b, mundo)).toBe(componerInforme(a, mundo));
+    const manifiesto = (r: typeof a) => componerManifiesto(r, mundo, TABLAS_DEL_JUEGO, PROCEDENCIA);
+    expect(componerInforme(b, mundo, manifiesto(b))).toBe(componerInforme(a, mundo, manifiesto(a)));
     expect(componerCsv(b)).toBe(componerCsv(a));
     expect(componerSerieCsv(b)).toBe(componerSerieCsv(a));
+    expect(textoDeManifiesto(manifiesto(b))).toBe(textoDeManifiesto(manifiesto(a)));
     expect(b.partidas[0]?.huellaFinal).toBe(a.partidas[0]?.huellaFinal);
   }, 60_000);
 

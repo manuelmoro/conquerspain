@@ -17,7 +17,7 @@ Lee antes: [docs/04-casas-y-tradiciones.md](../04-casas-y-tradiciones.md) §4.4,
 controlados están en [bitacora-equilibrio.md](bitacora-equilibrio.md). Las tablas originales se
 conservan: ninguno de esos ensayos resolvió las vías pendientes.
 
-Orden de desbloqueo: **T-048 → T-049 → T-050 → T-051 → T-047**. Se corrigen primero el instrumento,
+Orden de desbloqueo: **T-048 (hecha el 21-09-2026) → T-049 → T-050 → T-051 → T-047**. Se corrigen primero el instrumento,
 el escenario, los robots y la equivalencia de planes. No se intenta compensar sus defectos con
 bonificaciones de prestigio. El recorte y arranque pasan de T-065 a T-049 para eliminar el ciclo
 T-047 → T-065 → T-062 → T-061 → T-060 → T-047.
@@ -99,7 +99,15 @@ Además, dos comprobaciones cualitativas, hechas leyendo una partida completa:
 
 ### 5.1 Cómo se interpreta y se demuestra la tabla
 
-Estas definiciones evitan cerrar con promedios que esconden fallos; T-048 las implementa.
+Estas definiciones evitan cerrar con promedios que esconden fallos. **T-048 las implementa** en
+`herramientas/banco/src/equilibrio.ts`: los umbrales están en `OBJETIVOS` (una sola tabla, la misma
+que esta) y `evaluarEquilibrio` saca una fila por criterio, semilla y casa con su veredicto. Los
+criterios se llaman `prestigio`, `ganadores`, `actividad`, `decisiones útiles`, `escasez`,
+`precios`, `tierra`, `ausencia`, `dominio` y `obra mayor`. Si se cambia un umbral aquí, hay que
+cambiarlo allí: la huella de `OBJETIVOS` va en el manifiesto de cada informe y delata el cambio.
+
+Una fila que cumple **apoyada en una precondición** de otra tarea (T-049, T-050 o T-051) no cierra
+el criterio: `codigoDeEvaluacion` la trata como pendiente.
 
 - **Prestigio:** por casa en cada partida, frente a la mediana de las ocho casas de esa partida;
   publicar también medias por campaña. Ninguna casa gana las tres repeticiones de una campaña.
@@ -149,14 +157,17 @@ herramientas/banco/informes/            (informes de referencia)
 ## 7. Verificación
 
 ```bash
-npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3
-npm run banco -- --semilla 1085 --turnos 200 --repeticiones 3
-npm run banco -- --semilla 1212 --turnos 200 --repeticiones 3
+npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --evaluar --cambios "<lo ensayado>"
+npm run banco -- --semilla 1085 --turnos 200 --repeticiones 3 --evaluar
+npm run banco -- --semilla 1212 --turnos 200 --repeticiones 3 --evaluar
 npm run banco:comparar -- informes/<antes>.csv informes/<despues>.csv
 npm run verificar
 ```
 
-Los tres informes deben cumplir la tabla de §5.
+Los tres informes deben cumplir la tabla de §5: `--evaluar` termina con código 0 solo cuando no
+queda ni un incumplimiento, ni un «no evaluable», ni una precondición pendiente. El manifiesto que
+acompaña a cada informe fija con qué se midió, y `banco:comparar` avisa si entre los dos informes
+ha cambiado algo más que el grupo de valores ensayado.
 
 ## 8. Al terminar
 

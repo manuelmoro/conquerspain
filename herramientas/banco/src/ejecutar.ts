@@ -3,7 +3,12 @@
 //
 // Uso:
 //   npx tsx herramientas/banco/src/ejecutar.ts --semilla 1492 --turnos 200 --casas todas \
-//     --repeticiones 3 [--escenario hambre] [--sin-ausencia] [--fecha 2026-09-19]
+//     --repeticiones 3 [--escenario hambre] [--sin-ausencia] [--fecha 2026-09-19] \
+//     [--cambios "movimiento.portePorAcemila=4"] [--revision <sha>] [--evaluar]
+//
+// Con `--evaluar`, el proceso termina con codigo 2 si algun criterio de T-047 incumple o no se
+// puede evaluar (ficha T-048 §7).
+import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,17 +33,25 @@ import type {
 
 import { ESCENARIOS } from './escenarios/index.ts';
 import type { NombreDeEscenario } from './escenarios/index.ts';
+import {
+  codigoDeEvaluacion,
+  componerEvaluacionCsv,
+  evaluarEquilibrio,
+  pendientes,
+} from './equilibrio.ts';
 import { componerCsv, componerInforme, componerSerieCsv } from './informe.ts';
 import type { MetricasDePartida } from './metricas.ts';
 import { Registro } from './metricas.ts';
 import { mundoPeninsula, partidaInicial } from './partida.ts';
+import { componerManifiesto, textoDeManifiesto } from './procedencia.ts';
 import type { Robot } from './robots/index.ts';
 import { origenPreferido, robotDe } from './robots/index.ts';
 
 export const DIRECTORIO_DE_INFORMES = fileURLToPath(new URL('../informes', import.meta.url));
 
-/** Cada cuantos turnos entra el jugador que juega sin estar (el mismo plan de seis de T-045). */
-export const CADENCIA_AUSENTE = 6;
+import { CADENCIA_AUSENTE } from './version.ts';
+
+export { CADENCIA_AUSENTE } from './version.ts';
 
 export interface OpcionesDePartida {
   readonly semilla: string;
@@ -102,7 +115,8 @@ export function jugarPartida(opciones: OpcionesDePartida): MetricasDePartida {
   const { semilla, turnos, casas, cadencia, reglas, mundo } = opciones;
   let estado: EstadoPartida = partidaInicial(semilla, casas, reglas, mundo, origenPreferido);
   const robots = casas.map((casa) => robotDe(casa, cadencia));
-  const registro = new Registro(reglas, cadencia);
+  const registro = new Registro(reglas, mundo, cadencia);
+  registro.empezar(estado);
   for (let i = 0; i < turnos; i += 1) {
     const turno = jugarTurno(estado, robots, mundo, reglas);
     estado = turno.estado;
@@ -202,6 +216,18 @@ function hoy(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** La revision con la que se ejecuta, para el manifiesto. Si no hay git, se dice y ya. */
+function revisionDeGit(): string {
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+  } catch {
+    return 'desconocida';
+  }
+}
+
+/** Cuantos criterios sin cerrar se enseñan por pantalla; el CSV los lleva todos. */
+const MUESTRA_DE_PENDIENTES = 10;
+
 function principal(argumentos: readonly string[]): void {
   const semilla = valorDe(argumentos, 'semilla') ?? '1492';
   const mapa = valorDe(argumentos, 'mapa') ?? 'peninsula';
@@ -222,17 +248,46 @@ function principal(argumentos: readonly string[]): void {
     ausencia: !argumentos.includes('--sin-ausencia'),
     estados: join(DIRECTORIO_DE_INFORMES, 'estados', base),
   };
+  const mundo = mundoPeninsula();
   const inicio = performance.now();
-  const resultado = ejecutarBanco(opciones);
+  const resultado = ejecutarBanco(opciones, mundo);
   const segundos = ((performance.now() - inicio) / 1000).toFixed(1);
+  const manifiesto = componerManifiesto(
+    resultado,
+    mundo,
+    ESCENARIOS[escenario].reglas(TABLAS_DEL_JUEGO),
+    {
+      revision: valorDe(argumentos, 'revision') ?? revisionDeGit(),
+      etiqueta: base,
+      cambios: valorDe(argumentos, 'cambios') ?? '',
+    },
+  );
+  const evaluacion = evaluarEquilibrio(resultado);
   mkdirSync(DIRECTORIO_DE_INFORMES, { recursive: true });
   const ruta = join(DIRECTORIO_DE_INFORMES, base);
-  writeFileSync(`${ruta}.md`, componerInforme(resultado, mundoPeninsula()), 'utf8');
+  writeFileSync(`${ruta}.md`, componerInforme(resultado, mundo, manifiesto), 'utf8');
   writeFileSync(`${ruta}.csv`, componerCsv(resultado), 'utf8');
   writeFileSync(`${ruta}-turnos.csv`, componerSerieCsv(resultado), 'utf8');
+  writeFileSync(`${ruta}-evaluacion.csv`, componerEvaluacionCsv(evaluacion), 'utf8');
+  writeFileSync(`${ruta}-manifiesto.json`, textoDeManifiesto(manifiesto), 'utf8');
   console.log(`Informe: ${ruta}.md (${segundos} s)`);
-  console.log(`Datos:   ${ruta}.csv y ${ruta}-turnos.csv`);
+  console.log(`Datos:   ${ruta}.csv, ${ruta}-turnos.csv y ${ruta}-evaluacion.csv`);
+  console.log(`Procedencia: ${ruta}-manifiesto.json`);
   console.log(`Estados cada 10 turnos: ${opciones.estados ?? ''}`);
+  if (!argumentos.includes('--evaluar')) return;
+  const codigo = codigoDeEvaluacion(evaluacion);
+  const sinCerrar = pendientes(evaluacion);
+  console.log(
+    codigo === 0
+      ? 'Los criterios de T-047 cumplen todos.'
+      : `Criterios sin cerrar: ${String(sinCerrar.length)} de ${String(evaluacion.length)}.`,
+  );
+  for (const f of sinCerrar.slice(0, MUESTRA_DE_PENDIENTES)) {
+    console.log(
+      `  ${f.estado} · ${f.criterio} · ${f.semilla} · ${f.casa ?? 'partida'}: ${f.detalle}`,
+    );
+  }
+  process.exitCode = codigo;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

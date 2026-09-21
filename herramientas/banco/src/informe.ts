@@ -6,9 +6,12 @@ import { CAPITULOS_DE_PRESTIGIO, RECURSOS, comparar } from '@conquer/nucleo';
 import type { CapituloDePrestigio, Casa, Mundo, Recurso } from '@conquer/nucleo';
 
 import type { ResultadoDelBanco } from './ejecutar.ts';
+import { componerEvaluacion, evaluarEquilibrio, pendientes, recuentoDe } from './equilibrio.ts';
+import type { Evaluacion } from './equilibrio.ts';
 import { ESCENARIOS } from './escenarios/index.ts';
 import type { MetricasDePartida, PrecioPegado, ResumenDeJugador } from './metricas.ts';
 import { resumir } from './metricas.ts';
+import type { Manifiesto } from './procedencia.ts';
 
 /** Los umbrales de salud del juego (ficha T-046 §4.5). */
 export const SALUD = {
@@ -80,18 +83,32 @@ const CIFRAS: readonly (keyof ResumenDeJugador)[] = [
   'jornadas',
   'volumenComerciado',
   'volumenEnRuta',
-  'arbitrajes',
+  'indicioDeArbitraje',
+  'negocios',
+  'cargasArbitradas',
+  'margenDeNegocios',
+  'margenNetoDeNegocios',
+  'ventasSinCompra',
   'ingresosDeFeria',
   'lanaEsquilada',
   'pueblasFundadas',
   'comarcasIncorporadas',
   'turnosDeDecision',
-  'turnosSinDecision',
+  'turnosSinOrdenes',
+  'ordenesPropuestas',
+  'ordenesDeAlta',
+  'ordenesTerminadas',
+  'ordenesCanceladas',
+  'ordenesEnEspera',
 ];
 
 function mediasDe(lista: readonly ResumenDeJugador[]): Medias {
   const m: Medias = {};
   for (const cifra of CIFRAS) m[cifra] = media(lista.map((r) => Number(r[cifra])));
+  // El turno de la primera obra mayor no se promedia con los que no la terminaron: se cuentan aparte.
+  const conObra = lista.flatMap((r) => (r.primeraObraMayor === null ? [] : [r.primeraObraMayor]));
+  m['primeraObraMayor'] = media(conObra);
+  m['partidasSinObraMayor'] = lista.length - conObra.length;
   for (const c of CAPITULOS_DE_PRESTIGIO)
     m[`capitulo_${c}`] = media(lista.map((r) => r.capitulos[c]));
   for (const r of RECURSOS) m[`producido_${r}`] = media(lista.map((x) => x.producido[r]));
@@ -180,15 +197,15 @@ export function alertasDeSalud(resultado: ResultadoDelBanco, mundo: Mundo): Aler
   const sinDecision = a.casas.filter((c) => {
     const hechas = cifra(a, c, 'turnosDeDecision');
     return (
-      hechas > 0 && cifra(a, c, 'turnosSinDecision') * 100 > hechas * SALUD.sinDecisionMaximaPct
+      hechas > 0 && cifra(a, c, 'turnosSinOrdenes') * 100 > hechas * SALUD.sinDecisionMaximaPct
     );
   });
   const decision: Alerta = {
-    nombre: `Más de un ${String(SALUD.sinDecisionMaximaPct)} % de turnos sin decisión útil`,
+    nombre: `Más de un ${String(SALUD.sinDecisionMaximaPct)} % de turnos sin proponer órdenes`,
     enRojo: sinDecision.length > 0,
     detalle: sinDecision.map(
       (c) =>
-        `${nombre(c)}: ${pct(cifra(a, c, 'turnosSinDecision'), cifra(a, c, 'turnosDeDecision'))}`,
+        `${nombre(c)}: ${pct(cifra(a, c, 'turnosSinOrdenes'), cifra(a, c, 'turnosDeDecision'))}`,
     ),
   };
 
@@ -290,7 +307,7 @@ function seccionClasificacion(a: Analisis): string {
       'Comarcas',
       'Maravedís',
       'Escasez',
-      'Sin decisión',
+      'Sin órdenes',
     ],
     orden.map((c) => {
       const mil = sobreLaMedianaMil(a, c);
@@ -304,7 +321,7 @@ function seccionClasificacion(a: Analisis): string {
         String(cifra(a, c, 'comarcas')),
         String(cifra(a, c, 'maravedis')),
         pct(cifra(a, c, 'turnosConEscasez'), a.turnos),
-        pct(cifra(a, c, 'turnosSinDecision'), cifra(a, c, 'turnosDeDecision')),
+        pct(cifra(a, c, 'turnosSinOrdenes'), cifra(a, c, 'turnosDeDecision')),
       ];
     }),
   );
@@ -354,8 +371,8 @@ export const PRUEBA_DE_VIA: Readonly<
   },
   canteros: { texto: 'termina obras mayores', cumple: (m) => (m['obrasMayores'] ?? 0) > 0 },
   mercaderes: {
-    texto: 'compra en una plaza y vende en otra',
-    cumple: (m) => (m['arbitrajes'] ?? 0) > 0,
+    texto: 'compra en una plaza y vende esa misma mercancía en otra',
+    cumple: (m) => (m['negocios'] ?? 0) > 0,
   },
   monjes: { texto: 'funda pueblas', cumple: (m) => (m['pueblasFundadas'] ?? 0) > 0 },
   salineros: {
@@ -393,7 +410,7 @@ function seccionVia(a: Analisis): string {
       'Jornadas',
       'Comerciado',
       'En ruta',
-      'Arbitrajes',
+      'Negocios',
       'Pueblas',
       'Incorporadas',
     ],
@@ -407,7 +424,7 @@ function seccionVia(a: Analisis): string {
       String(cifra(a, c, 'jornadas')),
       String(cifra(a, c, 'volumenComerciado')),
       String(cifra(a, c, 'volumenEnRuta')),
-      String(cifra(a, c, 'arbitrajes')),
+      String(cifra(a, c, 'negocios')),
       String(cifra(a, c, 'pueblasFundadas')),
       String(cifra(a, c, 'comarcasIncorporadas')),
     ]),
@@ -470,10 +487,161 @@ function seccionAlertas(alertas: readonly Alerta[]): string {
     .join('\n');
 }
 
-export function componerInforme(resultado: ResultadoDelBanco, mundo: Mundo): string {
+// ——— Secciones nuevas de T-048 ————————————————————————————————————————————
+
+function seccionProcedencia(manifiesto: Manifiesto): string {
+  const m = manifiesto;
+  return tabla(
+    ['Dato', 'Valor'],
+    [
+      ['Revisión del código', `\`${m.revision}\``],
+      ['Etiqueta del informe', m.etiqueta],
+      ['Cambios experimentales', m.cambios === '' ? 'ninguno' : m.cambios],
+      [
+        'Versiones',
+        `banco ${m.versiones.banco} · métricas ${String(m.versiones.metricas)} · robots ${String(m.versiones.robots)} · reglas ${String(m.versiones.reglas)}`,
+      ],
+      ['Semillas', m.campanya.semillas.join(', ')],
+      [
+        'Campaña',
+        `${String(m.campanya.turnos)} turnos · ${String(m.campanya.repeticiones)} repetición(es) · cadencias ${m.campanya.cadencias.join(' y ')} · escenario ${m.campanya.escenario}`,
+      ],
+      [
+        'Mundo',
+        `${m.mundo.version}, ${String(m.mundo.comarcas)} comarcas, huella \`${m.mundo.huella}\``,
+      ],
+      ['Tablas del juego', `huella \`${m.reglas.huella}\``],
+      ['Objetivos de T-047', `huella \`${m.objetivos.huella}\``],
+    ],
+    [0, 1],
+  );
+}
+
+function turnoOguion(turno: number | null): string {
+  return turno === null ? '**no**' : `T${String(turno)}`;
+}
+
+/** Cuando llega cada casa a los dos hitos de ritmo de T-047 §5, partida a partida. */
+function seccionRitmo(resultado: ResultadoDelBanco): string {
+  const filas: string[][] = [];
+  for (const partida of resultado.partidas) {
+    for (const jugador of partida.jugadores) {
+      filas.push([
+        partida.semilla,
+        NOMBRES_DE_CASA[jugador.casa],
+        turnoOguion(jugador.hitos['pequenyo-dominio']),
+        turnoOguion(jugador.primeraObraMayor),
+        turnoOguion(jugador.hitos['maestro-de-obra']),
+        String(Object.values(jugador.hitos).filter((t) => t !== null).length),
+      ]);
+    }
+  }
+  return tabla(
+    ['Semilla', 'Casa', 'Pequeño dominio', 'Primera obra mayor', 'Maestro de obra', 'Hitos'],
+    filas,
+    [0, 1, 2, 3, 4],
+  );
+}
+
+/** El arbitraje con traza: solo cuenta la mercancia comprada que se vendio en otra plaza. */
+function seccionNegocios(resultado: ResultadoDelBanco): string {
+  const filas: string[][] = [];
+  for (const partida of resultado.partidas) {
+    for (const jugador of partida.jugadores) {
+      const t = jugador.traza;
+      if (
+        t.negocios.length === 0 &&
+        t.reventas.length === 0 &&
+        t.ventasSinCompra.length === 0 &&
+        t.cargasDescargadas === 0
+      ) {
+        continue;
+      }
+      filas.push([
+        partida.semilla,
+        NOMBRES_DE_CASA[jugador.casa],
+        String(t.negocios.length),
+        String(t.negocios.reduce((x, n) => x + n.cargas, 0)),
+        String(t.negocios.reduce((x, n) => x + n.margen, 0)),
+        String(t.negocios.reduce((x, n) => x + n.margenNeto, 0)),
+        String(t.reventas.length),
+        String(t.ventasSinCompra.reduce((x, v) => x + v.cargas, 0)),
+        String(t.cargasDescargadas),
+      ]);
+    }
+  }
+  if (filas.length === 0) {
+    return 'Ninguna casa compró para revender: no hay ni un negocio de arbitraje que trazar.';
+  }
+  return tabla(
+    [
+      'Semilla',
+      'Casa',
+      'Negocios',
+      'Cargas',
+      'Margen',
+      'Margen neto',
+      'Reventas en la misma plaza',
+      'Cargas vendidas sin compra',
+      'Cargas descargadas',
+    ],
+    filas,
+    [0, 1],
+  );
+}
+
+const MOTIVOS_EN_EL_INFORME = 5;
+
+/** Que pasa con las ordenes que dan los robots: cuantas entran, terminan, esperan o se caen. */
+function seccionOrdenes(resultado: ResultadoDelBanco, a: Analisis): string {
+  const cuenta = tabla(
+    ['Casa', 'Propuestas', 'De alta', 'Terminadas', 'Canceladas', 'En espera o en cola'],
+    a.casas.map((c) => [
+      NOMBRES_DE_CASA[c],
+      String(cifra(a, c, 'ordenesPropuestas')),
+      String(cifra(a, c, 'ordenesDeAlta')),
+      String(cifra(a, c, 'ordenesTerminadas')),
+      String(cifra(a, c, 'ordenesCanceladas')),
+      String(cifra(a, c, 'ordenesEnEspera')),
+    ]),
+  );
+  const motivos = new Map<string, number>();
+  for (const partida of resultado.partidas) {
+    for (const jugador of partida.jugadores) {
+      for (const [motivo, veces] of Object.entries(jugador.cancelacionesPorMotivo)) {
+        motivos.set(motivo, (motivos.get(motivo) ?? 0) + veces);
+      }
+    }
+  }
+  const peores = [...motivos.entries()]
+    .sort((x, y) => y[1] - x[1] || comparar(x[0], y[0]))
+    .slice(0, MOTIVOS_EN_EL_INFORME);
+  const lista =
+    peores.length === 0
+      ? 'No se canceló ninguna orden.'
+      : peores.map(([motivo, veces]) => `- ${motivo}: ${String(veces)}`).join('\n');
+  return `${cuenta}\n\nPor qué se cancelan las órdenes:\n\n${lista}`;
+}
+
+function seccionEvaluacion(filas: readonly Evaluacion[]): string {
+  const sinCerrar = pendientes(filas);
+  const recuento = recuentoDe(filas);
+  const cabecera =
+    recuento.incumple + recuento.noEvaluable === 0 && recuento.conPrecondicion === 0
+      ? 'Todos los criterios de T-047 §5 cumplen.'
+      : `Quedan ${String(sinCerrar.length)} filas sin cerrar de ${String(filas.length)}.`;
+  return `${cabecera}\n\n${componerEvaluacion(filas)}`;
+}
+
+export function componerInforme(
+  resultado: ResultadoDelBanco,
+  mundo: Mundo,
+  manifiesto: Manifiesto,
+): string {
   const { opciones } = resultado;
   const a = analizar(resultado);
   const alertas = alertasDeSalud(resultado, mundo);
+  const evaluacion = evaluarEquilibrio(resultado);
   const huellas = resultado.partidas.map((p) => `- semilla \`${p.semilla}\`: \`${p.huellaFinal}\``);
   return `${[
     `# Banco de pruebas · semilla ${opciones.semilla}`,
@@ -484,13 +652,27 @@ export function componerInforme(resultado: ResultadoDelBanco, mundo: Mundo): str
     '',
     resumenLegible(a, alertas),
     '',
-    '## Salud del juego',
+    '## Procedencia',
+    '',
+    'Con qué se sacó este informe. Dos informes con distinta procedencia no se comparan sin más (ficha T-048 §4.1).',
+    '',
+    seccionProcedencia(manifiesto),
+    '',
+    '## Evaluación de los criterios de T-047',
+    '',
+    'El juicio, criterio a criterio y partida a partida. Un «no evaluable» impide cerrar el equilibrio igual que un «incumple».',
+    '',
+    seccionEvaluacion(evaluacion),
+    '',
+    '## Salud del juego (diagnóstico antiguo)',
+    '',
+    'Las cinco alertas de T-046 §4.5. Son más flojas que los criterios de T-047 y **no sirven para cerrar el equilibrio**: se conservan porque señalan de un vistazo dónde mirar.',
     '',
     seccionAlertas(alertas),
     '',
     '## Clasificación final',
     '',
-    'Media de las partidas. La escasez y los turnos sin decisión, sobre los turnos jugados y los turnos en que el robot decidió.',
+    'Media de las partidas. La escasez, sobre los turnos jugados; los turnos sin órdenes, sobre los turnos en que el robot entró.',
     '',
     seccionClasificacion(a),
     '',
@@ -509,6 +691,24 @@ export function componerInforme(resultado: ResultadoDelBanco, mundo: Mundo): str
     'El mismo robot entrando cada turno o cada seis, con colas, plan y mayordomo (docs/02 §2.5). La diferencia tiene que ser pequeña: conectarse más no puede dar ventaja.',
     '',
     seccionAusencia(a),
+    '',
+    '## Ritmo: hitos y primera obra mayor',
+    '',
+    'Turno exacto de cada uno, por partida y casa. «no» es «no lo alcanzó», nunca un cero.',
+    '',
+    seccionRitmo(resultado),
+    '',
+    '## Arbitraje con traza',
+    '',
+    'Solo cuenta la mercancía comprada en una plaza y vendida en otra, seguida carga a carga. Lo que se vende sin haberlo comprado se publica aparte: es producción propia o carga de casa.',
+    '',
+    seccionNegocios(resultado),
+    '',
+    '## Órdenes',
+    '',
+    'Lo que propone cada robot y lo que pasa con ello. Proponer cero órdenes es un dato de actividad, no una prueba de que no hubiera nada útil que hacer.',
+    '',
+    seccionOrdenes(resultado, a),
     '',
     '## Evolución del prestigio',
     '',
@@ -543,20 +743,53 @@ export function componerCsv(resultado: ResultadoDelBanco): string {
   filas.push(`partida,precios_pegados,${String(preciosPegados(resultado).length)}`);
   const tocadas = new Set<string>(resultado.partidas.flatMap((p) => p.comarcasTocadas));
   filas.push(`partida,comarcas_tocadas,${String(tocadas.size)}`);
+  const racha = Math.max(0, ...resultado.partidas.map((p) => p.preciosPegados[0]?.turnos ?? 0));
+  filas.push(`partida,racha_de_precio_maxima,${String(racha)}`);
+  const evaluacion = evaluarEquilibrio(resultado);
+  const recuento = recuentoDe(evaluacion);
+  filas.push(`partida,criterios_cumplen,${String(recuento.cumple)}`);
+  filas.push(`partida,criterios_incumplen,${String(recuento.incumple)}`);
+  filas.push(`partida,criterios_no_evaluables,${String(recuento.noEvaluable)}`);
   return `${filas.join('\n')}\n`;
 }
 
-/** La serie turno a turno, para dibujarla o compararla con detalle. */
+/**
+ * La serie turno a turno de las dos cadencias, con lo que hace falta para revisar los criterios sin
+ * abrir un snapshot: produccion, almacen, obras e hitos (ficha T-048 §4.1).
+ */
 export function componerSerieCsv(resultado: ResultadoDelBanco): string {
   const filas: string[] = [
-    'semilla,turno,casa,prestigio,poblacion,comarcas,maravedis,pan,escasez,decidio,sin_decision',
+    [
+      'semilla',
+      'cadencia',
+      'turno',
+      'casa',
+      'prestigio',
+      'poblacion',
+      'comarcas',
+      'maravedis',
+      'pan',
+      'lana',
+      'sal',
+      'hierro',
+      'produccion_pan',
+      'produccion_total',
+      'escasez',
+      'obras_terminadas',
+      'obras_mayores',
+      'hitos',
+      'decidio',
+      'ordenes_propuestas',
+      'sin_ordenes',
+    ].join(','),
   ];
-  for (const partida of resultado.partidas) {
+  for (const partida of [...resultado.partidas, ...resultado.ausentes]) {
     for (const jugador of partida.jugadores) {
       for (const f of jugador.filas) {
         filas.push(
           [
             partida.semilla,
+            String(partida.cadencia),
             String(f.turno),
             jugador.casa,
             String(f.prestigio),
@@ -564,9 +797,18 @@ export function componerSerieCsv(resultado: ResultadoDelBanco): string {
             String(f.comarcas),
             String(f.almacen.maravedis),
             String(f.almacen.pan),
+            String(f.almacen.lana),
+            String(f.almacen.sal),
+            String(f.almacen.hierro),
+            String(f.produccion.pan),
+            String(RECURSOS.reduce((t, r) => t + f.produccion[r], 0)),
             f.escasez ? '1' : '0',
+            String(f.obrasTerminadas),
+            String(f.obrasMayoresTerminadas),
+            String(f.hitosLogrados),
             f.decidio === null ? '' : '1',
-            f.sinDecision ? '1' : '0',
+            String(f.ordenesPropuestas),
+            f.sinOrdenes ? '1' : '0',
           ].join(','),
         );
       }

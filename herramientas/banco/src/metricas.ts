@@ -1,22 +1,46 @@
-// Lo que se mide de cada partida (ficha T-046 §4.3): una fila por jugador y turno, y el resumen de
-// la partida. Todo se saca del estado y de los sucesos del turno, como lo veria un auditor.
+// Lo que se mide de cada partida (ficha T-046 §4.3, ampliada por T-048 §4.1 y §4.2): una fila por
+// jugador y turno, y el resumen de la partida. Todo se saca del estado y de los sucesos del turno,
+// como lo veria un auditor.
+//
+// T-048 anyade lo que hacia falta para verificar los criterios de T-047 §5 sin abrir snapshots:
+// el turno de cada hito y de la primera obra mayor, las rachas de precio contadas solo en turnos de
+// mercado abierto, las comarcas pisadas de paso y la traza de cada negocio de arbitraje.
 import {
   CAPITULOS_DE_PRESTIGIO,
+  HITOS,
   RECURSOS,
+  bastimentoDe,
+  calendarioDe,
+  catalogoDePlazas,
   comparar,
+  estacionDe,
   limitesDePrecio,
+  modificadoresDelJugador,
   prestigioDe,
 } from '@conquer/nucleo';
 import type {
   CapituloDePrestigio,
   Casa,
   EstadoPartida,
+  Hito,
+  IdComarca,
   IdJugador,
+  Mundo,
   Recursos,
   Recurso,
   Suceso,
   TablasDeReglas,
 } from '@conquer/nucleo';
+
+import { LibroDeNegocios, tratoDeSuceso } from './negocios.ts';
+import type { TrazaDeNegocios } from './negocios.ts';
+import { pasoDelTurno } from './visitas.ts';
+
+/**
+ * Version de las metricas: sube cuando cambia lo que significa una cifra. Va en el manifiesto, para
+ * que nadie compare dos informes que no miden lo mismo (ficha T-048 §4.1).
+ */
+export const VERSION_METRICAS = 2;
 
 /** Lo que se sabe de un jugador al acabar un turno. */
 export interface FilaDeTurno {
@@ -32,6 +56,8 @@ export interface FilaDeTurno {
   readonly produccion: Recursos;
   readonly obrasTerminadas: number;
   readonly obrasMayoresTerminadas: number;
+  /** Hitos logrados hasta este turno. */
+  readonly hitosLogrados: number;
   /** Jornadas andadas por sus recuas este turno, en milesimas. */
   readonly jornadasMil: number;
   /** Cargas compradas y vendidas en cualquier plaza. */
@@ -47,17 +73,34 @@ export interface FilaDeTurno {
   readonly comarcasIncorporadas: number;
   /** El robot decidio este turno; null si no le tocaba entrar. */
   readonly decidio: boolean | null;
-  /** Decidio y no encontro ninguna orden sensata que dar. */
-  readonly sinDecision: boolean;
+  /** Ordenes que propuso el robot. Cero no significa que no hubiera nada util que hacer. */
+  readonly ordenesPropuestas: number;
+  /** Decidio y no propuso ninguna orden: indicador de actividad, no de utilidad (T-048 §4.2). */
+  readonly sinOrdenes: boolean;
+  /** Ordenes que entraron en juego este turno (suceso `orden.alta`). */
+  readonly ordenesDeAlta: number;
+  readonly ordenesTerminadas: number;
+  readonly ordenesCanceladas: number;
+  readonly ordenesEnEspera: number;
 }
 
 export interface MetricasDeJugador {
   readonly jugador: IdJugador;
   readonly casa: Casa;
   readonly filas: readonly FilaDeTurno[];
-  /** Recursos que compro en una plaza y vendio en otra: `plaza|recurso` de cada compra y venta. */
+  /** Turno en que logro cada hito; null si no lo logro (nunca cero ni omitido). */
+  readonly hitos: Readonly<Record<Hito, number | null>>;
+  /** Turno en que termino su primera obra mayor; null si no termino ninguna. */
+  readonly primeraObraMayor: number | null;
+  /** Compras y ventas por `plaza|recurso`: el indicio antiguo, que no prueba ningun negocio. */
   readonly compras: readonly string[];
   readonly ventas: readonly string[];
+  /** El arbitraje de verdad, carga a carga (ficha T-048 §4.2). */
+  readonly traza: TrazaDeNegocios;
+  /** Motivo → ordenes canceladas por el. */
+  readonly cancelacionesPorMotivo: Readonly<Record<string, number>>;
+  /** Motivo → veces que una orden se quedo esperando por el. */
+  readonly esperasPorMotivo: Readonly<Record<string, number>>;
 }
 
 /** Un precio que se quedo en el suelo o en el techo de su plaza muchos turnos seguidos. */
@@ -65,6 +108,7 @@ export interface PrecioPegado {
   readonly mercado: string;
   readonly recurso: Recurso;
   readonly extremo: 'suelo' | 'techo';
+  /** Turnos seguidos **con la plaza abierta**: el cierre de una feria rompe la racha. */
   readonly turnos: number;
 }
 
@@ -81,6 +125,10 @@ export interface MetricasDePartida {
   readonly preciosPegados: readonly PrecioPegado[];
   /** Comarcas que alguien poseyo, piso o influyo en algun momento. */
   readonly comarcasTocadas: readonly string[];
+  /** Las comarcas del mapa que se jugo de verdad: el criterio de tierra se mide sobre ellas. */
+  readonly comarcasDelMapa: readonly string[];
+  /** False si el paso de alguna unidad no se pudo reconstruir: las visitas son una cota inferior. */
+  readonly visitasCompletas: boolean;
   /** Huella del ultimo turno: si dos ejecuciones la dan distinta, no son la misma partida. */
   readonly huellaFinal: string;
 }
@@ -91,6 +139,10 @@ function recursosCero(): Record<Recurso, number> {
 
 function numero(valor: number | string | undefined): number {
   return typeof valor === 'number' ? valor : 0;
+}
+
+function texto(valor: number | string | undefined): string {
+  return valor === undefined ? '' : String(valor);
 }
 
 /** Suma un dato de los sucesos de un tipo y un jugador. */
@@ -135,11 +187,25 @@ export class Registro {
   private readonly tocadas = new Set<string>();
   private readonly compras = new Map<string, Set<string>>();
   private readonly ventas = new Map<string, Set<string>>();
+  private readonly cancelaciones = new Map<string, Map<string, number>>();
+  private readonly esperas = new Map<string, Map<string, number>>();
+  private readonly libro: LibroDeNegocios;
+  private anterior: EstadoPartida | null = null;
+  private visitasCompletas = true;
 
   constructor(
     private readonly reglas: TablasDeReglas,
+    private readonly mundo: Mundo,
     private readonly cadencia: number,
-  ) {}
+  ) {
+    this.libro = new LibroDeNegocios(reglas);
+  }
+
+  /** El estado con el que empieza la partida, antes de resolver ningun turno. */
+  empezar(estado: EstadoPartida): void {
+    this.anterior = estado;
+    this.anotarTierra(estado, []);
+  }
 
   /** Apunta el turno recien resuelto. `decisiones` dice cuantas ordenes dio cada robot, o null. */
   anotar(
@@ -176,6 +242,7 @@ export class Registro {
           'obra.termina',
           (s) => s.datos['clase'] === 'obra mayor',
         ),
+        hitosLogrados: Object.keys(jugador.hitos).length,
         jornadasMil: sumar(sucesos, jugador.id, 'recua.avanza', 'andadoMil'),
         volumenComerciado: sumar(sucesos, jugador.id, 'mercado.trato', 'cantidad'),
         volumenEnRuta: sumar(
@@ -198,39 +265,117 @@ export class Registro {
         pueblasFundadas: contar(sucesos, jugador.id, 'recua.funda-puebla'),
         comarcasIncorporadas: contar(sucesos, jugador.id, 'incorporar.completa'),
         decidio: decision === null ? null : true,
-        sinDecision: decision === 0,
+        ordenesPropuestas: decision ?? 0,
+        sinOrdenes: decision === 0,
+        ordenesDeAlta: contar(sucesos, jugador.id, 'orden.alta'),
+        ordenesTerminadas: contar(
+          sucesos,
+          jugador.id,
+          'orden.estado',
+          (s) => s.datos['estado'] === 'terminada',
+        ),
+        ordenesCanceladas: contar(
+          sucesos,
+          jugador.id,
+          'orden.estado',
+          (s) => s.datos['estado'] === 'cancelada',
+        ),
+        ordenesEnEspera: contar(
+          sucesos,
+          jugador.id,
+          'orden.estado',
+          (s) => s.datos['estado'] === 'en espera' || s.datos['estado'] === 'en cola',
+        ),
       };
       this.filas.set(id, [...(this.filas.get(id) ?? []), fila]);
     }
-    this.anotarPrecios(estado);
-    this.anotarTierra(estado);
-    this.anotarTratos(sucesos);
+    this.anotarMotivos(sucesos);
+    this.anotarPrecios(estado, turno);
+    this.anotarTierra(estado, sucesos);
+    this.anotarNegocios(estado, sucesos, turno);
+    this.anterior = estado;
   }
 
-  private anotarTratos(sucesos: readonly Suceso[]): void {
+  /** Por que se cancelan y por que esperan las ordenes: sin esto, «sin decision» no explica nada. */
+  private anotarMotivos(sucesos: readonly Suceso[]): void {
     for (const s of sucesos) {
-      if (s.tipo !== 'mercado.trato' || s.jugador === null || numero(s.datos['cantidad']) <= 0) {
-        continue;
-      }
-      const donde = s.datos['operacion'] === 'comprar' ? this.compras : this.ventas;
-      const clave = `${String(s.datos['mercado'])}|${String(s.datos['recurso'])}`;
-      donde.set(s.jugador, (donde.get(s.jugador) ?? new Set<string>()).add(clave));
+      if (s.tipo !== 'orden.estado' || s.jugador === null) continue;
+      const estado = texto(s.datos['estado']);
+      const donde =
+        estado === 'cancelada'
+          ? this.cancelaciones
+          : estado === 'en espera' || estado === 'en cola'
+            ? this.esperas
+            : null;
+      if (donde === null) continue;
+      const motivo = texto(s.datos['motivo']) || 'sin motivo';
+      const clave = `${texto(s.datos['clase'])}: ${motivo}`;
+      const suyos = donde.get(s.jugador) ?? new Map<string, number>();
+      suyos.set(clave, (suyos.get(clave) ?? 0) + 1);
+      donde.set(s.jugador, suyos);
     }
   }
 
-  private anotarPrecios(estado: EstadoPartida): void {
+  /** La traza del arbitraje: el bastimento del viaje y cada trato, en el orden en que pasaron. */
+  private anotarNegocios(estado: EstadoPartida, sucesos: readonly Suceso[], turno: number): void {
+    const estacion = estacionDe(turno, this.reglas);
+    for (const s of sucesos) {
+      if (s.tipo === 'recua.avanza' && s.jugador !== null) {
+        const jugador = estado.jugadores[s.jugador];
+        const bastimento = bastimentoDe(
+          numero(s.datos['andadoMil']),
+          estacion,
+          this.reglas,
+          jugador === undefined
+            ? undefined
+            : modificadoresDelJugador(jugador, this.reglas).bastimentoMil,
+        );
+        this.libro.anotarBastimento(
+          s.jugador,
+          texto(s.datos['recua']),
+          bastimento.pan,
+          bastimento.sal,
+        );
+        continue;
+      }
+      const trato = tratoDeSuceso(s);
+      if (trato === null) continue;
+      this.libro.anotarTrato(turno, trato);
+      const donde = trato.operacion === 'comprar' ? this.compras : this.ventas;
+      const clave = `${trato.mercado}|${trato.recurso}`;
+      donde.set(trato.jugador, (donde.get(trato.jugador) ?? new Set<string>()).add(clave));
+    }
+    for (const recua of Object.values(estado.recuas)) {
+      this.libro.ajustarCarga(recua.jugador, recua.id, recua.carga);
+    }
+    for (const recua of Object.values(this.anterior?.recuas ?? {})) {
+      if (estado.recuas[recua.id] === undefined) {
+        this.libro.ajustarCarga(recua.jugador, recua.id, null);
+      }
+    }
+  }
+
+  private anotarPrecios(estado: EstadoPartida, turno: number): void {
+    const calendario = calendarioDe(turno, this.mundo, this.reglas);
+    const catalogo = catalogoDePlazas(estado, this.mundo, calendario.feriasActivas);
     for (const id of Object.keys(estado.mercados).sort(comparar)) {
       const mercado = estado.mercados[id];
       if (mercado === undefined) continue;
+      // La plaza cerrada no comercia: su precio almacenado no cuenta y su racha se rompe.
+      const abierta = catalogo.abierta(mercado.id) !== null;
       for (const recurso of RECURSOS) {
         if (recurso === 'maravedis') continue;
+        const clave = `${id}|${recurso}`;
+        if (!abierta) {
+          this.rachas.delete(clave);
+          continue;
+        }
         const { sueloMil, techoMil } = limitesDePrecio(
           this.reglas.recursos[recurso].precioBaseMil,
           this.reglas.mercado,
         );
         const precio = mercado.preciosMil[recurso];
         const extremo = precio <= sueloMil ? 'suelo' : precio >= techoMil ? 'techo' : null;
-        const clave = `${id}|${recurso}`;
         const racha = this.rachas.get(clave);
         if (extremo === null) {
           this.rachas.delete(clave);
@@ -246,16 +391,18 @@ export class Registro {
     }
   }
 
-  private anotarTierra(estado: EstadoPartida): void {
+  private anotarTierra(estado: EstadoPartida, sucesos: readonly Suceso[]): void {
     for (const comarca of Object.values(estado.comarcas)) {
       if (comarca.duenyo !== null || Object.keys(comarca.influencias).length > 0) {
         this.tocadas.add(comarca.id);
       }
     }
-    for (const unidad of [...Object.values(estado.recuas), ...Object.values(estado.rebanyos)]) {
-      const s = unidad.situacion;
-      this.tocadas.add(s.donde === 'comarca' ? s.comarca : s.desde);
-    }
+    const entradas = sucesos
+      .filter((s) => s.tipo === 'recua.entra' && s.comarca !== null)
+      .map((s) => s.comarca as IdComarca);
+    const paso = pasoDelTurno(this.anterior, estado, entradas);
+    for (const comarca of paso.comarcas) this.tocadas.add(comarca);
+    if (!paso.completo) this.visitasCompletas = false;
   }
 
   cerrar(estado: EstadoPartida, semilla: string, turnos: number): MetricasDePartida {
@@ -270,13 +417,7 @@ export class Registro {
       semilla,
       turnos,
       cadencia: this.cadencia,
-      jugadores: [...this.filas.keys()].sort(comparar).map((id) => ({
-        jugador: id as IdJugador,
-        casa: this.casas.get(id) ?? 'mesta',
-        filas: this.filas.get(id) ?? [],
-        compras: [...(this.compras.get(id) ?? [])].sort(comparar),
-        ventas: [...(this.ventas.get(id) ?? [])].sort(comparar),
-      })),
+      jugadores: [...this.filas.keys()].sort(comparar).map((id) => this.jugador(estado, id)),
       puestos,
       primicias,
       preciosPegados: [...this.peores.values()].sort(
@@ -284,9 +425,39 @@ export class Registro {
           b.turnos - a.turnos || comparar(a.mercado, b.mercado) || comparar(a.recurso, b.recurso),
       ),
       comarcasTocadas: [...this.tocadas].sort(comparar),
+      comarcasDelMapa: Object.keys(this.mundo.comarcas).sort(comparar),
+      visitasCompletas: this.visitasCompletas,
       huellaFinal: estado.huellaTurnoAnterior ?? '',
     };
   }
+
+  private jugador(estado: EstadoPartida, id: string): MetricasDeJugador {
+    const filas = this.filas.get(id) ?? [];
+    const logrados = estado.jugadores[id]?.hitos ?? {};
+    const hitos = {} as Record<Hito, number | null>;
+    for (const hito of HITOS) hitos[hito] = logrados[hito] ?? null;
+    return {
+      jugador: id as IdJugador,
+      casa: this.casas.get(id) ?? 'mesta',
+      filas,
+      hitos,
+      primeraObraMayor: filas.find((f) => f.obrasMayoresTerminadas > 0)?.turno ?? null,
+      compras: [...(this.compras.get(id) ?? [])].sort(comparar),
+      ventas: [...(this.ventas.get(id) ?? [])].sort(comparar),
+      traza: this.libro.trazaDe(id),
+      cancelacionesPorMotivo: ordenado(this.cancelaciones.get(id)),
+      esperasPorMotivo: ordenado(this.esperas.get(id)),
+    };
+  }
+}
+
+/** Un recuento por motivo, siempre en el mismo orden: el informe no puede depender de un Map. */
+function ordenado(cuenta: ReadonlyMap<string, number> | undefined): Record<string, number> {
+  const salida: Record<string, number> = {};
+  for (const clave of [...(cuenta?.keys() ?? [])].sort(comparar)) {
+    salida[clave] = cuenta?.get(clave) ?? 0;
+  }
+  return salida;
 }
 
 /** Las cifras de un jugador al acabar la partida, para las tablas del informe. */
@@ -305,8 +476,15 @@ export interface ResumenDeJugador {
   readonly jornadas: number;
   readonly volumenComerciado: number;
   readonly volumenEnRuta: number;
-  /** Recursos que compro en una plaza y vendio en otra distinta: el arbitraje. */
-  readonly arbitrajes: number;
+  /** Recursos que compro en una plaza y vendio en otra: solo un indicio (ficha T-048 §4.2). */
+  readonly indicioDeArbitraje: number;
+  /** Negocios de arbitraje con traza completa: compra seguida de venta de esa misma mercancia. */
+  readonly negocios: number;
+  readonly cargasArbitradas: number;
+  readonly margenDeNegocios: number;
+  readonly margenNetoDeNegocios: number;
+  /** Cargas vendidas que no vienen de ninguna compra: produccion propia o carga de casa. */
+  readonly ventasSinCompra: number;
   readonly ingresosDeFeria: number;
   readonly lanaEsquilada: number;
   readonly pueblasFundadas: number;
@@ -316,11 +494,17 @@ export interface ResumenDeJugador {
   /** Lo producido en toda la partida, por clase de edificio. */
   readonly porEdificio: Readonly<Record<string, number>>;
   readonly turnosDeDecision: number;
-  readonly turnosSinDecision: number;
+  readonly turnosSinOrdenes: number;
+  readonly ordenesPropuestas: number;
+  readonly ordenesDeAlta: number;
+  readonly ordenesTerminadas: number;
+  readonly ordenesCanceladas: number;
+  readonly ordenesEnEspera: number;
+  readonly primeraObraMayor: number | null;
 }
 
-/** Recursos comprados en una plaza y vendidos en otra. */
-function arbitrajesDe(jugador: MetricasDeJugador): number {
+/** Recursos comprados en una plaza y vendidos en otra, sin mirar ni el orden ni el origen. */
+function indicioDeArbitraje(jugador: MetricasDeJugador): number {
   const partes = (clave: string): [string, string] => {
     const [plaza = '', recurso = ''] = clave.split('|');
     return [plaza, recurso];
@@ -352,6 +536,7 @@ export function resumir(partida: MetricasDePartida, jugador: MetricasDeJugador):
   }
   const capitulos = {} as Record<CapituloDePrestigio, number>;
   for (const c of CAPITULOS_DE_PRESTIGIO) capitulos[c] = ultima?.capitulos[c] ?? 0;
+  const negocios = jugador.traza.negocios;
   return {
     casa: jugador.casa,
     prestigio: ultima?.prestigio ?? 0,
@@ -367,7 +552,12 @@ export function resumir(partida: MetricasDePartida, jugador: MetricasDeJugador):
     jornadas: Math.floor(suma((f) => f.jornadasMil) / 1000),
     volumenComerciado: suma((f) => f.volumenComerciado),
     volumenEnRuta: suma((f) => f.volumenEnRuta),
-    arbitrajes: arbitrajesDe(jugador),
+    indicioDeArbitraje: indicioDeArbitraje(jugador),
+    negocios: negocios.length,
+    cargasArbitradas: negocios.reduce((t, n) => t + n.cargas, 0),
+    margenDeNegocios: negocios.reduce((t, n) => t + n.margen, 0),
+    margenNetoDeNegocios: negocios.reduce((t, n) => t + n.margenNeto, 0),
+    ventasSinCompra: jugador.traza.ventasSinCompra.reduce((t, v) => t + v.cargas, 0),
     ingresosDeFeria: suma((f) => f.ingresosDeFeria),
     lanaEsquilada: suma((f) => f.lanaEsquilada),
     pueblasFundadas: suma((f) => f.pueblasFundadas),
@@ -375,6 +565,12 @@ export function resumir(partida: MetricasDePartida, jugador: MetricasDeJugador):
     producido,
     porEdificio: edificios,
     turnosDeDecision: filas.filter((f) => f.decidio === true).length,
-    turnosSinDecision: filas.filter((f) => f.sinDecision).length,
+    turnosSinOrdenes: filas.filter((f) => f.sinOrdenes).length,
+    ordenesPropuestas: suma((f) => f.ordenesPropuestas),
+    ordenesDeAlta: suma((f) => f.ordenesDeAlta),
+    ordenesTerminadas: suma((f) => f.ordenesTerminadas),
+    ordenesCanceladas: suma((f) => f.ordenesCanceladas),
+    ordenesEnEspera: suma((f) => f.ordenesEnEspera),
+    primeraObraMayor: jugador.primeraObraMayor,
   };
 }

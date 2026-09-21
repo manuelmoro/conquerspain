@@ -123,3 +123,59 @@ las dependencias. Una tarea, una referencia medible y un commit por sesión.
 899 tests en verde**; el atlas coincide con el generado. `git diff --check` no detectó errores.
 Los enlaces locales de las fichas revisadas existen y el grafo del índice (58 tareas) no tiene
 ciclos. No hay cambios en `paquetes/` ni en el código de los robots; solo plan, estado y evidencia.
+
+## 21-09-2026 · T-048: el instrumento ya dice la verdad
+
+**Encargo:** que cada criterio de T-047 §5 tenga evidencia por partida y un veredicto reproducible.
+**Resultado:** hecho. No se cambió ni una tabla del juego: la comparación del informe nuevo con el
+de T-046 no mueve ni una cifra de la partida, solo aparecen y desaparecen métricas.
+
+### Base nueva
+
+| Dato | Valor |
+|---|---|
+| Informe | [`herramientas/banco/informes/T-048-1492.md`](../../herramientas/banco/informes/T-048-1492.md) |
+| Revisión | `bf47da3327a9019ff05cad1717d6100118a5c7b9+T-048`: el cierre de T-047 más el código de esta tarea. Un informe no puede llevar la huella del commit que lo contiene, así que la revisión se pasó a mano con `--revision`; el juego no cambia entre las dos |
+| Campaña | `1492`, `1492-2`, `1492-3`, 200 turnos, ocho casas, cadencias 1 y 6 |
+| Huella de las tablas | `4814155cae6e8badfd6f9dc95336a8989f2f194c7fe20c9e2bc6546a3a893ef9` |
+| Huella del mundo | `aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550` |
+| Veredicto | 46 filas cumplen, 87 incumplen, 24 no evaluables; 127 de 157 sin cerrar |
+
+Los archivos `-evaluacion.csv` y `-manifiesto.json` acompañan al informe. A partir de ahora, un
+ensayo se compara contra esta base con `npm run banco:comparar`, que avisa si ha cambiado algo más
+que el grupo de valores ensayado.
+
+### Lo que el instrumento corregido enseña
+
+| Hallazgo | Antes (T-046) | Ahora |
+|---|---|---|
+| Ritmo | Se leía a mano de snapshots no versionados | En el informe: dominio T34/T33/T32 y primera obra mayor T88 en las tres; **coincide** con lo leído a mano el 19-09-2026 |
+| Tierra | 235 de 403 sin tocar en la **unión** de las tres | 338, 327 y 324 de 403 **por partida** (80–84 %), con las visitas de paso contadas |
+| Arbitraje | «arbitrajes» cruzaba conjuntos de compras y ventas | **Cero negocios con traza** en toda la campaña; y miles de cargas vendidas sin compra previa, que son producción propia |
+| Precios | Solo había alerta pasados 20 turnos | Racha máxima 0 turnos con la plaza abierta: el precio guardado de una feria cerrada ya no cuenta |
+| Actividad | Una media podía tapar una casa parada | Hortelanos 67 % de turnos sin proponer órdenes en `1492`; la utilidad de las órdenes sigue **no evaluable** hasta T-050 |
+| Ausencia | Medias por casa | Pareja a pareja en T100 y T200: canteros 248 → 71 en `1492`. Solo 6 de 48 parejas bajan del 5 %, y esas seis quedan apoyadas en la precondición de T-051 |
+
+### El recuento, criterio a criterio
+
+| Criterio | Filas | Cumplen | Incumplen | No evaluables |
+|---|---:|---:|---:|---:|
+| prestigio | 24 | 4 | 20 | 0 |
+| actividad | 24 | 19 | 5 | 0 |
+| decisiones útiles | 24 | 0 | 0 | 24 |
+| escasez | 24 | 10 | 14 | 0 |
+| ausencia | 48 | 6 | 42 | 0 |
+| precios | 3 | 3 | 0 | 0 |
+| tierra | 3 | 0 | 3 | 0 |
+| dominio | 3 | 0 | 3 | 0 |
+| obra mayor | 3 | 3 | 0 | 0 |
+| ganadores | 1 | 1 | 0 | 0 |
+
+De los 46 «cumple», **16 se apoyan en una precondición pendiente** (10 de escasez, por T-050, y 6 de
+ausencia, por T-051): no cierran su criterio.
+
+### Lo que sigue sin poder afirmarse
+
+«No evaluable» sigue siendo el estado de las decisiones útiles (T-050), y las filas de escasez,
+tierra y ausencia que cumplen lo hacen apoyadas en precondiciones de T-049, T-050 y T-051. Por eso
+`--evaluar` devuelve 2 y **el equilibrio sigue abierto**, como estaba previsto en T-048 §7.

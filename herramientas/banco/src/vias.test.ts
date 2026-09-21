@@ -32,7 +32,7 @@ function cifrasDe(partida: MetricasDePartida): Record<string, number> {
     lanaEsquilada: r.lanaEsquilada,
     ingresosDeFeria: r.ingresosDeFeria,
     obrasMayores: r.obrasMayores,
-    arbitrajes: r.arbitrajes,
+    negocios: r.negocios,
     pueblasFundadas: r.pueblasFundadas,
     jornadas: r.jornadas,
     volumenComerciado: r.volumenComerciado,
@@ -170,7 +170,8 @@ describe('cada robot juega su vía', () => {
     if (!valido.ok) throw new Error(explicar(valido.errores));
     let estado: EstadoPartida = valido.valor;
     const robots = [robotDe('mercaderes')];
-    const registro = new Registro(reglas, 1);
+    const registro = new Registro(reglas, mundo, 1);
+    registro.empezar(estado);
     for (let i = 0; i < 16; i += 1) {
       const turno = jugarTurno(estado, robots, mundo, reglas);
       estado = turno.estado;
