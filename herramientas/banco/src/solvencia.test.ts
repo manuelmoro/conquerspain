@@ -24,16 +24,8 @@ function muestraDe(casa: Casa): ComarcaMundo[] {
   return [...porPerfil.values()];
 }
 
-/**
- * T-050 en curso: el plan del ferrón cuenta con derribar la lonja sin sal (`hacerSitio`) y la
- * simulación de solvencia aún no lo modela. Ver «Dónde va T-050» en ESTADO.md.
- */
-const PENDIENTES_DE_T050: readonly Casa[] = ['ferrones'];
-
 describe('los planes de los robots son solventes', () => {
-  it.skip.each(PENDIENTES_DE_T050.map((casa) => [casa]))('pendiente de T-050: %s', () => undefined);
-
-  it.each(CASAS.filter((casa) => !PENDIENTES_DE_T050.includes(casa)).map((casa) => [casa]))(
+  it.each(CASAS.map((casa) => [casa]))(
     '%s: el plan de la capital cabe y tiene de donde sacar lo que consume',
     (casa) => {
       const problemas = muestraDe(casa).flatMap((comarca) =>
@@ -47,23 +39,27 @@ describe('los planes de los robots son solventes', () => {
   );
 
   it('la prueba ve un plan mal ordenado y un insumo sin fuente', () => {
-    // El plan del ferrón anterior a T-050: la cantera delante de la ferrería. En Bilbao, que
-    // arranca con granja y dos lonjas, la ferrería se queda sin solar.
+    // Bilbao arranca con granja y dos lonjas. Un plan que las quiere conservar (estan en el plan, no
+    // se derriban) y pone la cantera delante de la ferreria deja a la ferreria sin solar.
     const bilbao = MUNDO.comarcas['bilbao'];
     if (bilbao === undefined) throw new Error('falta Bilbao en el mundo');
     const suyo = ESTRATEGIAS.ferrones.perfil;
-    const antiguo = {
+    const conLonjas = {
       ...suyo,
       capital: [
+        ['lonja', 2],
         ['cantera', 1],
         ['mercado', 1],
+        ['aserradero', 1],
         ['carbonera', 1],
         ['ferreria', 1],
       ] as const,
     };
-    expect(problemasDelPlan('ferrones', bilbao, REGLAS, antiguo)).toContainEqual(
-      expect.stringContaining('ferreria 1: sin-solar'),
+    expect(problemasDelPlan('ferrones', bilbao, REGLAS, conLonjas)).toContainEqual(
+      expect.stringContaining('sin-solar'),
     );
+    // Con el plan de verdad, las lonjas sin sal se derriban y la cadena del hierro cabe.
+    expect(problemasDelPlan('ferrones', bilbao, REGLAS)).toEqual([]);
     // Sin mercado nadie compra la madera que se come la carbonera.
     const sinMercado = { ...suyo, capital: [['carbonera', 1]] as const, esenciales: [] };
     expect(problemasDelPlan('ferrones', bilbao, REGLAS, sinMercado)).toContainEqual(

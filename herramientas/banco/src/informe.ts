@@ -392,36 +392,86 @@ function hay(m: Readonly<Record<string, number>>, nombre: string): boolean {
 export const PRUEBA_DE_VIA: Readonly<
   Record<
     Casa,
-    { readonly texto: string; readonly cumple: (m: Readonly<Record<string, number>>) => boolean }
+    {
+      readonly texto: string;
+      readonly cumple: (m: Readonly<Record<string, number>>) => boolean;
+      /** Los motivos que explican que esta via no ocurra: los demas son de otras rutinas. */
+      readonly motivos: readonly Motivo[];
+    }
   >
 > = {
   mesta: {
     texto: 'lleva el ganado de un pasto al otro, esquila y vende la lana',
     cumple: (m) => hay(m, 'trashumancias') && hay(m, 'lanaEsquilada') && hay(m, 'vendido_lana'),
+    motivos: [
+      'sin-pasto-de-verano',
+      'sin-pasto-de-invierno',
+      'pastos-demasiado-lejos',
+      'sin-maravedis-para-rebanyo',
+      'sin-lana-que-vender',
+      'sin-mercado-propio',
+      'recua-sin-formar',
+      'escasez',
+    ],
   },
   ferrones: {
     texto: 'saca hierro en sus ferrerías y lo vende o lo pone en aperos',
     cumple: (m) => hay(m, 'edificio_ferreria') && (hay(m, 'vendido_hierro') || hay(m, 'aperos')),
+    motivos: ['esencial-sin-recursos', 'escasez', 'sin-mercado-propio'],
   },
-  canteros: { texto: 'termina obras mayores', cumple: (m) => hay(m, 'obrasMayores') },
+  canteros: {
+    texto: 'termina obras mayores',
+    cumple: (m) => hay(m, 'obrasMayores'),
+    motivos: [
+      'obra-mayor-en-marcha',
+      'obra-mayor-sin-recursos',
+      'esencial-sin-recursos',
+      'escasez',
+      'sin-mercado-propio',
+    ],
+  },
   mercaderes: {
     texto: 'compra en una plaza y vende esa misma mercancía en otra con ganancia neta',
     cumple: (m) => hay(m, 'negociosRentables'),
+    motivos: [
+      'sin-precios-sabidos',
+      'sin-negocio-rentable',
+      'sin-viaje-que-quepa',
+      'sin-bolsa-para-comprar',
+      'sin-oida-al-alcance',
+      'recua-sin-formar',
+      'escasez',
+    ],
   },
-  monjes: { texto: 'funda pueblas', cumple: (m) => hay(m, 'pueblasFundadas') },
+  monjes: {
+    texto: 'funda pueblas',
+    cumple: (m) => hay(m, 'pueblasFundadas'),
+    motivos: ['sin-tierra-que-ganar', 'sin-pan-para-el-viaje', 'sin-sal-de-verano', 'escasez'],
+  },
   salineros: {
     texto: 'saca sal o salazón y la vende',
     cumple: (m) =>
       (hay(m, 'edificio_salina') && hay(m, 'vendido_sal')) ||
       (hay(m, 'edificio_lonja') && hay(m, 'vendido_pan')),
+    motivos: ['esencial-sin-recursos', 'escasez', 'sin-mercado-propio', 'sin-feria-al-alcance'],
   },
   arrieros: {
     texto: 'lleva mercancía por los caminos y la vende fuera de su tierra',
     cumple: (m) => hay(m, 'jornadas') && hay(m, 'ventasFuera'),
+    motivos: [
+      'sin-precios-sabidos',
+      'sin-negocio-rentable',
+      'sin-viaje-que-quepa',
+      'sin-bolsa-para-comprar',
+      'sin-oida-al-alcance',
+      'recua-sin-formar',
+      'escasez',
+    ],
   },
   hortelanos: {
     texto: 'vive del pan de sus huertas y vende el que sobra',
     cumple: (m) => hay(m, 'edificio_huerta') && hay(m, 'vendido_pan'),
+    motivos: ['esencial-sin-recursos', 'escasez', 'sin-mercado-propio'],
   },
 };
 
@@ -429,18 +479,23 @@ export const PRUEBA_DE_VIA: Readonly<
 const MOTIVOS_POR_VIA = 3;
 
 /**
- * Por que no juega su via: los motivos que dio el robot mas turnos, con su categoria. Es la razon
- * trazable que pide T-050 §6.4; si el robot no dio ninguno, se dice.
+ * Por que no juega su via: los motivos de su via que dio el robot mas turnos, con su categoria. Es
+ * la razon trazable que pide T-050 §6.4. Si no dio ninguno de su via, es un defecto del robot y se
+ * dice asi, sin buscarle otra explicacion.
  */
 export function porQueNo(jugador: MetricasDeJugador): string {
+  const suyos = new Set<Motivo>(PRUEBA_DE_VIA[jugador.casa].motivos);
   const cuenta = new Map<Motivo, number>();
   for (const fila of jugador.filas) {
-    for (const motivo of fila.motivos) cuenta.set(motivo, (cuenta.get(motivo) ?? 0) + 1);
+    for (const motivo of fila.motivos) {
+      if (suyos.has(motivo)) cuenta.set(motivo, (cuenta.get(motivo) ?? 0) + 1);
+    }
   }
   const principales = [...cuenta]
     .sort((a, b) => b[1] - a[1] || comparar(a[0], b[0]))
     .slice(0, MOTIVOS_POR_VIA);
-  if (principales.length === 0) return 'el robot no dio ningún motivo: **defecto del robot**';
+  if (principales.length === 0)
+    return 'el robot no dio ningún motivo de su vía: **defecto del robot**';
   return principales
     .map(([motivo, turnos]) => {
       const datos = MOTIVOS[motivo];

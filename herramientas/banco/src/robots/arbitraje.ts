@@ -133,6 +133,36 @@ function negocioDe(
   };
 }
 
+/**
+ * El negocio tanteado con la recua vacia, comprobado con la mercancia encima: cargada anda menos y
+ * come mas. Si no cabe, se prueba con menos cargas; si con ninguna deja ganancia, no hay negocio.
+ */
+function conLaCarga(
+  t: Tablero,
+  recua: Recua,
+  paradas: readonly Parada[],
+  tanteo: Omit<Negocio, 'provision'>,
+  bolsa: number,
+  salida = 0,
+): Negocio | null {
+  for (let cargas = tanteo.cantidad; cargas > 0; cargas -= 1) {
+    const llena = provisionPara(t, recua, paradas, { [tanteo.recurso]: cargas }, salida);
+    if (!llena.ok) continue;
+    const final = negocioDe(
+      t,
+      tanteo.compra,
+      tanteo.venta,
+      tanteo.recurso,
+      bolsa,
+      cargas,
+      llena.valor,
+    );
+    if (final !== null && final.ganancia >= GANANCIA_MINIMA)
+      return { ...final, provision: llena.valor };
+  }
+  return null;
+}
+
 /** Diferencia bruta de precio mas alta entre dos plazas: para mirar primero las prometedoras. */
 function diferencia(t: Tablero, compra: PlazaConocida, venta: PlazaConocida): number {
   let mejor = Number.NEGATIVE_INFINITY;
@@ -152,7 +182,7 @@ function diferencia(t: Tablero, compra: PlazaConocida, venta: PlazaConocida): nu
  * El mejor negocio que la recua, quieta en la capital, puede hacer con lo que sabe: el que mas
  * gana en limpio. Si no hay ninguno, dice por que.
  */
-function mejorNegocio(d: Decision, recua: Recua, bolsa: number): Negocio | null {
+function mejorNegocio(d: Decision, recua: Recua, bolsa: number, enCasa: Tanteo): Negocio | null {
   const { t } = d;
   const plazas = plazasConPrecio(t);
   if (plazas.length < 2) {
@@ -169,52 +199,61 @@ function mejorNegocio(d: Decision, recua: Recua, bolsa: number): Negocio | null 
   }
   parejas.sort((a, b) => b[2] - a[2] || comparar(a[0].id, b[0].id) || comparar(a[1].id, b[1].id));
   let mejor: Negocio | null = null;
+  let algunViaje = false;
   for (const [compra, venta] of parejas.slice(0, PAREJAS_QUE_SE_PREVEN)) {
     const vacia = provisionPara(t, recua, paradasDe(t, compra, venta));
     if (!vacia.ok) continue;
+    algunViaje = true;
     const hueco = recua.porte - vacia.valor.pan - vacia.valor.sal;
     for (const recurso of COMERCIABLES) {
       const tanteo = negocioDe(t, compra, venta, recurso, bolsa, hueco, vacia.valor);
       if (tanteo === null || tanteo.ganancia < GANANCIA_MINIMA) continue;
       if (mejor !== null && tanteo.ganancia <= mejor.ganancia) continue;
-      // Con la mercancia encima se anda menos: se prevé otra vez con ella, y solo vale si cabe.
-      const llena = provisionPara(t, recua, paradasDe(t, compra, venta), {
-        [recurso]: tanteo.cantidad,
-      });
-      if (!llena.ok) continue;
-      const final = negocioDe(t, compra, venta, recurso, bolsa, tanteo.cantidad, llena.valor);
-      if (final === null || final.ganancia < GANANCIA_MINIMA) continue;
-      if (mejor === null || final.ganancia > mejor.ganancia) {
-        mejor = { ...final, provision: llena.valor };
-      }
+      const final = conLaCarga(t, recua, paradasDe(t, compra, venta), tanteo, bolsa);
+      if (final !== null && (mejor === null || final.ganancia > mejor.ganancia)) mejor = final;
     }
   }
-  if (mejor === null) d.m.anotar('sin-negocio-rentable');
+  if (mejor === null) {
+    const sinViaje =
+      (parejas.length > 0 && !algunViaje) || (parejas.length === 0 && enCasa === 'sin-viaje');
+    d.m.anotar(sinViaje ? 'sin-viaje-que-quepa' : 'sin-negocio-rentable');
+  }
   return mejor;
 }
 
+/** Lo que salio de mirar un negocio: hecho, imposible por el viaje o sin ninguno a la vista. */
+type Tanteo = 'hecho' | 'sin-viaje' | 'ninguno';
+
 /** La compra se hace en la plaza de la capital, donde esta la recua: con una orden de mercado. */
-function negocioEnCasa(d: Decision, recua: Recua, bolsa: number): boolean {
+function negocioEnCasa(d: Decision, recua: Recua, bolsa: number): Tanteo {
   const { t, p } = d;
   const plazas = plazasConPrecio(t);
   const casa = plazas.find((pl) => pl.comarca === t.capital && pl.tipo === 'local');
-  if (casa === undefined) return false;
-  let mejor: Omit<Negocio, 'provision'> | null = null;
+  if (casa === undefined) return 'ninguno';
+  let mejor: Negocio | null = null;
+  let conDiferencia = false;
+  let algunViaje = false;
   for (const venta of plazas) {
-    if (venta.id === casa.id) continue;
-    const vacia = provisionPara(t, recua, [
+    if (venta.id === casa.id || diferencia(t, casa, venta) <= 0) continue;
+    conDiferencia = true;
+    const paradas: Parada[] = [
       { comarca: venta.comarca, detiene: true },
       { comarca: t.capital, detiene: false },
-    ]);
+    ];
+    // Se compra hoy en la plaza y se sale el turno que viene: la prevision empieza entonces.
+    const vacia = provisionPara(t, recua, paradas, {}, 1);
     if (!vacia.ok) continue;
+    algunViaje = true;
     const hueco = recua.porte - vacia.valor.pan - vacia.valor.sal;
     for (const recurso of COMERCIABLES) {
-      const negocio = negocioDe(t, casa, venta, recurso, bolsa, hueco, vacia.valor);
-      if (negocio === null || negocio.ganancia < GANANCIA_MINIMA) continue;
-      if (mejor === null || negocio.ganancia > mejor.ganancia) mejor = negocio;
+      const tanteo = negocioDe(t, casa, venta, recurso, bolsa, hueco, vacia.valor);
+      if (tanteo === null || tanteo.ganancia < GANANCIA_MINIMA) continue;
+      if (mejor !== null && tanteo.ganancia <= mejor.ganancia) continue;
+      const final = conLaCarga(t, recua, paradas, tanteo, bolsa, 1);
+      if (final !== null && (mejor === null || final.ganancia > mejor.ganancia)) mejor = final;
     }
   }
-  if (mejor === null) return false;
+  if (mejor === null) return conDiferencia && !algunViaje ? 'sin-viaje' : 'ninguno';
   p.carga(recua.id, { maravedis: mejor.bolsa }, {});
   if (recua.cometido !== 'tratar') p.cometido(recua.id, 'tratar');
   p.mercado(
@@ -226,7 +265,7 @@ function negocioEnCasa(d: Decision, recua: Recua, bolsa: number): boolean {
     mejor.precioMaximoMil,
     t.turnosHastaQueAbra(casa) + d.cadencia,
   );
-  return true;
+  return 'hecho';
 }
 
 /** Lo que lleva la recua para vender, en la capital: todo menos el pan y los maravedis. */
@@ -242,7 +281,8 @@ function venderLoQueLleva(d: Decision, recua: Recua, recurso: Recurso): void {
   const { t, p } = d;
   const cantidad = recua.carga[recurso];
   let mejor: { plaza: PlazaConocida; precio: number; provision: Provision } | null = null;
-  for (const plaza of plazasConPrecio(t)) {
+  // En la plaza de casa no: es donde se compro, y alli la vende el tratante si sobra.
+  for (const plaza of plazasConPrecio(t).filter((pl) => pl.comarca !== t.capital)) {
     const precio = precioSabido(t, plaza.id, recurso);
     if (precio === null || (mejor !== null && precio <= mejor.precio)) continue;
     const provision = provisionPara(t, recua, [
@@ -329,8 +369,9 @@ export const arbitraje: Rutina = (d, recua) => {
     d.m.anotar('sin-bolsa-para-comprar');
     return;
   }
-  if (negocioEnCasa(d, recua, bolsa)) return;
-  const negocio = mejorNegocio(d, recua, bolsa);
+  const enCasa = negocioEnCasa(d, recua, bolsa);
+  if (enCasa === 'hecho') return;
+  const negocio = mejorNegocio(d, recua, bolsa, enCasa);
   if (negocio !== null) {
     cargarBastimento(d, recua, negocio.provision, negocio.bolsa);
     p.ruta(recua.id, [

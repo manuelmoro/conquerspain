@@ -40,6 +40,18 @@ export const MOTIVOS = {
     categoria: 'recursos',
     texto: 'no tiene con qué levantar un edificio esencial de su vía',
   },
+  'recua-sin-formar': {
+    categoria: 'recursos',
+    texto: 'no tiene la gente, el pan o los maravedís para formar la recua que le falta',
+  },
+  'obra-mayor-en-marcha': {
+    categoria: 'plan',
+    texto: 'tiene una obra mayor en marcha y aún no la ha terminado',
+  },
+  'obra-mayor-sin-recursos': {
+    categoria: 'recursos',
+    texto: 'junta el material y los maravedís de su próxima obra mayor',
+  },
   'sin-tierra-que-ganar': {
     categoria: 'mapa',
     texto: 'no hay comarca neutral explorada y vecina que se pueda ganar',
@@ -86,6 +98,11 @@ export const MOTIVOS = {
   'sin-negocio-rentable': {
     categoria: 'reglas',
     texto: 'con los precios que sabe, ningún viaje deja ganancia después del bastimento',
+  },
+  'sin-viaje-que-quepa': {
+    categoria: 'reglas',
+    texto:
+      'hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento',
   },
   'sin-bolsa-para-comprar': {
     categoria: 'recursos',

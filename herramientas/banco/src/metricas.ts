@@ -494,7 +494,7 @@ export class Registro {
     const entradas = sucesos
       .filter((s) => s.tipo === 'recua.entra' && s.comarca !== null)
       .map((s) => s.comarca as IdComarca);
-    const paso = pasoDelTurno(this.anterior, estado, entradas);
+    const paso = pasoDelTurno(this.anterior, estado, entradas, this.mundo.vecinos);
     for (const comarca of paso.comarcas) this.tocadas.add(comarca);
     if (!paso.completo) this.visitasCompletas = false;
   }

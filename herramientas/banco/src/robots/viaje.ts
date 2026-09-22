@@ -77,6 +77,8 @@ export function preverViaje(
   recua: Recua,
   paradas: readonly Parada[],
   carga: Recursos,
+  /** Turnos que faltan para salir: 0 si sale este turno. */
+  salida = 0,
 ): Resultado<Prevision> {
   const desde = recua.situacion.donde === 'comarca' ? recua.situacion.comarca : null;
   if (desde === null || paradas.length === 0) return fallo('sin-ruta');
@@ -105,7 +107,7 @@ export function preverViaje(
   }
 
   for (let k = 0; k < TURNOS_MAXIMOS_DE_VIAJE; k += 1) {
-    const estacional = t.estacional(t.turno + k);
+    const estacional = t.estacional(t.turno + salida + k);
     const donde = situacion.donde === 'comarca' ? situacion.comarca : situacion.desde;
     const proxima = pendiente[0];
     if (proxima === undefined) break;
@@ -179,6 +181,8 @@ export function provisionPara(
   recua: Recua,
   paradas: readonly Parada[],
   mercancia: Partial<Recursos> = {},
+  /** Turnos que faltan para salir: la compra en casa se hace hoy y la recua sale el que viene. */
+  salida = 0,
 ): Resultado<Provision> {
   const base: Record<Recurso, number> = { ...recua.carga };
   for (const [recurso, cantidad] of Object.entries(mercancia) as [Recurso, number][]) {
@@ -188,7 +192,7 @@ export function provisionPara(
   let sal = recua.carga.sal;
   let prevision: Prevision | null = null;
   for (let intento = 0; intento < 4; intento += 1) {
-    const resultado = preverViaje(t, recua, paradas, { ...base, pan, sal });
+    const resultado = preverViaje(t, recua, paradas, { ...base, pan, sal }, salida);
     if (!resultado.ok) return resultado;
     prevision = resultado.valor;
     const quierePan = Math.max(recua.carga.pan, prevision.pan + margenDePan(t));

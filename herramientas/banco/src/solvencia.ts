@@ -71,6 +71,13 @@ function levantarPlan(
       // ordenado; lo demas se pide solo si cabe.
       // Esencial es tener el edificio; los niveles de mas son crecimiento.
       const esencial = perfil.esenciales.includes(edificio) && (edificios[edificio] ?? 0) === 0;
+      // Como `hacerSitio` del robot: un esencial sin solar se lo quita a lo que no puede trabajar.
+      const inutil =
+        esencial && impedimento === 'sin-solar' ? sinTrabajo(edificios, perfil, reglas) : null;
+      if (inutil !== null) {
+        edificios[inutil] = (edificios[inutil] ?? 0) - 1;
+        continue;
+      }
       if (esencial && (impedimento === 'sin-solar' || impedimento === 'falta-edificio-requerido')) {
         problemas.push(
           `${edificio} ${String(nivel)}: ${impedimento}, con ${JSON.stringify(edificios)} en ${String(comarca.solares)} solares`,
@@ -82,6 +89,26 @@ function levantarPlan(
   return { edificios, problemas };
 }
 
+/**
+ * Un edificio que no esta en el plan y consume algo que ningun edificio de la capital produce: el
+ * que `hacerSitio` derribaria (la lonja sin sal del ferron). El robot lo decide con el almacen de
+ * cada turno; aqui, sin partida, basta con que nada lo produzca.
+ */
+function sinTrabajo(
+  edificios: Readonly<Record<string, number>>,
+  perfil: Perfil,
+  reglas: TablasDeReglas,
+): TipoEdificio | null {
+  const enElPlan = new Set<TipoEdificio>(perfil.capital.map(([e]) => e));
+  const dan = producidos(edificios, reglas);
+  for (const edificio of Object.keys(edificios) as TipoEdificio[]) {
+    if (enElPlan.has(edificio) || (edificios[edificio] ?? 0) <= 0) continue;
+    const consume = Object.keys(reglas.edificios[edificio].consumo) as Recurso[];
+    if (consume.some((recurso) => !dan.has(recurso))) return edificio;
+  }
+  return null;
+}
+
 /** Recursos que produce algun edificio de la lista. */
 function producidos(
   edificios: Readonly<Record<string, number>>,
@@ -89,6 +116,7 @@ function producidos(
 ): Set<Recurso> {
   const dan = new Set<Recurso>();
   for (const edificio of Object.keys(edificios) as TipoEdificio[]) {
+    if ((edificios[edificio] ?? 0) <= 0) continue;
     for (const [recurso, cantidad] of Object.entries(reglas.edificios[edificio].produccion)) {
       if (cantidad > 0) dan.add(recurso as Recurso);
     }
@@ -111,6 +139,7 @@ export function problemasDelPlan(
       ? new Set<Recurso>(LO_QUE_COMPRA_EL_TRATANTE)
       : new Set<Recurso>();
   for (const edificio of Object.keys(plan.edificios) as TipoEdificio[]) {
+    if ((plan.edificios[edificio] ?? 0) <= 0) continue;
     for (const recurso of Object.keys(reglas.edificios[edificio].consumo) as Recurso[]) {
       if (!dan.has(recurso) && !compra.has(recurso)) {
         problemas.push(`${edificio} consume ${recurso} y ni lo produce el plan ni lo compra`);

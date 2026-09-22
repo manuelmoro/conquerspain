@@ -209,7 +209,6 @@ function deEscasez(partida: MetricasDePartida, escenario: string): Evaluacion[] 
       estado:
         escenario === 'normal' ? enIntervalo(porcentaje, OBJETIVOS.escasezPct) : 'no evaluable',
       casa: jugador.casa,
-      precondicion: 'T-050: la horquilla vale para una partida bien jugada',
       detalle:
         escenario === 'normal'
           ? `${String(turnos)} de ${String(partida.turnos)} turnos`

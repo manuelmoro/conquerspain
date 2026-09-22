@@ -42,6 +42,8 @@ export function pasoDelTurno(
   anterior: EstadoPartida | null,
   ahora: EstadoPartida,
   entradasDeRecua: readonly IdComarca[],
+  /** Las vecinas de cada comarca del mapa jugado. */
+  vecinos: Readonly<Record<string, readonly string[]>> = {},
 ): PasoDelTurno {
   const comarcas = new Set<IdComarca>(entradasDeRecua);
   let completo = true;
@@ -53,6 +55,14 @@ export function pasoDelTurno(
     if (antes === undefined) continue;
     const pasadas = prefijoConsumido(antes.ruta, rebanyo.ruta);
     if (pasadas === null) {
+      // Ruta nueva este turno. El ganado anda poco: si ha acabado donde salio o en una vecina, no
+      // ha pisado nada mas que esas dos; si ha ido mas lejos, no se sabe por donde.
+      const salida = donde(antes.situacion);
+      const llegada = donde(rebanyo.situacion);
+      if (salida === llegada || (vecinos[salida] ?? []).includes(llegada)) {
+        comarcas.add(salida);
+        continue;
+      }
       completo = false;
       continue;
     }

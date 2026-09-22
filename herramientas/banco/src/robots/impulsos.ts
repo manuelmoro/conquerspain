@@ -310,13 +310,19 @@ export function obraMayor(d: Decision): void {
   const aMedias =
     t.vista.obras.some((o) => o.tipo === 'obra mayor' && !o.abandonada) ||
     t.ordenes.some((o) => o.tipo === 'obra-mayor');
-  if (aMedias) return;
+  if (aMedias) {
+    d.m.anotar('obra-mayor-en-marcha');
+    return;
+  }
   for (const obra of perfil.obrasMayores) {
     for (const comarca of t.propias) {
       if (comarca.obrasMayores.includes(obra)) continue;
       if (!puedeLevantar(t, comarca, obra)) continue;
       // Se pide cuando se puede pagar: esperando en la cola no hace nada y confunde al que la lee.
-      if (!p.alcanza(costeDeObraMayor(obra, t.casa, t.reglas))) return;
+      if (!p.alcanza(costeDeObraMayor(obra, t.casa, t.reglas))) {
+        d.m.anotar('obra-mayor-sin-recursos');
+        return;
+      }
       p.obraMayor(comarca.id, obra);
       return;
     }
@@ -434,11 +440,14 @@ export function formarRecuas(d: Decision): void {
   if (papel === null) return;
   if (t.ordenes.some((o) => o.tipo === 'formar-recua')) return;
   const comprador = papel === 'tratar' && (sede.edificios['mercado'] ?? 0) > 0;
-  if (sede.poblacion < (comprador ? 10 : 40)) return;
   const coste = costeDeRecua(t.casa, t.reglas);
   const holgado = !t.yo.escasez && t.disponible('pan') >= coste.pan + t.consumoDePan() * 2;
-  if (!comprador && !holgado) return;
-  if (!p.alcanza(coste)) return;
+  const puede =
+    sede.poblacion >= (comprador ? 10 : 40) && (comprador || holgado) && p.alcanza(coste);
+  if (!puede) {
+    d.m.anotar('recua-sin-formar');
+    return;
+  }
   p.formarRecua(sede.id);
 }
 
@@ -855,8 +864,8 @@ function materialDelEsencial(t: Tablero, perfil: Perfil): [Recurso, number] | nu
 }
 
 /**
- * Sal que se guarda para las conservas de los viajes de verano. Para las lonjas no se compra: dos
- * de sal dan seis de pan, y ese pan sale mas barato comprado. La lonja es del que tiene su sal.
+ * Sal que se guarda para las conservas de los viajes de verano. Para las lonjas solo la compra
+ * quien las tiene en su plan: a los demas, dos de sal dan seis de pan que sale mas barato comprado.
  */
 const SAL_DE_VIAJE = 2;
 
@@ -873,6 +882,11 @@ function compras(t: Tablero, perfil: Perfil): [Recurso, number][] {
   if (urgente > 0) falta.push(['pan', urgente]);
   const esencial = materialDelEsencial(t, perfil);
   if (esencial !== null) falta.push(esencial);
+  // La sal de las lonjas, solo para quien las tiene en su plan: a los salineros la salazon les rinde
+  // mas y es su via; a los demas, el pan sale mas barato comprado (ver `SAL_DE_VIAJE`).
+  const deSuPlan = [...perfil.capital, ...perfil.comarcas].some(([e]) => e === 'lonja');
+  const salDeLonjas = deSuPlan ? t.consumoDe('sal') * TURNOS_DE_URGENCIA - t.disponible('sal') : 0;
+  if (salDeLonjas > 0) falta.push(['sal', salDeLonjas]);
   const despensa = consumo * TURNOS_DE_DESPENSA - t.disponible('pan') - Math.max(0, urgente);
   if (despensa > 0) falta.push(['pan', despensa]);
   const material = materialQueFalta(t, perfil);

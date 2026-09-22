@@ -227,3 +227,73 @@ se puede leer es el criterio de tierra, que es justo lo que esta tarea tenía qu
    consumo de 4 de madera por turno se comía los 60 del arranque antes de que pudiera levantar la
    ferrería: dejó de sacar hierro en 96 turnos. Hoy empieza sin ella y hay un test que impide dar
    ningún edificio que coma algo que el arranque no entrega.
+
+## 22-09-2026 · T-050: robots que juegan su vía y dicen por qué no
+
+**Encargo:** que los robots ejecuten planes legales, sostenibles y propios de su casa, y que cada
+vía ausente tenga causa. **Resultado:** hecho. **Ninguna tabla del juego cambia**: el núcleo solo
+exporta funciones que ya existían, para que los robots prevean los viajes con la misma fórmula.
+
+### Base nueva
+
+| Dato | Valor |
+|---|---|
+| Informe | [`herramientas/banco/informes/T-050-1492.md`](../../herramientas/banco/informes/T-050-1492.md) |
+| Revisión | `9ce5572+T-050` (el checkpoint de T-050 más su cierre) |
+| Versiones | métricas 3, robots 2 |
+| Veredicto | 71 filas cumplen, 86 incumplen, **0 no evaluables** (T-049: 42 / 91 / 24) |
+
+**No se compara cifra a cifra con `T-049-1492`**: cambian los robots, que es lo que se mide. Lo que
+se lee es qué criterios pasan a medirse y qué vías aparecen.
+
+### El recuento, criterio a criterio
+
+| Criterio | T-049 | T-050 | Lectura |
+|---|---|---|---|
+| decisiones útiles | 24 no evaluables | **24 cumplen** (0–2 % de turnos sin orden útil ni plan en marcha) | Se mide por fin; ningún robot se queda parado |
+| actividad | 15 cumplen, 9 incumplen | 23 cumplen, 1 incumple | Los hortelanos tienen mercado y venden |
+| escasez | 9 cumplen, 15 incumplen | 12 cumplen, 12 incumplen | Ya sin precondición: los robots juegan su plan |
+| obra mayor | 3 incumplen (T61, T70, T72) | 2 cumplen (primera en T69, T105 y T93) | El cantero vende piedra para pagar la madera de sus obras |
+| tierra | 66 % sin usar | **38–50 %** sin usar | Exploración encadenada y arriesgada; y las visitas del ganado ya se reconstruyen |
+| prestigio | 8 cumplen | 6 cumplen | Monjes y hortelanos se disparan (≈ 4 veces la mediana); la Mesta y los ferrones, abajo |
+| ausencia | 6 cumplen | 1 cumple | El robot diligente juega mucho mejor que el de cada seis: es T-051 |
+| ganadores | cumple | incumple | Monjes ganan las tres |
+| dominio | 3 incumplen | 3 incumplen | Sin cambio |
+| precios | 3 cumplen | 3 cumplen | Sin cambio |
+
+### Las vías, partida a partida
+
+Quince de veinticuatro. Las nueve que faltan tienen su motivo en el informe:
+
+| Casa | Partidas sin vía | Motivo principal | Categoría |
+|---|---|---|---|
+| Mercaderes | 3 de 3 | Con los precios que sabe, ningún viaje deja ganancia después del bastimento | reglas |
+| Arrieros | 3 de 3 | No sabe precios de dos plazas a su alcance, o no dejan ganancia | mapa / reglas |
+| Mesta | 2 de 3 | No conoce uno de los dos pastos al que pueda llegar el ganado | mapa |
+| Ferrones | 1 de 3 (Bilbao) | Escasez y un esencial sin recursos | recursos |
+
+Probado también un origen por perfil y casa, en solitario y 96 turnos: ninguna vía ausente queda
+sin motivo de su vía (ninguna aparece como «defecto del robot»).
+
+### Hallazgos para T-047 (hechos medidos, no hipótesis)
+
+1. **El arbitraje no paga el camino con porte 10.** Llevar sal a una vecina a tres jornadas deja
+   dos cargas de hueco tras el pan de ida y vuelta, y el margen no cubre el bastimento. Con la
+   tradición «Compañía» (porte 13) o con la recua maragata (porte 15, +1 jornada) sí sale: lo
+   demuestran las pruebas de capacidad. Los mercaderes no tienen hoy vía en una partida normal.
+2. **Desde la sierra no se explora.** Un tramo de sierra son 5 jornadas (7,5 en invierno): ni
+   malviviendo la vuelta llega una recua de porte 10 más allá de las vecinas. Afecta a la Mesta del
+   Pirineo y a cualquier capital de montaña.
+3. **Bilbao no es un origen sostenible para los ferrones**, aunque aguante el primer año sin
+   órdenes (T-049): la capital no se alimenta y la escasez bloquea sus obras.
+4. **Monjes y hortelanos** llegan a unas cuatro veces la mediana; ferrones y Mesta, muy por debajo.
+5. La primera obra mayor de cada partida cae ya en la horquilla T80–T130 en dos de tres (T105 y
+   T93); en la tercera, T69.
+6. **El primer «pequeño dominio» llega pronto** (T43, T48 y T43 frente a T60–T100): sin cambio
+   respecto a T-049.
+
+### Reproducción
+
+```bash
+npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-050 --revision <sha>+T-050
+```

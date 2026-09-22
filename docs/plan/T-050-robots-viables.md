@@ -1,6 +1,6 @@
 # T-050 · Robots que ejecutan sus vías
 
-**Fase:** 2 · Motor · **Depende de:** T-048, T-049 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-048, T-049 · **Estado:** hecha (22-09-2026)
 
 ## 1. Contexto
 
@@ -92,3 +92,54 @@ Antes del cierre, comprobar también orígenes de perfiles distintos a los tests
 
 Marcar T-050 hecha, actualizar ESTADO y continuar con T-051. Commit y push:
 `T-050: planes viables y diagnósticos de los robots`.
+
+## 9. Resultado (22-09-2026)
+
+Hecha. Informe de referencia: [`T-050-1492`](../../herramientas/banco/informes/T-050-1492.md),
+con su manifiesto. Evidencia y lectura en la [bitácora de equilibrio](bitacora-equilibrio.md).
+
+### Lo que se hizo, defecto a defecto
+
+| Defecto (§4.1) | Corrección | Prueba |
+|---|---|---|
+| 1. Hortelano sin mercado | Mercado antes de la acequia (con la piedra del arranque cabe uno de los dos); el tratante compra la piedra y vende el pan que sobra | `vias.test.ts`: hortelanos en la Vega de Granada venden pan |
+| 2. Exploración que consume la recua | Ir y volver con la previsión exacta; exploración encadenada mientras llega para volver; recua mermada (<75 % de acémilas) que vuelve y se disuelve, con papeles **por hueco** (el nombre «Recua de X N») que no cambian al rehacerla; **expedición arriesgada deliberada** con carga ligera solo si ninguna oída cabe y la casa puede rehacer la recua | `robots/viaje.test.ts` |
+| 3. Viajes aproximados | `robots/viaje.ts`: previsión turno a turno con `rutaPorParadas`, `pasoDeRecua`, `avanzar` y `bastimentoDe` del núcleo (paso de la casa, carga pesada, barro, calzadas, sal de verano, primer turno del almacén, pan y sal que paga el almacén, turno de salida). `panDeViaje` y `panDeIda` eliminados | `robots/viaje.test.ts`: bastimento de la casa, carga que frena, `no-cabe`, `sin-sal`, `sin-pan` |
+| 4. Trashumancia sin probar | Ciclo `completo`, `a-medias` o `ninguno`; salida calculada para llegar al cambio de pasto; ningún trayecto de más de seis turnos; capacidad con el ganado propio y el ajeno que se ve; rebaño detenido que se replanifica; tratante el primero | `vias.test.ts`: Mesta en Sayago (Aliste ↔ Bragança, calidad ≥ 700, supervivencia, lana vendida) y en Zafra (un rebaño a medias, con motivo) |
+| 5. Arbitraje sobreatribuido | Ganancia neta con las comisiones de la casa y el bastimento valorado, comprobada con la carga encima; nunca revende en su propia plaza; motivos cuando no hay negocio | `vias.test.ts`: mercader y arriero compran en casa, venden en una vecina **neutral** con margen neto positivo y vuelven |
+| 6. Solvencia de planes | `solvencia.ts`: el plan de la capital sobre el arranque real, con esenciales que caben, insumos con fuente y material de la primera obra mayor. Perfil con `esenciales`; `hacerSitio` derriba lo que no puede trabajar (la lonja sin sal); el tratante compra por urgencia y guarda un lote por cosa pendiente | `solvencia.test.ts`, con control negativo |
+
+Además: `Robot.decidir` devuelve `{ ordenes, motivos }` con un catálogo cerrado de motivos por
+categoría (`robots/motivos.ts`); `PRUEBA_DE_VIA` exige la acción distintiva de cada casa y declara
+qué motivos la explican; el informe enseña la vía **partida a partida** con su «por qué no»; el
+criterio de **decisiones útiles** ya se evalúa (turno sin orden que trabaje ni plan en marcha); y la
+reconstrucción de visitas de `visitas.ts` sabe por dónde pasa un rebaño con ruta nueva si acaba en
+una vecina. `VERSION_METRICAS = 3`, `VERSION_ROBOTS = 2`.
+
+### Decisiones tomadas durante la tarea
+
+- **El núcleo solo exporta más, no cambia**: `avanzar`, `pasoDeRecua`, `pesoDeLaCarga`, `porteDe`,
+  `rutaPorParadas`, `costeDeTramoMil`, `tieneCalzada`, `tramoEntre`, `comarcasTransitables`,
+  `bastimentoDePresencia`, `capacidadDePasto`, `esPastoCorrecto`, `opcionesDeRutaDeRebanyo`,
+  `pasoDeRebanyo` y `puedeEntrar`. Es lo que el cliente necesitará para sus previsiones; ninguna
+  regla ni tabla cambia.
+- La expedición arriesgada es una apuesta legal que un jugador haría (docs/03 §3.7.1: la recua
+  malvive y siempre puede volver); se permite solo cuando no hay nada seguro y se paga rehaciendo
+  la recua.
+- Un rebaño con un solo pasto conocido rinde más que no criar: se permite uno solo, con motivo.
+- Solo compra sal para lonjas quien las tiene en su plan (los salineros): a los demás, dos de sal
+  dan seis de pan que sale más barato comprado.
+- Para la prueba de capacidad del mercader se usa su tradición «Compañía» (porte 13): con porte 10
+  la sal a una vecina a tres jornadas no paga el camino. Es un hallazgo para T-047, no un ajuste.
+
+### Lo que no se ha podido cerrar aquí, y dónde queda
+
+- Mercaderes y arrieros no hacen negocio en ninguna partida normal: con porte 10 y dos panes por
+  jornada, las diferencias de precio que dejan los mercaderes menores no pagan el bastimento
+  (motivo `sin-negocio-rentable`, categoría reglas) o no conocen una segunda plaza. Es de T-047.
+- La exploración desde la sierra no llega más allá de las vecinas ni con expediciones arriesgadas
+  (`sin-oida-al-alcance`, reglas). Es de T-047.
+- Los ferrones de Bilbao aguantan el primer año (T-049) pero no son sostenibles: escasez casi
+  permanente. Origen o arranque, para T-047.
+- La diferencia entre jugar cada turno y cada seis crece, porque el robot diligente juega mucho
+  mejor: es exactamente el trabajo de T-051.

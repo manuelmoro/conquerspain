@@ -23,7 +23,8 @@ export const SALINEROS: Estrategia = {
     ],
     obrasMayores: ['atarazana', 'muralla'],
     recuas: ['tratar', 'explorar', 'feriar', 'emisario'],
-    vende: { sal: 15 },
+    // La salazón es pan conservado: el que sobra de la despensa va a la plaza, como la sal.
+    vende: { sal: 15, pan: 150 },
     feria: ['sal'],
     criterio: 'profundizar',
     valorDe: (g) => g.potenciales.sal * 4 + g.potenciales.pesca * 3 + g.potenciales.labor,

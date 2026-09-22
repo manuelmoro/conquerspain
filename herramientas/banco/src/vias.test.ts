@@ -1,19 +1,28 @@
-// Cada robot juega su via (ficha T-046 §6.3). Cada casa juega sola en un origen donde su via es
-// posible, y la cifra que la prueba (`PRUEBA_DE_VIA`, la misma del informe) tiene que salir.
+// Cada robot juega su vía (fichas T-046 §6.3 y T-050 §6). La prueba es la misma del informe
+// (`PRUEBA_DE_VIA`) y exige la acción distintiva de cada casa, no que produzca ni que dos contadores
+// coincidan.
 //
-// El informe de referencia dice si la via sale tambien con las ocho casas juntas; cuando no sale,
-// es un asunto de equilibrio (T-047), no del robot: aqui se ve que el robot sabe jugarla.
+// Hay dos clases de prueba, y no se mezclan:
+// - de **vía en su tierra**: la casa sola en un origen del catálogo donde su vía tiene sentido, sin
+//   preparar nada; lo que sale es lo que sale jugando;
+// - de **capacidad**: un escenario preparado a mano (lo explorado, una plaza con precios, una
+//   carestía) que demuestra que el robot sabe hacer lo que su vía pide cuando la ocasión existe.
+//   Que la ocasión exista en una partida normal lo dicen los informes, con su motivo si no.
 import { describe, expect, it } from 'vitest';
 
 import { TABLAS_DEL_JUEGO, explicar, idDeMercadoLocal, validarEstado } from '@conquer/nucleo';
 import type {
   Casa,
+  Conocimiento,
   EstadoMercado,
   EstadoPartida,
   IdAcontecimiento,
   IdComarca,
   IdJugador,
+  Mundo,
   Recursos,
+  Suceso,
+  Tradicion,
 } from '@conquer/nucleo';
 
 import { jugarPartida, jugarTurno } from './ejecutar.ts';
@@ -21,7 +30,10 @@ import { PRUEBA_DE_VIA, cifrasDeVia } from './informe.ts';
 import type { MetricasDePartida } from './metricas.ts';
 import { Registro, resumir } from './metricas.ts';
 import { altaDelBanco, mundoPeninsula } from './partida.ts';
-import { origenPreferido, robotDe } from './robots/index.ts';
+import { robotDe } from './robots/index.ts';
+import type { Motivo } from './robots/motivos.ts';
+
+const REGLAS = TABLAS_DEL_JUEGO;
 
 /** Las cifras de la partida con los nombres que usa `PRUEBA_DE_VIA`. */
 function cifrasDe(partida: MetricasDePartida): Record<string, number> {
@@ -30,10 +42,14 @@ function cifrasDe(partida: MetricasDePartida): Record<string, number> {
   return cifrasDeVia(resumir(partida, jugador));
 }
 
+/** Los motivos que dio el robot a lo largo de la partida, sin repetir. */
+function motivosDe(partida: MetricasDePartida): Set<Motivo> {
+  return new Set(partida.jugadores[0]?.filas.flatMap((f) => f.motivos) ?? []);
+}
+
 /**
  * La casa sola en la peninsula entera, **sin recortar** y en la comarca que se le diga (T-049):
- * esto prueba que su via es posible donde su via tiene sentido, no que el sorteo se la ponga a
- * tiro. Que el recorte reparta buenos origenes lo miden los informes del banco.
+ * esto prueba que su via es posible donde su via tiene sentido, no que el sorteo se la ponga a tiro.
  */
 function sola(casa: Casa, origen: string, turnos: number): MetricasDePartida {
   return jugarPartida({
@@ -41,7 +57,7 @@ function sola(casa: Casa, origen: string, turnos: number): MetricasDePartida {
     turnos,
     casas: [casa],
     cadencia: 1,
-    reglas: TABLAS_DEL_JUEGO,
+    reglas: REGLAS,
     mundo: mundoPeninsula(),
     estados: null,
     recortar: false,
@@ -49,31 +65,86 @@ function sola(casa: Casa, origen: string, turnos: number): MetricasDePartida {
   });
 }
 
-/** Casa, comarca de origen y turnos para que su via salga. */
-const ESCENARIOS: readonly (readonly [Casa, string, number, string])[] = [
-  ['mesta', 'zafra-rio-bodion', 72, 'en Zafra, con su feria en casa'],
+/** Casa, comarca de origen y turnos para que su via salga jugando, sin preparar nada. */
+const EN_SU_TIERRA: readonly (readonly [Casa, string, number, string])[] = [
   ['ferrones', 'senyorio-de-molina', 96, 'en el señorío de Molina'],
   ['canteros', 'tierra-de-toledo', 120, 'en la Tierra de Toledo'],
   ['monjes', 'evora', 72, 'en Évora'],
   ['salineros', 'valles-alaveses', 72, 'en los Valles Alaveses, con la sal de Añana'],
-  ['arrieros', 'o-bierzo', 48, 'en El Bierzo'],
-  ['hortelanos', 'vega-de-granada', 48, 'en la Vega de Granada'],
+  ['hortelanos', 'vega-de-granada', 48, 'en la Vega de Granada, vendiendo el pan que sobra'],
 ];
 
-/**
- * T-050 en curso: la prueba de vía se endureció (trashumancia de la Mesta, ventas fuera de los
- * arrieros) y estos dos escenarios tienen que rehacerse con la Mesta en Sayago y el arriero con un
- * negocio preparado. Ver «Dónde va T-050» en ESTADO.md. No cerrar T-050 con esta lista no vacía.
- */
-const PENDIENTES_DE_T050: readonly Casa[] = ['mesta', 'arrieros'];
+/** Una partida preparada a mano, jugada turno a turno con su registro y sus sucesos. */
+interface Jugada {
+  readonly partida: MetricasDePartida;
+  readonly sucesos: readonly (readonly [number, Suceso])[];
+  readonly final: EstadoPartida;
+}
 
-describe('cada robot juega su vía', () => {
-  it.skip.each(ESCENARIOS.filter(([casa]) => PENDIENTES_DE_T050.includes(casa)))(
-    'pendiente de T-050: %s',
-    () => undefined,
+function jugar(
+  estado: EstadoPartida,
+  mundo: Mundo,
+  casa: Casa,
+  turnos: number,
+  semilla: string,
+): Jugada {
+  const robots = [robotDe(casa)];
+  const registro = new Registro(REGLAS, mundo, 1);
+  registro.empezar(estado);
+  const sucesos: [number, Suceso][] = [];
+  let actual = estado;
+  for (let i = 0; i < turnos; i += 1) {
+    const turno = jugarTurno(actual, robots, mundo, REGLAS);
+    for (const s of turno.sucesos) sucesos.push([actual.turno, s]);
+    actual = turno.estado;
+    registro.anotar(actual, turno.sucesos, turno.decisiones);
+  }
+  return { partida: registro.cerrar(actual, semilla, turnos), sucesos, final: actual };
+}
+
+function validar(estado: EstadoPartida, mundo: Mundo): EstadoPartida {
+  const valido = validarEstado(estado, mundo);
+  if (!valido.ok) throw new Error(explicar(valido.errores));
+  return valido.valor;
+}
+
+/** La casa sola en su origen, con las comarcas a `tramos` tramos o menos ya exploradas. */
+function conLoCercanoExplorado(casa: Casa, origen: string, tramos: number) {
+  const alta = altaDelBanco({
+    semilla: '1492',
+    casas: [casa],
+    reglas: REGLAS,
+    mundo: mundoPeninsula(),
+    recortar: false,
+    origenesFijos: { [casa]: origen as IdComarca },
+  });
+  const yo = casa as string as IdJugador;
+  const jugador = alta.estado.jugadores[yo];
+  if (jugador === undefined) throw new Error(`falta el jugador ${casa}`);
+  const distancia = new Map<string, number>([[origen, 0]]);
+  const pendientes = [origen];
+  for (let actual = pendientes.shift(); actual !== undefined; actual = pendientes.shift()) {
+    for (const vecina of alta.mundo.vecinos[actual] ?? []) {
+      if (distancia.has(vecina)) continue;
+      distancia.set(vecina, (distancia.get(actual) ?? 0) + 1);
+      pendientes.push(vecina);
+    }
+  }
+  const conocimiento: Record<string, Conocimiento> = { ...jugador.conocimiento };
+  for (const [id, n] of distancia) {
+    if (n > 0 && n <= tramos) {
+      conocimiento[id] = { nivel: 'explorada', turnoUltimaNoticia: 1, datos: null };
+    }
+  }
+  const estado = validar(
+    { ...alta.estado, jugadores: { [yo]: { ...jugador, conocimiento } } },
+    alta.mundo,
   );
+  return { estado, mundo: alta.mundo };
+}
 
-  it.each(ESCENARIOS.filter(([casa]) => !PENDIENTES_DE_T050.includes(casa)))(
+describe('cada robot juega su vía en su tierra', () => {
+  it.each(EN_SU_TIERRA)(
     '%s (origen %s, %i turnos, %s)',
     (casa, origen, turnos) => {
       const cifras = cifrasDe(sola(casa, origen, turnos));
@@ -81,69 +152,148 @@ describe('cada robot juega su vía', () => {
     },
     60_000,
   );
+});
 
-  it('mercaderes: con la sal cara en una plaza propia vecina, la compra en casa y la vende allí', () => {
-    // En solitario los precios no se mueven (nadie mas comercia) y los mercaderes menores igualan
-    // cualquier diferencia en pocos turnos. Se le dan dos plazas propias y una carestia de sal en la
-    // vecina, que la mantiene cara: la diferencia dura y el mercader tiene que aprovecharla.
-    const reglas = TABLAS_DEL_JUEGO;
-    const alta = altaDelBanco({
-      semilla: '1492',
-      casas: ['mercaderes'],
-      reglas,
-      preferencia: origenPreferido,
-      recortar: false,
-    });
-    const mundo = alta.mundo;
-    const inicial = alta.estado;
-    const yo = 'mercaderes' as IdJugador;
-    const capital = inicial.jugadores[yo]?.capital as IdComarca;
-    const vecina = mundo.vecinos[capital]?.[0] as IdComarca;
-    const precios = (sal: number): Recursos => ({
-      pan: reglas.recursos.pan.precioBaseMil,
-      madera: reglas.recursos.madera.precioBaseMil,
-      piedra: reglas.recursos.piedra.precioBaseMil,
-      maravedis: reglas.recursos.maravedis.precioBaseMil,
-      sal,
-      hierro: reglas.recursos.hierro.precioBaseMil,
-      lana: reglas.recursos.lana.precioBaseMil,
-    });
-    const plaza = (comarca: IdComarca, sal: number): EstadoMercado => ({
-      id: idDeMercadoLocal(comarca),
-      comarca,
-      tipo: 'local',
-      volumen: 'pequenya',
-      preciosMil: precios(sal),
-      ultimoVolumen: { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 },
-    });
-    const jugador = inicial.jugadores[yo];
-    if (jugador === undefined) throw new Error('falta el mercader');
-    const conMercado = (id: IdComarca) => ({
-      ...inicial.comarcas[id],
-      duenyo: yo,
-      edificios: { ...inicial.comarcas[id]?.edificios, mercado: 1, granja: 2 },
-    });
-    const preparado = {
+describe('la Mesta hace la trashumancia', () => {
+  it('en Sayago, con lo que tiene a dos tramos explorado: invernadero, agostadero, lana vendida', () => {
+    // Sayago es invernadero; Sanabria y Bragança, agostaderos a dos tramos. Se le da explorado lo
+    // que un jugador conoceria tras sus primeras salidas: el resto lo decide el robot.
+    const { estado, mundo } = conLoCercanoExplorado('mesta', 'sayago', 2);
+    const jugada = jugar(estado, mundo, 'mesta', 96, 'mesta-sayago');
+    const cifras = cifrasDe(jugada.partida);
+    expect(PRUEBA_DE_VIA.mesta.cumple(cifras), JSON.stringify(cifras)).toBe(true);
+
+    // Llega a los dos pastos, cada uno en su estacion.
+    const verano = REGLAS.estaciones.turnosPastoDeVerano;
+    const delAnyo = (turno: number): number => ((turno - 1) % REGLAS.estaciones.turnosPorAnyo) + 1;
+    const llegadas = jugada.sucesos.filter(([, s]) => s.tipo === 'rebanyo.llega');
+    const aUnPasto = (turno: number, comarca: string | null, deVerano: boolean): boolean => {
+      const rasgos = comarca === null ? [] : (mundo.comarcas[comarca]?.rasgos ?? []);
+      const pasto = deVerano
+        ? rasgos.includes('pasto-de-verano')
+        : rasgos.some((r) => r === 'pasto-de-invierno' || r === 'dehesa' || r === 'montado');
+      // Llega el turno del cambio o el anterior: el que sale para llegar justo al cambio.
+      const siguiente = verano.includes(delAnyo(turno + 1));
+      return pasto && (verano.includes(delAnyo(turno)) === deVerano || siguiente === deVerano);
+    };
+    expect(llegadas.some(([t, s]) => aUnPasto(t, s.comarca, true))).toBe(true);
+    expect(llegadas.some(([t, s]) => aUnPasto(t, s.comarca, false))).toBe(true);
+
+    // Esquila con calidad: pasta la mayor parte del anyo en el pasto que toca.
+    const calidades = jugada.sucesos
+      .filter(([, s]) => s.tipo === 'rebanyo.esquileo')
+      .map(([, s]) => Number(s.datos['calidadMil']));
+    expect(Math.max(...calidades)).toBeGreaterThanOrEqual(700);
+
+    // El ganado sobrevive: el primer rebanyo conserva mas de la mitad de sus cabezas en cuatro anyos
+    // de canyadas, y la cabanya crece.
+    const rebanyos = Object.values(jugada.final.rebanyos);
+    expect(rebanyos.length).toBeGreaterThan(1);
+    expect(Math.max(...rebanyos.map((r) => r.cabezas))).toBeGreaterThan(
+      REGLAS.ganaderia.cabezasPorRebanyo / 2,
+    );
+  }, 60_000);
+
+  it('en Zafra, sin agostadero conocido, cria un solo rebaño y dice por qué no trashuma', () => {
+    const partida = sola('mesta', 'zafra-rio-bodion', 72);
+    const cifras = cifrasDe(partida);
+    expect(cifras['lanaEsquilada'], JSON.stringify(cifras)).toBeGreaterThan(0);
+    expect(cifras['trashumancias']).toBe(0);
+    expect(PRUEBA_DE_VIA.mesta.cumple(cifras)).toBe(false);
+    expect(motivosDe(partida)).toContain('sin-pasto-de-verano');
+  }, 60_000);
+});
+
+/**
+ * La casa sola en su capital de siempre, con mercado, y una comarca vecina **neutral** explorada
+ * con plaza, de la que sabe los precios. Una carestia de sal allí la mantiene cara durante todo
+ * el escenario: sin ella, los mercaderes menores igualan cualquier diferencia en pocos turnos.
+ */
+function negocioPreparado(
+  casa: Casa,
+  origen: string,
+  tradiciones: readonly Tradicion[] = [],
+): { estado: EstadoPartida; mundo: Mundo } {
+  const alta = altaDelBanco({
+    semilla: '1492',
+    casas: [casa],
+    reglas: REGLAS,
+    recortar: false,
+    origenesFijos: { [casa]: origen as IdComarca },
+  });
+  const mundo = alta.mundo;
+  const inicial = alta.estado;
+  const yo = casa as string as IdJugador;
+  const jugador = inicial.jugadores[yo];
+  if (jugador === undefined) throw new Error(`falta el jugador ${casa}`);
+  const capital = jugador.capital;
+  // La vecina neutral del camino mas corto: el negocio tiene que caber en el porte de cualquiera.
+  const jornadas = (id: string): number =>
+    mundo.caminos.find(
+      (c) => (c.desde === capital && c.hasta === id) || (c.hasta === capital && c.desde === id),
+    )?.jornadasBase ?? Number.POSITIVE_INFINITY;
+  const vecina = (mundo.vecinos[capital] ?? [])
+    .filter((id) => inicial.comarcas[id]?.duenyo === null && mundo.comarcas[id] !== undefined)
+    .sort((a, b) => jornadas(a) - jornadas(b) || (a < b ? -1 : 1))[0];
+  const suya = inicial.comarcas[capital];
+  const ajena = vecina === undefined ? undefined : inicial.comarcas[vecina];
+  const geografia = vecina === undefined ? undefined : mundo.comarcas[vecina];
+  if (vecina === undefined || suya === undefined || ajena === undefined || !geografia) {
+    throw new Error(`${capital} no tiene ninguna vecina neutral`);
+  }
+  const precios = (sal: number): Recursos => ({
+    pan: REGLAS.recursos.pan.precioBaseMil,
+    madera: REGLAS.recursos.madera.precioBaseMil,
+    piedra: REGLAS.recursos.piedra.precioBaseMil,
+    maravedis: REGLAS.recursos.maravedis.precioBaseMil,
+    sal,
+    hierro: REGLAS.recursos.hierro.precioBaseMil,
+    lana: REGLAS.recursos.lana.precioBaseMil,
+  });
+  const cara = 30000;
+  const plaza = (comarca: IdComarca, sal: number): EstadoMercado => ({
+    id: idDeMercadoLocal(comarca),
+    comarca,
+    tipo: 'local',
+    volumen: 'pequenya',
+    preciosMil: precios(sal),
+    ultimoVolumen: { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 },
+  });
+  const edificiosVecina = { ...ajena.edificios, mercado: 1 };
+  const estado = validar(
+    {
       ...inicial,
       jugadores: {
         [yo]: {
           ...jugador,
           almacen: { ...jugador.almacen, maravedis: 900, pan: 300 },
+          tradiciones: [...tradiciones],
+          rondas: tradiciones.length > 0 ? { renombre: 1, fama: 1 } : jugador.rondas,
           conocimiento: {
             ...jugador.conocimiento,
-            [vecina]: { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },
+            [vecina]: {
+              nivel: 'explorada',
+              turnoUltimaNoticia: 1,
+              datos: {
+                duenyo: null,
+                poblacion: ajena.poblacion,
+                terreno: geografia.terreno,
+                potenciales: ajena.potenciales,
+                edificios: edificiosVecina,
+              },
+            },
           },
           plazas: {
             [idDeMercadoLocal(capital)]: {
               turno: 1,
               fuente: 'visita',
-              preciosMil: precios(reglas.recursos.sal.precioBaseMil),
+              preciosMil: precios(REGLAS.recursos.sal.precioBaseMil),
               visitada: true,
             },
             [idDeMercadoLocal(vecina)]: {
               turno: 1,
               fuente: 'visita',
-              preciosMil: precios(30000),
+              preciosMil: precios(cara),
               visitada: true,
             },
           },
@@ -151,18 +301,18 @@ describe('cada robot juega su vía', () => {
       },
       comarcas: {
         ...inicial.comarcas,
-        [capital]: conMercado(capital),
-        [vecina]: conMercado(vecina),
+        [capital]: { ...suya, edificios: { ...suya.edificios, mercado: 1, granja: 2 } },
+        [vecina]: { ...ajena, edificios: edificiosVecina },
       },
       mercados: {
-        [idDeMercadoLocal(capital)]: plaza(capital, reglas.recursos.sal.precioBaseMil),
-        [idDeMercadoLocal(vecina)]: plaza(vecina, 30000),
+        [idDeMercadoLocal(capital)]: plaza(capital, REGLAS.recursos.sal.precioBaseMil),
+        [idDeMercadoLocal(vecina)]: plaza(vecina, cara),
       },
       acontecimientos: [
         {
           id: 'ac-1-1' as IdAcontecimiento,
           tipo: 'carestia-de-sal',
-          region: mundo.comarcas[vecina]?.region ?? '',
+          region: geografia.region,
           comarca: vecina,
           turnoAnuncio: 1,
           turnoInicio: 1,
@@ -178,20 +328,49 @@ describe('cada robot juega su vía', () => {
           ],
         },
       ],
-    };
-    const valido = validarEstado(preparado, mundo);
-    if (!valido.ok) throw new Error(explicar(valido.errores));
-    let estado: EstadoPartida = valido.valor;
-    const robots = [robotDe('mercaderes')];
-    const registro = new Registro(reglas, mundo, 1);
-    registro.empezar(estado);
-    for (let i = 0; i < 16; i += 1) {
-      const turno = jugarTurno(estado, robots, mundo, reglas);
-      estado = turno.estado;
-      registro.anotar(estado, turno.sucesos, turno.decisiones);
-    }
-    const partida = registro.cerrar(estado, '1492', 16);
-    const cifras = cifrasDe(partida);
-    expect(PRUEBA_DE_VIA.mercaderes.cumple(cifras), JSON.stringify(cifras)).toBe(true);
-  }, 60_000);
+    },
+    mundo,
+  );
+  return { estado, mundo };
+}
+
+describe('el comercio fuera de casa', () => {
+  // Con porte 10 y dos panes por jornada, llevar sal a una vecina a tres jornadas no paga el camino
+  // (ver la bitacora de equilibrio, T-050): el mercader juega aqui con su tradicion «Compañía»,
+  // la que elige quien vive del arbitraje, y el arriero con su recua maragata.
+  it.each([
+    ['mercaderes', 'alfoz-de-burgos', ['mercaderes-compania']],
+    ['arrieros', 'alfoz-de-burgos', []],
+  ] as const)(
+    '%s en %s compra sal en su plaza, la lleva a la vecina neutral, la vende con ganancia y vuelve',
+    (casa, origen, tradiciones) => {
+      const { estado, mundo } = negocioPreparado(casa, origen, tradiciones);
+      const jugada = jugar(estado, mundo, casa, 16, `negocio-${casa}`);
+      const jugador = jugada.partida.jugadores[0];
+      if (jugador === undefined) throw new Error('falta el jugador');
+      const negocios = jugador.traza.negocios;
+      // Negocio con traza: la carga comprada en una plaza se vende en otra, despues de comprarla,
+      // y deja ganancia despues del bastimento del viaje.
+      expect(negocios.length, JSON.stringify(jugador.traza)).toBeGreaterThan(0);
+      for (const negocio of negocios) {
+        expect(negocio.plazaDeVenta).not.toBe(negocio.plazaDeCompra);
+        expect(negocio.turnoDeVenta).toBeGreaterThan(negocio.turnoDeCompra);
+      }
+      expect(negocios.some((n) => n.margenNeto > 0)).toBe(true);
+      const cifras = cifrasDe(jugada.partida);
+      expect(cifras['ventasFuera']).toBeGreaterThan(0);
+      expect(PRUEBA_DE_VIA[casa].cumple(cifras), JSON.stringify(cifras)).toBe(true);
+      // Y la recua que vendio vuelve a la capital.
+      const vendedora = negocios[0]?.recua ?? '';
+      const volvio = jugada.sucesos.some(
+        ([t, s]) =>
+          t > (negocios[0]?.turnoDeVenta ?? 0) &&
+          s.tipo === 'recua.entra' &&
+          s.datos['recua'] === vendedora &&
+          s.comarca === jugada.final.jugadores[casa as string as IdJugador]?.capital,
+      );
+      expect(volvio).toBe(true);
+    },
+    60_000,
+  );
 });

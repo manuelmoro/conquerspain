@@ -109,7 +109,7 @@ describe('las comarcas que se pisan de paso', () => {
     expect(paso.completo).toBe(true);
   });
 
-  it('si al rebaño le dan una ruta nueva en el mismo turno, se dice que faltan pasos', () => {
+  it('con una ruta nueva en el turno, si acaba en una vecina se sabe por dónde pasó', () => {
     const inicial = estadoMini();
     const rebanyo = {
       id: 'rebanyo-1' as never,
@@ -124,9 +124,43 @@ describe('las comarcas que se pisan de paso', () => {
     const antes: EstadoPartida = { ...inicial, rebanyos: { 'rebanyo-1': rebanyo } };
     const ahora: EstadoPartida = {
       ...inicial,
-      rebanyos: { 'rebanyo-1': { ...rebanyo, ruta: ['prueba-monte', 'prueba-rio'] as never } },
+      rebanyos: {
+        'rebanyo-1': {
+          ...rebanyo,
+          situacion: { donde: 'comarca', comarca: 'prueba-monte' as never },
+          ruta: ['prueba-sierra'] as never,
+        },
+      },
     };
-    expect(pasoDelTurno(antes, ahora, []).completo).toBe(false);
+    const paso = pasoDelTurno(antes, ahora, [], mundoMini().vecinos);
+    expect(paso.completo).toBe(true);
+    expect([...paso.comarcas].sort()).toEqual(['prueba-llano', 'prueba-monte']);
+  });
+
+  it('si con la ruta nueva acaba más lejos que una vecina, se dice que faltan pasos', () => {
+    const inicial = estadoMini();
+    const rebanyo = {
+      id: 'rebanyo-1' as never,
+      jugador: 'casa-uno' as IdJugador,
+      nombre: 'Rebaño',
+      situacion: { donde: 'comarca' as const, comarca: 'prueba-llano' as never },
+      ruta: ['prueba-vega'] as never,
+      cabezas: 100,
+      pastoDelAnyoMil: 0,
+      turnosSinPasto: 0,
+    };
+    const antes: EstadoPartida = { ...inicial, rebanyos: { 'rebanyo-1': rebanyo } };
+    const ahora: EstadoPartida = {
+      ...inicial,
+      rebanyos: {
+        'rebanyo-1': {
+          ...rebanyo,
+          situacion: { donde: 'comarca', comarca: 'prueba-sierra' as never },
+          ruta: ['prueba-mina'] as never,
+        },
+      },
+    };
+    expect(pasoDelTurno(antes, ahora, [], mundoMini().vecinos).completo).toBe(false);
   });
 
   it('la recua cuenta sus entradas por los sucesos, y llegan al registro', () => {
