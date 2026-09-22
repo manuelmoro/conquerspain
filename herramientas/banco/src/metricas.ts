@@ -43,12 +43,14 @@ import { pasoDelTurno } from './visitas.ts';
  * Version de las metricas: sube cuando cambia lo que significa una cifra. Va en el manifiesto, para
  * que nadie compare dos informes que no miden lo mismo (ficha T-048 §4.1).
  */
-export const VERSION_METRICAS = 3;
+export const VERSION_METRICAS = 4;
 
 /** Lo que decidio un robot en un turno, para medir si sirvio de algo (ficha T-050 §4.1.6). */
 export interface DecisionDeRobot {
   /** Identificadores de las ordenes que propuso. */
   readonly ordenes: readonly string[];
+  /** Cuantas ordenes de cada clase propuso: para ver que trae entrar mas veces (T-051 §4.1.2). */
+  readonly porTipo: Readonly<Record<string, number>>;
   /** Ordenes vivas que ya tenia al decidir: obras, colas y rutas de su plan en marcha. */
   readonly enMarcha: number;
   /** Por que su via no avanzo, si lo dijo. */
@@ -114,6 +116,8 @@ export interface FilaDeTurno {
   readonly sinDecisionUtil: boolean;
   /** Por que su via no avanzo este turno, segun el robot. */
   readonly motivos: readonly Motivo[];
+  /** Ordenes por clase, para el diagnostico de frecuencia. */
+  readonly porTipo: Readonly<Record<string, number>>;
 }
 
 export interface MetricasDeJugador {
@@ -370,6 +374,7 @@ export class Registro {
         enMarcha: (decision?.enMarcha ?? 0) > 0,
         sinDecisionUtil: decision !== null && utiles === 0 && decision.enMarcha === 0,
         motivos: decision?.motivos ?? [],
+        porTipo: decision?.porTipo ?? {},
       };
       this.filas.set(id, [...(this.filas.get(id) ?? []), fila]);
     }

@@ -33,6 +33,8 @@ import type {
 } from '@conquer/nucleo';
 
 import { ESCENARIOS } from './escenarios/index.ts';
+import type { FilaDeEquivalencia, RobotDelPlan } from './escenarios/equivalencia.ts';
+import { equivalenciaDeLaPartida } from './escenarios/equivalencia.ts';
 import type { NombreDeEscenario } from './escenarios/index.ts';
 import {
   codigoDeEvaluacion,
@@ -118,8 +120,11 @@ export function jugarTurno(
     const vista = vistaDeJugador(estado, jugador, mundo);
     const decidido = robot.decidir(vista, mundo, reglas);
     const suyas = decidido.ordenes.map((o) => comprobar(o, robot.casa));
+    const porTipo: Record<string, number> = {};
+    for (const suya of suyas) porTipo[suya.tipo] = (porTipo[suya.tipo] ?? 0) + 1;
     decisiones.set(jugador, {
       ordenes: suyas.map((o) => o.id),
+      porTipo,
       enMarcha: vista.ordenes.filter((o) => VIVAS.includes(o.estado)).length,
       motivos: decidido.motivos,
     });
@@ -180,6 +185,47 @@ export interface ResultadoDelBanco {
   readonly partidas: readonly MetricasDePartida[];
   /** Las mismas partidas, con los robots entrando cada seis turnos. */
   readonly ausentes: readonly MetricasDePartida[];
+  /**
+   * La equivalencia de ejecución (T-051 §4.1.1): el plan que deja el que entra cada seis turnos,
+   * entregado a mano día a día. Una fila por casa, semilla y turno mirado.
+   */
+  readonly equivalencia: readonly (FilaDeEquivalencia & { readonly semilla: string })[];
+}
+
+/** Los turnos en que se mira la equivalencia y la ausencia (ficha T-051 §4.4). */
+export const TURNOS_QUE_SE_MIRAN = [100, 200] as const;
+
+/**
+ * La equivalencia de una partida: se juega con los robots entrando cada seis turnos y después se
+ * entrega ese mismo plan a mano, día a día, sin colas ni fechas. Mismo plan y mismas decisiones.
+ */
+function equivalenciaDeUnaPartida(
+  opciones: OpcionesDePartida,
+): (FilaDeEquivalencia & { semilla: string })[] {
+  const alta = altaDelBanco({
+    semilla: opciones.semilla,
+    casas: opciones.casas,
+    reglas: opciones.reglas,
+    mundo: opciones.mundo,
+    preferencia: origenPreferido,
+    recortar: opciones.recortar,
+    origenesFijos: opciones.origenesFijos,
+  });
+  const robots: RobotDelPlan[] = opciones.casas.map((casa) => {
+    const robot = robotDe(casa, opciones.cadencia);
+    return {
+      jugador: casa as string as IdJugador,
+      cadencia: opciones.cadencia,
+      decidir: (vista, mundo, reglas) => robot.decidir(vista, mundo, reglas),
+    };
+  });
+  const turnos = TURNOS_QUE_SE_MIRAN.filter((t) => t <= opciones.turnos);
+  const filas = equivalenciaDeLaPartida(
+    robots,
+    { estado: alta.estado, mundo: alta.mundo, reglas: opciones.reglas, turnos: opciones.turnos },
+    turnos,
+  );
+  return filas.map((fila) => ({ ...fila, semilla: opciones.semilla }));
 }
 
 /** La semilla de cada repeticion: la primera es la dada; las demas, derivadas de ella. */
@@ -194,16 +240,21 @@ export function ejecutarBanco(
   const reglas = ESCENARIOS[opciones.escenario].reglas(TABLAS_DEL_JUEGO);
   const partidas: MetricasDePartida[] = [];
   const ausentes: MetricasDePartida[] = [];
+  const equivalencia: (FilaDeEquivalencia & { semilla: string })[] = [];
   for (let r = 1; r <= opciones.repeticiones; r += 1) {
     const semilla = semillaDeRepeticion(opciones.semilla, r);
     const base = { semilla, turnos: opciones.turnos, casas: opciones.casas, reglas, mundo };
     const estados =
       opciones.estados === null ? null : join(opciones.estados, `repeticion-${String(r)}`);
     partidas.push(jugarPartida({ ...base, cadencia: 1, estados }));
-    if (opciones.ausencia)
+    if (opciones.ausencia) {
       ausentes.push(jugarPartida({ ...base, cadencia: CADENCIA_AUSENTE, estados: null }));
+      equivalencia.push(
+        ...equivalenciaDeUnaPartida({ ...base, cadencia: CADENCIA_AUSENTE, estados: null }),
+      );
+    }
   }
-  return { opciones, partidas, ausentes };
+  return { opciones, partidas, ausentes, equivalencia };
 }
 
 // ——— Linea de ordenes ——————————————————————————————————————————————————————

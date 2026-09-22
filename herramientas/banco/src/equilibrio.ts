@@ -256,35 +256,47 @@ function deTierra(partida: MetricasDePartida): Evaluacion {
   });
 }
 
-function deAusencia(partida: MetricasDePartida, ausente: MetricasDePartida | null): Evaluacion[] {
+/**
+ * El criterio de T-047 §5 sobre jugar sin estar, medido como pide T-051 §4.1.1: **el mismo plan**,
+ * dejado por bloques o entregado a mano día a día. Lo que compara dos planes distintos (el robot
+ * adaptativo de cada cadencia) es el diagnóstico de frecuencia, y va aparte en el informe.
+ */
+function deAusencia(
+  partida: MetricasDePartida,
+  equivalencia: ResultadoDelBanco['equivalencia'],
+): Evaluacion[] {
   const filas: Evaluacion[] = [];
+  const suyas = equivalencia.filter((e) => e.semilla === partida.semilla);
   for (const jugador of partida.jugadores) {
-    const pareja = ausente?.jugadores.find((j) => j.jugador === jugador.jugador);
     for (const corte of OBJETIVOS.cortesDeAusencia) {
-      const diligente = jugador.filas.find((f) => f.turno === corte)?.prestigio;
-      const suyo = pareja?.filas.find((f) => f.turno === corte)?.prestigio;
-      const hay = diligente !== undefined && suyo !== undefined;
-      const ambosCero = hay && diligente === 0 && suyo === 0;
-      const diferencia = hay ? diferenciaDeAusencia(diligente, suyo) : null;
+      const medida = suyas.find((e) => e.jugador === jugador.jugador && e.turno === corte);
+      const ambosCero = medida !== undefined && medida.porBloques === 0 && medida.aMano === 0;
+      const porcentaje = medida === undefined ? null : medida.diferenciaMil / 10;
       filas.push(
         fila(partida.semilla, {
           criterio: 'ausencia',
           ambito: 'casa y partida',
-          unidad: '% de diferencia de prestigio',
+          unidad: '% de diferencia de prestigio con el mismo plan',
           objetivo: `< ${String(OBJETIVOS.ausenciaPct)} %`,
-          observado: diferencia?.porcentaje ?? null,
+          observado: porcentaje,
           estado:
-            !hay || ambosCero
+            medida === undefined
               ? 'no evaluable'
-              : menorQue(diferencia?.porcentaje ?? null, OBJETIVOS.ausenciaPct),
+              : ambosCero
+                ? 'cumple'
+                : menorQue(porcentaje, OBJETIVOS.ausenciaPct),
           casa: jugador.casa,
           turno: corte,
-          precondicion: 'T-051: los dos planes tienen que ser equivalentes',
-          detalle: !hay
-            ? `falta la pareja de esta casa en T${String(corte)} (¿se jugó sin ausencia o con menos turnos?)`
-            : ambosCero
-              ? 'las dos cadencias están a cero: no hay nada que comparar'
-              : `cada turno ${String(diligente)} · cada seis ${String(suyo)} · diferencia absoluta ${String(diferencia?.absoluta ?? 0)}`,
+          detalle:
+            medida === undefined
+              ? `falta la medida de esta casa en T${String(corte)} (¿se jugó sin ausencia o con menos turnos?)`
+              : ambosCero
+                ? 'las dos maneras están a cero: el plan no había dado prestigio todavía'
+                : `por bloques ${String(medida.porBloques)} · a mano ${String(medida.aMano)}${
+                    medida.primeraDiferencia === null
+                      ? ' · el dominio coincide turno a turno'
+                      : ` · el dominio se separa en T${String(medida.primeraDiferencia)}`
+                  }`,
         }),
       );
     }
@@ -342,15 +354,13 @@ function deGanadores(resultado: ResultadoDelBanco): Evaluacion {
 export function evaluarEquilibrio(resultado: ResultadoDelBanco): Evaluacion[] {
   const filas: Evaluacion[] = [];
   for (const partida of resultado.partidas) {
-    const ausente =
-      resultado.ausentes.find((a) => a.semilla === partida.semilla && a.cadencia !== 1) ?? null;
     filas.push(
       ...dePrestigio(partida),
       ...deActividad(partida),
       ...deEscasez(partida, resultado.opciones.escenario),
       dePrecios(partida),
       deTierra(partida),
-      ...deAusencia(partida, ausente),
+      ...deAusencia(partida, resultado.equivalencia),
       deRitmo(
         partida,
         'dominio',

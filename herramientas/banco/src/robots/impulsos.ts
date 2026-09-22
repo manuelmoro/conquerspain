@@ -80,8 +80,14 @@ export interface Perfil {
 
 /** Turnos de consumo que el robot quiere tener siempre en el granero. */
 const TURNOS_DE_DESPENSA = 6;
-/** Obras que deja esperando en la cola de cada comarca, como mucho. */
-const OBRAS_EN_COLA = 1;
+/**
+ * Obras que deja esperando en la cola de cada comarca: una por turno hasta la proxima decision. El
+ * que entra cada turno pide una cada vez; el que entra cada seis deja seis dichas, que es lo mismo
+ * dicho antes. La cola no reserva nada hasta que empieza la obra (T-045).
+ */
+function obrasEnCola(d: Decision): number {
+  return Math.max(1, d.cadencia);
+}
 /** Maravedis que no gasta en regalos ni en recuas: son para la administracion. */
 const COLCHON_DE_MARAVEDIS = 60;
 /** Lo minimo que merece la pena llevar a vender a la plaza de casa. */
@@ -155,6 +161,14 @@ function hayPanParaMas(t: Tablero): boolean {
   return t.turno === 1 || panDeUnAnyoCorriente(t) >= t.consumoDePan() + masConsumo;
 }
 
+/** El nivel que tendra el edificio contando tambien lo que el robot acaba de pedir este turno. */
+function nivelPedido(d: Decision, comarca: EstadoComarca, edificio: TipoEdificio): number {
+  const nuevas = d.p.ordenes.filter(
+    (o) => o.tipo === 'construir' && o.comarca === comarca.id && o.edificio === edificio,
+  ).length;
+  return d.t.nivelPrevisto(comarca, edificio) + nuevas;
+}
+
 /** Obras esperando en la cola de la comarca, contando las que el robot acaba de pedir. */
 function enCola(d: Decision, comarca: IdComarca): number {
   const nuevas = d.p.ordenes.filter(
@@ -198,46 +212,58 @@ function planCumplido(t: Tablero, perfil: Perfil): boolean {
  * quita el solar al plan de la casa salvo con hambre: alli se compra el pan que falte.
  */
 export function alimentar(d: Decision): void {
+  // Una explotacion de pan por turno hasta la proxima decision: el que entra cada seis deja seis
+  // dichas en la cola, como el que entra cada dia pide una cada vez.
+  for (let k = 0; k < Math.max(1, d.cadencia); k += 1) {
+    if (!unaDeComer(d)) return;
+  }
+}
+
+/** Pide una explotacion de pan si hace falta y cabe; dice si la pidio. */
+function unaDeComer(d: Decision): boolean {
   const { t, perfil } = d;
-  if (t.turno === 1) return;
+  if (t.turno === 1) return false;
   const consumo = t.consumoDePan();
   const margen = panDeUnAnyoCorriente(t) - consumo;
   const sobra = t.disponible('pan') >= consumo * TURNOS_DE_DESPENSA;
-  if (margen >= 0 || sobra) return;
+  if (margen >= 0 || sobra) return false;
   const yaPedida = t.ordenes.some(
     (o) => o.tipo === 'construir' && DE_COMER.includes(o.edificio) && o.estado !== 'en curso',
   );
-  if (yaPedida) return;
+  if (yaPedida) return false;
   const capitalLibre = t.yo.escasez || planCumplido(t, perfil);
   for (const comarca of t.propias) {
     if (comarca.id === t.capital && !capitalLibre) continue;
     for (const edificio of DE_COMER) {
       const potencial = t.reglas.edificios[edificio].potencial;
       if (potencial !== null && comarca.potenciales[potencial] < POTENCIAL_QUE_MERECE) continue;
-      if (pedirSiCabe(d, comarca, edificio)) return;
+      if (pedirSiCabe(d, comarca, edificio)) return true;
     }
   }
+  return false;
 }
 
 /** Casas donde la gente ya roza el techo: sin sitio no se crece. */
 export function crecer(d: Decision): void {
   const { t } = d;
   for (const comarca of t.propias) {
-    if (enCola(d, comarca.id) >= OBRAS_EN_COLA) continue;
-    if (comarca.poblacion + 10 < t.capacidad(comarca)) continue;
-    if (
-      t.ordenes.some(
-        (o) =>
-          o.tipo === 'construir' &&
-          o.comarca === comarca.id &&
-          o.edificio === 'casas' &&
-          o.estado !== 'en curso',
-      )
-    ) {
-      continue;
-    }
-    pedirSiCabe(d, comarca, 'casas');
+    while (enCola(d, comarca.id) < obrasEnCola(d) && unaDeCasas(d, comarca)) continue;
   }
+}
+
+/** Una casa mas en la comarca si la gente roza el techo y cabe; dice si la pidio. */
+function unaDeCasas(d: Decision, comarca: EstadoComarca): boolean {
+  const { t } = d;
+  if (comarca.poblacion + 10 < t.capacidad(comarca)) return false;
+  const yaPedida = t.ordenes.some(
+    (o) =>
+      o.tipo === 'construir' &&
+      o.comarca === comarca.id &&
+      o.edificio === 'casas' &&
+      o.estado !== 'en curso',
+  );
+  if (yaPedida) return false;
+  return pedirSiCabe(d, comarca, 'casas');
 }
 
 /** El plan de edificios de la casa, comarca a comarca, sin llenar las colas de mas. */
@@ -252,12 +278,17 @@ export function edificar(d: Decision): void {
     );
   if (esencialPendiente) d.m.anotar('esencial-sin-recursos');
   for (const comarca of t.propias) {
-    if (enCola(d, comarca.id) >= OBRAS_EN_COLA) continue;
     const plan = comarca.id === t.capital ? perfil.capital : perfil.comarcas;
-    for (const [edificio, nivel, condicion] of plan) {
-      if (t.nivelPrevisto(comarca, edificio) >= nivel) continue;
-      if (condicion !== undefined && !condicion(t)) break;
-      if (pedirSiCabe(d, comarca, edificio)) break;
+    // Se llena la cola de la comarca hasta la proxima decision: una obra por turno, dichas hoy.
+    while (enCola(d, comarca.id) < obrasEnCola(d)) {
+      let pedida = false;
+      for (const [edificio, nivel, condicion] of plan) {
+        if (nivelPedido(d, comarca, edificio) >= nivel) continue;
+        if (condicion !== undefined && !condicion(t)) break;
+        if (pedirSiCabe(d, comarca, edificio)) pedida = true;
+        break;
+      }
+      if (!pedida) break;
     }
   }
 }
@@ -580,13 +611,15 @@ function idaYVuelta(t: Tablero, destino: IdComarca): Parada[] {
 function siguienteAExplorar(
   d: Decision,
   recua: Recua,
+  /** Las que ya van en el plan de este turno: no se manda dos veces a la misma. */
+  planeadas: ReadonlySet<string> = new Set(),
 ): { id: IdComarca; provision: Provision | null; arriesgada: boolean } | null {
   const { t } = d;
   const aqui = Tablero.donde(recua);
   const enCasa = t.esPropia(aqui);
   const distancias = t.jornadasDesde(aqui);
   const oidas = [...distancias]
-    .filter(([id]) => t.nivel(id) === 'oida')
+    .filter(([id]) => t.nivel(id) === 'oida' && !planeadas.has(id))
     .sort((a, b) => a[1] - b[1] || comparar(a[0], b[0]))
     .slice(0, OIDAS_QUE_SE_MIRAN);
   let imposible: ViajeImposible = 'sin-ruta';
@@ -647,32 +680,22 @@ function expedicionArriesgada(
  * granero lo permite, y desde cada comarca explorada sigue a la siguiente mientras le llegue para
  * volver; cuando no, vuelve a la comarca propia mas cercana.
  */
-const explorar: Rutina = (d, recua) => {
+/**
+ * Un viaje de exploracion entero, dejado en la cola de la recua: carga el pan y la sal del camino,
+ * va, explora y vuelve a lo propio a descargar. Devuelve los turnos que ocupa, o 0 si no se puede.
+ */
+function viajeDeExploracion(d: Decision, recua: Recua, planeadas: Set<string>): number {
   const { t, p } = d;
-  const destino = siguienteAExplorar(d, recua);
-  if (!t.esPropia(Tablero.donde(recua))) {
-    if (destino === null) {
-      volverAlDominio(d, recua);
-      return;
-    }
-    p.ir(recua.id, destino.id);
-    p.cometido(recua.id, 'explorar');
-    return;
-  }
-  if (destino?.provision === null || destino === null) return;
-  const { pan, sal } = destino.provision;
-  // Lo que sobra en la recua va de pan de mas, si el granero lo aguanta: asi encadena exploraciones.
-  // La expedicion arriesgada va ligera a proposito: cargada andaria menos.
-  const hueco = recua.porte - pan - sal;
-  const reserva = t.consumoDePan() * TURNOS_DE_DESPENSA;
-  const deMas = destino.arriesgada
-    ? 0
-    : Math.max(0, Math.min(hueco, t.disponible('pan') - reserva - pan));
-  const cargarPan = pan + deMas - recua.carga.pan;
+  const destino = siguienteAExplorar(d, recua, planeadas);
+  if (destino === null || destino.provision === null) return 0;
+  const { pan, sal, prevision } = destino.provision;
+  const cargarPan = pan - recua.carga.pan;
   const cargarSal = sal - recua.carga.sal;
+  // No se saca del granero el pan de la gente: `disponible` ya descuenta lo que se han llevado los
+  // viajes dichos antes en este mismo turno.
   if (t.disponible('pan') < cargarPan + t.consumoDePan() * 2) {
     d.m.anotar('sin-pan-para-el-viaje');
-    return;
+    return 0;
   }
   const cargar: Partial<Record<Recurso, number>> = {
     ...(cargarPan > 0 ? { pan: cargarPan } : {}),
@@ -681,6 +704,39 @@ const explorar: Rutina = (d, recua) => {
   p.carga(recua.id, cargar, todoMenos(recua, ['pan', 'sal']));
   p.ir(recua.id, destino.id);
   p.cometido(recua.id, 'explorar');
+  planeadas.add(destino.id);
+  // La vuelta va dicha desde ya: una recua no se queda parada esperando a que alguien entre.
+  p.ir(recua.id, t.casaMasCercana(destino.id));
+  p.carga(recua.id, {}, {});
+  return prevision.turnos;
+}
+
+/**
+ * Explorar: ir a la oida mas cercana a la que se pueda ir y volver, explorarla y volver a casa.
+ * El plan cubre hasta la proxima decision: quien entra cada seis turnos deja dichos los viajes de
+ * esos seis turnos, que son los mismos que haria entrando cada dia.
+ */
+const explorar: Rutina = (d, recua) => {
+  const { t, p } = d;
+  if (!t.esPropia(Tablero.donde(recua))) {
+    // Fuera de casa solo se decide una cosa: seguir a la siguiente si le llega, o volver.
+    const siguiente = siguienteAExplorar(d, recua);
+    if (siguiente === null) {
+      volverAlDominio(d, recua);
+      return;
+    }
+    p.ir(recua.id, siguiente.id);
+    p.cometido(recua.id, 'explorar');
+    return;
+  }
+  const planeadas = new Set<string>();
+  let turnos = 0;
+  while (turnos < Math.max(1, d.cadencia)) {
+    const viaje = viajeDeExploracion(d, recua, planeadas);
+    if (viaje === 0) return;
+    // Ida y vuelta: el viaje previsto cuenta la ida, y la vuelta cuesta otro tanto.
+    turnos += viaje * 2;
+  }
 };
 
 /**
@@ -802,6 +858,16 @@ const emisario: Rutina = (d, recua) => {
   );
   p.ir(recua.id, objetivo);
   p.cometido(recua.id, 'presencia');
+  // Y la vuelta, fechada: estara presente mientras le dure el pan y volvera sola. Sin esto, quien
+  // entra cada seis turnos deja la recua parada o sin bastimento en tierra ajena.
+  const come = panDePresencia(t, 1);
+  const paraLaVuelta = provision.valor.pan;
+  const turnosDePresencia =
+    come.pan <= 0 ? d.cadencia : Math.floor((pan - paraLaVuelta) / Math.max(1, come.pan));
+  const vuelveEn = provision.valor.prevision.llegadas[0] ?? 1;
+  const cuando = t.turno + vuelveEn + Math.max(1, Math.min(turnosDePresencia, d.cadencia));
+  p.ruta(recua.id, [parada(t.casaMasCercana(objetivo))], false, cuando);
+  p.carga(recua.id, {}, {}, 0, cuando);
 };
 
 /** Regalos al concejo de la comarca que se quiere, y la incorporacion en cuanto se pueda. */
@@ -899,17 +965,20 @@ function compras(t: Tablero, perfil: Perfil): [Recurso, number][] {
 }
 
 /** El tratante: quieto en la plaza de la capital, vende lo que sobra y compra lo que falta. */
-export const rutinaDeTratar: Rutina = (d, recua) => {
-  const { t, p, perfil, cadencia } = d;
+/**
+ * Un turno de plaza: lo que falta y lo que sobra, con el porte de la recua como medida. `enTurno`
+ * es el turno en que tiene que hacerse, o null para hoy mismo.
+ */
+function tratarUnTurno(
+  d: Decision,
+  recua: Recua,
+  enTurno: number | null,
+  /** Lo que la recua tendra encima ese turno segun el plan: se descarga antes de cargar. */
+  encima: Cantidades,
+): { hizo: boolean; encima: Cantidades } {
+  const { t, p, perfil } = d;
   const sede = t.sede;
-  if (sede === null || (sede.edificios['mercado'] ?? 0) === 0) {
-    d.m.anotar('sin-mercado-propio');
-    return;
-  }
-  if (Tablero.donde(recua) !== sede.id) {
-    p.ir(recua.id, sede.id);
-    return;
-  }
+  if (sede === null) return { hizo: false, encima };
   const plaza = idDeMercadoLocal(sede.id);
   // Lo que puede ir a una feria no se malvende en casa.
   const aLaFeria = perfil.recuas.includes('feriar') && feriaAlAlcance(d, recua, {}) !== null;
@@ -952,16 +1021,47 @@ export const rutinaDeTratar: Rutina = (d, recua) => {
     ventas.push([recurso, lote]);
     hueco -= lote;
   }
-  const descargar = todoMenos(recua, []);
+  // Lo que la recua trae del turno anterior se descarga antes de cargar lo de hoy: si no, el pan
+  // comprado se quedaria en la recua y la gente pasaria hambre con el granero lleno.
+  const descargar = { ...encima };
   const nada = ventas.length === 0 && compra.length === 0 && Object.keys(descargar).length === 0;
-  if (!nada) p.carga(recua.id, cargar, descargar);
-  if (recua.cometido !== 'tratar') p.cometido(recua.id, 'tratar');
+  if (!nada) p.carga(recua.id, cargar, descargar, 0, enTurno);
   for (const [recurso, lote] of ventas) {
     const minimo = Math.floor((t.reglas.recursos[recurso].precioBaseMil * 6) / 10);
-    p.mercado(recua.id, plaza, recurso, 'vender', lote, minimo, cadencia);
+    p.mercado(recua.id, plaza, recurso, 'vender', lote, minimo, 1, enTurno);
   }
   for (const [recurso, cantidad, maximo] of compra) {
-    p.mercado(recua.id, plaza, recurso, 'comprar', cantidad, maximo, cadencia);
+    p.mercado(recua.id, plaza, recurso, 'comprar', cantidad, maximo, 1, enTurno);
+  }
+  // Lo comprado llega a la recua al cerrar la plaza; lo vendido sale. Con eso se planea el turno
+  // siguiente: lo comprado es justo lo que habra que descargar.
+  const trae: Partial<Record<Recurso, number>> = {};
+  for (const [recurso, cantidad] of compra) trae[recurso] = cantidad;
+  return { hizo: ventas.length > 0 || compra.length > 0, encima: trae };
+}
+
+/**
+ * El tratante: quieto en la plaza de la capital, vende lo que sobra y compra lo que falta. Con la
+ * cadencia del que entra poco, deja dicho el trato de cada turno del bloque con su fecha: es el
+ * mismo plan, dicho antes, y no la mitad de comercio por no estar delante.
+ */
+export const rutinaDeTratar: Rutina = (d, recua) => {
+  const { t, p, cadencia } = d;
+  const sede = t.sede;
+  if (sede === null || (sede.edificios['mercado'] ?? 0) === 0) {
+    d.m.anotar('sin-mercado-propio');
+    return;
+  }
+  if (Tablero.donde(recua) !== sede.id) {
+    p.ir(recua.id, sede.id);
+    return;
+  }
+  if (recua.cometido !== 'tratar') p.cometido(recua.id, 'tratar');
+  let encima: Cantidades = todoMenos(recua, []);
+  for (let k = 0; k < Math.max(1, cadencia); k += 1) {
+    const turno = tratarUnTurno(d, recua, k === 0 ? null : t.turno + k, encima);
+    encima = turno.encima;
+    if (!turno.hizo) break;
   }
 };
 
@@ -1100,7 +1200,8 @@ const feriar: Rutina = (d, recua) => {
     };
   }
   p.carga(recua.id, cargar, todoMenos(recua, ['pan', 'sal', ...perfil.feria]));
-  p.ruta(recua.id, [parada(plan.plaza.comarca, { vender })]);
+  // La vuelta va dicha: el feriante no espera en la feria a que alguien entre a mandarlo a casa.
+  p.ruta(recua.id, [parada(plan.plaza.comarca, { vender }), parada(t.capital)]);
   p.cometido(recua.id, 'tratar');
 };
 

@@ -8,6 +8,7 @@ import type { CapituloDePrestigio, Casa, Mundo, Recurso } from '@conquer/nucleo'
 import type { ResultadoDelBanco } from './ejecutar.ts';
 import { componerEvaluacion, evaluarEquilibrio, pendientes, recuentoDe } from './equilibrio.ts';
 import type { Evaluacion } from './equilibrio.ts';
+import { CADENCIA_AUSENTE } from './version.ts';
 import { ESCENARIOS } from './escenarios/index.ts';
 import type {
   MetricasDeJugador,
@@ -564,19 +565,86 @@ function seccionVia(resultado: ResultadoDelBanco, a: Analisis): string {
   return `${pruebas}\n\nMedias de las partidas:\n\n${cifras}`;
 }
 
-function seccionAusencia(a: Analisis): string {
-  if (a.ausentes.size === 0) return 'No se jugó la comparación (`--sin-ausencia`).';
+/**
+ * La medida obligatoria de T-051: el mismo plan, dejado por bloques de seis turnos o entregado a
+ * mano día a día. Si el motor deja jugar sin estar, las dos columnas tienen que coincidir.
+ */
+function seccionEquivalencia(resultado: ResultadoDelBanco): string {
+  if (resultado.equivalencia.length === 0) return 'No se jugó la comparación (`--sin-ausencia`).';
+  const filas = [...resultado.equivalencia].sort(
+    (a, b) => comparar(a.semilla, b.semilla) || a.turno - b.turno || comparar(a.jugador, b.jugador),
+  );
   return tabla(
-    ['Casa', 'Entrando cada turno', 'Entrando cada seis', 'Diferencia'],
+    [
+      'Semilla',
+      'Turno',
+      'Casa',
+      'Plan por bloques',
+      'El mismo plan a mano',
+      'Diferencia',
+      'Dominio',
+    ],
+    filas.map((f) => [
+      f.semilla,
+      `T${String(f.turno)}`,
+      f.jugador,
+      String(f.porBloques),
+      String(f.aMano),
+      `${decimal(f.diferenciaMil / 10)} %`,
+      f.primeraDiferencia === null
+        ? 'igual turno a turno'
+        : `se separa en T${String(f.primeraDiferencia)}`,
+    ]),
+    [0, 1, 2, 6],
+  );
+}
+
+/** Clases de orden que se ensenyan en el diagnostico de frecuencia. */
+const CLASES_QUE_SE_MIRAN = 3;
+
+/**
+ * El diagnostico de T-051 §4.1.2: dos robots distintos, uno que decide cada turno y otro cada seis.
+ * Aqui no se compara un plan consigo mismo, sino la ventaja de mirar el tablero mas veces; lo que
+ * la explica es lo que el diligente hace **entre bloques**, que es lo que el otro no llega a decidir.
+ */
+function seccionFrecuencia(resultado: ResultadoDelBanco, a: Analisis): string {
+  if (a.ausentes.size === 0) return 'No se jugó la comparación (`--sin-ausencia`).';
+  const entreBloques = new Map<Casa, Map<string, number>>();
+  for (const partida of resultado.partidas) {
+    for (const jugador of partida.jugadores) {
+      const suyas = entreBloques.get(jugador.casa) ?? new Map<string, number>();
+      for (const filaDelTurno of jugador.filas) {
+        if ((filaDelTurno.turno - 1) % CADENCIA_AUSENTE === 0) continue;
+        for (const [tipo, cuantas] of Object.entries(filaDelTurno.porTipo)) {
+          suyas.set(tipo, (suyas.get(tipo) ?? 0) + cuantas);
+        }
+      }
+      entreBloques.set(jugador.casa, suyas);
+    }
+  }
+  return tabla(
+    [
+      'Casa',
+      'Entrando cada turno',
+      'Entrando cada seis',
+      'Diferencia',
+      'Lo que decide entre bloques',
+    ],
     a.casas.map((c) => {
       const diligente = cifra(a, c, 'prestigio');
       const ausente = a.ausentes.get(c)?.['prestigio'] ?? 0;
       const mayor = Math.max(Math.abs(diligente), Math.abs(ausente), 1);
+      const suyas = [...(entreBloques.get(c) ?? new Map<string, number>())]
+        .sort((x, y) => y[1] - x[1] || comparar(x[0], y[0]))
+        .slice(0, CLASES_QUE_SE_MIRAN)
+        .map(([tipo, cuantas]) => `${tipo} ${String(cuantas)}`)
+        .join(', ');
       return [
         NOMBRES_DE_CASA[c],
         String(diligente),
         String(ausente),
         `${decimal((Math.abs(diligente - ausente) * 100) / mayor)} %`,
+        suyas === '' ? 'nada' : suyas,
       ];
     }),
   );
@@ -818,11 +886,17 @@ export function componerInforme(
     '',
     seccionVia(resultado, a),
     '',
-    '## Jugar sin estar',
+    '## Jugar sin estar: el mismo plan, dicho antes',
     '',
-    'El mismo robot entrando cada turno o cada seis, con colas, plan y mayordomo (docs/02 §2.5). La diferencia tiene que ser pequeña: conectarse más no puede dar ventaja.',
+    'La medida que cuenta (ficha T-051 §4.1.1): el plan que deja quien entra cada seis turnos —colas, órdenes fechadas, rutas y mayordomo— jugado también a mano, día a día. Las mismas decisiones y la misma información; solo cambia cuándo se dicen las órdenes.',
     '',
-    seccionAusencia(a),
+    seccionEquivalencia(resultado),
+    '',
+    '## Sensibilidad a la frecuencia (diagnóstico)',
+    '',
+    'Aquí se comparan **dos planes distintos**: un robot que decide cada turno y otro que decide cada seis. No mide el motor, sino lo que se gana mirando el tablero más veces; la última columna dice qué decide el diligente entre bloques.',
+    '',
+    seccionFrecuencia(resultado, a),
     '',
     '## Ritmo: hitos y primera obra mayor',
     '',

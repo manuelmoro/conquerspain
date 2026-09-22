@@ -398,7 +398,17 @@ describe('el recuento de órdenes y los turnos de los hitos', () => {
     registro.anotar(
       estado,
       sucesos,
-      new Map([['casa-uno', { ordenes: ['o1', 'o2', 'o3'], enMarcha: 0, motivos: [] }]]),
+      new Map([
+        [
+          'casa-uno',
+          {
+            ordenes: ['o1', 'o2', 'o3'],
+            porTipo: { construir: 2, mercado: 1 },
+            enMarcha: 0,
+            motivos: [],
+          },
+        ],
+      ]),
     );
     const jugador = registro.cerrar(estado, 'prueba', 1).jugadores[0];
     const fila = jugador?.filas[0];

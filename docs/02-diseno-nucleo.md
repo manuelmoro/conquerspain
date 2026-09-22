@@ -245,6 +245,20 @@ un calendario y se puede reajustar en cualquier momento antes de su resolución.
 - Una ruta circular se detiene sola si falta bastimento o si un precio límite no se cumple tres
   paradas seguidas; al pasar por comarca propia repone pan y sal para doce jornadas.
 
+### 2.5.6 Una orden suelta y la misma orden en cola (T-051)
+
+No es lo mismo decir una orden para hoy que dejarla en una cola, y conviene saberlo:
+
+- Una orden **suelta** se paga al darla: si al empezar el turno el almacén no llega, se **cancela**
+  con el motivo `sin-recursos`, y el jugador la vuelve a dar otro día.
+- Una orden **en cola** no reserva nada: espera y empieza en cuanto hay con qué pagarla, ya en la
+  fase de obras, **después** de la producción de ese turno.
+
+La cola es por tanto el sitio de lo que se hará «en cuanto se pueda», y la tiene igual quien entra
+todos los días que quien entra una vez por temporada. Con eso, el mismo plan da exactamente el mismo
+resultado se diga día a día o de una vez: lo comprueba `equivalencia.test.ts` (ficha T-051), que
+juega los dos calendarios y compara el dominio turno a turno.
+
 ## 2.6 Lo que se sabe: conocimiento y niebla
 
 - El conocimiento es **por jugador**: cada uno tiene su propio mapa de lo que ha visto.

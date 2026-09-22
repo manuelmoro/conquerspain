@@ -67,6 +67,7 @@ export function fila(turno: number, cambios: Partial<FilaDeTurno> = {}): FilaDeT
     enMarcha: false,
     sinDecisionUtil: false,
     motivos: [],
+    porTipo: {},
     ...cambios,
   };
 }
@@ -160,6 +161,7 @@ export function resultado(
   partidas: readonly MetricasDePartida[],
   ausentes: readonly MetricasDePartida[] = [],
   opciones: Partial<OpcionesDelBanco> = {},
+  equivalencia: ResultadoDelBanco['equivalencia'] = [],
 ): ResultadoDelBanco {
   const primera = partidas[0];
   return {
@@ -175,6 +177,7 @@ export function resultado(
     },
     partidas,
     ausentes,
+    equivalencia,
   };
 }
 

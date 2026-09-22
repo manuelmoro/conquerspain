@@ -167,20 +167,36 @@ describe('los bordes de cada umbral', () => {
     expect(conRacha(9)).toBe('cumple');
   });
 
-  it('una diferencia de ausencia del 5 % justo falla', () => {
-    const conAusencia = (ausente: number): string => {
-      const diligente = partida(
-        MEDIANA_100.map((j) => ({ ...j, enTurno: { 100: 100, 200: 100 } })),
-        { turnos: 200 },
+  it('una diferencia del 5 % justo entre las dos maneras de jugar el mismo plan falla', () => {
+    // Lo que se juzga es la equivalencia de ejecución (T-051): el mismo plan por bloques o a mano.
+    const conEquivalencia = (aMano: number): string => {
+      const diligente = partida(MEDIANA_100, { turnos: 200 });
+      const equivalencia = [100, 200].flatMap((turno) =>
+        MEDIANA_100.map((j) => ({
+          jugador: j.casa,
+          semilla: 'prueba',
+          turno,
+          porBloques: 100,
+          aMano,
+          diferenciaMil: Math.floor((Math.abs(100 - aMano) * 1000) / 100),
+          primeraDiferencia: null,
+        })),
       );
-      const cada6 = partida(
-        MEDIANA_100.map((j) => ({ ...j, enTurno: { 100: ausente, 200: ausente } })),
-        { turnos: 200, cadencia: 6 },
+      return estadoDe(
+        evaluarEquilibrio(resultado([diligente], [], {}, equivalencia)),
+        'ausencia',
+        'mesta',
       );
-      return estadoDe(evaluarEquilibrio(resultado([diligente], [cada6])), 'ausencia', 'mesta');
     };
-    expect(conAusencia(95)).toBe('incumple');
-    expect(conAusencia(96)).toBe('cumple');
+    expect(conEquivalencia(95)).toBe('incumple');
+    expect(conEquivalencia(96)).toBe('cumple');
+  });
+
+  it('sin la medida de equivalencia, el criterio no se puede evaluar', () => {
+    const evaluacion = evaluarEquilibrio(resultado([partida(MEDIANA_100, { turnos: 200 })]));
+    const ausencia = filasDe(evaluacion, 'ausencia')[0];
+    expect(ausencia?.estado).toBe('no evaluable');
+    expect(ausencia?.detalle).toContain('falta la medida');
   });
 
   it('el ritmo incluye los extremos: T60 y T100 valen para el dominio', () => {
@@ -235,17 +251,23 @@ describe('lo que no se puede esconder', () => {
     expect(filas.every((f) => f.observado === null)).toBe(true);
   });
 
-  it('dos cadencias a cero no son un empate perfecto: no hay nada que comparar', () => {
-    const quietas = MEDIANA_100.map((j) => ({ ...j, enTurno: { 100: 0, 200: 0 } }));
-    const evaluacion = evaluarEquilibrio(
-      resultado(
-        [partida(quietas, { turnos: 200 })],
-        [partida(quietas, { turnos: 200, cadencia: 6 })],
-      ),
+  it('el mismo plan a cero por las dos partes es un empate de verdad, no un hueco', () => {
+    const diligente = partida(MEDIANA_100, { turnos: 200 });
+    const equivalencia = [100, 200].flatMap((turno) =>
+      MEDIANA_100.map((j) => ({
+        jugador: j.casa,
+        semilla: 'prueba',
+        turno,
+        porBloques: 0,
+        aMano: 0,
+        diferenciaMil: 0,
+        primeraDiferencia: null,
+      })),
     );
-    const filas = filasDe(evaluacion, 'ausencia');
-    expect(filas.every((f) => f.estado === 'no evaluable')).toBe(true);
-    expect(filas[0]?.detalle).toContain('cero');
+    const evaluacion = evaluarEquilibrio(resultado([diligente], [], {}, equivalencia));
+    const ausencia = filasDe(evaluacion, 'ausencia')[0];
+    expect(ausencia?.estado).toBe('cumple');
+    expect(ausencia?.detalle).toContain('cero');
   });
 
   it('sin la pareja ausente, la ausencia no se da por buena', () => {

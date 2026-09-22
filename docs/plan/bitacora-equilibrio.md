@@ -297,3 +297,88 @@ sin motivo de su vía (ninguna aparece como «defecto del robot»).
 ```bash
 npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-050 --revision <sha>+T-050
 ```
+
+## 23-09-2026 · T-051: el mismo plan, dicho antes
+
+**Encargo:** demostrar que una misma estrategia se puede ejecutar sin conectarse más de una vez
+cada seis turnos, y separar la ventaja de la información nueva del trámite automatizable.
+**Resultado:** hecho, y con la medida fuerte: **igualdad exacta del dominio**. Ninguna tabla del
+juego cambia; tampoco el motor.
+
+### Base nueva
+
+| Dato | Valor |
+|---|---|
+| Informes | [`T-051-1492`](../../herramientas/banco/informes/T-051-1492.md), `T-051-1085` y `T-051-1212` |
+| Versiones | robots 3, métricas 4 |
+| Veredicto | `1492` y `1085`: 113 cumplen, 44 incumplen; `1212`: 112 y 45. **0 no evaluables** |
+
+### Las dos medidas, que no son la misma
+
+| Medida | Qué compara | Resultado |
+|---|---|---|
+| **Equivalencia de ejecución** (obligatoria) | El **mismo plan**, dejado por bloques de seis turnos o entregado a mano día a día | **144 de 144 filas al 0,0 %**; el dominio coincide turno a turno en siete de las nueve partidas |
+| **Sensibilidad a la frecuencia** (diagnóstico) | **Dos planes distintos**: decidir cada turno o cada seis | Sigue habiendo diferencia; lo que el diligente decide entre bloques es casi todo `mercado` y `carga` |
+
+El criterio de ausencia de T-047 §5 pasa a juzgarse sobre la primera medida: **48 de 48 filas
+cumplen en cada semilla** (antes, 1 de 48 en `T-050-1492`).
+
+### El recuento, criterio a criterio (semilla 1492)
+
+| Criterio | T-050 | T-051 | Lectura |
+|---|---|---|---|
+| ausencia | 1 cumple, 47 incumplen | **48 cumplen** | Se mide el mismo plan, no dos planes distintos |
+| prestigio | 6 cumplen | 3 cumplen | Los robots que planean el bloque separan más a las casas: es trabajo de T-047 |
+| escasez | 12 cumplen | 11 cumplen | Sin cambio apreciable |
+| actividad | 23 cumplen | 22 cumplen | Sin cambio apreciable |
+| decisiones útiles | 24 cumplen | 24 cumplen | Sin cambio |
+| obra mayor | 2 cumplen | 2 cumplen | Sin cambio |
+| tierra, dominio, ganadores | incumplen | incumplen | Sin cambio: son de T-047 |
+
+### Lo que hizo falta para llegar al 0,0 %
+
+Ninguna regla nueva: lo que faltaba era que los robots **dijeran el plan entero** con lo que el
+motor ya daba.
+
+1. La cola de cada comarca admite una obra por turno hasta la próxima decisión (antes, una sola).
+2. El tratante deja dicho el trato de cada turno del bloque, con su fecha, descargando lo que trajo
+   el turno anterior. Sin eso comerciaba la sexta parte.
+3. Las recuas dejan viajes completos: ida, cometido y vuelta. Antes se quedaban paradas esperando a
+   que alguien entrara a mandarlas a casa.
+4. El emisario fecha su regreso para cuando se le acabe el pan de la presencia.
+
+### Hallazgo de reglas (escrito en docs/02 §2.5.6)
+
+Una orden **suelta** se paga al darla y se cancela con `sin-recursos` si el almacén no llega en ese
+momento; la misma orden **en cola** no reserva nada y empieza en cuanto hay con qué, ya en la fase
+de obras, después de la producción del turno. La cola es, por tanto, el sitio de lo que se hará «en
+cuanto se pueda», y la tienen igual los dos jugadores. Medido: entregar el plan a mano **sin** las
+colas retrasaba un turno cada obra apretada y hundía a los salineros de `1492` (250 → 106 de
+prestigio en T100). Con las colas, igualdad exacta. El motor no necesita cambiar: quien juega cada
+día tiene la misma herramienta.
+
+### Divergencias que quedan, con su primera causa
+
+En `1492-2` (T109) y en `1212` (T175 y T193) el dominio se separa tarde sin mover el prestigio en
+T100 ni en T200. Causa: las órdenes que no llegaron a trabajar dentro de la ventana medida —una
+`incorporar` esperando `sin-ventaja`, un `cometido` con la recua ocupada— no se entregan en la
+variante a mano, y su hueco mueve un par de cargas de pan. Es un artefacto de la medida.
+
+### Lo que sigue abierto para T-047
+
+- **Prestigio**: solo 3 de 24 filas dentro de la horquilla en `1492` (2 de 24 en `1085` y `1212`).
+  Monjes y hortelanos arriba; ferrones y Mesta abajo.
+- **Sensibilidad a la frecuencia**: entrar cada turno sigue dando ventaja en casi todas las casas
+  (entre el 3,6 % y el 30 %, y más en cifras pequeñas como las de los ferrones). Lo que se decide
+  entre bloques es casi todo comercio: reaccionar a precios nuevos es **información**, no trámite.
+  Los canteros y los monjes salen incluso mejor entrando cada seis turnos.
+- Tierra, dominio y ganadores siguen igual que en T-050.
+
+### Reproducción
+
+```bash
+npm run verificar
+npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-051 --revision <sha>+T-051
+npm run banco -- --semilla 1085 --turnos 200 --repeticiones 3 --fecha T-051 --revision <sha>+T-051
+npm run banco -- --semilla 1212 --turnos 200 --repeticiones 3 --fecha T-051 --revision <sha>+T-051
+```

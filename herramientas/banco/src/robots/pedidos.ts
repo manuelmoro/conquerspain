@@ -154,9 +154,14 @@ export class Pedidos {
   }
 
   /** Una ruta de recua, en su cola: sale cuando acabe lo anterior. */
-  ruta(recua: IdRecua, paradas: readonly ParadaDeRuta[], circular = false): Orden {
+  ruta(
+    recua: IdRecua,
+    paradas: readonly ParadaDeRuta[],
+    circular = false,
+    enTurno: number | null = null,
+  ): Orden {
     return this.dar({
-      ...this.base({ cola: `recua:${recua}` }),
+      ...this.base({ cola: `recua:${recua}`, turnoProgramado: enTurno }),
       tipo: 'ruta',
       recua,
       rebanyo: null,
@@ -181,10 +186,17 @@ export class Pedidos {
     });
   }
 
-  carga(recua: IdRecua, cargar: Cantidades, descargar: Cantidades, vecinos = 0): Orden {
+  carga(
+    recua: IdRecua,
+    cargar: Cantidades,
+    descargar: Cantidades,
+    vecinos = 0,
+    /** Turno en que tiene que trabajar; hoy mismo si no se dice otra cosa (plan de temporada). */
+    enTurno: number | null = null,
+  ): Orden {
     this.t.apartar(cargar);
     return this.dar({
-      ...this.base({ cola: `recua:${recua}` }),
+      ...this.base({ cola: `recua:${recua}`, turnoProgramado: enTurno }),
       tipo: 'carga',
       recua,
       cargar,
@@ -211,9 +223,10 @@ export class Pedidos {
     cantidad: number,
     precioLimiteMil: number,
     turnos: number,
+    enTurno: number | null = null,
   ): Orden {
     return this.dar({
-      ...this.base({ turnosTotales: turnos }),
+      ...this.base({ turnosTotales: turnos, turnoProgramado: enTurno }),
       tipo: 'mercado',
       mercado,
       recua,
