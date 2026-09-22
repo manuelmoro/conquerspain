@@ -34,7 +34,7 @@ export type {
   EstadoEstacional,
   ModificadorDeClima,
 } from './reglas/calendario.ts';
-export type { CosteDeTramo, OpcionesDeTramo } from './reglas/jornadas.ts';
+export type { CosteDeTramo, CosteDeTramoMil, OpcionesDeTramo } from './reglas/jornadas.ts';
 export { casarPlaza } from './reglas/mercado.ts';
 export type {
   EntradaDePlaza,
@@ -96,7 +96,24 @@ export { impedimentoDeConstruir, solaresDe, solaresOcupados } from './reglas/obr
 export type { MotivoSinConstruir } from './reglas/obras.ts';
 export { cuadrillasDe } from './reglas/cuadrillas.ts';
 export { capacidadDe } from './reglas/poblar.ts';
-export { calidadDeTramo, claveDeTramo, tienePuente } from './reglas/ruta.ts';
+export {
+  calidadDeTramo,
+  claveDeTramo,
+  comarcasTransitables,
+  costeDeTramoMil,
+  rutaPorParadas,
+  tieneCalzada,
+  tienePuente,
+  tramoEntre,
+} from './reglas/ruta.ts';
+export type { Mejoras, OpcionesDeRuta, Ruta } from './reglas/ruta.ts';
+// Las previsiones de viaje (el cliente, T-08x, y los robots del banco) andan con las mismas
+// funciones que el motor: una segunda formula acabaria dando otra cifra.
+export { avanzar, pasoDeRecua, pesoDeLaCarga, porteDe } from './reglas/movimiento.ts';
+export type { Avance, CondicionesDePaso, Paradas } from './reglas/movimiento.ts';
+export { bastimentoDePresencia } from './reglas/presencia.ts';
+export { capacidadDePasto, esPastoCorrecto } from './reglas/pastos.ts';
+export { opcionesDeRutaDeRebanyo, pasoDeRebanyo, puedeEntrar } from './reglas/rebanyos.ts';
 export {
   elegirOrigenes,
   origenesPosibles,

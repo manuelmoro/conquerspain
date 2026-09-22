@@ -160,7 +160,7 @@ describe('los robots juegan limpio', () => {
           (a, b) => b.potenciales.hierro - a.potenciales.hierro || (a.id < b.id ? -1 : 1),
         )[0];
         if (recua !== undefined && mejor !== undefined) p.ir(recua.id, mejor.id);
-        return [...p.ordenes];
+        return { ordenes: [...p.ordenes], motivos: [] };
       },
     };
     const vista = vistaDeJugador(estado, jugador('ferrones'), mundo);
@@ -189,7 +189,7 @@ describe('los robots juegan limpio', () => {
 
   it.each(CASAS)('todas las ordenes de %s las aceptaria el servidor', (casa) => {
     const vista = vistaDeJugador(estado, jugador(casa), mundo);
-    const ordenes: readonly Orden[] = robotDe(casa).decidir(vista, mundo, REGLAS);
+    const ordenes: readonly Orden[] = robotDe(casa).decidir(vista, mundo, REGLAS).ordenes;
     for (const orden of ordenes) {
       const resultado = validarOrdenEntrante(orden);
       expect(resultado.ok, `${orden.id}: ${JSON.stringify(orden)}`).toBe(true);

@@ -39,6 +39,7 @@ export const CANTEROS: Estrategia = {
       ['mercado', 1],
       ['cantera', 2],
     ],
+    esenciales: ['cantera', 'mercado'],
     comarcas: [
       ['granja', 1],
       ['cantera', 1],
@@ -47,7 +48,9 @@ export const CANTEROS: Estrategia = {
     ],
     obrasMayores: ['monasterio', 'muralla', 'acequia-mayor', 'atarazana', 'catedral'],
     recuas: ['tratar', 'explorar', 'emisario'],
-    vende: {},
+    // La piedra que sobra paga la madera de las obras mayores, que su tierra no da: se guarda la de
+    // la obra mas cara que persigue (la catedral) y se vende el resto.
+    vende: { piedra: 150 },
     feria: [],
     criterio: 'profundizar',
     valorDe: (g) =>

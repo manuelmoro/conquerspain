@@ -165,6 +165,11 @@ function deActividad(partida: MetricasDePartida): Evaluacion[] {
     const callado = jugador.filas.filter((f) => f.sinOrdenes).length;
     const porcentaje = entro === 0 ? null : (100 * callado) / entro;
     const detalle = `${String(callado)} de ${String(entro)} turnos en que entró el robot`;
+    const turnosSinUtil = jugador.filas.filter((f) => f.sinDecisionUtil).length;
+    const sinUtil = {
+      turnos: turnosSinUtil,
+      porcentaje: entro === 0 ? null : (100 * turnosSinUtil) / entro,
+    };
     filas.push(
       fila(partida.semilla, {
         criterio: 'actividad',
@@ -181,11 +186,10 @@ function deActividad(partida: MetricasDePartida): Evaluacion[] {
         ambito: 'casa y partida',
         unidad: '% de turnos sin decisión útil',
         objetivo: `< ${String(OBJETIVOS.actividadPct)} %`,
-        observado: porcentaje,
-        estado: 'no evaluable',
+        observado: sinUtil.porcentaje,
+        estado: menorQue(sinUtil.porcentaje, OBJETIVOS.actividadPct),
         casa: jugador.casa,
-        precondicion: 'T-050: distinguir «no propuso órdenes» de «no había nada útil que hacer»',
-        detalle: `${detalle}; que las órdenes propuestas sirvieran de algo no lo mide este banco`,
+        detalle: `${String(sinUtil.turnos)} de ${String(entro)} turnos sin ninguna orden que trabajara ni plan en marcha`,
       }),
     );
   }

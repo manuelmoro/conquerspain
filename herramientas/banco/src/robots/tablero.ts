@@ -7,17 +7,25 @@
 import {
   calendarioDe,
   capacidadDe,
+  comarcasTransitables,
   comparar,
+  costeDeTramoMil,
   cuadrillasDe,
+  estadoEstacionalDe,
   idDeMercadoDeFeria,
   idDeMercadoLocal,
   modificadoresDelJugador,
+  opcionesDeRutaDeRebanyo,
   permisosDelJugador,
   prohibicionesDelJugador,
+  rutaPorParadas,
+  tieneCalzada,
+  tramoEntre,
 } from '@conquer/nucleo';
 import type {
   Calendario,
   Camino,
+  EstadoEstacional,
   ComarcaMundo,
   EstadoComarca,
   EstadoJugador,
@@ -31,6 +39,7 @@ import type {
   Rebanyo,
   Recua,
   Recurso,
+  Ruta,
   TablasDeReglas,
   TipoEdificio,
   VistaComarca,
@@ -72,6 +81,10 @@ export class Tablero {
   readonly recuas: readonly Recua[];
   readonly rebanyos: readonly Rebanyo[];
   readonly ordenes: readonly Orden[];
+  /** Lo que las cargas de esta decision sacan del almacen. */
+  private readonly apartado = new Map<Recurso, number>();
+  /** Las distancias ya calculadas en esta decision, por comarca de salida. */
+  private readonly distancias = new Map<IdComarca, Map<IdComarca, number>>();
 
   constructor(
     readonly vista: VistaJugador,
@@ -107,8 +120,21 @@ export class Tablero {
     return this.propias.find((c) => c.id === this.yo.capital) ?? null;
   }
 
+  /** Lo que queda en el almacen: sin lo reservado ni lo que las cargas de este turno se llevan. */
   disponible(recurso: Recurso): number {
-    return this.yo.almacen[recurso] - this.yo.reservado[recurso];
+    return (
+      this.yo.almacen[recurso] - this.yo.reservado[recurso] - (this.apartado.get(recurso) ?? 0)
+    );
+  }
+
+  /**
+   * Una orden de carga de este turno se lleva esto del almacen: lo que decida despues el robot ya
+   * no puede contar con ello. Dos recuas que salen a la vez no se comen el mismo pan.
+   */
+  apartar(cantidades: Readonly<Partial<Record<Recurso, number>>>): void {
+    for (const [recurso, cantidad] of Object.entries(cantidades) as [Recurso, number][]) {
+      this.apartado.set(recurso, (this.apartado.get(recurso) ?? 0) + cantidad);
+    }
   }
 
   nivel(id: string): VistaComarca['nivel'] | 'desconocida' {
@@ -154,7 +180,27 @@ export class Tablero {
    * las oidas se alcanzan, pero no se cruzan. Dijkstra con desempate por identificador.
    */
   jornadasDesde(origen: IdComarca): Map<IdComarca, number> {
-    return this.jornadasDesdeVarias([origen]);
+    const guardadas = this.distancias.get(origen);
+    if (guardadas !== undefined) return guardadas;
+    const distancias = this.jornadasDesdeVarias([origen]);
+    this.distancias.set(origen, distancias);
+    return distancias;
+  }
+
+  /**
+   * La comarca propia mas cercana a otra, por jornadas base: adonde vuelve una recua que anda por
+   * alli. A igual distancia, la capital y despues el orden de identificador.
+   */
+  casaMasCercana(desde: IdComarca): IdComarca {
+    let mejor: { id: IdComarca; jornadas: number } = {
+      id: this.capital,
+      jornadas: Number.POSITIVE_INFINITY,
+    };
+    for (const comarca of this.propias) {
+      const jornadas = this.jornadasDesde(comarca.id).get(desde) ?? Number.POSITIVE_INFINITY;
+      if (jornadas < mejor.jornadas) mejor = { id: comarca.id, jornadas };
+    }
+    return mejor.id;
   }
 
   /** Jornadas desde la comarca propia mas cercana: lo que se anda fuera de casa. */
@@ -200,6 +246,100 @@ export class Tablero {
         (c) => (c.desde === a && c.hasta === b) || (c.desde === b && c.hasta === a),
       ) ?? null
     );
+  }
+
+  // ——— Lo que dice el nucleo de los caminos, con lo que el jugador sabe ———————————————
+
+  /**
+   * La estacion de un turno, con los acontecimientos que el jugador conoce: unas nieves o una riada
+   * de las que no se ha enterado no cuentan, como no contarian para quien mira el mapa.
+   */
+  estacional(turno: number): EstadoEstacional {
+    return estadoEstacionalDe(turno, this.mundo, this.reglas, this.vista.acontecimientos);
+  }
+
+  /** Por donde puede trazar ruta el jugador: lo explorado, lo propio y la capital. */
+  private transitables(): Set<string> {
+    const transitables = comarcasTransitables(this.yo);
+    for (const c of this.propias) transitables.add(c.id);
+    return transitables;
+  }
+
+  /** La ruta que trazaria hoy el motor para una recua que sale de `desde` y para en `paradas`. */
+  rutaDeRecua(desde: IdComarca, paradas: readonly IdComarca[]): Ruta | null {
+    return rutaPorParadas(
+      desde,
+      paradas,
+      false,
+      this.mundo,
+      this.estacional(this.turno),
+      this.transitables(),
+      this.reglas,
+      this.vista.caminos,
+    );
+  }
+
+  /**
+   * La ruta que trazaria hoy el motor para un rebanyo: por las canyadas si puede, y sin entrar en
+   * tierra ajena salvo por canyada con paso franco (la regla la pone el nucleo, no el robot).
+   */
+  rutaDeRebanyo(desde: IdComarca, hasta: IdComarca): Ruta | null {
+    const sede = this.sede;
+    if (sede === null) return null;
+    // Para la regla de paso solo cuenta el duenyo de cada comarca: lo propio es lo que es, y de lo
+    // explorado se sabe de quien era cuando se exploro. Si hoy ya no es neutral (la vista no da
+    // influencia propia), es de otro aunque no se sepa de quien: cuenta como la de cualquier rival.
+    const rival = this.vista.casas.find((c) => c.id !== this.yo.id)?.id ?? null;
+    const comarcas: Record<string, EstadoComarca> = {};
+    for (const c of this.propias) comarcas[c.id] = c;
+    for (const id of this.conocidas()) {
+      const sabido = this.explorada(id);
+      if (sabido === null) continue;
+      const duenyo = sabido.datos?.duenyo ?? (sabido.influenciaPropia === null ? rival : null);
+      if (duenyo !== null && duenyo !== this.yo.id) comarcas[id] = { ...sede, id, duenyo };
+    }
+    return rutaPorParadas(
+      desde,
+      [hasta],
+      false,
+      this.mundo,
+      this.estacional(this.turno),
+      this.transitables(),
+      this.reglas,
+      this.vista.caminos,
+      opcionesDeRutaDeRebanyo(comarcas, this.yo, this.reglas),
+    );
+  }
+
+  /** Lo que cuesta un tramo de una ruta con la estacion dada, en milesimas, o `cerrado`. */
+  costeDeTramo(
+    desde: IdComarca,
+    hasta: IdComarca,
+    estacional: EstadoEstacional,
+  ): number | 'cerrado' {
+    const camino = this.caminoDeRuta(desde, hasta);
+    return costeDeTramoMil(camino, estacional, this.reglas, this.vista.caminos);
+  }
+
+  /** El tramo tiene calzada: la recua anda una jornada mas por el. */
+  calzadaEntre(desde: IdComarca, hasta: IdComarca): boolean {
+    return tieneCalzada(this.caminoDeRuta(desde, hasta), this.vista.caminos);
+  }
+
+  /** Canyada real entre dos comarcas de una ruta: el ganado anda mas por ella. */
+  canyadaEntre(desde: IdComarca, hasta: IdComarca): boolean {
+    return this.caminoDeRuta(desde, hasta).canyada !== null;
+  }
+
+  /** Un tramo de una ruta que ha trazado el nucleo: existe siempre, y una punta es conocida. */
+  private caminoDeRuta(desde: IdComarca, hasta: IdComarca): Camino {
+    const camino = tramoEntre(this.mundo, desde, hasta);
+    if (camino === undefined || this.tramo(desde, hasta) === null) {
+      throw new Error(
+        `El robot pregunta por el tramo ${desde}–${hasta}, que no esta en ninguna ruta que pueda conocer.`,
+      );
+    }
+    return camino;
   }
 
   /** Donde esta una recua o un rebanyo: su comarca, o la de salida si va de camino. */
@@ -322,10 +462,15 @@ export class Tablero {
 
   /** Turnos que faltan para que abra una plaza de feria (0 si abre este turno). */
   turnosHastaQueAbra(plaza: PlazaConocida): number {
+    return this.turnosHastaQueAbraEn(plaza, this.turno);
+  }
+
+  /** Turnos que faltan, contados desde el turno dado, para que la plaza este abierta. */
+  turnosHastaQueAbraEn(plaza: PlazaConocida, turno: number): number {
     if (plaza.tipo === 'local') return 0;
-    const hoy = this.calendario.turnoDelAnyo;
     const anyo = this.reglas.estaciones.turnosPorAnyo;
-    return Math.min(...plaza.turnos.map((t) => (t - hoy + anyo) % anyo));
+    const delAnyo = ((turno - 1) % anyo) + 1;
+    return Math.min(...plaza.turnos.map((t) => (t - delAnyo + anyo) % anyo));
   }
 
   /** Cuadrillas de la comarca que quedan libres sin contar lo que espera en su cola. */

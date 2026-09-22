@@ -13,7 +13,9 @@ import {
   calendarioDe,
   catalogoDePlazas,
   comparar,
+  esPastoCorrecto,
   estacionDe,
+  estadoEstacionalDe,
   limitesDePrecio,
   modificadoresDelJugador,
   prestigioDe,
@@ -33,6 +35,7 @@ import type {
 } from '@conquer/nucleo';
 
 import { LibroDeNegocios, tratoDeSuceso } from './negocios.ts';
+import type { Motivo } from './robots/motivos.ts';
 import type { TrazaDeNegocios } from './negocios.ts';
 import { pasoDelTurno } from './visitas.ts';
 
@@ -40,7 +43,17 @@ import { pasoDelTurno } from './visitas.ts';
  * Version de las metricas: sube cuando cambia lo que significa una cifra. Va en el manifiesto, para
  * que nadie compare dos informes que no miden lo mismo (ficha T-048 §4.1).
  */
-export const VERSION_METRICAS = 2;
+export const VERSION_METRICAS = 3;
+
+/** Lo que decidio un robot en un turno, para medir si sirvio de algo (ficha T-050 §4.1.6). */
+export interface DecisionDeRobot {
+  /** Identificadores de las ordenes que propuso. */
+  readonly ordenes: readonly string[];
+  /** Ordenes vivas que ya tenia al decidir: obras, colas y rutas de su plan en marcha. */
+  readonly enMarcha: number;
+  /** Por que su via no avanzo, si lo dijo. */
+  readonly motivos: readonly Motivo[];
+}
 
 /** Lo que se sabe de un jugador al acabar un turno. */
 export interface FilaDeTurno {
@@ -69,6 +82,14 @@ export interface FilaDeTurno {
   /** Maravedis cobrados vendiendo en una feria. */
   readonly ingresosDeFeria: number;
   readonly lanaEsquilada: number;
+  /** Cargas vendidas de cada recurso, en cualquier plaza. */
+  readonly vendido: Readonly<Partial<Record<Recurso, number>>>;
+  /** Cargas vendidas en plazas de comarcas que no son suyas: mercancia llevada por el camino. */
+  readonly ventasFuera: number;
+  /** Niveles de aperos instalados este turno. */
+  readonly aperos: number;
+  /** Rebanyos que llegaron a un pasto que es el correcto de la estacion: la trashumancia. */
+  readonly trashumancias: number;
   readonly pueblasFundadas: number;
   readonly comarcasIncorporadas: number;
   /** El robot decidio este turno; null si no le tocaba entrar. */
@@ -82,6 +103,17 @@ export interface FilaDeTurno {
   readonly ordenesTerminadas: number;
   readonly ordenesCanceladas: number;
   readonly ordenesEnEspera: number;
+  /** Ordenes que propuso y que el motor no cancelo al darlas de alta: las que trabajan. */
+  readonly ordenesUtiles: number;
+  /** Tenia ordenes vivas de turnos anteriores: su plan seguia en marcha aunque no diera otras. */
+  readonly enMarcha: boolean;
+  /**
+   * Entro y no hizo nada que sirviera: ninguna orden nueva que trabaje y ningun plan en marcha
+   * (ficha T-050 §4.1.6). Es lo que mide el criterio de decisiones utiles.
+   */
+  readonly sinDecisionUtil: boolean;
+  /** Por que su via no avanzo este turno, segun el robot. */
+  readonly motivos: readonly Motivo[];
 }
 
 export interface MetricasDeJugador {
@@ -178,6 +210,33 @@ function porEdificio(sucesos: readonly Suceso[], jugador: IdJugador): Record<str
   return total;
 }
 
+/** Las ordenes propuestas que no se cancelaron este mismo turno. */
+function ordenesUtiles(decision: DecisionDeRobot | null, sucesos: readonly Suceso[]): number {
+  if (decision === null) return 0;
+  const canceladas = new Set(
+    sucesos
+      .filter((s) => s.tipo === 'orden.estado' && s.datos['estado'] === 'cancelada')
+      .map((s) => texto(s.datos['orden'])),
+  );
+  return decision.ordenes.filter((id) => !canceladas.has(id)).length;
+}
+
+/** Cargas vendidas de cada recurso por un jugador en el turno. */
+function vendidoPorRecurso(
+  sucesos: readonly Suceso[],
+  jugador: IdJugador,
+): Partial<Record<Recurso, number>> {
+  const vendido: Partial<Record<Recurso, number>> = {};
+  for (const s of sucesos) {
+    if (s.tipo !== 'mercado.trato' || s.jugador !== jugador || s.datos['operacion'] !== 'vender') {
+      continue;
+    }
+    const recurso = texto(s.datos['recurso']) as Recurso;
+    vendido[recurso] = (vendido[recurso] ?? 0) + numero(s.datos['cantidad']);
+  }
+  return vendido;
+}
+
 /** Va apuntando cada turno de una partida y al final da sus metricas. */
 export class Registro {
   private readonly filas = new Map<string, FilaDeTurno[]>();
@@ -211,7 +270,7 @@ export class Registro {
   anotar(
     estado: EstadoPartida,
     sucesos: readonly Suceso[],
-    decisiones: ReadonlyMap<string, number | null>,
+    decisiones: ReadonlyMap<string, DecisionDeRobot | null>,
   ): void {
     const turno = estado.turno - 1;
     for (const id of Object.keys(estado.jugadores).sort(comparar)) {
@@ -225,6 +284,7 @@ export class Registro {
       }
       const prestigio = prestigioDe(estado, jugador, this.reglas);
       const decision = decisiones.get(id) ?? null;
+      const utiles = ordenesUtiles(decision, sucesos);
       const fila: FilaDeTurno = {
         turno,
         prestigio: jugador.prestigio,
@@ -262,11 +322,31 @@ export class Registro {
             s.datos['operacion'] === 'vender' && String(s.datos['mercado']).startsWith('feria-'),
         ),
         lanaEsquilada: sumar(sucesos, jugador.id, 'rebanyo.esquileo', 'lana'),
+        vendido: vendidoPorRecurso(sucesos, jugador.id),
+        ventasFuera: sumar(
+          sucesos,
+          jugador.id,
+          'mercado.trato',
+          'cantidad',
+          (s) =>
+            s.datos['operacion'] === 'vender' &&
+            s.comarca !== null &&
+            estado.comarcas[s.comarca]?.duenyo !== jugador.id,
+        ),
+        aperos: contar(
+          sucesos,
+          jugador.id,
+          'orden.estado',
+          (s) => s.datos['clase'] === 'aperos' && s.datos['estado'] === 'terminada',
+        ),
+        trashumancias: contar(sucesos, jugador.id, 'rebanyo.llega', (s) =>
+          this.enPastoCorrecto(estado, s, turno),
+        ),
         pueblasFundadas: contar(sucesos, jugador.id, 'recua.funda-puebla'),
         comarcasIncorporadas: contar(sucesos, jugador.id, 'incorporar.completa'),
         decidio: decision === null ? null : true,
-        ordenesPropuestas: decision ?? 0,
-        sinOrdenes: decision === 0,
+        ordenesPropuestas: decision?.ordenes.length ?? 0,
+        sinOrdenes: decision?.ordenes.length === 0,
         ordenesDeAlta: contar(sucesos, jugador.id, 'orden.alta'),
         ordenesTerminadas: contar(
           sucesos,
@@ -286,6 +366,10 @@ export class Registro {
           'orden.estado',
           (s) => s.datos['estado'] === 'en espera' || s.datos['estado'] === 'en cola',
         ),
+        ordenesUtiles: utiles,
+        enMarcha: (decision?.enMarcha ?? 0) > 0,
+        sinDecisionUtil: decision !== null && utiles === 0 && decision.enMarcha === 0,
+        motivos: decision?.motivos ?? [],
       };
       this.filas.set(id, [...(this.filas.get(id) ?? []), fila]);
     }
@@ -294,6 +378,16 @@ export class Registro {
     this.anotarTierra(estado, sucesos);
     this.anotarNegocios(estado, sucesos, turno);
     this.anterior = estado;
+  }
+
+  /** La comarca a la que llega un rebanyo es pasto correcto el turno en que llega. */
+  private enPastoCorrecto(estado: EstadoPartida, suceso: Suceso, turno: number): boolean {
+    const id = suceso.comarca;
+    const comarca = id === null ? undefined : estado.comarcas[id];
+    const geografia = id === null ? undefined : this.mundo.comarcas[id];
+    if (comarca === undefined || geografia === undefined) return false;
+    const estacional = estadoEstacionalDe(turno, this.mundo, this.reglas, estado.acontecimientos);
+    return esPastoCorrecto(comarca, geografia, estacional, this.reglas);
   }
 
   /** Por que se cancelan y por que esperan las ordenes: sin esto, «sin decision» no explica nada. */
@@ -487,6 +581,13 @@ export interface ResumenDeJugador {
   readonly ventasSinCompra: number;
   readonly ingresosDeFeria: number;
   readonly lanaEsquilada: number;
+  /** Cargas vendidas en toda la partida, por recurso. */
+  readonly vendido: Recursos;
+  readonly ventasFuera: number;
+  readonly aperos: number;
+  readonly trashumancias: number;
+  /** Negocios de arbitraje que dejaron ganancia despues del bastimento. */
+  readonly negociosRentables: number;
   readonly pueblasFundadas: number;
   readonly comarcasIncorporadas: number;
   /** Lo producido en toda la partida, por recurso. */
@@ -534,6 +635,12 @@ export function resumir(partida: MetricasDePartida, jugador: MetricasDeJugador):
       edificios[edificio] = (edificios[edificio] ?? 0) + cantidad;
     }
   }
+  const vendido = recursosCero();
+  for (const fila of filas) {
+    for (const [recurso, cantidad] of Object.entries(fila.vendido) as [Recurso, number][]) {
+      vendido[recurso] += cantidad;
+    }
+  }
   const capitulos = {} as Record<CapituloDePrestigio, number>;
   for (const c of CAPITULOS_DE_PRESTIGIO) capitulos[c] = ultima?.capitulos[c] ?? 0;
   const negocios = jugador.traza.negocios;
@@ -560,6 +667,11 @@ export function resumir(partida: MetricasDePartida, jugador: MetricasDeJugador):
     ventasSinCompra: jugador.traza.ventasSinCompra.reduce((t, v) => t + v.cargas, 0),
     ingresosDeFeria: suma((f) => f.ingresosDeFeria),
     lanaEsquilada: suma((f) => f.lanaEsquilada),
+    vendido,
+    ventasFuera: suma((f) => f.ventasFuera),
+    aperos: suma((f) => f.aperos),
+    trashumancias: suma((f) => f.trashumancias),
+    negociosRentables: negocios.filter((n) => n.margenNeto > 0).length,
     pueblasFundadas: suma((f) => f.pueblasFundadas),
     comarcasIncorporadas: suma((f) => f.comarcasIncorporadas),
     producido,

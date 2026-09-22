@@ -50,6 +50,10 @@ export function fila(turno: number, cambios: Partial<FilaDeTurno> = {}): FilaDeT
     porEdificio: {},
     ingresosDeFeria: 0,
     lanaEsquilada: 0,
+    vendido: {},
+    ventasFuera: 0,
+    aperos: 0,
+    trashumancias: 0,
     pueblasFundadas: 0,
     comarcasIncorporadas: 0,
     decidio: true,
@@ -59,6 +63,10 @@ export function fila(turno: number, cambios: Partial<FilaDeTurno> = {}): FilaDeT
     ordenesTerminadas: 0,
     ordenesCanceladas: 0,
     ordenesEnEspera: 0,
+    ordenesUtiles: 1,
+    enMarcha: false,
+    sinDecisionUtil: false,
+    motivos: [],
     ...cambios,
   };
 }
@@ -125,6 +133,8 @@ export function partida(jugadas: readonly Jugada[], extra: Extras = {}): Metrica
         prestigio: j.enTurno?.[turno] ?? (turno === turnos ? j.prestigio : 0),
         sinOrdenes: i < (j.sinOrdenes ?? 0),
         ordenesPropuestas: i < (j.sinOrdenes ?? 0) ? 0 : 1,
+        ordenesUtiles: i < (j.sinOrdenes ?? 0) ? 0 : 1,
+        sinDecisionUtil: i < (j.sinOrdenes ?? 0),
         escasez: i < (j.escasez ?? 0),
         obrasMayoresTerminadas: turno === j.obraMayor ? 1 : 0,
       });

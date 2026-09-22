@@ -13,6 +13,7 @@ export const MERCADERES: Estrategia = {
       ['aserradero', 1],
       ['casas', 1],
     ],
+    esenciales: ['mercado'],
     comarcas: [
       ['granja', 1],
       ['mercado', 1],

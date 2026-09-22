@@ -277,12 +277,37 @@ describe('lo que no se puede esconder', () => {
     expect(estadoDe(evaluarEquilibrio(entera), 'tierra')).toBe('cumple');
   });
 
-  it('«no propuso órdenes» y «no había nada útil que hacer» son dos criterios distintos', () => {
+  it('«no propuso órdenes» y «no hizo nada útil» son dos criterios distintos', () => {
     const evaluacion = evaluarEquilibrio(unaPartida(MEDIANA_100));
     expect(estadoDe(evaluacion, 'actividad', 'mesta')).toBe('cumple');
     const util = filasDe(evaluacion, 'decisiones útiles')[0];
-    expect(util?.estado).toBe('no evaluable');
-    expect(util?.precondicion).toContain('T-050');
+    expect(util?.estado).toBe('cumple');
+    expect(util?.precondicion).toBeNull();
+  });
+
+  it('un turno sin órdenes nuevas no es inútil si su plan sigue en marcha', () => {
+    const base = partida(MEDIANA_100, { turnos: 200 });
+    const conPlan = resultado([
+      {
+        ...base,
+        jugadores: base.jugadores.map((j) => ({
+          ...j,
+          filas: j.filas.map((f) => ({
+            ...f,
+            sinOrdenes: true,
+            ordenesPropuestas: 0,
+            ordenesUtiles: 0,
+            enMarcha: f.turno % 2 === 0,
+            sinDecisionUtil: f.turno % 2 !== 0,
+          })),
+        })),
+      },
+    ]);
+    const evaluacion = evaluarEquilibrio(conPlan);
+    const util = filasDe(evaluacion, 'decisiones útiles')[0];
+    expect(estadoDe(evaluacion, 'actividad', 'mesta')).toBe('incumple');
+    expect(util?.observado).toBe(50);
+    expect(util?.estado).toBe('incumple');
   });
 });
 

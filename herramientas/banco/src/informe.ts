@@ -9,9 +9,16 @@ import type { ResultadoDelBanco } from './ejecutar.ts';
 import { componerEvaluacion, evaluarEquilibrio, pendientes, recuentoDe } from './equilibrio.ts';
 import type { Evaluacion } from './equilibrio.ts';
 import { ESCENARIOS } from './escenarios/index.ts';
-import type { MetricasDePartida, PrecioPegado, ResumenDeJugador } from './metricas.ts';
+import type {
+  MetricasDeJugador,
+  MetricasDePartida,
+  PrecioPegado,
+  ResumenDeJugador,
+} from './metricas.ts';
 import { resumir } from './metricas.ts';
 import type { Manifiesto } from './procedencia.ts';
+import type { Motivo } from './robots/motivos.ts';
+import { MOTIVOS } from './robots/motivos.ts';
 
 /** Los umbrales de salud del juego (ficha T-046 §4.5). */
 export const SALUD = {
@@ -91,6 +98,10 @@ const CIFRAS: readonly (keyof ResumenDeJugador)[] = [
   'ventasSinCompra',
   'ingresosDeFeria',
   'lanaEsquilada',
+  'ventasFuera',
+  'aperos',
+  'trashumancias',
+  'negociosRentables',
   'pueblasFundadas',
   'comarcasIncorporadas',
   'turnosDeDecision',
@@ -112,6 +123,7 @@ function mediasDe(lista: readonly ResumenDeJugador[]): Medias {
   for (const c of CAPITULOS_DE_PRESTIGIO)
     m[`capitulo_${c}`] = media(lista.map((r) => r.capitulos[c]));
   for (const r of RECURSOS) m[`producido_${r}`] = media(lista.map((x) => x.producido[r]));
+  for (const r of RECURSOS) m[`vendido_${r}`] = media(lista.map((x) => x.vendido[r]));
   const edificios = new Set(lista.flatMap((x) => Object.keys(x.porEdificio)));
   for (const e of [...edificios].sort(comparar)) {
     m[`edificio_${e}`] = media(lista.map((x) => x.porEdificio[e] ?? 0));
@@ -352,8 +364,30 @@ function seccionCapitulos(a: Analisis): string {
 const PRODUCTOS: readonly Recurso[] = ['pan', 'madera', 'piedra', 'sal', 'hierro'];
 
 /**
+ * Las cifras de una partida con los nombres que usa `PRUEBA_DE_VIA`: las del resumen, lo producido
+ * y lo vendido por recurso, y lo producido por clase de edificio.
+ */
+export function cifrasDeVia(r: ResumenDeJugador): Record<string, number> {
+  const cifras: Record<string, number> = {};
+  for (const nombre of CIFRAS) cifras[nombre] = Number(r[nombre]);
+  for (const recurso of RECURSOS) {
+    cifras[`producido_${recurso}`] = r.producido[recurso];
+    cifras[`vendido_${recurso}`] = r.vendido[recurso];
+  }
+  for (const [edificio, cantidad] of Object.entries(r.porEdificio)) {
+    cifras[`edificio_${edificio}`] = cantidad;
+  }
+  return cifras;
+}
+
+function hay(m: Readonly<Record<string, number>>, nombre: string): boolean {
+  return (m[nombre] ?? 0) > 0;
+}
+
+/**
  * Lo que tiene que verse en la partida de cada casa para decir que su robot juega a lo suyo (ficha
- * T-046 §6.3): la cifra que lo prueba y lo que se espera de ella.
+ * T-050 §6.3): su accion distintiva, no la produccion ni que dos contadores coincidan. Se evalua
+ * partida a partida.
  */
 export const PRUEBA_DE_VIA: Readonly<
   Record<
@@ -362,74 +396,117 @@ export const PRUEBA_DE_VIA: Readonly<
   >
 > = {
   mesta: {
-    texto: 'esquila lana y la vende en feria',
-    cumple: (m) => (m['lanaEsquilada'] ?? 0) > 0 && (m['ingresosDeFeria'] ?? 0) > 0,
+    texto: 'lleva el ganado de un pasto al otro, esquila y vende la lana',
+    cumple: (m) => hay(m, 'trashumancias') && hay(m, 'lanaEsquilada') && hay(m, 'vendido_lana'),
   },
   ferrones: {
-    texto: 'saca hierro en sus ferrerías',
-    cumple: (m) => (m['edificio_ferreria'] ?? 0) > 0,
+    texto: 'saca hierro en sus ferrerías y lo vende o lo pone en aperos',
+    cumple: (m) => hay(m, 'edificio_ferreria') && (hay(m, 'vendido_hierro') || hay(m, 'aperos')),
   },
-  canteros: { texto: 'termina obras mayores', cumple: (m) => (m['obrasMayores'] ?? 0) > 0 },
+  canteros: { texto: 'termina obras mayores', cumple: (m) => hay(m, 'obrasMayores') },
   mercaderes: {
-    texto: 'compra en una plaza y vende esa misma mercancía en otra',
-    cumple: (m) => (m['negocios'] ?? 0) > 0,
+    texto: 'compra en una plaza y vende esa misma mercancía en otra con ganancia neta',
+    cumple: (m) => hay(m, 'negociosRentables'),
   },
-  monjes: { texto: 'funda pueblas', cumple: (m) => (m['pueblasFundadas'] ?? 0) > 0 },
+  monjes: { texto: 'funda pueblas', cumple: (m) => hay(m, 'pueblasFundadas') },
   salineros: {
-    texto: 'saca sal o salazón',
-    cumple: (m) => (m['edificio_salina'] ?? 0) + (m['edificio_lonja'] ?? 0) > 0,
+    texto: 'saca sal o salazón y la vende',
+    cumple: (m) =>
+      (hay(m, 'edificio_salina') && hay(m, 'vendido_sal')) ||
+      (hay(m, 'edificio_lonja') && hay(m, 'vendido_pan')),
   },
   arrieros: {
-    texto: 'anda los caminos y comercia',
-    cumple: (m) => (m['jornadas'] ?? 0) > 0 && (m['volumenComerciado'] ?? 0) > 0,
+    texto: 'lleva mercancía por los caminos y la vende fuera de su tierra',
+    cumple: (m) => hay(m, 'jornadas') && hay(m, 'ventasFuera'),
   },
   hortelanos: {
-    texto: 'vive del pan de sus huertas',
-    cumple: (m) => (m['edificio_huerta'] ?? 0) > 0,
+    texto: 'vive del pan de sus huertas y vende el que sobra',
+    cumple: (m) => hay(m, 'edificio_huerta') && hay(m, 'vendido_pan'),
   },
 };
 
-function seccionVia(a: Analisis): string {
+/** Motivos que se ensenyan de cada via ausente: los mas frecuentes. */
+const MOTIVOS_POR_VIA = 3;
+
+/**
+ * Por que no juega su via: los motivos que dio el robot mas turnos, con su categoria. Es la razon
+ * trazable que pide T-050 §6.4; si el robot no dio ninguno, se dice.
+ */
+export function porQueNo(jugador: MetricasDeJugador): string {
+  const cuenta = new Map<Motivo, number>();
+  for (const fila of jugador.filas) {
+    for (const motivo of fila.motivos) cuenta.set(motivo, (cuenta.get(motivo) ?? 0) + 1);
+  }
+  const principales = [...cuenta]
+    .sort((a, b) => b[1] - a[1] || comparar(a[0], b[0]))
+    .slice(0, MOTIVOS_POR_VIA);
+  if (principales.length === 0) return 'el robot no dio ningún motivo: **defecto del robot**';
+  return principales
+    .map(([motivo, turnos]) => {
+      const datos = MOTIVOS[motivo];
+      return `${datos.texto} (${datos.categoria}, ${String(turnos)} turnos)`;
+    })
+    .join('; ');
+}
+
+function seccionVia(resultado: ResultadoDelBanco, a: Analisis): string {
+  const filas: string[][] = [];
+  for (const partida of resultado.partidas) {
+    for (const jugador of [...partida.jugadores].sort((x, y) => comparar(x.casa, y.casa))) {
+      const juega = PRUEBA_DE_VIA[jugador.casa].cumple(cifrasDeVia(resumir(partida, jugador)));
+      filas.push([
+        NOMBRES_DE_CASA[jugador.casa],
+        partida.semilla,
+        PRUEBA_DE_VIA[jugador.casa].texto,
+        juega ? 'sí' : '**no**',
+        juega ? '' : porQueNo(jugador),
+      ]);
+    }
+  }
   const pruebas = tabla(
-    ['Casa', 'Su vía', '¿La juega?'],
-    a.casas.map((c) => [
-      NOMBRES_DE_CASA[c],
-      PRUEBA_DE_VIA[c].texto,
-      PRUEBA_DE_VIA[c].cumple(a.medias.get(c) ?? {}) ? 'sí' : '**no**',
-    ]),
-    [0, 1, 2],
+    ['Casa', 'Semilla', 'Su vía', '¿La juega?', 'Por qué no'],
+    filas,
+    [0, 1, 2, 3, 4],
   );
   const cifras = tabla(
     [
       'Casa',
       'Lana esquilada',
+      'Trashumancias',
       'Ingresos de feria',
       ...PRODUCTOS.map((r) => `${r[0]?.toUpperCase() ?? ''}${r.slice(1)} producido`),
       'Obras',
       'Obras mayores',
+      'Aperos',
       'Jornadas',
       'Comerciado',
+      'Vendido fuera',
       'En ruta',
       'Negocios',
+      'Con ganancia',
       'Pueblas',
       'Incorporadas',
     ],
     a.casas.map((c) => [
       NOMBRES_DE_CASA[c],
       String(cifra(a, c, 'lanaEsquilada')),
+      String(cifra(a, c, 'trashumancias')),
       String(cifra(a, c, 'ingresosDeFeria')),
       ...PRODUCTOS.map((r) => String(cifra(a, c, `producido_${r}`))),
       String(cifra(a, c, 'obrasTerminadas')),
       String(cifra(a, c, 'obrasMayores')),
+      String(cifra(a, c, 'aperos')),
       String(cifra(a, c, 'jornadas')),
       String(cifra(a, c, 'volumenComerciado')),
+      String(cifra(a, c, 'ventasFuera')),
       String(cifra(a, c, 'volumenEnRuta')),
       String(cifra(a, c, 'negocios')),
+      String(cifra(a, c, 'negociosRentables')),
       String(cifra(a, c, 'pueblasFundadas')),
       String(cifra(a, c, 'comarcasIncorporadas')),
     ]),
   );
-  return `${pruebas}\n\n${cifras}`;
+  return `${pruebas}\n\nMedias de las partidas:\n\n${cifras}`;
 }
 
 function seccionAusencia(a: Analisis): string {
@@ -682,9 +759,9 @@ export function componerInforme(
     '',
     '## La vía de cada casa',
     '',
-    'Lo acumulado en toda la partida: cada robot tiene que jugar a lo suyo, y aquí se ve.',
+    'Partida a partida: cada robot tiene que hacer lo que distingue a su casa. Cuando no lo hace, el motivo que dio el robot (mapa, reglas, recursos o plan) dice por qué.',
     '',
-    seccionVia(a),
+    seccionVia(resultado, a),
     '',
     '## Jugar sin estar',
     '',

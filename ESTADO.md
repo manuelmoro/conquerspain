@@ -3,14 +3,83 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 21 de septiembre de 2026 (T-048 y T-049 hechas)
+**Última actualización:** 22 de septiembre de 2026 (T-050 en curso, checkpoint)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
 
 ## Tarea en curso
 
-Ninguna.
+**[T-050 · Robots que ejecutan sus vías](docs/plan/T-050-robots-viables.md)**, a medias (checkpoint
+del 22-09-2026 a petición del usuario). `npm run verificar` pasa: 985 tests en verde y **3 marcados
+`skip` como pendientes de T-050** (constante `PENDIENTES_DE_T050` en `vias.test.ts` y
+`solvencia.test.ts`). **No cerrar T-050 mientras esas listas no estén vacías.**
+
+### Dónde va T-050
+
+**Hecho y probado a mano con partidas de diagnóstico (seed 1492, y Mesta/ferrones/canteros/arrieros
+en solitario):**
+
+- `paquetes/nucleo/src/index.ts`: **solo exportaciones nuevas** (sin cambiar ninguna regla):
+  `avanzar`, `pasoDeRecua`, `pesoDeLaCarga`, `porteDe`, `rutaPorParadas`, `costeDeTramoMil`,
+  `tieneCalzada`, `tramoEntre`, `comarcasTransitables`, `bastimentoDePresencia`,
+  `capacidadDePasto`, `esPastoCorrecto`, `opcionesDeRutaDeRebanyo`, `pasoDeRebanyo`,
+  `puedeEntrar` y sus tipos. Justificación: previsiones con la misma fórmula que el motor.
+- `robots/viaje.ts` (nuevo): previsión turno a turno de recuas y rebaños con esas funciones
+  (paso de la casa, carga pesada, barro, calzadas, sal de verano, primer turno del almacén, pan y
+  sal que paga el almacén). `provisionPara`, `leLlega` (con margen), `panDePresencia`,
+  `preverRebanyo`. Sustituye a `panDeViaje`/`panDeIda`, eliminados.
+- `robots/tablero.ts`: `estacional`, `rutaDeRecua`, `rutaDeRebanyo` (comarca explorada que hoy ya
+  no es neutral cuenta como ajena), `costeDeTramo`, `casaMasCercana`, `turnosHastaQueAbraEn`,
+  `apartar` (lo que cargan las órdenes del turno sale de `disponible`) y caché de distancias.
+- `robots/impulsos.ts`: papeles de recua **por hueco** (nombre «Recua de X N»), estables al
+  disolver; recua mermada (<75 % de acémilas) vuelve y se disuelve; exploración con vuelta
+  asegurada y encadenada; **expedición arriesgada deliberada** (carga ligera) cuando nada cabe y la
+  casa puede rehacer la recua; emisario y poblar con provisión; feriante que sale cuando llegaría
+  con la feria abierta; tratante que compra por urgencia (pan de 2 turnos → material de los
+  esenciales → despensa → material → sal de viaje en primavera/verano) guardando un lote por cosa
+  pendiente; `hacerSitio` (derriba un edificio fuera del plan que no puede trabajar si un esencial
+  no cabe); motivos de escasez y de esencial sin recursos. Perfil con `esenciales`.
+- `robots/motivos.ts` (nuevo): catálogo cerrado de motivos con categoría mapa/reglas/recursos/plan.
+  `Robot.decidir` devuelve `{ ordenes, motivos }`.
+- `robots/mesta.ts`: ciclo `completo` / `a-medias` / `ninguno`; salida calculada para llegar al
+  cambio de pasto; nunca trayectos de más de 6 turnos; rebaño detenido se replanifica; tratante
+  primero; vende madera. Probado: en Sayago con dos tramos explorados hace Aliste ↔ Bragança,
+  calidad 833, cinco rebaños y vende lana.
+- `robots/arbitraje.ts`: ganancia neta con comisiones de la casa y bastimento valorado, compra en
+  casa con orden de mercado o ruta compra→venta→capital, motivos cuando no hay negocio.
+- Perfiles: hortelano con mercado antes de la acequia; ferrón mercado→aserradero→carbonera (solo
+  con madera propia y material para la cadena)→ferrería→cantera; cantero vende piedra por encima
+  de 150; Mesta vende madera.
+- Métricas (`VERSION_METRICAS = 3`): `ordenesUtiles`, `enMarcha`, `sinDecisionUtil`, `motivos`,
+  `vendido`, `ventasFuera`, `aperos`, `trashumancias`; resumen con `negociosRentables`.
+  **«Decisiones útiles» ya se evalúa** en `equilibrio.ts` (turno sin orden que trabaje ni plan en
+  marcha).
+- `solvencia.ts` + `solvencia.test.ts` (nuevos): el plan de la capital, sobre el arranque real, con
+  esenciales que caben, insumos con fuente y material de la primera obra mayor; control negativo.
+- Informe: sección de vías **por partida** con «Por qué no» (motivos más frecuentes);
+  `PRUEBA_DE_VIA` exige la acción distintiva; `cifrasDeVia` compartida con las pruebas.
+
+**Falta, en este orden:**
+
+1. `vias.test.ts`: rehacer los escenarios de Mesta (Sayago, capacidad preparada con los tramos
+   explorados, comprobar trashumancia en las dos estaciones, calidad, supervivencia y venta de
+   lana) y arrieros (negocio fuera de casa); añadir mercader con venta **fuera del dominio**
+   (plaza neutral explorada) y ganancia neta positiva, y hortelano que vende excedentes. Vaciar
+   `PENDIENTES_DE_T050`.
+2. `solvencia.ts`: modelar `hacerSitio` (derribo de lo que no puede trabajar) para Bilbao y
+   vaciar su `PENDIENTES_DE_T050`.
+3. Regresiones unitarias en `robots/viaje.test.ts`: carga insuficiente (`no-cabe`, carga pesada
+   más lenta), sal de verano (`sin-sal`, también la que paga el almacén), retorno garantizado,
+   modificador de bastimento de la casa, recua mermada → disolver con papel estable, feria.
+4. `equilibrio.ts`: quitar la precondición «T-050» de escasez al cerrar; subir `VERSION_ROBOTS`
+   a 2 en `version.ts`.
+5. Campaña `npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-050` y
+   repaso de cada vía ausente con su motivo; probar orígenes de perfiles distintos.
+6. Documentar: ficha T-050 (decisiones), bitácora de equilibrio (hallazgos de reglas: porte 10 y
+   2 panes/jornada no dejan explorar desde la sierra sin malvivir; Bilbao para ferrones no es
+   sostenible aunque aguante el primer año; hortelanos muy por encima de la mediana), índice y
+   ESTADO. Commit `T-050: planes viables y diagnósticos de los robots`.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,

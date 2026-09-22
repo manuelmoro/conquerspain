@@ -41,7 +41,7 @@ import {
   pendientes,
 } from './equilibrio.ts';
 import { componerCsv, componerInforme, componerSerieCsv } from './informe.ts';
-import type { MetricasDePartida } from './metricas.ts';
+import type { DecisionDeRobot, MetricasDePartida } from './metricas.ts';
 import { Registro } from './metricas.ts';
 import { altaDelBanco, mundoPeninsula } from './partida.ts';
 import { componerManifiesto, textoDeManifiesto } from './procedencia.ts';
@@ -84,9 +84,18 @@ function comprobar(orden: Orden, casa: Casa): Orden {
 export interface TurnoJugado {
   readonly estado: EstadoPartida;
   readonly sucesos: readonly Suceso[];
-  /** Cuantas ordenes dio cada robot; null si no le tocaba entrar. */
-  readonly decisiones: ReadonlyMap<string, number | null>;
+  /** Lo que decidio cada robot; null si no le tocaba entrar. */
+  readonly decisiones: ReadonlyMap<string, DecisionDeRobot | null>;
 }
+
+/** Estados en que una orden sigue trabajando para su jugador. */
+const VIVAS: readonly Orden['estado'][] = [
+  'pendiente',
+  'en espera',
+  'en curso',
+  'programada',
+  'en cola',
+];
 
 /**
  * Un turno: cada robot al que le toca entrar mira su vista y da sus ordenes, y el motor resuelve.
@@ -99,7 +108,7 @@ export function jugarTurno(
   reglas: TablasDeReglas,
 ): TurnoJugado {
   const ordenes: Orden[] = [];
-  const decisiones = new Map<string, number | null>();
+  const decisiones = new Map<string, DecisionDeRobot | null>();
   for (const robot of robots) {
     const jugador = robot.casa as string as IdJugador;
     if ((estado.turno - 1) % robot.cadencia !== 0) {
@@ -107,8 +116,13 @@ export function jugarTurno(
       continue;
     }
     const vista = vistaDeJugador(estado, jugador, mundo);
-    const suyas = robot.decidir(vista, mundo, reglas).map((o) => comprobar(o, robot.casa));
-    decisiones.set(jugador, suyas.length);
+    const decidido = robot.decidir(vista, mundo, reglas);
+    const suyas = decidido.ordenes.map((o) => comprobar(o, robot.casa));
+    decisiones.set(jugador, {
+      ordenes: suyas.map((o) => o.id),
+      enMarcha: vista.ordenes.filter((o) => VIVAS.includes(o.estado)).length,
+      motivos: decidido.motivos,
+    });
     ordenes.push(...suyas);
   }
   const resultado = resolverTurno(estado, ordenes, mundo, reglas);

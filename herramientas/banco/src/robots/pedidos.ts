@@ -103,6 +103,16 @@ export class Pedidos {
     });
   }
 
+  /** Derribar un nivel de un edificio, en la cola de su comarca: deja el solar libre. */
+  derribar(comarca: IdComarca, edificio: TipoEdificio): Orden {
+    return this.dar({
+      ...this.base({ cola: `comarca:${comarca}` }),
+      tipo: 'derribar',
+      comarca,
+      edificio,
+    });
+  }
+
   obraMayor(comarca: IdComarca, obra: TipoObraMayor, hacia: IdComarca | null = null): Orden {
     const coste = costeDeObraMayor(obra, this.t.casa, this.t.reglas);
     return this.dar({
@@ -172,6 +182,7 @@ export class Pedidos {
   }
 
   carga(recua: IdRecua, cargar: Cantidades, descargar: Cantidades, vecinos = 0): Orden {
+    this.t.apartar(cargar);
     return this.dar({
       ...this.base({ cola: `recua:${recua}` }),
       tipo: 'carga',

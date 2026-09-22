@@ -361,10 +361,17 @@ describe('el recuento de órdenes y los turnos de los hitos', () => {
         motivo: 'sin-plaza',
       }),
     ];
-    registro.anotar(estado, sucesos, new Map([['casa-uno', 3]]));
+    registro.anotar(
+      estado,
+      sucesos,
+      new Map([['casa-uno', { ordenes: ['o1', 'o2', 'o3'], enMarcha: 0, motivos: [] }]]),
+    );
     const jugador = registro.cerrar(estado, 'prueba', 1).jugadores[0];
     const fila = jugador?.filas[0];
     expect(fila?.ordenesPropuestas).toBe(3);
+    // La cancelada no trabaja: quedan dos útiles, y con ellas el turno sirvió de algo.
+    expect(fila?.ordenesUtiles).toBe(2);
+    expect(fila?.sinDecisionUtil).toBe(false);
     expect(fila?.sinOrdenes).toBe(false);
     expect(fila?.ordenesDeAlta).toBe(1);
     expect(fila?.ordenesTerminadas).toBe(1);
