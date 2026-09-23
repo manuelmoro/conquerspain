@@ -18,7 +18,6 @@ export const SALINEROS: Estrategia = {
     comarcas: [
       ['granja', 1],
       ['salina', 2],
-      ['mercado', 1],
       ['lonja', 1],
       ['casas', 1],
     ],

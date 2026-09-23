@@ -20,7 +20,6 @@ export const HORTELANOS: Estrategia = {
     comarcas: [
       ['huerta', 2],
       ['acequia', 1],
-      ['mercado', 1],
       ['casas', 1],
       ['aserradero', 1],
     ],

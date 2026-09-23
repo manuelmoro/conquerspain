@@ -100,8 +100,9 @@ huellas de reproducción no cambian.
   `enTierraDeNadie` (`datos/edificios.ts`), validado en `validarTablas.ts`.
 - **Los robots las plantan** (`robots/impulsos.ts`, `plantarVentas`): solo las casas que mandan una
   recua a arbitrar, hasta tres, donde la mercancía cotiza **distinto** que en casa. Medido: se
-  plantan de verdad (Arlanza, Monegros, Montes de Oca en `1492`) y las plazas de la partida suben
-  de 10 a 20.
+  plantan de verdad (Arlanza, Monegros y Montes de Oca en `1492`) y las plazas de la partida suben
+  de **10 a 13**. El veredicto del banco queda en 112 filas que cumplen, las mismas que la base
+  `T-052`: la venta abre el sitio, todavía no el negocio.
 - **Diseño escrito** en `docs/03-economia.md` §3.3 y §3.10.1.
 
 ### Lo que falta, y es una sola cosa
@@ -131,7 +132,7 @@ No repetir ninguno de estos sin una razón nueva:
 
 | Sospecha | Ensayo | Resultado |
 |---|---|---|
-| Faltan mercados | Un mercado en cada comarca propia (robots) | Plazas de 10 a 17. **Cero negocios**: el mercader tiene **una sola comarca** toda la partida |
+| Faltan mercados | Un mercado en cada comarca propia (robots) | Plazas de 10 a 17. **Cero negocios**: el mercader tiene **una sola comarca** toda la partida. Revertido |
 | Falta porte | `portePorAcemila` 1 → 2, con y sin ventas | **Cero negocios** en los dos casos |
 | Falta dinero | `COLCHON_DE_MARAVEDIS` 60 → 20 | **Cero negocios** (la casa tiene ~65 maravedís: la bolsa de comercio era de 5) |
 | Faltan ferias | Medición del catálogo | 9 comarcas con feria de 403, abiertas 1–2 turnos al año |

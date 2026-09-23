@@ -614,13 +614,14 @@ es el camino**. Lo que se levanta allí no pasa a ser tuyo: si alguien incorpora
 con ella y con lo que haya dentro.
 
 Medido: los robots las plantan de verdad (Arlanza, Monegros y Montes de Oca en `1492`) y las plazas
-de una partida suben de **10 a 20**.
+de una partida suben de **10 a 13**. El veredicto del banco queda en 112 filas que cumplen, las
+mismas que la base `T-052`: la venta abre el sitio, todavía no el negocio.
 
 ### Cuatro sospechas descartadas, cada una con su medida
 
 | Sospecha | Ensayo | Resultado |
 |---|---|---|
-| Faltan mercados | Un mercado en cada comarca propia (robots) | Plazas de 10 a 17. **Cero negocios**: el mercader tiene **una sola comarca** toda la partida |
+| Faltan mercados | Un mercado en cada comarca propia (robots) | Plazas de 10 a 17. **Cero negocios**: el mercader tiene **una sola comarca** toda la partida. Revertido |
 | Falta porte | `portePorAcemila` 1 → 2, con ventas y sin ellas | **Cero negocios** en los dos casos |
 | Falta dinero | `COLCHON_DE_MARAVEDIS` 60 → 20 | **Cero negocios**. La casa tiene unos 65 maravedís, así que la bolsa de comercio era de **cinco** |
 | Faltan ferias | Recuento del catálogo | 9 de 403 comarcas, abiertas 1–2 turnos al año |

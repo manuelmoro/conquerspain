@@ -61,7 +61,6 @@ export const FERRONES: Estrategia = {
       ['granja', 1],
       ['carbonera', 1],
       ['ferreria', 1],
-      ['mercado', 1],
       ['aserradero', 1],
       ['casas', 1],
     ],

@@ -28,7 +28,6 @@ export const MONJES: Estrategia = {
     comarcas: [
       ['granja', 1],
       ['aserradero', 1],
-      ['mercado', 1],
       ['casas', 1],
       ['huerta', 1],
     ],

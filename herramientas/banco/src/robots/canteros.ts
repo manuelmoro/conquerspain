@@ -43,7 +43,6 @@ export const CANTEROS: Estrategia = {
     comarcas: [
       ['granja', 1],
       ['cantera', 1],
-      ['mercado', 1],
       ['aserradero', 1],
       ['casas', 1],
     ],
