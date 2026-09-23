@@ -709,3 +709,59 @@ que recorrer, y el comercio no puede existir por mucho porte, dinero o plazas qu
 amplía T-052 y toca lógica (hace falta el grafo de caminos), así que **es una decisión de diseño que
 el usuario debe ver antes de implementarse**; queda anotada en
 [T-053 §8](T-053-plazas-donde-comerciar.md) y no se ha abierto ficha por cuenta propia.
+
+## 24-09-2026 · T-047: el marcador deja de pagar solo por ocupar tierra
+
+**Encargo:** atacar lo de T-047 que **no** depende de la decisión pendiente sobre los precios: el
+ritmo (el primer «pequeño dominio» llegaba en T43 y el objetivo es T60–T100) y los monjes, que se
+disparan. **Resultado:** primera ganancia de equilibrio de la tarea, confirmada en las tres campañas.
+
+### Lo que se ensayó y por qué se descartó
+
+El diseño promete que «expandirse cuesta administración y lealtad: el líder no se dispara solo», así
+que se atacó primero por ahí. Tres ensayos sobre el grupo de la administración:
+
+| Ensayo | Resultado |
+|---|---|
+| `administracionBase` 4 → 10 y `porJornada` 2 → 5 | Frena de verdad (los monjes bajan de 14 comarcas a 6) y el prestigio sube a **7 de 24**, pero arrasa: la actividad cae de 22 a 14 y **nadie termina una obra mayor**. 103 filas cumplen |
+| `administracionBase` 4 → 6 y `porJornada` 2 → 3 | 113 filas; prestigio 5; obra mayor sigue en **0** |
+| `administracionBase` 4 → 8, dejando la distancia quieta | 112 filas; prestigio 5; obra mayor **0** |
+
+**El patrón es el hallazgo:** cualquier subida de la administración mata las obras mayores, porque
+se pagan de lo mismo y las casas no tienen maravedís para las dos cosas. Es la tercera confirmación
+de que la economía está sin dinero, y no se arregla desde la administración. Los tres, descartados.
+
+### El cambio adoptado: la tabla de prestigio
+
+Con una comarca a 20 y una feria a 30, **ocupar tierra pesaba unas cuatro veces más que cualquier
+oficio**, y el marcador se reducía a quien producía más pan. La tabla nueva paga lo que cuesta
+lograr cada cosa:
+
+| Concepto | Antes | Ahora |
+|---|---:|---:|
+| Comarca propia | 20 (+10 con fuero) | **8** (+4 con fuero) |
+| Comarca explorada | 3 | **8** |
+| Año trashumante completo | 10 | **30** |
+| Feria destacada | 30 | **60** |
+| Aperos de nivel 3 o más | 10 | **25** |
+
+Escrito en [docs/06-competicion.md §6.3](../06-competicion.md) con su porqué.
+
+| Campaña | Base `T-053` | Con el marcador nuevo |
+|---|---:|---:|
+| 1492 | 114 | **116** |
+| 1085 | 109 | **112** |
+| 1212 | 109 | **113** |
+
+La horquilla se estrecha en lo que mide el criterio: monjes de 457 % a 327 % de la mediana,
+hortelanos de 385 % a 280 %, mercaderes de 63 % a 80 % y ferrones de 48 % a 51 %. Las obras mayores
+siguen cumpliendo 3 de 3, la actividad 22 de 24 y `ganadores` cumple.
+
+Se ajustaron a mano los tres escenarios de `prestigio.test.ts` (49 → 72, 853 → 931 y −45 → −52) y se
+regeneraron las huellas de reproducción, que cambian porque el prestigio entra en el estado.
+
+### Lo que sigue sin moverse
+
+`dominio` y `tierra` siguen incumpliendo 3 de 3, y el prestigio va por 4 filas de 24: la horquilla
+80–120 % pide que **todas** las casas compitan, y cuatro de ellas siguen sin economía mientras el
+comercio no exista. Eso depende de la decisión pendiente sobre los precios y la distancia.

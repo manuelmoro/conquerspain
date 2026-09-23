@@ -7,9 +7,10 @@ import type { DatosHito, DatosPrestigio, Hito } from '../tipos/reglas.ts';
 
 export const PRESTIGIO: DatosPrestigio = {
   porCadaCincoVecinos: 1,
-  porComarca: 20,
-  // Una comarca con fuero vale 30 en lugar de 20 (docs/06: «20, +10 si tiene fuero»).
-  porComarcaConFuero: 30,
+  // Ocupar tierra pesaba cuatro veces mas que cualquier oficio, asi que ganaba siempre quien mas
+  // pan producia (medido en T-047, 24-09-2026). Ahora una comarca vale 8, y 12 si tiene fuero.
+  porComarca: 8,
+  porComarcaConFuero: 12,
   porObraMayor: {
     puente: 120,
     calzada: 150,
@@ -20,14 +21,17 @@ export const PRESTIGIO: DatosPrestigio = {
     'acequia-mayor': 120,
   },
   porTramoDeCamino: 15,
-  porFeriaDestacada: 30,
+  // Lo que distingue a una casa vale ahora lo que cuesta lograrlo: una feria destacada, un anyo
+  // trashumante entero o una comarca con aperos de sobra no pueden valer menos que ocupar tierra.
+  porFeriaDestacada: 60,
   volumenDeFeriaDestacada: 500,
   porPrimicia: 50,
-  porComarcaExplorada: 3,
-  porAnyoTrashumante: 10,
+  // Abrir camino es de las pocas cosas que hacen todas las casas, tambien las que no crecen.
+  porComarcaExplorada: 8,
+  porAnyoTrashumante: 30,
   // Un rebanyo quieto en la sierra se queda en torno a 580 milesimas; el ciclo completo pasa de 750.
   calidadDeAnyoTrashumanteMil: 750,
-  porAperosAltos: 10,
+  porAperosAltos: 25,
   nivelDeAperosAltos: 3,
   reservaDeDespensaEstable: 60,
   penalizacionPorComarcaPerdida: 20,

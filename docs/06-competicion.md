@@ -77,18 +77,26 @@ no lo que acumulas en el almacén.
 | Concepto | Prestigio |
 |---|---|
 | Vecino en tu dominio | 1 por cada 5 vecinos |
-| Comarca propia | 20, +10 si tiene fuero |
+| Comarca propia | 8, +4 si tiene fuero |
 | Obra mayor terminada | 120 (catedral 250, calzada 150) |
 | Camino carretero o calzada construida | 15 por tramo |
-| Feria con más de 500 mrs de volumen propio en el año | 30 |
+| Feria con más de 500 mrs de volumen propio en el año | 60 |
 | Hito logrado | lo que diga el hito (10 a 50) |
 | Hito alcanzado el primero de la partida | 50 más |
-| Comarca explorada | 3 |
-| Rebaño que completa un año trashumante (esquila con calidad del año ≥ 75 %) | 10 |
-| Aperos de nivel 3 o más instalados | 10 por comarca |
+| Comarca explorada | 8 |
+| Rebaño que completa un año trashumante (esquila con calidad del año ≥ 75 %) | 30 |
+| Aperos de nivel 3 o más instalados | 25 por comarca |
 
 Penalizaciones: −20 por comarca perdida por deslealtad; −1 por turno con escasez. El prestigio puede
 quedar en negativo.
+
+**Por qué estos pesos** (ajustados en T-047 el 24-09-2026, con las nueve partidas del banco
+delante). Con una comarca a 20 y una feria a 30, ocupar tierra pesaba unas cuatro veces más que
+cualquier oficio, y el marcador se reducía a quien producía más pan: los monjes y los hortelanos
+llegaban a cuatro veces la mediana y los ferrones y la Mesta no pasaban del 20 %. Ahora **lo que
+distingue a una casa vale lo que cuesta lograrlo**: un año trashumante entero, una feria destacada o
+una comarca con aperos de sobra no pueden valer menos que ocupar una comarca más. Explorar sube de 3
+a 8 porque es de las pocas cosas que hacen todas las casas, también las que no crecen.
 
 ### 6.3.1 Cómo se lleva la cuenta (T-043)
 

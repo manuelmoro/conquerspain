@@ -95,25 +95,25 @@ describe('el prestigio por capítulos', () => {
     expect(Object.keys(DATOS_DE_HITOS)).toEqual([...HITOS]);
   });
 
-  it('escenario 1, el origen: 40 vecinos, una comarca y siete conocidas = 49', () => {
+  it('escenario 1, el origen: 40 vecinos, una comarca y siete conocidas = 72', () => {
     const estado = escenario();
     const p = prestigioDe(estado, jugadorDe(estado), reglas);
     expect(p.capitulos).toEqual({
       poblacion: 8, // 40 / 5
-      territorio: 20,
+      territorio: 8,
       obras: 0,
       caminos: 0,
       comercio: 0,
-      exploracion: 21, // 6 exploradas y la propia, a 3
+      exploracion: 56, // 6 exploradas y la propia, a 8
       ganaderia: 0,
       industria: 0,
       hitos: 0,
     });
     expect(p.penalizaciones).toBe(0);
-    expect(p.total).toBe(49);
+    expect(p.total).toBe(72);
   });
 
-  it('escenario 2, un dominio hecho: 853', () => {
+  it('escenario 2, un dominio hecho: 931', () => {
     let estado = conComarca(escenario(), 'prueba-llano', { poblacion: 150, fuero: 'fuero' });
     estado = conComarca(estado, 'prueba-vega', { duenyo: UNO, poblacion: 60, aperos: 3 });
     estado = conComarca(estado, 'prueba-costa', { duenyo: UNO, poblacion: 23, aperos: 2 });
@@ -134,27 +134,27 @@ describe('el prestigio por capítulos', () => {
     const p = prestigioDe(estado, jugadorDe(estado), reglas);
     expect(p.capitulos).toEqual({
       poblacion: 46, // 233 vecinos / 5
-      territorio: 70, // 30 con fuero + 20 + 20
+      territorio: 28, // 12 con fuero + 8 + 8
       obras: 550, // catedral 250 + dos calzadas a 150
       caminos: 30, // dos tramos de calzada a 15
-      comercio: 30,
-      exploracion: 21,
-      ganaderia: 20,
-      industria: 10, // solo la vega llega a aperos 3
+      comercio: 60, // una feria destacada
+      exploracion: 56,
+      ganaderia: 60, // dos anyos trashumantes a 30
+      industria: 25, // solo la vega llega a aperos 3
       hitos: 100, // villa 20 + dominio 30 + primicia 50
     });
     expect(p.penalizaciones).toBe(24); // 20 por la comarca perdida y 4 turnos de escasez
-    expect(p.total).toBe(853);
+    expect(p.total).toBe(931);
   });
 
   it('escenario 3, una casa en apuros: el prestigio puede ser negativo', () => {
     let estado = soloElOrigen(conComarca(escenario(), 'prueba-llano', { poblacion: 12 }));
     estado = conRegistro(estado, { turnosConEscasez: 10 });
-    expect(prestigioDe(estado, jugadorDe(estado), reglas).total).toBe(2 + 20 + 3 - 10);
+    expect(prestigioDe(estado, jugadorDe(estado), reglas).total).toBe(2 + 8 + 8 - 10);
     estado = conRegistro(estado, { turnosConEscasez: 10, comarcasPerdidas: 3 });
     const p = prestigioDe(estado, jugadorDe(estado), reglas);
     expect(p.penalizaciones).toBe(70);
-    expect(p.total).toBe(-45);
+    expect(p.total).toBe(-52);
   });
 
   it('el almacén no da prestigio: se premia lo hecho, no lo guardado', () => {
