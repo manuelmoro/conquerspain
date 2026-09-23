@@ -17,6 +17,7 @@ import type { Plaza } from '../reglas/plazas.ts';
 import { comarcasConRecua, preciosDeOido, sortearRumores, viasDeRumor } from '../reglas/rumores.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import type { EstadoJugador } from '../tipos/estado.ts';
+import type { IdComarca } from '../tipos/ids.ts';
 import { comparar, idsEnOrden } from '../utiles/orden.ts';
 
 export function faseCronica(ctx: Contexto): void {
@@ -24,7 +25,7 @@ export function faseCronica(ctx: Contexto): void {
   for (const id of idsEnOrden(ctx.estado.jugadores)) {
     const jugador = ctx.estado.jugadores[id];
     if (jugador === undefined) continue;
-    loQueVenSusRecuas(ctx, jugador, abiertas);
+    loQueVeLoSuyo(ctx, jugador, abiertas);
     loQueEscribenSusCorresponsales(ctx, jugador);
     loQueOye(ctx, jugador, abiertas);
   }
@@ -52,12 +53,21 @@ function saberPrecios(
   });
 }
 
-function loQueVenSusRecuas(
-  ctx: Contexto,
-  jugador: EstadoJugador,
-  abiertas: readonly Plaza[],
-): void {
-  for (const comarca of comarcasConRecua(ctx.estado, jugador)) {
+/**
+ * Las comarcas donde el jugador tiene gente suya: donde para una recua y donde tiene la venta que
+ * levanto en tierra de nadie (ficha T-053). De las dos sabe lo que pasa y lo que se paga; una
+ * venta sin ventero que cuente los precios no serviria para decidir ningun viaje.
+ */
+function dondeTieneGente(ctx: Contexto, jugador: EstadoJugador): IdComarca[] {
+  const suyas = new Set<IdComarca>(comarcasConRecua(ctx.estado, jugador));
+  for (const id of idsEnOrden(ctx.estado.comarcas)) {
+    if (ctx.estado.comarcas[id]?.ventaDe === jugador.id) suyas.add(id as IdComarca);
+  }
+  return [...suyas].sort(comparar);
+}
+
+function loQueVeLoSuyo(ctx: Contexto, jugador: EstadoJugador, abiertas: readonly Plaza[]): void {
+  for (const comarca of dondeTieneGente(ctx, jugador)) {
     for (const plaza of abiertas.filter((p) => p.comarca === comarca)) {
       saberPrecios(ctx, jugador, plaza.id, 'visita');
     }

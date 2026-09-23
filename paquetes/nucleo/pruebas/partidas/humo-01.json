@@ -48,6 +48,7 @@
         "presenciaSeguida": {},
         "ultimoRegalo": {},
         "exDuenyo": null,
+        "ventaDe": null,
         "turnosDeAbono": 0,
         "estiercol": 0
       },
@@ -95,6 +96,7 @@
         "presenciaSeguida": {},
         "ultimoRegalo": {},
         "exDuenyo": null,
+        "ventaDe": null,
         "turnosDeAbono": 0,
         "estiercol": 0
       },
@@ -140,6 +142,7 @@
         "presenciaSeguida": {},
         "ultimoRegalo": {},
         "exDuenyo": null,
+        "ventaDe": null,
         "turnosDeAbono": 0,
         "estiercol": 0
       },
@@ -185,6 +188,7 @@
         "presenciaSeguida": {},
         "ultimoRegalo": {},
         "exDuenyo": null,
+        "ventaDe": null,
         "turnosDeAbono": 0,
         "estiercol": 0
       },
@@ -230,6 +234,7 @@
         "presenciaSeguida": {},
         "ultimoRegalo": {},
         "exDuenyo": null,
+        "ventaDe": null,
         "turnosDeAbono": 0,
         "estiercol": 0
       },
@@ -275,6 +280,7 @@
         "presenciaSeguida": {},
         "ultimoRegalo": {},
         "exDuenyo": null,
+        "ventaDe": null,
         "turnosDeAbono": 0,
         "estiercol": 0
       },
@@ -320,6 +326,7 @@
         "presenciaSeguida": {},
         "ultimoRegalo": {},
         "exDuenyo": null,
+        "ventaDe": null,
         "turnosDeAbono": 0,
         "estiercol": 0
       }
@@ -412,17 +419,17 @@
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "2124d294f60f541544eac156c4a70298e4f1fd1f949a3d1fb93b9a4598456511"
+      "huellaEsperada": "708b244293be66046a6c74f617423de169b027f8ee540039162a27509eaaed8a"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "7caacd968ab4cef1ba38797ae3984d1f70e9afe37e95e9f20236ebb90fbcdb42"
+      "huellaEsperada": "44bd103cc738120fcbdc2dead85bcba0ffa6c18fd10ff5d22e38888e910fa11e"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "5cfc94ca20f27b7d56d35ff92ef6b3f6409eaf8ffbe30da71cf1455f7aa7af71"
+      "huellaEsperada": "374a6cfcb9279d6487552387e97e3fcdd7f6f7b45a8407da4cc3e85f7a09954c"
     }
   ]
 }

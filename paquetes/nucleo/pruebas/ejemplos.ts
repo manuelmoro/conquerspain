@@ -149,6 +149,7 @@ export function estadoDeEjemplo(): Registro {
     exDuenyo: null,
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
+    ventaDe: null,
     turnosDeAbono: 0,
     estiercol: 0,
     obrasMayores: [],

@@ -626,17 +626,28 @@ mismas que la base `T-052`: la venta abre el sitio, todavía no el negocio.
 | Falta dinero | `COLCHON_DE_MARAVEDIS` 60 → 20 | **Cero negocios**. La casa tiene unos 65 maravedís, así que la bolsa de comercio era de **cinco** |
 | Faltan ferias | Recuento del catálogo | 9 de 403 comarcas, abiertas 1–2 turnos al año |
 
-### El eslabón que queda, localizado con un volcado
+### El eslabón que quedaba, y cómo se cerró (24-09-2026)
 
-**Un jugador no se entera de lo que él mismo ha construido fuera de su dominio.** El robot planta su
-venta en Arlanza y en el turno 100 su rutina de arbitraje sigue diciendo `conocidas=2`: las dos
-plazas de su propia capital. La causa está en `fases/12-cronica.ts`: el conocimiento de una comarca
-ajena es una **foto** que solo se refresca donde el jugador tiene una recua.
+**Un jugador no se enteraba de lo que él mismo había construido fuera de su dominio.** El robot
+plantaba su venta en Arlanza y en el turno 100 su rutina de arbitraje seguía diciendo `conocidas=2`:
+las dos plazas de su propia capital. La causa estaba en `fases/12-cronica.ts`: el conocimiento de
+una comarca ajena es una **foto** que solo se refrescaba donde el jugador tiene una recua.
 
-Falta, por ese orden: guardar de quién es la venta (`EstadoComarca.ventaDe`, que además deja
-preparado el portazgo del arriero que docs/03 ya promete), que la venta informe a su dueño cada
-turno como hace la recua presente, y volver a medir. El detalle está en
-[T-053 §8](T-053-plazas-donde-comerciar.md).
+Cerrado: `EstadoComarca.ventaDe` guarda quién la levantó —se borra al derribarla y al incorporar la
+comarca, porque quien se queda la tierra se queda la venta— y la crónica refresca cada turno el
+conocimiento y los precios de su plaza para el ventero. Cinco pruebas nuevas en `obras.test.ts`. Las
+huellas de reproducción cambian, como debe ser cuando el estado gana un campo, y se regeneraron.
+
+**Lo que enseña la medida.** El motivo dominante del mercader deja de ser «no sé precios» y pasa a
+ser **«hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su
+bastimento»**: 74 turnos de 200 en el mercader y 49 en el arriero. El robot **ve por fin un negocio
+de verdad**, y lo único que lo frena es la logística.
+
+`negociosRentables` sigue en 0 y el recuento queda plano (114, 109 y 109 filas cumplen, frente a
+112, 111 y 109 de la base `T-052`). Quedan dos paredes, las dos **tablas de T-047**: el porte manda
+sobre el mapa (con porte 10 y dos panes por jornada, la ida y vuelta a tres jornadas pide 12 de pan
+y no cabe), y **doblar el porte no basta por sí solo** —medido, cero negocios—, porque la otra mitad
+es el margen contra lo que cuesta el bastimento. Se miden juntas.
 
 ### Reproducción
 

@@ -65,6 +65,7 @@ function comarcaInicial(
     exDuenyo: null,
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
+    ventaDe: null,
     obrasMayores: [],
     produccionUltimoTurno: sinRecursos(),
     turnosDeAbono: 0,

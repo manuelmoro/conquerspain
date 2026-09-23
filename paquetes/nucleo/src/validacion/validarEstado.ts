@@ -166,6 +166,7 @@ const validarComarca: Validador<EstadoComarca> = objeto<EstadoComarca>({
   presenciaSeguida: registro(enteroNoNegativo(), identificador()),
   ultimoRegalo: registro(entero({ minimo: 1 }), identificador()),
   exDuenyo: oNulo(identificador<IdJugador>()),
+  ventaDe: oNulo(identificador<IdJugador>()),
   turnosDesleal: enteroNoNegativo(),
   turnosSinMantenimiento: enteroNoNegativo(),
   turnosDeAbono: enteroNoNegativo(),

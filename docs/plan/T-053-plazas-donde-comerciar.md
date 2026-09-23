@@ -105,26 +105,36 @@ huellas de reproducción no cambian.
   `T-052`: la venta abre el sitio, todavía no el negocio.
 - **Diseño escrito** en `docs/03-economia.md` §3.3 y §3.10.1.
 
-### Lo que falta, y es una sola cosa
+### La venta tiene ventero (24-09-2026)
 
-**Un jugador no se entera de lo que él mismo ha construido fuera de su dominio.** Medido con un
-volcado de la rutina de arbitraje: el robot planta su venta en Arlanza y en el turno 100 sigue
-diciendo `conocidas=2`, las dos plazas de su propia capital. La causa está en
-`fases/12-cronica.ts`: el conocimiento de una comarca ajena es una **foto** que solo se refresca
-donde el jugador tiene una recua, así que su venta no aparece nunca en `conocimiento.datos.edificios`.
+Hecho lo que faltaba, y **el mecanismo queda desbloqueado**:
 
-El paso siguiente, en orden:
+- `EstadoComarca.ventaDe` guarda quién levantó la venta mientras la comarca es de nadie. Se pone al
+  terminar la obra, se borra al derribarla y **se borra al incorporar la comarca**: quien se queda
+  con la tierra se queda con la venta. Deja además preparado el portazgo del arriero que docs/03
+  promete y T-103 activará.
+- `fases/12-cronica.ts` refresca cada turno el conocimiento de la comarca y los precios de su plaza
+  para el ventero, igual que para una comarca donde para una recua. Es lo que hacía un ventero.
+- Cinco pruebas nuevas en `obras.test.ts`: se levanta solo en tierra explorada, solo la venta la
+  admite, abre plaza, su ventero sabe los precios y quien incorpora se la queda.
 
-1. **Guardar de quién es la venta.** Hoy `EstadoComarca.edificios` es un recuento sin dueño, así que
-   en tierra de nadie la venta no es de nadie. Un campo `ventaDe: IdJugador | null` en la comarca
-   (la venta tiene `nivelMaximo: 1`, así que basta uno) lo resuelve y además deja preparado el
-   portazgo del arriero, que docs/03 ya promete y T-103 activará.
-2. **Que tu venta te informe**: refrescar cada turno el conocimiento de la comarca y los precios de
-   su plaza para el dueño de la venta, como hace `loQueVenSusRecuas` con las comarcas donde hay
-   recua. Es lo que hacía un ventero.
-3. **Volver a medir** `negociosRentables` en las tres campañas. Si sigue en 0, el siguiente
-   sospechoso está medido y listo: con porte 10 y dos panes por jornada **una recua no llega a una
-   plaza a tres jornadas y vuelve** (12 de pan para 10 de porte), y eso es tabla de T-047.
+**Lo que enseña la medida.** El motivo dominante del mercader deja de ser «no sé precios» y pasa a
+ser **«hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su
+bastimento»** (74 turnos de 200; 49 en el arriero). Es decir: **el robot ve por fin un negocio de
+verdad y lo único que lo frena es la logística.**
+
+### Lo que falta
+
+`negociosRentables` sigue en 0 y el recuento del banco queda plano (114, 109 y 109 filas cumplen,
+frente a 112, 111 y 109 de la base `T-052`). Quedan dos paredes, las dos de **tablas de T-047**:
+
+1. **El porte manda sobre el mapa.** Con porte 10 y dos panes por jornada, la ida y vuelta a una
+   plaza a tres jornadas pide 12 de pan y no cabe. Es el primer punto de T-046 §8, sin resolver.
+2. **Doblar el porte no basta por sí solo**: medido con todo lo demás puesto, `portePorAcemila`
+   1 → 2 sigue dando cero negocios. La otra mitad es el margen contra el coste del bastimento, que
+   es el precio del pan y de la sal en la comarca de partida.
+
+Las dos se miden juntas, no por separado, y con la base `T-053-*` delante.
 
 ### Lo que ya se ha descartado, con su medida
 

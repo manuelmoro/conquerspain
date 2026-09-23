@@ -452,9 +452,21 @@ function terminarObra(ctx: Contexto, obra: Obra): void {
   switch (obra.tipo) {
     case 'edificio':
       aplicar(ctx, { tipo: 'edificio', comarca: obra.comarca, edificio: obra.que, delta: 1 });
+      // Lo levantado en tierra de nadie queda a nombre de quien lo levanto: es su ventero quien
+      // le dira lo que alli se paga (T-053). En tierra propia no hace falta: ya es suya.
+      if (
+        esTipoDeEdificio(obra.que) &&
+        ctx.reglas.edificios[obra.que].enTierraDeNadie &&
+        ctx.estado.comarcas[obra.comarca]?.duenyo === null
+      ) {
+        aplicar(ctx, { tipo: 'venta-de', comarca: obra.comarca, jugador: obra.jugador });
+      }
       break;
     case 'derribo': {
       aplicar(ctx, { tipo: 'edificio', comarca: obra.comarca, edificio: obra.que, delta: -1 });
+      if ((ctx.estado.comarcas[obra.comarca]?.edificios['venta'] ?? 0) === 0) {
+        aplicar(ctx, { tipo: 'venta-de', comarca: obra.comarca, jugador: null });
+      }
       if (!esTipoDeEdificio(obra.que)) break;
       const devuelto = devolucionDeDerribo(obra.que, ctx.reglas);
       for (const recurso of RECURSOS) {

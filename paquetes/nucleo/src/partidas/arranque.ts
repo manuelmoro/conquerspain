@@ -53,6 +53,7 @@ function comarcaConEdificios(
     exDuenyo: null,
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
+    ventaDe: null,
     obrasMayores: [],
     produccionUltimoTurno: {
       pan: 0,

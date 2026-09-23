@@ -370,9 +370,11 @@ Una **plaza** es un mercado abierto este turno:
   turnos. Volumen pequeño, precios peores.
 - **Venta**: la posada del camino abre plaza igual que un mercado, y es **el único edificio que se
   levanta en tierra de nadie** —una comarca explorada y sin dueño—, porque las ventas se hacían
-  fuera de poblado. Lo que se levanta allí no pasa a ser tuyo: si alguien incorpora la comarca, se
-  queda con ella y con lo que haya dentro. A diferencia del mercado, la venta no da sus maravedís
-  ni su lealtad: **el mercado es el pueblo, la venta es el camino**.
+  fuera de poblado. Queda **a nombre de quien la levantó**, y su ventero le dice cada turno lo que
+  allí se paga, igual que una recua parada en la comarca: sin eso, una venta no serviría para
+  decidir ningún viaje. Lo que se levanta allí no pasa a ser tuyo: si alguien incorpora la comarca,
+  se queda con ella y con la venta. A diferencia del mercado, la venta no da sus maravedís ni su
+  lealtad: **el mercado es el pueblo, la venta es el camino**.
 - **Ferias**: en comarcas con derecho de feria, solo en sus turnos de calendario. Volumen grande,
   mejores precios, y son el punto de encuentro (y de rumores) entre jugadores. Hay once en toda la
   península y cada una abre uno o dos turnos al año: son el acontecimiento anual, no el mercado de

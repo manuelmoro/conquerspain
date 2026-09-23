@@ -171,6 +171,12 @@ export interface EstadoComarca {
   readonly ultimoRegalo: Readonly<Record<string, number>>;
   /** Quien la tuvo antes de que volviera a neutral; su monasterio le da influencia. */
   readonly exDuenyo: IdJugador | null;
+  /**
+   * Quien levanto la venta mientras la comarca es de nadie (ficha T-053). Es el unico edificio que
+   * cabe en tierra de nadie, y su duenyo sabe cada turno lo que alli se paga, como el ventero. Si
+   * alguien incorpora la comarca, se queda con ella y con la venta: el campo vuelve a null.
+   */
+  readonly ventaDe: IdJugador | null;
   /** Turnos seguidos con lealtad por debajo del minimo antes de volver a neutral. */
   readonly turnosDesleal: number;
   /** Turnos seguidos sin hierro para mantener los aperos: al segundo, bajan un nivel. */

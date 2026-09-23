@@ -225,6 +225,7 @@ function comarcaDeEstado(plantilla: Plantilla, duenyo: string | null): Registro 
     exDuenyo: null,
     turnosDesleal: 0,
     turnosSinMantenimiento: 0,
+    ventaDe: null,
     turnosDeAbono: 0,
     estiercol: 0,
     obrasMayores: [],

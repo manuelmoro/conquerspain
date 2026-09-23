@@ -470,3 +470,99 @@ describe('simultaneidad', () => {
     }
   });
 });
+
+describe('la venta, plaza del camino (T-053)', () => {
+  /** Una comarca vecina de nadie, explorada por el jugador: donde cabe una venta. */
+  function conVecinaDeNadie(explorada = true): EstadoPartida {
+    const inicial = escenario({ jugador: { almacen: recursos(RICO) } });
+    const vecina = c('prueba-vega');
+    const jugador = inicial.jugadores[UNO];
+    if (jugador === undefined) throw new Error('falta el jugador');
+    const geografia = mundo.comarcas[vecina];
+    const estadoVecina = inicial.comarcas[vecina];
+    if (geografia === undefined || estadoVecina === undefined) throw new Error('falta la vecina');
+    return {
+      ...inicial,
+      comarcas: { ...inicial.comarcas, [vecina]: { ...estadoVecina, duenyo: null } },
+      jugadores: {
+        ...inicial.jugadores,
+        [UNO]: {
+          ...jugador,
+          conocimiento: {
+            ...jugador.conocimiento,
+            [vecina]: explorada
+              ? {
+                  nivel: 'explorada',
+                  turnoUltimaNoticia: 1,
+                  datos: {
+                    duenyo: null,
+                    poblacion: estadoVecina.poblacion,
+                    terreno: geografia.terreno,
+                    potenciales: estadoVecina.potenciales,
+                    edificios: estadoVecina.edificios,
+                  },
+                }
+              : { nivel: 'oida', turnoUltimaNoticia: 1, datos: null },
+          },
+        },
+      },
+    };
+  }
+
+  /** Juega turnos sin órdenes hasta que la obra termine. */
+  function jugar(estado: EstadoPartida, turnos: number, primeras: Orden[] = []): EstadoPartida {
+    let actual = estado;
+    for (let i = 0; i < turnos; i += 1) {
+      actual = turno(actual, i === 0 ? primeras : []).estado;
+    }
+    return actual;
+  }
+
+  it('se levanta en tierra de nadie y queda a nombre de quien la levantó', () => {
+    const inicial = conVecinaDeNadie();
+    const estado = jugar(inicial, 4, [construir(inicial.turno, 'venta', 'prueba-vega')]);
+    const vecina = estado.comarcas[c('prueba-vega')];
+    expect(vecina?.edificios['venta']).toBe(1);
+    expect(vecina?.duenyo).toBeNull();
+    expect(vecina?.ventaDe).toBe(UNO);
+  });
+
+  it('en una comarca solo oída no se levanta: hay que haberla explorado', () => {
+    const inicial = conVecinaDeNadie(false);
+    const estado = jugar(inicial, 4, [construir(inicial.turno, 'venta', 'prueba-vega')]);
+    expect(estado.comarcas[c('prueba-vega')]?.edificios['venta']).toBeUndefined();
+  });
+
+  it('ningún otro edificio cabe en tierra de nadie', () => {
+    const inicial = conVecinaDeNadie();
+    const estado = jugar(inicial, 4, [construir(inicial.turno, 'mercado', 'prueba-vega')]);
+    expect(estado.comarcas[c('prueba-vega')]?.edificios['mercado']).toBeUndefined();
+    // Y la tabla dice que la venta es la única excepción.
+    const conPermiso = TIPOS_DE_EDIFICIO.filter((e) => reglas.edificios[e].enTierraDeNadie);
+    expect(conPermiso).toEqual(['venta']);
+  });
+
+  it('abre plaza y su ventero sabe cada turno lo que allí se paga', () => {
+    const inicial = conVecinaDeNadie();
+    const estado = jugar(inicial, 6, [construir(inicial.turno, 'venta', 'prueba-vega')]);
+    const plaza = `local-${String(c('prueba-vega'))}`;
+    expect(estado.mercados[plaza]).toMatchObject({ tipo: 'local', volumen: 'pequenya' });
+    const sabido = estado.jugadores[UNO]?.plazas[plaza];
+    expect(sabido?.turno).toBe(estado.turno - 1);
+    expect(sabido?.preciosMil.sal).toBe(estado.mercados[plaza]?.preciosMil.sal);
+  });
+
+  it('quien incorpora la comarca se queda con la venta', () => {
+    const inicial = conVecinaDeNadie();
+    const conVenta = jugar(inicial, 4, [construir(inicial.turno, 'venta', 'prueba-vega')]);
+    const vecina = conVenta.comarcas[c('prueba-vega')];
+    if (vecina === undefined) throw new Error('falta la vecina');
+    const incorporada: EstadoPartida = {
+      ...conVenta,
+      comarcas: { ...conVenta.comarcas, [vecina.id]: { ...vecina, duenyo: UNO, ventaDe: null } },
+    };
+    const despues = turno(incorporada, []).estado;
+    expect(despues.comarcas[vecina.id]?.ventaDe).toBeNull();
+    expect(despues.comarcas[vecina.id]?.edificios['venta']).toBe(1);
+  });
+});

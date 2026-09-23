@@ -107,6 +107,12 @@ export type Cambio =
       readonly delta: number;
     }
   | {
+      /** Quien levanto la venta de una comarca de nadie; null cuando deja de haberla (T-053). */
+      readonly tipo: 'venta-de';
+      readonly comarca: IdComarca;
+      readonly jugador: IdJugador | null;
+    }
+  | {
       readonly tipo: 'influencia';
       readonly comarca: IdComarca;
       readonly jugador: IdJugador;
@@ -769,6 +775,19 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       return;
     }
 
+    case 'venta-de': {
+      const comarca = comarcaDe(ctx, cambio.comarca);
+      if (cambio.jugador !== null && comarca.duenyo !== null) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `${cambio.comarca} tiene duenyo: su venta es de la comarca, no de ${cambio.jugador}.`,
+          { comarca: cambio.comarca, jugador: cambio.jugador },
+        );
+      }
+      comarca.ventaDe = cambio.jugador;
+      return;
+    }
+
     case 'influencia': {
       const comarca = comarcaDe(ctx, cambio.comarca);
       if (comarca.duenyo !== null) {
@@ -832,6 +851,8 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         comarca.presenciaSeguida = {};
         comarca.ultimoRegalo = {};
         comarca.exDuenyo = null;
+        // Quien incorpora la comarca se queda con ella y con la venta que haya dentro (T-053).
+        comarca.ventaDe = null;
       } else {
         comarca.exDuenyo = antes;
       }
