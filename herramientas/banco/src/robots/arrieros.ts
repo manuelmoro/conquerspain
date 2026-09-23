@@ -17,6 +17,7 @@ export const ARRIEROS: Estrategia = {
     esenciales: ['mercado', 'venta'],
     comarcas: [
       ['granja', 1],
+      ['mercado', 1],
       ['venta', 1],
       ['casas', 1],
     ],

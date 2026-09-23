@@ -65,7 +65,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-050](T-050-robots-viables.md) | Robots que ejecutan sus vías | **hecha** | T-048, T-049 |
 | [T-051](T-051-ausencia-equivalente.md) | Ausencia con planes equivalentes | **hecha** | T-050 |
 | [T-052](T-052-geografia-de-precios.md) | Geografía de precios: el precio base, por comarca | **hecha** | T-048, T-050 |
-| [T-053](T-053-plazas-donde-comerciar.md) | Plazas donde comerciar: densidad y cómo se abre una | pendiente | T-049, T-052 |
+| [T-053](T-053-plazas-donde-comerciar.md) | Plazas donde comerciar: densidad y cómo se abre una | en curso | T-049, T-052 |
 
 > **19-09-2026 · revisión del plan solicitada por el usuario.** Antes de seguir construyendo,
 > corregir el diagnóstico del equilibrio: **T-048 → T-049 → T-050 → T-051 → T-047 → T-060**.

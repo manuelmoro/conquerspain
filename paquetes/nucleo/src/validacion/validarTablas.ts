@@ -106,6 +106,7 @@ const validarEdificio: Validador<DatosEdificio> = objeto<DatosEdificio>({
   requiereEdificio: oNulo(unoDe(TIPOS_DE_EDIFICIO)),
   esDePiedra: booleano(),
   exigePermiso: oNulo(unoDe(NOMBRES_DE_PERMISO)),
+  enTierraDeNadie: booleano(),
 });
 
 const camposDeModificadores: CamposDe<Modificadores> = {

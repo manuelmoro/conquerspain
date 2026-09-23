@@ -447,7 +447,8 @@ export class Tablero {
       const edificios = this.esPropia(id)
         ? (this.propias.find((c) => c.id === id)?.edificios ?? {})
         : (this.explorada(id)?.datos?.edificios ?? {});
-      if ((edificios['mercado'] ?? 0) > 0) {
+      // El mercado del pueblo y la venta del camino abren plaza igual (T-053).
+      if ((edificios['mercado'] ?? 0) > 0 || (edificios['venta'] ?? 0) > 0) {
         plazas.push({ id: idDeMercadoLocal(id), comarca: id, tipo: 'local', turnos: [] });
       }
     }

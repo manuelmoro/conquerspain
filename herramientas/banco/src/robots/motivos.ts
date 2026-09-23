@@ -52,6 +52,11 @@ export const MOTIVOS = {
     categoria: 'recursos',
     texto: 'junta el material y los maravedís de su próxima obra mayor',
   },
+  'sin-sitio-para-venta': {
+    categoria: 'mapa',
+    texto:
+      'no hay comarca de nadie a su alcance que cotice distinto que la suya: una venta alli no abriria negocio',
+  },
   'sin-tierra-que-ganar': {
     categoria: 'mapa',
     texto: 'no hay comarca neutral explorada y vecina que se pueda ganar',

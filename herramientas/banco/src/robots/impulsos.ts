@@ -13,7 +13,7 @@ import {
   impedimentoDeConstruir,
   opcionesDeTradicion,
 } from '@conquer/nucleo';
-import { RONDAS_DE_TRADICION } from '@conquer/nucleo';
+import { RECURSOS, RONDAS_DE_TRADICION } from '@conquer/nucleo';
 import type {
   Casa,
   ComarcaMundo,
@@ -770,6 +770,54 @@ function jornadasAFeria(t: Tablero, desde: IdComarca, ferias: readonly IdComarca
 }
 
 /** La mejor comarca neutral para hacerla propia: explorada, vecina de lo propio y cerca. */
+/** Todo lo que se puede comerciar: los maravedis son la moneda, no mercancia. */
+export const COMERCIABLES: readonly Recurso[] = RECURSOS.filter((r) => r !== 'maravedis');
+
+/** Ventas que llega a sostener una casa: una por cada dos recuas, y nunca mas de tres. */
+const VENTAS_POR_RECUA = 2;
+const VENTAS_MAXIMAS = 3;
+
+/** Jornadas hasta la venta mas lejana que merece la pena: mas alla no se va a comerciar. */
+const JORNADAS_DE_VENTA = 4;
+
+/**
+ * La venta es la plaza del camino (ficha T-053): se levanta en tierra de nadie y abre mercado
+ * alli. Se planta donde la mercancia vale **distinto** que en casa, que es donde hay negocio: de
+ * poco sirve una posada en una comarca que cotiza lo mismo que la propia.
+ */
+export function plantarVentas(d: Decision): void {
+  const { t, p, perfil } = d;
+  // Solo las casas que viven del camino: quien no manda una recua a arbitrar no necesita plaza
+  // fuera de su tierra, y una posada vacia es madera y piedra tiradas.
+  if (!perfil.recuas.includes('arbitraje')) return;
+  const sede = t.sede;
+  if (sede === null) return;
+  const mias = t.propias.filter((c) => (c.edificios['venta'] ?? 0) > 0).length;
+  const enMarcha = t.ordenes.filter((o) => o.tipo === 'construir' && o.edificio === 'venta').length;
+  const tope = Math.min(VENTAS_MAXIMAS, Math.floor(t.recuas.length / VENTAS_POR_RECUA));
+  if (mias + enMarcha >= tope) return;
+  if (!p.alcanza(costeDeEdificio('venta', t.casa, t.reglas))) return;
+
+  const jornadas = t.jornadasDesdeLoPropio();
+  let mejor: { id: IdComarca; diferencia: number } | null = null;
+  for (const [id, lejos] of [...jornadas].sort((a, b) => comparar(a[0], b[0]))) {
+    if (lejos > JORNADAS_DE_VENTA || t.esPropia(id)) continue;
+    const sabido = t.explorada(id);
+    if (sabido === null || sabido.datos === null || sabido.datos.duenyo !== null) continue;
+    if ((sabido.datos.edificios['venta'] ?? 0) > 0) continue;
+    // Lo que mas se separa del precio de casa: ahi es donde un viaje deja algo.
+    const diferencia = Math.max(
+      ...COMERCIABLES.map((r) => Math.abs(t.baseEn(id, r) - t.baseEn(sede.id, r))),
+    );
+    if (mejor === null || diferencia > mejor.diferencia) mejor = { id, diferencia };
+  }
+  if (mejor === null || mejor.diferencia <= 0) {
+    d.m.anotar('sin-sitio-para-venta');
+    return;
+  }
+  p.construir(mejor.id, 'venta');
+}
+
 export function objetivoDeTierra(t: Tablero, perfil: Perfil): IdComarca | null {
   const cerca = new Set<string>(t.propias.flatMap((c) => t.vecinas(c.id)));
   const ferias =
@@ -1327,6 +1375,7 @@ export function decidirComoSiempre(
   via(d);
   hacerSitio(d);
   edificar(d);
+  plantarVentas(d);
   crecer(d);
   obraMayor(d);
   formarRecuas(d);

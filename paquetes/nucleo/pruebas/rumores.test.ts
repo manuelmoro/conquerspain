@@ -178,13 +178,16 @@ describe('lo que se oye', () => {
       preciosMil: exactos,
       visitada: true,
     });
-    // Sin recua en la feria, la venta sigue trayendo rumores de ella.
+    // Sin recua en la feria, la venta sigue trayendo rumores **de ella**. La propia venta abre
+    // ademas su plaza (T-053), asi que hay que esperar al rumor de la feria y no al primero.
     let estado: EstadoPartida = { ...conPrecios, recuas: {} };
     let oido = false;
-    for (let i = 0; i < 12 && !oido; i += 1) {
+    for (let i = 0; i < 24 && !oido; i += 1) {
       const resultado = turno(estado, [], reglas, conFeria);
       estado = resultado.estado;
-      oido = resultado.sucesos.some((s) => s.tipo === 'rumor.precios');
+      oido = resultado.sucesos.some(
+        (s) => s.tipo === 'rumor.precios' && (s.datos as { mercado?: string }).mercado === FERIA,
+      );
     }
     expect(oido).toBe(true);
     const sabido = jugadorDe(estado).plazas[FERIA];

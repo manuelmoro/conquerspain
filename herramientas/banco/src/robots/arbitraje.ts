@@ -5,11 +5,11 @@
 // Un negocio se cuenta en limpio (ficha T-050 §4.1.5): se puja por encima del precio sabido y se
 // acepta vender por debajo, se pagan las comisiones de la casa en las dos plazas y el pan y la sal
 // que se come la recua por el camino, al precio base. Si con eso no queda ganancia, no se sale.
-import { RECURSOS, comparar, multiplicarFactores } from '@conquer/nucleo';
+import { comparar, multiplicarFactores } from '@conquer/nucleo';
 import type { IdMercado, Recua, Recurso } from '@conquer/nucleo';
 
 import type { Decision, Rutina } from './impulsos.ts';
-import { volverACasa } from './impulsos.ts';
+import { COMERCIABLES, volverACasa } from './impulsos.ts';
 import { parada } from './pedidos.ts';
 import type { PlazaConocida } from './tablero.ts';
 import { Tablero } from './tablero.ts';
@@ -46,8 +46,6 @@ interface Negocio {
   readonly ganancia: number;
   readonly provision: Provision;
 }
-
-const COMERCIABLES = RECURSOS.filter((r) => r !== 'maravedis');
 
 function precioSabido(t: Tablero, plaza: IdMercado, recurso: Recurso): number | null {
   const sabido = t.yo.plazas[plaza];

@@ -242,6 +242,7 @@ export const MESTA: Estrategia = {
     comarcas: [
       ['granja', 1],
       ['majada', 1],
+      ['mercado', 1],
       ['casas', 1],
     ],
     obrasMayores: ['muralla'],

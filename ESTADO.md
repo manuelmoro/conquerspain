@@ -3,12 +3,17 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 23 de septiembre de 2026 (T-052 hecha; T-047 en curso; T-053 abierta)
+**Última actualización:** 23 de septiembre de 2026 (T-053 en curso; T-047 en espera)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
 
 ## Tarea en curso
+
+**[T-053 · Plazas donde comerciar](docs/plan/T-053-plazas-donde-comerciar.md)** — **en curso**, con
+una pieza hecha y verificada (la venta abre plaza y se levanta en tierra de nadie) y el eslabón que
+falta ya localizado con un volcado. El detalle, en
+**[T-053 §8 · Dónde va](docs/plan/T-053-plazas-donde-comerciar.md)**.
 
 **[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — abierta y **en espera de
 T-053**. Es una tarea iterativa por naturaleza (ajustar, medir, repetir). De ella han salido dos
@@ -23,14 +28,15 @@ fichas nuevas, las dos por medición y no por corazonada: T-052 (hecha) y T-053.
 
 ## Siguiente tarea
 
-**[T-053 · Plazas donde comerciar](docs/plan/T-053-plazas-donde-comerciar.md)** — abierta el
-23-09-2026 **desde dentro de T-052**, y por la misma razón: una medición, no una corazonada. Con los
-precios ya puestos en su sitio sigue sin haber un solo negocio, y el estado del turno 100 dice por
-qué: **hay diez plazas para 208 comarcas**, siete mercados (uno por capital, y las capitales se
-reparten a seis jornadas unas de otras) y tres ferias. El comercio no tiene adónde ir. La ficha está
-detallada y lista para implementar.
+La que hay en curso: **T-053**, que va por su §8. Después se reanuda **T-047**.
 
 Orden: **T-053 → T-047 (se reanuda) → T-060**.
+
+Lo que falta de T-053 es **una sola cosa, ya localizada**: un jugador no se entera de lo que él
+mismo ha construido fuera de su dominio, porque el conocimiento de una comarca ajena es una foto que
+solo se refresca donde tiene una recua. Hay que guardar de quién es la venta
+(`EstadoComarca.ventaDe`, que además deja preparado el portazgo del arriero) y que la venta informe
+a su dueño cada turno.
 
 La base contra la que comparar ahora es `herramientas/banco/informes/T-052-*`
 (robots **4**, métricas 4, tres semillas: 1492, 1085 y 1212); `npm run banco -- ... --evaluar`
@@ -110,7 +116,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, y **T-052** ha puesto el precio base en cada comarca; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -157,6 +163,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Fecha | Qué pasó |
 |---|---|
 | 23-09-2026 | **T-052 abierta desde dentro de T-047**: la geografía de precios no es una cifra. Al turno 100, entre las diez plazas de una partida, la dispersión de precios es de **0,0 puntos en la lana, 0,4 en el hierro y 0,6 en la sal**: lo que distingue una comarca de otra cuesta lo mismo en todas partes, y la comisión sola es un 2 % por lado. Se ensayaron y descartaron las dos palancas de datos que quedaban (liquidez de los menores a 300, que además **quita el comprador** y hunde el prestigio a 0 de 24 filas; y margen al 2 %, que no mueve la dispersión). La razón se lee en el código: el precio de una plaza solo cambia si alguien compra o vende allí, y la sal, el hierro y la lana no se comercian en ninguna parte, así que se quedan clavados en su único `precioBaseMil` global. **Ninguna cifra puede abaratar la sal de Añana frente a la de Sevilla.** Ficha [T-052](docs/plan/T-052-geografia-de-precios.md) escrita y detallada: precio base por comarca derivado de sus potenciales, con su tabla de abundancia, los cuatro sitios que hoy usan el número global y criterios de aceptación con cifras. T-047 se reanuda después |
+| 23-09-2026 | **T-053 en curso**: la venta, plaza del camino. Primero, una medición que descarta el camino barato: el catálogo tiene **9 comarcas con feria de 403** y cada feria abre **uno o dos turnos al año**, así que las ferias son el acontecimiento anual y no el mercado de cada quincena. La decisión de diseño: **la venta abre plaza y es el único edificio que se levanta en tierra de nadie** (comarca explorada y sin dueño), sin dar los maravedís ni la lealtad del mercado —el mercado es el pueblo, la venta es el camino—, y lo que se levanta allí no pasa a ser tuyo. Los robots las plantan donde la mercancía cotiza distinto que en casa: las plazas de una partida suben de 10 a 20. Cuatro sospechas más, descartadas **con su medida**: un mercado en cada comarca propia (el mercader tiene una sola comarca), el porte al doble, el colchón de maravedís a 20 (la casa tiene 65: la bolsa de comercio eran cinco) y más ferias. Queda **un solo eslabón, localizado con un volcado**: un jugador no se entera de lo que él mismo ha construido fuera de su dominio, porque el conocimiento de una comarca ajena es una foto que solo se refresca donde tiene recua. 1016 tests en verde |
 | 23-09-2026 | **T-052 hecha**: la geografía, en el precio. El precio base de cada recurso pasa a ser el de **su comarca**: el del catálogo por la abundancia del potencial que lo produce (la sal mira a las salinas, el hierro a las venas, la lana al pasto, el pan a la labor), anclado en el nivel corriente para que la escasez encarezca poco y la abundancia abarate mucho. La dispersión entre las diez plazas de una partida sube de **0,6 a 40,4 puntos en la sal**, de 0,4 a 40,3 en el hierro y de 0,0 a 30,0 en la lana. Compone con los acontecimientos, el suelo y el techo y los límites de los menores sin tocarlos, y es función pura del catálogo: las huellas de reproducción no cambian. De paso destapa tres defectos de los robots que con un precio único no se veían (límites medidos contra el catálogo, la capital repetida en la ruta cuando se vende en casa, y el bastimento valorado fuera de su plaza) y una prueba de vía que ponía una carestía de sal justo en la comarca con salinas. **Y el hallazgo grande**: aun con precios y con el porte al doble no hay **ni un negocio**, porque hay **diez plazas para 208 comarcas**; de ahí sale T-053. Robots 4. 1016 tests en verde |
 | 23-09-2026 | **T-047 en curso**: el marcador solo paga por crecer. Diagnóstico medido sobre las nueve partidas de T-051: cuatro de los nueve capítulos del prestigio —comercio, ganadería, industria y caminos— dan **cero a todas las casas**, así que el prestigio es casi exactamente el pan producido (monjes 417 %, hortelanos 379 %, ferrones 14 % de la mediana). Una capa más abajo, el comercio **no existe**: `negociosRentables`, `ventasFuera` e `ingresosDeFeria` valen 0 en las nueve, porque el precio base es un número global y los mercaderes menores cubren el cupo entero de la plaza por los dos lados. Cinco ensayos aislados: bastimento a la mitad, colchón del arranque, sal de la lonja y `compraElPan` del ferrón, **descartados con su medida**; adoptado que **la casa del hierro empiece donde hay hierro y monte** (antes bastaba con que lo tuviera una vecina, y en cuatro de cada cinco semillas arrancaba con `hierro: 0`; el segundo defecto, ferrería sin carbonera posible, lo cazó `solvencia.test.ts`). Ferrones de 5–14 % a 28–53 %. El recuento global no se mueve porque los monjes se lo comen: es lo siguiente. 1010 tests en verde |
 | 23-09-2026 | **T-051 hecha**: jugar sin estar, demostrado. Arnés de equivalencia que juega el mismo plan de dos maneras —dejado por bloques de seis turnos o entregado a mano día a día— y compara el dominio turno a turno; los seis escenarios mínimos de la ficha y las ocho vías con el plan de sus robots. **144 de 144 filas al 0,0 %** en 1492, 1085 y 1212, con igualdad exacta del dominio en siete de las nueve partidas; el criterio de ausencia pasa de 1 a 48 filas cumpliendo por semilla. Para llegar ahí, los robots dicen el plan entero con lo que el motor ya daba: colas de una obra por turno, el trato de cada turno fechado, viajes completos de ida y vuelta y el regreso del emisario con fecha. Hallazgo escrito en docs/02 §2.5.6: una orden suelta se cancela si al darla no hay con qué pagarla y la misma en cola espera; sin colas, el plan a mano se retrasaba un turno en cada obra apretada. **Ningún cambio del motor ni de las tablas.** 1010 tests en verde |

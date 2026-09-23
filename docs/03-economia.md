@@ -110,7 +110,7 @@ con ella, el comercio.
 | Majada | pasto | 15 madera, 10 mrs | 2 | mantiene 1 rebaño invernando | 3 |
 | Lonja de pescado | pesca | 20 madera, 15 mrs | 2 | +6 pan, +2 sal consumida | 2 |
 | Mercado | — | 15 madera, 15 piedra, 20 mrs | 3 | +8 mrs y mercado local activo | 2 |
-| Venta (posada) | en camino | 10 madera, 10 piedra | 2 | recuas propias y ajenas reponen; +4 mrs por tránsito | 1 |
+| Venta (posada) | **en tierra de nadie o propia** | 10 madera, 10 piedra | 2 | **abre plaza local**; recuas propias y ajenas reponen; +4 mrs por tránsito | 1 |
 | Casas | — | 25 madera, 10 piedra | 2 | +30 de capacidad | 3 |
 | Cerca | — | 20 piedra | 3 | +10 lealtad, protege del bandidaje (fase posterior) | 1 |
 
@@ -368,8 +368,20 @@ Una **plaza** es un mercado abierto este turno:
 
 - **Mercado local**: en comarcas con edificio de mercado, de cualquier dueño y abierto todos los
   turnos. Volumen pequeño, precios peores.
+- **Venta**: la posada del camino abre plaza igual que un mercado, y es **el único edificio que se
+  levanta en tierra de nadie** —una comarca explorada y sin dueño—, porque las ventas se hacían
+  fuera de poblado. Lo que se levanta allí no pasa a ser tuyo: si alguien incorpora la comarca, se
+  queda con ella y con lo que haya dentro. A diferencia del mercado, la venta no da sus maravedís
+  ni su lealtad: **el mercado es el pueblo, la venta es el camino**.
 - **Ferias**: en comarcas con derecho de feria, solo en sus turnos de calendario. Volumen grande,
-  mejores precios, y son el punto de encuentro (y de rumores) entre jugadores.
+  mejores precios, y son el punto de encuentro (y de rumores) entre jugadores. Hay once en toda la
+  península y cada una abre uno o dos turnos al año: son el acontecimiento anual, no el mercado de
+  cada quincena.
+
+Esto es lo que da un mapa donde comerciar. Sin ventas, una partida de ocho casas tiene **diez
+plazas para unas 208 comarcas** —un mercado por capital, y las capitales se reparten a seis
+jornadas unas de otras—, así que llevar mercancía de una plaza a otra no es una decisión: no hay
+adónde ir.
 
 Toda la mercancía viaja en recuas: **no se compra ni se vende desde el almacén**. Lo vendido sale de
 la carga de la recua, lo comprado entra en ella y los maravedís se cobran y se pagan de la carga (no

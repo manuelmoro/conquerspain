@@ -592,3 +592,54 @@ npm run verificar
 npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-052 --revision <sha>+T-052
 npm run banco:comparar -- herramientas/banco/informes/T-047-hierro-1492.csv herramientas/banco/informes/T-052-1492.csv
 ```
+
+## 23-09-2026 · T-053 (en curso): la venta, plaza del camino
+
+**Encargo:** que haya plazas suficientes y repartidas para que llevar mercancía de una a otra sea
+una decisión. **Estado:** abierto, con una pieza hecha y verificada y el siguiente paso medido.
+
+### Lo primero: las ferias no son plazas
+
+El catálogo entero tiene **9 comarcas con feria de 403**, once ferias, y **cada una abre uno o dos
+turnos al año** de veinticuatro. Las ferias son el acontecimiento anual, no el mercado de cada
+quincena, y no se les toca el calendario porque es histórico. Eso descarta el camino más barato
+(subir `recorte.feriasMinimas`): no se puede repartir lo que no existe.
+
+### La decisión de diseño: la venta abre plaza, y se levanta en tierra de nadie
+
+Escrito en [docs/03-economia.md §3.3 y §3.10.1](../03-economia.md). Una venta vale como plaza y es
+el único edificio que cabe en una comarca **explorada y sin dueño**, porque las ventas se hacían
+fuera de poblado. No da los maravedís ni la lealtad del mercado: **el mercado es el pueblo, la venta
+es el camino**. Lo que se levanta allí no pasa a ser tuyo: si alguien incorpora la comarca, se queda
+con ella y con lo que haya dentro.
+
+Medido: los robots las plantan de verdad (Arlanza, Monegros y Montes de Oca en `1492`) y las plazas
+de una partida suben de **10 a 20**.
+
+### Cuatro sospechas descartadas, cada una con su medida
+
+| Sospecha | Ensayo | Resultado |
+|---|---|---|
+| Faltan mercados | Un mercado en cada comarca propia (robots) | Plazas de 10 a 17. **Cero negocios**: el mercader tiene **una sola comarca** toda la partida |
+| Falta porte | `portePorAcemila` 1 → 2, con ventas y sin ellas | **Cero negocios** en los dos casos |
+| Falta dinero | `COLCHON_DE_MARAVEDIS` 60 → 20 | **Cero negocios**. La casa tiene unos 65 maravedís, así que la bolsa de comercio era de **cinco** |
+| Faltan ferias | Recuento del catálogo | 9 de 403 comarcas, abiertas 1–2 turnos al año |
+
+### El eslabón que queda, localizado con un volcado
+
+**Un jugador no se entera de lo que él mismo ha construido fuera de su dominio.** El robot planta su
+venta en Arlanza y en el turno 100 su rutina de arbitraje sigue diciendo `conocidas=2`: las dos
+plazas de su propia capital. La causa está en `fases/12-cronica.ts`: el conocimiento de una comarca
+ajena es una **foto** que solo se refresca donde el jugador tiene una recua.
+
+Falta, por ese orden: guardar de quién es la venta (`EstadoComarca.ventaDe`, que además deja
+preparado el portazgo del arriero que docs/03 ya promete), que la venta informe a su dueño cada
+turno como hace la recua presente, y volver a medir. El detalle está en
+[T-053 §8](T-053-plazas-donde-comerciar.md).
+
+### Reproducción
+
+```bash
+npm run verificar
+npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-053 --revision <sha>+T-053
+```

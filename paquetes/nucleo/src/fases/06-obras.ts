@@ -69,10 +69,32 @@ export function faseObras(ctx: Contexto): void {
 
 const SIN_NADA: Recursos = recursosSegun(() => 0);
 
+/**
+ * Se puede obrar aqui: o la comarca es del dominio, o es una **venta en tierra de nadie**, que es
+ * el unico edificio que se levanta fuera de poblado (ficha T-053). Para eso hay que haberla
+ * explorado: no se planta una posada en un sitio del que solo se ha oido hablar.
+ */
+function puedeObrarEn(
+  ctx: Contexto,
+  orden: OrdenDeObra,
+  comarca: EstadoComarca,
+  jugador: EstadoJugador,
+): boolean {
+  if (comarca.duenyo === orden.jugador) return true;
+  if (comarca.duenyo !== null) return false;
+  if (orden.tipo !== 'construir') return false;
+  if (!ctx.reglas.edificios[orden.edificio].enTierraDeNadie) return false;
+  return jugador.conocimiento[comarca.id]?.nivel === 'explorada';
+}
+
 function atenderOrden(ctx: Contexto, orden: OrdenDeObra): void {
   const comarca = ctx.estado.comarcas[orden.comarca];
   const jugador = ctx.estado.jugadores[orden.jugador];
-  if (comarca === undefined || jugador === undefined || comarca.duenyo !== orden.jugador) {
+  if (
+    comarca === undefined ||
+    jugador === undefined ||
+    !puedeObrarEn(ctx, orden, comarca, jugador)
+  ) {
     cancelarOrden(ctx, orden, 'comarca-ajena');
     return;
   }

@@ -24,6 +24,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   huerta: {
     nombre: 'Huerta',
@@ -38,6 +39,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   molino: {
     nombre: 'Molino',
@@ -52,6 +54,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: 'granja',
     esDePiedra: true,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   granero: {
     nombre: 'Granero',
@@ -66,6 +69,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: true,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   aserradero: {
     nombre: 'Aserradero',
@@ -80,6 +84,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   carbonera: {
     nombre: 'Carbonera',
@@ -94,6 +99,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   cantera: {
     nombre: 'Cantera',
@@ -108,6 +114,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   ferreria: {
     nombre: 'Ferreria',
@@ -122,6 +129,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: 'carbonera',
     esDePiedra: true,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   salina: {
     nombre: 'Salina',
@@ -136,6 +144,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   majada: {
     nombre: 'Majada',
@@ -150,6 +159,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   lonja: {
     nombre: 'Lonja de pescado',
@@ -164,6 +174,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   mercado: {
     nombre: 'Mercado',
@@ -178,6 +189,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: true,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   venta: {
     nombre: 'Venta',
@@ -192,6 +204,9 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    // La posada del camino: se levantaba fuera de poblado, y por eso es el unico edificio que
+    // cabe en tierra de nadie (ficha T-053). Lo que se levanta alli no pasa a ser tuyo.
+    enTierraDeNadie: true,
   },
   casas: {
     nombre: 'Casas',
@@ -206,6 +221,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: false,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   cerca: {
     nombre: 'Cerca',
@@ -220,6 +236,7 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: true,
     exigePermiso: null,
+    enTierraDeNadie: false,
   },
   // La acequia menor de los hortelanos: una obra corta que riega la comarca y le quita a su pan el
   // factor de la estacion. Sin permiso de casa no se puede levantar (docs/04 §4.1.8).
@@ -236,5 +253,6 @@ export const EDIFICIOS: Readonly<Record<TipoEdificio, DatosEdificio>> = {
     requiereEdificio: null,
     esDePiedra: true,
     exigePermiso: 'acequiaMenor',
+    enTierraDeNadie: false,
   },
 };

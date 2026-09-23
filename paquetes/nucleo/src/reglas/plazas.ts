@@ -29,12 +29,19 @@ export interface CatalogoDePlazas {
 
 const PREFIJO_LOCAL = 'local-';
 
-/** La comarca tiene una plaza, abierta o no: un mercado local o una feria en algun turno del anyo. */
+/** Los edificios que abren plaza local: el mercado del pueblo y la venta del camino (T-053). */
+const EDIFICIOS_DE_PLAZA = ['mercado', 'venta'] as const;
+
+/** Niveles de edificio de plaza que hay en la comarca; 0 si no hay ninguno. */
+function nivelDePlaza(estado: EstadoPartida, comarca: IdComarca): number {
+  const edificios = estado.comarcas[comarca]?.edificios;
+  if (edificios === undefined) return 0;
+  return EDIFICIOS_DE_PLAZA.reduce((total, tipo) => total + (edificios[tipo] ?? 0), 0);
+}
+
+/** La comarca tiene una plaza, abierta o no: un mercado local, una venta o una feria del anyo. */
 export function hayPlazaEn(estado: EstadoPartida, mundo: Mundo, comarca: IdComarca): boolean {
-  return (
-    (estado.comarcas[comarca]?.edificios['mercado'] ?? 0) > 0 ||
-    (mundo.comarcas[comarca]?.ferias.length ?? 0) > 0
-  );
+  return nivelDePlaza(estado, comarca) > 0 || (mundo.comarcas[comarca]?.ferias.length ?? 0) > 0;
 }
 
 /** Lo que hay abierto este turno y lo que el mundo permite que exista. */
@@ -63,7 +70,7 @@ export function catalogoDePlazas(
   }
   for (const idComarca of idsEnOrden(estado.comarcas)) {
     const comarca = estado.comarcas[idComarca];
-    if (comarca === undefined || (comarca.edificios['mercado'] ?? 0) <= 0) continue;
+    if (comarca === undefined || nivelDePlaza(estado, comarca.id) <= 0) continue;
     const id = idDeMercadoLocal(comarca.id);
     abiertas.set(id, { id, comarca: comarca.id, tipo: 'local', volumen: 'pequenya' });
   }

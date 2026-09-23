@@ -83,6 +83,12 @@ export interface DatosEdificio {
   readonly esDePiedra: boolean;
   /** Permiso de casa sin el cual no se puede levantar (la acequia menor); null: cualquiera. */
   readonly exigePermiso: keyof Permisos | null;
+  /**
+   * Se puede levantar en **tierra de nadie**: una comarca explorada y sin duenyo (ficha T-053).
+   * Solo la venta, la posada del camino, que se hacia fuera de poblado. Lo que se levanta alli no
+   * pasa a ser tuyo: si alguien incorpora la comarca, se queda con ella y con lo que haya dentro.
+   */
+  readonly enTierraDeNadie: boolean;
 }
 
 /** Los permisos de casa, en el orden de `Permisos`: para validar y para enumerar. */
