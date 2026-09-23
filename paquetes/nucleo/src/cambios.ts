@@ -40,6 +40,7 @@ import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
 import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
+import { precioBaseLocalMil } from './reglas/precios.ts';
 import { modificadoresDe } from './reglas/casas/index.ts';
 import { impedimentoDeTradicion, opcionesDeTradicion } from './reglas/tradiciones.ts';
 import { limitar, multiplicarFactores } from './utiles/enteros.ts';
@@ -1749,9 +1750,16 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'mercado-precio': {
       const mercado = mercadoDe(ctx, cambio.mercado);
-      // Una carestia mueve el precio base de la plaza; el suelo y el techo se miden sobre el efectivo.
+      // El suelo y el techo se miden sobre el base de **esta** plaza: primero la abundancia de su
+      // comarca (T-052) y encima la carestia que haya. Con el base global se rechazarian precios
+      // legitimos de una salina o de un secano.
       const base = precioBaseEfectivo(
-        ctx.reglas.recursos[cambio.recurso].precioBaseMil,
+        precioBaseLocalMil(
+          ctx.reglas.recursos[cambio.recurso].precioBaseMil,
+          ctx.mundo.comarcas[mercado.comarca],
+          cambio.recurso,
+          ctx.reglas.mercado,
+        ),
         ctx.estado.acontecimientos,
         ctx.turno,
         {

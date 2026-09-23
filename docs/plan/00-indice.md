@@ -59,12 +59,13 @@ mapa completo; ESTADO.md es la aguja.
 | [T-044](T-044-cronica-y-niebla.md) | Fase 12: crónica, niebla e información fechada | **hecha** | T-034 |
 | [T-045](T-045-mayordomo-y-colas.md) | Colas, rutas permanentes, mayordomo y plan de temporada | **hecha** | T-044 |
 | [T-046](T-046-banco-de-pruebas.md) | Banco de pruebas: robots por casa e informes | **hecha** | T-045 |
-| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | en curso | T-048, T-049, T-050, T-051, T-052 |
+| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | en curso | T-048, T-049, T-050, T-051, T-052, T-053 |
 | [T-048](T-048-auditoria-del-banco.md) | Métricas auditables del banco | **hecha** | T-046 |
 | [T-049](T-049-preparacion-pura-de-partidas.md) | Preparación de partidas sin servidor | **hecha** | T-048 |
 | [T-050](T-050-robots-viables.md) | Robots que ejecutan sus vías | **hecha** | T-048, T-049 |
 | [T-051](T-051-ausencia-equivalente.md) | Ausencia con planes equivalentes | **hecha** | T-050 |
-| [T-052](T-052-geografia-de-precios.md) | Geografía de precios: el precio base, por comarca | pendiente | T-048, T-050 |
+| [T-052](T-052-geografia-de-precios.md) | Geografía de precios: el precio base, por comarca | **hecha** | T-048, T-050 |
+| [T-053](T-053-plazas-donde-comerciar.md) | Plazas donde comerciar: densidad y cómo se abre una | pendiente | T-049, T-052 |
 
 > **19-09-2026 · revisión del plan solicitada por el usuario.** Antes de seguir construyendo,
 > corregir el diagnóstico del equilibrio: **T-048 → T-049 → T-050 → T-051 → T-047 → T-060**.
@@ -77,8 +78,14 @@ mapa completo; ESTADO.md es la aguja.
 > precio base de cada recurso es un número global: al turno 100 la dispersión entre las diez plazas
 > de una partida es de 0,0 puntos en la lana, 0,4 en el hierro y 0,6 en la sal, y no hay un solo
 > negocio rentable en las nueve partidas. Ninguna cifra lo arregla —se ensayaron cinco—, así que
-> hace falta lógica y va en ficha aparte, como manda T-047 §3. **T-047 se reanuda después de
-> T-052**: no tiene sentido repartir el prestigio de unas vías comerciales que no existen.
+> hace falta lógica y va en ficha aparte, como manda T-047 §3. **T-047 se reanuda después**: no
+> tiene sentido repartir el prestigio de unas vías comerciales que no existen.
+
+> **23-09-2026 · T-052 hecha, y T-053 abierta desde dentro.** El precio base pasa a ser de cada
+> comarca y la dispersión entre plazas sube de 0,6 a 40,4 puntos en la sal. Aun así no aparece ni un
+> negocio, y la causa resultó ser otra, medida en el estado del turno 100: **hay diez plazas para
+> 208 comarcas**. Ni el precio ni el porte lo arreglan (los dos ensayados y descartados). T-053 se
+> ocupa de las plazas; después vuelve T-047.
 
 ## Fase 3 · Servidor autoritativo
 

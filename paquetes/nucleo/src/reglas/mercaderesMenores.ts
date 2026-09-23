@@ -1,4 +1,4 @@
-// Mercaderes menores: la liquidez de fondo de cada plaza (docs/03-economia.md §3.10.2; ficha T-037
+// Mercaderes menores: la liquidez de fondo de cada plaza (docs/03-economia.md §3.10.3; ficha T-037
 // §4.5). No son jugadores ni tienen almacen ni memoria: son un cupo y dos limites de precio.
 import type { DatosMercado } from '../tipos/reglas.ts';
 import { MIL, multiplicarFactores, porcentaje } from '../utiles/enteros.ts';

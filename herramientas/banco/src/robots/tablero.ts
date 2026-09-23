@@ -17,6 +17,7 @@ import {
   modificadoresDelJugador,
   opcionesDeRutaDeRebanyo,
   permisosDelJugador,
+  precioBaseLocalMil,
   prohibicionesDelJugador,
   rutaPorParadas,
   tieneCalzada,
@@ -453,11 +454,30 @@ export class Tablero {
     return plazas.sort((a, b) => comparar(a.id, b.id));
   }
 
-  /** El precio de un recurso en una plaza, tal como se supo; si no se sabe, el base. */
+  /** El precio de un recurso en una plaza, tal como se supo; si no se sabe, el base de alli. */
   precioMil(plaza: IdMercado, recurso: Recurso): number {
     return (
-      this.yo.plazas[plaza]?.preciosMil[recurso] ?? this.reglas.recursos[recurso].precioBaseMil
+      this.yo.plazas[plaza]?.preciosMil[recurso] ?? this.baseEn(this.comarcaDePlaza(plaza), recurso)
     );
+  }
+
+  /**
+   * El precio base de un recurso **en una comarca** (T-052): es la vara con la que hay que medir
+   * lo caro y lo barato. Medir con el del catalogo lleva a vender sal a mitad de precio en una
+   * comarca sin salinas, o a no comprarla nunca en una que las tiene.
+   */
+  baseEn(comarca: IdComarca | null, recurso: Recurso): number {
+    return precioBaseLocalMil(
+      this.reglas.recursos[recurso].precioBaseMil,
+      comarca === null ? undefined : this.mundo.comarcas[comarca],
+      recurso,
+      this.reglas.mercado,
+    );
+  }
+
+  /** La comarca de una plaza conocida, si se sabe cual es. */
+  comarcaDePlaza(plaza: IdMercado): IdComarca | null {
+    return this.plazasConocidas().find((conocida) => conocida.id === plaza)?.comarca ?? null;
   }
 
   /** Turnos que faltan para que abra una plaza de feria (0 si abre este turno). */

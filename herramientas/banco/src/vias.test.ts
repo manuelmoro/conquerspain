@@ -10,16 +10,24 @@
 //   Que la ocasión exista en una partida normal lo dicen los informes, con su motivo si no.
 import { describe, expect, it } from 'vitest';
 
-import { TABLAS_DEL_JUEGO, explicar, idDeMercadoLocal, validarEstado } from '@conquer/nucleo';
+import {
+  TABLAS_DEL_JUEGO,
+  claveDeTramo,
+  explicar,
+  idDeMercadoLocal,
+  precioBaseLocalMil,
+  validarEstado,
+} from '@conquer/nucleo';
 import type {
   Casa,
+  IdAcontecimiento,
   Conocimiento,
   EstadoMercado,
   EstadoPartida,
-  IdAcontecimiento,
   IdComarca,
   IdJugador,
   Mundo,
+  Recurso,
   Recursos,
   Suceso,
   Tradicion,
@@ -227,42 +235,69 @@ function negocioPreparado(
   const jugador = inicial.jugadores[yo];
   if (jugador === undefined) throw new Error(`falta el jugador ${casa}`);
   const capital = jugador.capital;
-  // La vecina neutral del camino mas corto: el negocio tiene que caber en el porte de cualquiera.
+  // La vecina neutral a la que se lleva la sal: la que menos tiene, y entre esas la mas cercana,
+  // porque el negocio tiene que caber en el porte de cualquiera. Desde T-052 esto importa: una
+  // carestia de sal en una comarca con salinas no encarece nada, que es lo que hay al lado de
+  // Alfoz de Burgos (la Bureba, la de las salinas de Poza).
+  const salDe = (id: string): number =>
+    precioBaseLocalMil(
+      REGLAS.recursos.sal.precioBaseMil,
+      mundo.comarcas[id as IdComarca],
+      'sal',
+      REGLAS.mercado,
+    );
   const jornadas = (id: string): number =>
     mundo.caminos.find(
       (c) => (c.desde === capital && c.hasta === id) || (c.hasta === capital && c.desde === id),
     )?.jornadasBase ?? Number.POSITIVE_INFINITY;
   const vecina = (mundo.vecinos[capital] ?? [])
     .filter((id) => inicial.comarcas[id]?.duenyo === null && mundo.comarcas[id] !== undefined)
-    .sort((a, b) => jornadas(a) - jornadas(b) || (a < b ? -1 : 1))[0];
+    .sort((a, b) => salDe(b) - salDe(a) || jornadas(a) - jornadas(b) || (a < b ? -1 : 1))[0];
   const suya = inicial.comarcas[capital];
   const ajena = vecina === undefined ? undefined : inicial.comarcas[vecina];
   const geografia = vecina === undefined ? undefined : mundo.comarcas[vecina];
   if (vecina === undefined || suya === undefined || ajena === undefined || !geografia) {
     throw new Error(`${capital} no tiene ninguna vecina neutral`);
   }
-  const precios = (sal: number): Recursos => ({
-    pan: REGLAS.recursos.pan.precioBaseMil,
-    madera: REGLAS.recursos.madera.precioBaseMil,
-    piedra: REGLAS.recursos.piedra.precioBaseMil,
-    maravedis: REGLAS.recursos.maravedis.precioBaseMil,
+  /** Cada recurso en el precio base **de esa comarca** (T-052), con la sal a lo que se diga. */
+  const baseLocal = (comarca: IdComarca, recurso: Recurso): number =>
+    precioBaseLocalMil(
+      REGLAS.recursos[recurso].precioBaseMil,
+      mundo.comarcas[comarca],
+      recurso,
+      REGLAS.mercado,
+    );
+  const precios = (comarca: IdComarca, sal: number): Recursos => ({
+    pan: baseLocal(comarca, 'pan'),
+    madera: baseLocal(comarca, 'madera'),
+    piedra: baseLocal(comarca, 'piedra'),
+    maravedis: baseLocal(comarca, 'maravedis'),
     sal,
-    hierro: REGLAS.recursos.hierro.precioBaseMil,
-    lana: REGLAS.recursos.lana.precioBaseMil,
+    hierro: baseLocal(comarca, 'hierro'),
+    lana: baseLocal(comarca, 'lana'),
   });
-  const cara = 30000;
+  // La vecina paga por la sal el doble de lo que vale en la plaza de casa. Desde T-052 esa cifra
+  // se mide sobre el base **de cada comarca**, no sobre el del catalogo.
+  const cara = Math.floor((baseLocal(vecina, 'sal') * 30) / 14);
   const plaza = (comarca: IdComarca, sal: number): EstadoMercado => ({
     id: idDeMercadoLocal(comarca),
     comarca,
     tipo: 'local',
     volumen: 'pequenya',
-    preciosMil: precios(sal),
+    preciosMil: precios(comarca, sal),
     ultimoVolumen: { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 },
   });
   const edificiosVecina = { ...ajena.edificios, mercado: 1 };
   const estado = validar(
     {
       ...inicial,
+      // El camino real entre las dos plazas: un mercader de Burgos no comerciaba por veredas, y
+      // sin calzada la ida y vuelta se come el porte entero en pan (T-050 §6.1). Asi la prueba
+      // mide lo que dice medir —que el robot sepa hacer el negocio— y no si el camino da de si.
+      caminos: {
+        ...inicial.caminos,
+        [claveDeTramo(capital, vecina)]: { calidad: 'calzada', puente: false },
+      },
       jugadores: {
         [yo]: {
           ...jugador,
@@ -287,13 +322,13 @@ function negocioPreparado(
             [idDeMercadoLocal(capital)]: {
               turno: 1,
               fuente: 'visita',
-              preciosMil: precios(REGLAS.recursos.sal.precioBaseMil),
+              preciosMil: precios(capital, baseLocal(capital, 'sal')),
               visitada: true,
             },
             [idDeMercadoLocal(vecina)]: {
               turno: 1,
               fuente: 'visita',
-              preciosMil: precios(cara),
+              preciosMil: precios(vecina, cara),
               visitada: true,
             },
           },
@@ -305,9 +340,13 @@ function negocioPreparado(
         [vecina]: { ...ajena, edificios: edificiosVecina },
       },
       mercados: {
-        [idDeMercadoLocal(capital)]: plaza(capital, REGLAS.recursos.sal.precioBaseMil),
+        // La plaza de su casa, en el precio base **de su comarca** (T-052): es de ahi de donde
+        // parte, y hacia ahi vuelve si nadie la mueve.
+        [idDeMercadoLocal(capital)]: plaza(capital, baseLocal(capital, 'sal')),
         [idDeMercadoLocal(vecina)]: plaza(vecina, cara),
       },
+      // La carestia sostiene la diferencia mientras dura la prueba: aqui se mide que el robot
+      // sepa aprovechar una ocasion, no cuanta ocasion da el mapa (eso lo mide el banco).
       acontecimientos: [
         {
           id: 'ac-1-1' as IdAcontecimiento,
@@ -335,9 +374,11 @@ function negocioPreparado(
 }
 
 describe('el comercio fuera de casa', () => {
-  // Con porte 10 y dos panes por jornada, llevar sal a una vecina a tres jornadas no paga el camino
-  // (ver la bitacora de equilibrio, T-050): el mercader juega aqui con su tradicion «Compañía»,
-  // la que elige quien vive del arbitraje, y el arriero con su recua maragata.
+  // Con porte 10 y dos panes por jornada, un viaje de tres jornadas apenas deja hueco para la
+  // mercancia (ver la bitacora de equilibrio, T-050): el mercader juega aqui con su tradicion
+  // «Compañía», la que elige quien vive del arbitraje, y el arriero con su recua maragata.
+  //
+  // Desde T-052 los precios se miden sobre el base de cada comarca, no sobre el del catalogo.
   it.each([
     ['mercaderes', 'alfoz-de-burgos', ['mercaderes-compania']],
     ['arrieros', 'alfoz-de-burgos', []],
@@ -351,7 +392,10 @@ describe('el comercio fuera de casa', () => {
       const negocios = jugador.traza.negocios;
       // Negocio con traza: la carga comprada en una plaza se vende en otra, despues de comprarla,
       // y deja ganancia despues del bastimento del viaje.
-      expect(negocios.length, JSON.stringify(jugador.traza)).toBeGreaterThan(0);
+      expect(
+        negocios.length,
+        `${JSON.stringify(jugador.traza)} motivos=${[...motivosDe(jugada.partida)].join(',')}`,
+      ).toBeGreaterThan(0);
       for (const negocio of negocios) {
         expect(negocio.plazaDeVenta).not.toBe(negocio.plazaDeCompra);
         expect(negocio.turnoDeVenta).toBeGreaterThan(negocio.turnoDeCompra);

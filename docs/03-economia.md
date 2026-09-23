@@ -377,7 +377,43 @@ ocupan porte). Para comprar hay que llevar los maravedís cargados. Una comarca 
 feria a la vez comercia en la feria mientras esté abierta. Los maravedís son la moneda y no se
 comercian.
 
-### 3.10.2 Formación de precios
+### 3.10.2 El precio base de cada comarca
+
+**Lo que sobra en una comarca vale menos allí, y lo que no hay cuesta más traerlo.** El precio base
+de un recurso no es un número para toda la península: es el del catálogo multiplicado por la
+abundancia del potencial que lo produce.
+
+| Recurso | Potencial que lo abarata |
+|---|---|
+| pan | labor |
+| madera | monte |
+| piedra | piedra |
+| sal | sal |
+| hierro | hierro |
+| lana | pasto |
+| maravedís | ninguno: es la moneda y vale igual en todas partes |
+
+| Potencial | 0 | 1 | 2 | 3 | 4 | 5 |
+|---|---:|---:|---:|---:|---:|---:|
+| Factor sobre el precio base | 1,20 | 1,10 | **1,00** | 0,90 | 0,80 | 0,70 |
+
+El precio del catálogo es el de una **comarca corriente** (potencial 2). Desde ahí, la escasez
+encarece poco y la abundancia abarata mucho, porque lo que mueve el comercio es de dónde *sale* la
+mercancía. Un puerto de mar come pescado, pero su pan sigue mirando a la labor: Bilbao importaba
+grano y lo pagaba caro, y esa es justo la decisión que se quiere.
+
+Esto es lo que hace que la geografía mande en el comercio. La sal está en 12 comarcas de 403 y el
+hierro en 17: entre una salina y el secano hay un 70 % de diferencia de precio, mientras que el pan
+y la lana, que se dan en casi todas partes, apenas se mueven. Medido en una partida de 200 turnos,
+la diferencia entre la plaza más barata y la más cara pasó de **0,6 puntos a 40,4 en la sal** y de
+0,4 a 40,3 en el hierro.
+
+El factor se toma del potencial **del mundo**, no del agotamiento de la comarca: el precio base no
+oscila turno a turno con la explotación, igual que la administración se mide siempre en verano.
+Sobre este base se montan después los acontecimientos (una carestía de sal sube el base **de esa
+región**), el suelo y el techo, y los límites de los mercaderes menores.
+
+### 3.10.3 Formación de precios
 
 Cada mercado guarda un precio por recurso. Cada turno, y para cada recurso de cada plaza abierta:
 
@@ -396,16 +432,18 @@ precio_nuevo  = precio + impulso + 10 % de la distancia al precio base,
   actúa la vuelta al base, así que los precios se recuperan solos.
 - La elasticidad es propia de cada recurso: pan 400, sal 600, hierro 700, lana 500, madera 300,
   piedra 250 (milésimas del desequilibrio).
-- Precios base de partida, en maravedís por carga: pan 3, madera 4, piedra 6, sal 14, hierro 24,
-  lana 50. Son cifras de arranque para el banco de pruebas (T-046).
+- Precios base de partida, en maravedís por carga **en una comarca corriente**: pan 3, madera 4,
+  piedra 6, sal 14, hierro 24, lana 50. Cada comarca los corrige con su abundancia (§3.10.2). Son
+  cifras de arranque para el banco de pruebas (T-046).
 - **Mercaderes menores**: agentes sintéticos deterministas que dan liquidez y hacen que el mercado
-  se comporte como si hubiera mundo alrededor. Compran hasta un 10 % por encima del precio base y
+  se comporte como si hubiera mundo alrededor. Compran hasta un 10 % por encima del precio base de
+  esa plaza y
   venden desde un 10 % por debajo: dentro de esa banda son contraparte de los dos lados; fuera, solo
   del que sujeta el precio. Su cupo por turno es el tope de la plaza menos lo que los jugadores ya se
   comercian entre sí, así que en multijugador, con mucho comercio entre jugadores, casi desaparecen.
   No tienen almacén ni memoria y nunca casan entre ellos.
 
-### 3.10.3 Órdenes de mercado
+### 3.10.4 Órdenes de mercado
 
 Se envían con **precio límite** y cantidad: «vender hasta 40 de lana a no menos de 55 mrs». Las
 ejecuta una recua **quieta en la comarca de la plaza y con el cometido `tratar`**, y valen de 1 a 24

@@ -1,11 +1,42 @@
-// Formacion de precios de una plaza (docs/03-economia.md §3.10.2; ficha T-037 §4.3).
+// Formacion de precios de una plaza (docs/03-economia.md §3.10.2 y §3.10.3; fichas T-037 §4.3 y
+// T-052 §4.1).
 //
 // El precio de una plaza se mueve por el desequilibrio entre lo que se quiere comprar y lo que se
 // quiere vender, vuelve poco a poco al precio base y nunca se sale de la horquilla que la protege.
 import { ErrorDeMotor } from '../errores.ts';
-import type { VolumenFeria } from '../tipos/mundo.ts';
+import type { ComarcaMundo, VolumenFeria } from '../tipos/mundo.ts';
+import type { Recurso } from '../tipos/recursos.ts';
 import type { DatosMercado, DatosRecurso } from '../tipos/reglas.ts';
 import { MIL, limitar, multiplicarFactores, porcentaje } from '../utiles/enteros.ts';
+
+/**
+ * El precio base de un recurso **en una comarca** (ficha T-052 §4.1): lo que sobra alli vale menos
+ * y lo que no hay cuesta mas traerlo.
+ *
+ * Se indexa con el potencial **del mundo**, no con el agotamiento de la comarca: el precio base no
+ * puede oscilar turno a turno con la explotacion, igual que la administracion se mide siempre en
+ * verano. Es una funcion pura del catalogo, sin azar ni estado.
+ */
+export function precioBaseLocalMil(
+  precioBaseMil: number,
+  comarca: ComarcaMundo | undefined,
+  recurso: Recurso,
+  tabla: DatosMercado,
+): number {
+  const potencial = tabla.potencialDeRecurso[recurso];
+  // Los maravedis, y cualquier recurso sin potencial, valen lo mismo en todas partes.
+  if (potencial === undefined || comarca === undefined) return precioBaseMil;
+  const nivel = comarca.potenciales[potencial];
+  const factor = tabla.abundanciaMil[nivel];
+  if (factor === undefined) {
+    throw new ErrorDeMotor(
+      'invariante-rota',
+      `La tabla de mercado no dice cuanto vale el nivel de potencial ${String(nivel)}: "abundanciaMil" necesita una entrada por cada nivel de 0 a 5.`,
+      { recurso, potencial, nivel },
+    );
+  }
+  return Math.max(1, porcentaje(precioBaseMil, factor));
+}
 
 /** Cargas por recurso y turno que absorbe una plaza: la base por el multiplicador de su volumen. */
 export function topeDeVolumen(volumen: VolumenFeria, tabla: DatosMercado): number {

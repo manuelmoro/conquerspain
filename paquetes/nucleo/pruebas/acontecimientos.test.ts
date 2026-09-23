@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { aplicar } from '../src/cambios.ts';
 import { crearContexto } from '../src/contexto.ts';
 import { ACONTECIMIENTOS } from '../src/datos/acontecimientos.ts';
+import { MERCADO } from '../src/datos/mercado.ts';
+import { DATOS_DE_RECURSOS } from '../src/datos/recursos.ts';
 import { faseAcontecimientos } from '../src/fases/10-acontecimientos.ts';
 import {
   acontecimientosActivos,
@@ -22,9 +24,10 @@ import {
 import { claveDeTramo, costeDeTramoMil } from '../src/reglas/ruta.ts';
 import type { Suceso } from '../src/tipos/cronica.ts';
 import type { Acontecimiento, EstadoPartida } from '../src/tipos/estado.ts';
-import type { IdAcontecimiento, IdFeria, IdMercado } from '../src/tipos/ids.ts';
+import type { IdAcontecimiento, IdComarca, IdFeria, IdMercado } from '../src/tipos/ids.ts';
 import { idDeMercadoDeFeria } from '../src/tipos/ids.ts';
 import type { ComarcaMundo, Mundo } from '../src/tipos/mundo.ts';
+import type { Recurso } from '../src/tipos/recursos.ts';
 import type { TipoDeAcontecimiento } from '../src/tipos/reglas.ts';
 import { TIPOS_DE_ACONTECIMIENTO } from '../src/tipos/reglas.ts';
 import { validarEstado } from '../src/validacion/validarEstado.ts';
@@ -625,6 +628,18 @@ describe('obras', () => {
   });
 });
 
+/**
+ * El precio base de un recurso en una comarca, escrito otra vez a mano (T-052 §4.1). Aqui importa
+ * porque la carestia se monta **encima** del base local, no encima del catalogo.
+ */
+function baseEn(comarca: string, recurso: Recurso): number {
+  const base = DATOS_DE_RECURSOS[recurso].precioBaseMil;
+  const potencial = MERCADO.potencialDeRecurso[recurso];
+  if (potencial === undefined) return base;
+  const nivel = mundo.comarcas[comarca as IdComarca]?.potenciales[potencial] ?? 0;
+  return Math.max(1, Math.floor((base * (MERCADO.abundanciaMil[nivel] ?? 1000)) / 1000));
+}
+
 describe('mercado', () => {
   const FERIA_RIO = idDeMercadoDeFeria('rio' as IdFeria);
   const LOCAL = 'local-prueba-llano' as IdMercado;
@@ -639,22 +654,25 @@ describe('mercado', () => {
       estado = turno(estado, [], reglas, elMundo).estado;
       precios.push(estado.mercados[LOCAL]?.preciosMil.sal ?? 0);
     }
-    // Sube hacia 21000 (el base de 14000 por 1500), sin pasar del 15 % por turno; al llegar a
-    // ese base lo sobrepasa un poco y la regresion lo devuelve, como cualquier otro precio.
-    expect(precios[0]).toBeGreaterThan(14000);
+    // Sube hacia el base local por 1500 (prueba-llano no tiene sal, asi que su base es el del
+    // catalogo por 1,4: T-052), sin pasar del 15 % por turno; al llegar lo sobrepasa un poco y
+    // la regresion lo devuelve, como cualquier otro precio.
+    const baseDeLaSal = baseEn('prueba-llano', 'sal');
+    const conCarestia = Math.floor((baseDeLaSal * 1500) / 1000);
+    expect(precios[0]).toBeGreaterThan(baseDeLaSal);
     expect(precios[1]).toBeGreaterThan(precios[0] ?? 0);
     expect(precios[2]).toBeGreaterThan(precios[1] ?? 0);
     for (let i = 0; i < precios.length; i += 1) {
-      const anterior = i === 0 ? 14000 : (precios[i - 1] ?? 0);
+      const anterior = i === 0 ? baseDeLaSal : (precios[i - 1] ?? 0);
       expect(precios[i]).toBeLessThanOrEqual(Math.floor((anterior * 1150) / 1000));
     }
-    expect(precios.at(-1)).toBeGreaterThan(19000);
-    expect(precios.at(-1)).toBeLessThanOrEqual(21000 * 1.05);
+    expect(precios.at(-1)).toBeGreaterThan(Math.floor(conCarestia * 0.9));
+    expect(precios.at(-1)).toBeLessThanOrEqual(conCarestia * 1.05);
     // Acabada la carestia, el precio regresa al base normal (en un mundo sin calendario propio, para
     // que otros acontecimientos de anyos posteriores no lo vuelvan a mover).
     let despues: EstadoPartida = { ...estado, acontecimientos: [] };
     for (let i = 0; i < 150; i += 1) despues = turno(despues, [], reglas, mundo).estado;
-    expect(despues.mercados[LOCAL]?.preciosMil.sal).toBe(14000);
+    expect(despues.mercados[LOCAL]?.preciosMil.sal).toBe(baseDeLaSal);
   });
 
   it('la carestia no toca otros recursos ni otras regiones', () => {
@@ -663,11 +681,11 @@ describe('mercado', () => {
     });
     estado = conEventos(estado, evento('carestia-de-sal', 14, { region: SUR }));
     for (let i = 0; i < 5; i += 1) estado = turno(estado, [], reglas, elMundo).estado;
-    expect(estado.mercados[LOCAL]?.preciosMil.sal).toBe(14000);
+    expect(estado.mercados[LOCAL]?.preciosMil.sal).toBe(baseEn('prueba-llano', 'sal'));
     let norte = conComarca(escenario({ turno: 14 }), 'prueba-llano', { edificios: { mercado: 1 } });
     norte = conEventos(norte, evento('carestia-de-sal', 14));
     for (let i = 0; i < 5; i += 1) norte = turno(norte, [], reglas, elMundo).estado;
-    expect(norte.mercados[LOCAL]?.preciosMil.pan).toBe(3000);
+    expect(norte.mercados[LOCAL]?.preciosMil.pan).toBe(baseEn('prueba-llano', 'pan'));
   });
 
   it('el buen anyo de feria sube el tope de volumen de esa feria un 20 %', () => {
@@ -907,17 +925,23 @@ describe('validación y cambios', () => {
         comarca: c('prueba-llano'),
         tipo: 'local',
         volumen: 'pequenya',
-        preciosMil: recursos({ sal: 14000 }),
+        preciosMil: recursos({ sal: baseEn('prueba-llano', 'sal') }),
         ultimoVolumen: recursos(),
       },
     });
-    // El techo es el 250 % de 21000: 52500. Sin la carestia seria 35000.
+    // El techo es el 250 % del base local con la carestia encima. Prueba-llano no tiene sal, asi
+    // que su base es el del catalogo por 1,2 (T-052): 16800 x 1,5 x 2,5 = 63000. Sin la carestia
+    // seria 42000, y sin la abundancia de T-052, 35000.
+    const techo = Math.floor(
+      (Math.floor((baseEn('prueba-llano', 'sal') * 1500) / 1000) * 2500) / 1000,
+    );
+    expect(techo).toBe(63000);
     expect(() => {
       aplicar(ctx, {
         tipo: 'mercado-precio',
         mercado: 'local-prueba-llano' as IdMercado,
         recurso: 'sal',
-        precioMil: 52500,
+        precioMil: techo,
         volumen: 0,
       });
     }).not.toThrow();
@@ -926,7 +950,7 @@ describe('validación y cambios', () => {
         tipo: 'mercado-precio',
         mercado: 'local-prueba-llano' as IdMercado,
         recurso: 'sal',
-        precioMil: 52501,
+        precioMil: techo + 1,
         volumen: 0,
       });
     }).toThrow();

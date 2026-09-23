@@ -73,12 +73,15 @@ function ingresoDeVenta(cantidad: number, precioMil: number, comision: number): 
   return importe - multiplicarFactores(importe, [comision]);
 }
 
-/** El pan y la sal del viaje, al precio base: lo que cuesta mover la mercancia. */
+/**
+ * El pan y la sal del viaje, al precio base **de la capital**: sale del almacen de casa, asi que
+ * lo que cuesta mover la mercancia es lo que alli valdria (T-052).
+ */
 function valorDelBastimento(t: Tablero, provision: Provision): number {
   const p = provision.prevision;
   return (
-    multiplicarFactores(p.pan + p.panDeCasa, [t.reglas.recursos.pan.precioBaseMil]) +
-    multiplicarFactores(p.sal + p.salDeCasa, [t.reglas.recursos.sal.precioBaseMil])
+    multiplicarFactores(p.pan + p.panDeCasa, [t.baseEn(t.capital, 'pan')]) +
+    multiplicarFactores(p.sal + p.salDeCasa, [t.baseEn(t.capital, 'sal')])
   );
 }
 
@@ -90,13 +93,19 @@ function plazasConPrecio(t: Tablero): PlazaConocida[] {
     .filter((pl) => alcance.has(pl.comarca) && precioSabido(t, pl.id, 'pan') !== null);
 }
 
-/** Comprar en una plaza, vender en otra y volver a la capital. */
+/**
+ * Comprar en una plaza, vender en otra y volver a la capital. Si se vende **en casa** —lo normal
+ * desde T-052, cuando la mercancia es barata en la vecina y cara en la propia comarca— la vuelta
+ * ya es la parada de venta y no se repite: una ruta con la misma comarca dos veces seguidas no
+ * es un viaje.
+ */
 function paradasDe(t: Tablero, compra: PlazaConocida, venta: PlazaConocida): Parada[] {
-  return [
+  const paradas: Parada[] = [
     { comarca: compra.comarca, detiene: true },
     { comarca: venta.comarca, detiene: true },
-    { comarca: t.capital, detiene: false },
   ];
+  if (venta.comarca !== t.capital) paradas.push({ comarca: t.capital, detiene: false });
+  return paradas;
 }
 
 /** El negocio de un recurso entre dos plazas para una recua con esta provision, o null. */

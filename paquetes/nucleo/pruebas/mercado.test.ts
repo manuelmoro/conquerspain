@@ -16,7 +16,7 @@ import {
 import { limitesDeMenores } from '../src/reglas/mercaderesMenores.ts';
 import { limitesDePrecio } from '../src/reglas/precios.ts';
 import type { EstadoComarca, EstadoPartida, Recua } from '../src/tipos/estado.ts';
-import type { IdFeria, IdJugador, IdMercado, IdRecua } from '../src/tipos/ids.ts';
+import type { IdComarca, IdFeria, IdJugador, IdMercado, IdRecua } from '../src/tipos/ids.ts';
 import { idDeMercadoDeFeria, idDeMercadoLocal } from '../src/tipos/ids.ts';
 import type { Mundo, VolumenFeria } from '../src/tipos/mundo.ts';
 import type { Orden } from '../src/tipos/ordenes.ts';
@@ -485,6 +485,18 @@ function suceso(
   );
 }
 
+/**
+ * El precio base de un recurso en una comarca, escrito otra vez a mano (T-052 §4.1): el del
+ * catalogo por el factor de abundancia del potencial que lo produce.
+ */
+function baseEn(comarca: string, recurso: Recurso): number {
+  const base = DATOS_DE_RECURSOS[recurso].precioBaseMil;
+  const potencial = MERCADO.potencialDeRecurso[recurso];
+  if (potencial === undefined) return base;
+  const nivel = mundo.comarcas[comarca as IdComarca]?.potenciales[potencial] ?? 0;
+  return Math.max(1, Math.floor((base * (MERCADO.abundanciaMil[nivel] ?? 1000)) / 1000));
+}
+
 describe('las plazas', () => {
   it('un mercado nace la primera vez que se abre su plaza, con todos los recursos a su precio base', () => {
     const estado = conMercadoLocal(escenario());
@@ -492,7 +504,7 @@ describe('las plazas', () => {
     const mercado = mercadoDe(despues, LOCAL);
     expect(mercado).toMatchObject({ comarca: 'prueba-llano', tipo: 'local', volumen: 'pequenya' });
     for (const r of RECURSOS_COMERCIABLES) {
-      expect(mercado.preciosMil[r]).toBe(DATOS_DE_RECURSOS[r].precioBaseMil);
+      expect(mercado.preciosMil[r]).toBe(baseEn('prueba-llano', r));
       expect(mercado.ultimoVolumen[r]).toBe(0);
     }
     expect(suceso(sucesos, 'mercado.abre')).toHaveLength(1);
@@ -527,7 +539,13 @@ describe('las plazas', () => {
       },
     };
     const cerrada = turno(hundido, [], reglas, elMundo);
-    expect(mercadoDe(cerrada.estado, FERIA).preciosMil.lana).toBe(43250);
+    // Vuelve un 10 % de la distancia a **su** base: la lana mira al pasto, y prueba-vega es
+    // pasto 2, el nivel corriente, asi que su base es el del catalogo (T-052).
+    const baseDeLaVega = baseEn('prueba-vega', 'lana');
+    expect(baseDeLaVega).toBe(50000);
+    expect(mercadoDe(cerrada.estado, FERIA).preciosMil.lana).toBe(
+      42500 + Math.floor((baseDeLaVega - 42500) / 10),
+    );
     expect(mercadoDe(cerrada.estado, FERIA).ultimoVolumen.lana).toBe(0);
     expect(suceso(cerrada.sucesos, 'mercado.precio')).toHaveLength(0);
   });
@@ -910,8 +928,9 @@ describe('jugadores que comercian entre si', () => {
       }),
     ];
     const { estado: despues, sucesos } = turno(estado, ordenes, reglas, mundoConFeria());
-    // Demanda y oferta empatan (30 y 30 mas 290 de menores a cada lado): el precio no se mueve.
-    expect(mercadoDe(despues, FERIA).preciosMil.lana).toBe(50000);
+    // Demanda y oferta empatan (30 y 30 mas 290 de menores a cada lado): el precio no se mueve
+    // de su base, que es el del catalogo porque prueba-vega es pasto 2 (T-052).
+    expect(mercadoDe(despues, FERIA).preciosMil.lana).toBe(baseEn('prueba-vega', 'lana'));
     expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 1500 - 15 });
     expect(de(despues, 'recua-2').carga).toMatchObject({ lana: 30, maravedis: 3000 - 1500 - 15 });
     for (const t of suceso(sucesos, 'mercado.trato')) {
@@ -975,13 +994,15 @@ describe('una venta masiva de lana en una feria', () => {
   it('con menores hunde el precio un 13,5 % y se recupera en el turno siguiente', () => {
     const { precios, estado } = ventaMasiva(reglas);
     // Turno 1: 300 cargas contra un cupo de 320 hunden el precio hasta 43250, y se venden todas.
+    // El base de prueba-vega es el del catalogo, porque es pasto 2 (T-052).
+    const baseDeLaVega = baseEn('prueba-vega', 'lana');
     expect(precios[0]).toBe(43250);
     expect(de(estado, 'recua-1').carga.lana).toBe(0);
     // Turno 2: los menores solo compran (el precio esta bajo el 90 % del base) y lo suben hasta
     // donde deja el recorte del 15 % por turno: 43250 mas 6487.
     expect(precios[1]).toBe(49737);
     // Y vuelve al base sin pasarse.
-    expect(precios.slice(2).every((p) => p >= 49737 && p <= 50000)).toBe(true);
+    expect(precios.slice(2).every((p) => p >= 49737 && p <= baseDeLaVega)).toBe(true);
     expect(precios.at(-1)).toBeGreaterThan(49900);
   });
 
@@ -1083,6 +1104,8 @@ describe('cambios del mercado', () => {
       () => {
         aplicar(ctx, { tipo: 'mercado-precio', mercado: FERIA, recurso, precioMil, volumen });
       };
+    // El suelo y el techo se miden sobre el base de **esta** plaza (T-052); la lana de
+    // prueba-vega tiene el del catalogo, porque es pasto 2.
     expect(precio('lana', 19999)).toThrow(/entre 20000 y 125000/);
     expect(precio('lana', 125001)).toThrow(/entre 20000 y 125000/);
     expect(precio('maravedis', 1000)).toThrow();

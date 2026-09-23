@@ -542,6 +542,13 @@ export interface DatosMercado {
   readonly liquidezMercaderesMenoresMil: number;
   /** Los menores compran hasta base × (1 + margen) y venden desde base × (1 - margen). */
   readonly margenMercaderesMenoresMil: number;
+  /**
+   * Lo que sobra vale menos donde sobra (ficha T-052 §4.2). Indexada por el nivel de potencial
+   * 0…5 de la comarca: el precio base de un recurso alli es el del catalogo por este factor.
+   */
+  readonly abundanciaMil: readonly number[];
+  /** Que potencial abarata cada recurso. Sin entrada, el recurso vale igual en todas partes. */
+  readonly potencialDeRecurso: Readonly<Partial<Record<Recurso, Potencial>>>;
 }
 
 export interface DatosInfluencia {

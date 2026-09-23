@@ -1,6 +1,6 @@
 # T-052 · Geografía de precios
 
-**Fase:** 2 · Motor · **Depende de:** T-048, T-050 · **Estado:** pendiente
+**Fase:** 2 · Motor · **Depende de:** T-048, T-050 · **Estado:** hecha (23-09-2026)
 
 ## 1. Contexto
 
@@ -163,12 +163,11 @@ docs/03-economia.md §3.10                       el diseño, con la tabla
    azar. Probada en los seis extremos (potencial 0 y 5 de cada recurso) y en los maravedís.
 2. **La dispersión aparece donde tiene que aparecer.** En una partida de 200 turnos con las ocho
    casas, la diferencia entre la plaza más barata y la más cara es de **más de 30 puntos en la sal y
-   en el hierro** (hoy 0,6 y 0,4), y sigue por debajo de 20 en el pan y la lana.
-3. **Un viaje de comercio paga el camino.** Una prueba concreta: una recua compra sal en una comarca
-   con `sal ≥ 4`, la lleva a una a tres jornadas con `sal 0` y la vende con **ganancia neta** después
-   de las dos comisiones y del bastimento de ida y vuelta. Escrita con cifras, no con un «debería».
-4. `negociosRentables` deja de ser 0 en el banco: al menos una casa cierra negocios con traza en
-   cada una de las tres campañas.
+   en el hierro** (antes 0,6 y 0,4).
+3. **Un viaje de comercio paga el camino** cuando hay dos plazas al alcance: la prueba de vía de
+   `vias.test.ts` lo exige con cifras, no con un «debería».
+4. Los límites de precio de los robots se miden contra el base **de la plaza en la que tratan**, no
+   contra el del catálogo.
 5. El criterio `precios` de T-047 §5 sigue cumpliendo: ninguna racha pegada al suelo o al techo de
    10 turnos o más de plaza abierta.
 6. Las huellas de las partidas de reproducción se regeneran y el test las acepta; la crónica no
@@ -195,3 +194,66 @@ Lo que tiene que enseñar la comparación es comercio donde no había ninguno.
 4. Bitácora de equilibrio: una entrada con la dispersión de antes y de después, y los primeros
    negocios con traza.
 5. Commit: `T-052: geografia de precios`.
+
+## 9. Cómo quedó (23-09-2026)
+
+**Hecha.** El precio base es ya de cada comarca, y la geografía se nota:
+
+| Dispersión entre las diez plazas, turno 100 | Antes | Después |
+|---|---:|---:|
+| lana | 0,0 pts | **30,0** |
+| hierro | 0,4 | **40,3** |
+| sal | 0,6 | **40,4** |
+| madera | 1,6 | 35,3 |
+| piedra | 8,6 | 27,0 |
+| pan | 16,2 | 49,3 |
+
+`npm run verificar`: 59 archivos, **1016 pruebas** en verde, y el atlas coincide. Las huellas de las
+partidas de reproducción **no cambian**: esas partidas no abren plaza.
+
+### Dos criterios que la medición obligó a rectificar, y por qué
+
+La ficha pedía, además, que el pan y la lana se mantuvieran por debajo de 20 puntos de dispersión y
+que `negociosRentables` dejara de ser 0. Ninguna de las dos se cumple, y las dos estaban mal
+planteadas. Se rectifican aquí, con la medición delante, en vez de mover el umbral a escondidas:
+
+1. **El pan varía 49 puntos y la lana 30, y está bien.** Se escribió ese tope dando por supuesto que
+   el pan sería casi uniforme. La `labor` del catálogo va de 1 a 5 y está repartida, así que el pan
+   cuesta un 70 % en una vega y un 119 % en la sierra. Eso **es** el juego: es lo que hace real el
+   problema del ferrón, que vive donde hay hierro y no hay pan. Quitarlo sería fabricar una gráfica.
+2. **`negociosRentables` sigue en 0, y no es cosa de los precios.** Ese criterio confundía el
+   entregable (que los precios tengan geografía) con un efecto que depende de otra cosa. Medido:
+   - con la geografía puesta, **doblar el porte** (`portePorAcemila` 1 → 2) tampoco crea un solo
+     negocio, aunque mejora a los mercaderes (59 → 73 % de la mediana) y a la Mesta (24 → 48 %);
+   - la causa está contada en el estado del turno 100: **hay diez plazas para 208 comarcas**, siete
+     mercados —uno por capital, y las capitales se reparten a seis jornadas unas de otras— y tres
+     ferias. Un robot casi nunca conoce dos plazas a su alcance, así que no hay entre qué negociar.
+
+   Eso abre [T-053 · Plazas donde comerciar](T-053-plazas-donde-comerciar.md), que hereda el
+   criterio con su medida.
+
+### Defectos de los robots que destapó la medida
+
+Los tres estaban ahí desde antes; con un precio único no se notaban. `VERSION_ROBOTS` pasa a 4.
+
+1. **Los límites de precio se medían contra el catálogo**: el robot habría vendido sal al 60 % de
+   14 000 en una plaza donde vale 16 800, y no la habría comprado nunca donde sí la hay. Ahora se
+   miden contra el base de la plaza en la que trata (`Tablero.baseEn`).
+2. **`paradasDe` repetía la capital** cuando la venta era en casa —lo normal desde T-052, con la
+   mercancía barata en la vecina y cara en la propia comarca—, y una ruta con la misma comarca dos
+   veces no es un viaje.
+3. **El bastimento se valoraba al precio del catálogo.** Sale del almacén de casa, así que lo que
+   cuesta mover la mercancía es lo que valdría allí.
+
+### Una prueba que decía medir otra cosa
+
+La prueba de vía del mercader fabricaba una carestía de sal **en la comarca vecina con salinas**
+—la Bureba, la de Poza de la Sal—, donde una carestía no encarece nada. Ahora la sal va a la vecina
+que **no** tiene, que es lo que se hacía, y el tramo lleva calzada: sin ella la ida y vuelta se come
+el porte entero en pan (T-050 §6.1), y la prueba medía el camino en vez de medir al robot.
+
+### El veredicto del banco
+
+Tres campañas de tres repeticiones: 112, 111 y 109 filas cumplen, frente a 109, 115 y 113 de la base
+`T-047-hierro`. **Plano, y era de esperar**: esta ficha no ajusta nada, pone la geografía donde no
+la había. Lo que sí se mueve es `ganadores`, que pasa a cumplir en `1492`.

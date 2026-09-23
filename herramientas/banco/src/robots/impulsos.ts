@@ -999,7 +999,7 @@ function tratarUnTurno(
   const compra: [Recurso, number, number][] = [];
   let queda = bolsa;
   for (const [recurso, falta] of faltan) {
-    const maximo = Math.floor((t.reglas.recursos[recurso].precioBaseMil * 15) / 10);
+    const maximo = Math.floor((t.baseEn(t.capital, recurso) * 15) / 10);
     const cantidad = Math.min(cabe(), falta, Math.floor((queda * 1000) / maximo));
     turno += 1;
     if (cantidad <= 0) continue;
@@ -1027,7 +1027,7 @@ function tratarUnTurno(
   const nada = ventas.length === 0 && compra.length === 0 && Object.keys(descargar).length === 0;
   if (!nada) p.carga(recua.id, cargar, descargar, 0, enTurno);
   for (const [recurso, lote] of ventas) {
-    const minimo = Math.floor((t.reglas.recursos[recurso].precioBaseMil * 6) / 10);
+    const minimo = Math.floor((t.baseEn(t.comarcaDePlaza(plaza), recurso) * 6) / 10);
     p.mercado(recua.id, plaza, recurso, 'vender', lote, minimo, 1, enTurno);
   }
   for (const [recurso, cantidad, maximo] of compra) {
@@ -1116,14 +1116,14 @@ function enLaFeria(d: Decision, recua: Recua, plaza: PlazaConocida): void {
   const turnos = Math.max(cadencia, t.turnosHastaQueAbra(plaza) + 1);
   if (mercancia.length > 0) {
     for (const recurso of mercancia) {
-      const minimo = Math.floor((t.reglas.recursos[recurso].precioBaseMil * 6) / 10);
+      const minimo = Math.floor((t.baseEn(plaza.comarca, recurso) * 6) / 10);
       p.mercado(recua.id, plaza.id, recurso, 'vender', recua.carga[recurso], minimo, turnos);
     }
     return;
   }
   const vuelta = preverViaje(t, recua, [{ comarca: t.capital, detiene: false }], recua.carga);
   const falta = vuelta.ok ? vuelta.valor.pan + margenDePan(t) - recua.carga.pan : 0;
-  const maximo = Math.floor((t.reglas.recursos.pan.precioBaseMil * 15) / 10);
+  const maximo = Math.floor((t.baseEn(plaza.comarca, 'pan') * 15) / 10);
   const puede = Math.floor((recua.carga.maravedis * 1000) / maximo);
   if (falta > 0 && puede > 0 && t.turnosHastaQueAbra(plaza) === 0) {
     p.mercado(recua.id, plaza.id, 'pan', 'comprar', Math.min(falta, puede), maximo, 1);
@@ -1196,7 +1196,7 @@ const feriar: Rutina = (d, recua) => {
     if (falta > 0) cargar[recurso] = falta;
     vender[recurso] = {
       cantidad,
-      precioMinimoMil: Math.floor((t.reglas.recursos[recurso].precioBaseMil * 6) / 10),
+      precioMinimoMil: Math.floor((t.baseEn(plan.plaza.comarca, recurso) * 6) / 10),
     };
   }
   p.carga(recua.id, cargar, todoMenos(recua, ['pan', 'sal', ...perfil.feria]));

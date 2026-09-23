@@ -513,3 +513,82 @@ npm run banco:comparar -- herramientas/banco/informes/T-051-1492.csv herramienta
 Los informes de los ensayos descartados que cambiaron alguna cifra se conservan
 (`E1-bastimento1-1492`, con su manifiesto); los que salieron idénticos a la base no, porque su resultado es esta
 tabla.
+
+## 23-09-2026 · T-052: la geografía en el precio, y lo que quedó debajo
+
+**Encargo:** que el precio base deje de ser un número para toda la península. **Resultado:** hecho.
+Y al medirlo apareció la causa de verdad de que no haya comercio, que no era ni el precio ni el
+porte.
+
+### Lo que cambia
+
+El precio base de un recurso en una comarca es el del catálogo por la abundancia del potencial que
+lo produce (`abundanciaMil: [1200, 1100, 1000, 900, 800, 700]`, indexada por el potencial 0–5). El
+catálogo es el precio de una **comarca corriente**: desde ahí la escasez encarece poco y la
+abundancia abarata mucho, porque lo que mueve el comercio es de dónde *sale* la mercancía. Escrito
+en [docs/03-economia.md §3.10.2](../03-economia.md).
+
+| Dispersión entre las diez plazas de la partida, turno 100 | Antes | Después |
+|---|---:|---:|
+| lana | 0,0 pts | **30,0** |
+| hierro | 0,4 | **40,3** |
+| sal | 0,6 | **40,4** |
+| madera | 1,6 | 35,3 |
+| piedra | 8,6 | 27,0 |
+| pan | 16,2 | 49,3 |
+
+Veredicto del banco: 112, 111 y 109 filas cumplen en `1492`, `1085` y `1212`, frente a 109, 115 y
+113 de `T-047-hierro`. **Plano, y era de esperar**: esta ficha no ajusta, pone geografía donde no la
+había. `ganadores` pasa a cumplir en `1492`.
+
+### El hallazgo grande: no hay dónde comerciar
+
+`negociosRentables` sigue en **0** en las nueve partidas. La cadena de descartes, cada uno medido:
+
+| Sospecha | Ensayo | Resultado |
+|---|---|---|
+| El precio es plano | T-052: precio base por comarca | Dispersión de 0,6 → 40,4 en la sal. **Cero negocios** |
+| El porte no da para el viaje | Con T-052 puesto, `portePorAcemila` 1 → 2 | Mercaderes 59 → 73 % y Mesta 24 → 48 % de la mediana, pero **cero negocios**; los criterios bajan de 112 a 107 |
+| Los menores aplanan el mercado | liquidez a 300 y margen al 2 % | Los dos descartados el mismo día, arriba |
+
+La causa está en el estado guardado del turno 100 de `T-052-1492`: **hay diez plazas para 208
+comarcas**, siete mercados locales —uno por capital, y las capitales se reparten a seis jornadas
+unas de otras por diseño— y tres ferias. Un robot casi nunca conoce **dos** plazas a su alcance, así
+que no hay entre qué negociar. Por eso `arbitraje.ts` anota `sin-precios-sabidos`.
+
+Eso abre **[T-053 · Plazas donde comerciar](T-053-plazas-donde-comerciar.md)**, que hereda el
+criterio de `negociosRentables` con toda esta medida detrás.
+
+### Tres defectos de los robots que solo se ven con precios distintos
+
+`VERSION_ROBOTS` pasa a 4. Estaban desde antes; con un precio único no se notaban.
+
+1. Los límites de precio se medían contra el catálogo: el robot habría vendido sal al 60 % de 14 000
+   en una plaza donde vale 16 800, y no la habría comprado nunca donde sí la hay.
+2. `paradasDe` repetía la capital cuando la venta era en casa —lo normal ahora, con la mercancía
+   barata en la vecina y cara en la propia comarca—, y una ruta con la misma comarca dos veces
+   seguidas no es un viaje.
+3. El bastimento se valoraba al precio del catálogo, cuando sale del almacén de casa.
+
+### Y una prueba que decía medir otra cosa
+
+La prueba de vía del mercader fabricaba una carestía de sal **en la vecina que tiene salinas** (la
+Bureba, la de Poza de la Sal), donde una carestía no encarece nada. Ahora la sal va a la vecina que
+no tiene, y el tramo lleva calzada: sin ella la ida y vuelta se come el porte entero en pan, y la
+prueba medía el camino en vez de medir al robot.
+
+### Dos criterios rectificados con la medida delante
+
+La ficha de T-052 pedía además que el pan y la lana se quedaran por debajo de 20 puntos de
+dispersión y que `negociosRentables` dejara de ser 0. Las dos estaban mal planteadas y se rectifican
+en [T-052 §9](T-052-geografia-de-precios.md), no en silencio: el pan varía 49 puntos porque la
+`labor` del catálogo va de 1 a 5 y está repartida —y eso **es** el juego, es lo que hace real el
+problema del ferrón—, y el segundo confundía el entregable con un efecto que depende de las plazas.
+
+### Reproducción
+
+```bash
+npm run verificar
+npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-052 --revision <sha>+T-052
+npm run banco:comparar -- herramientas/banco/informes/T-047-hierro-1492.csv herramientas/banco/informes/T-052-1492.csv
+```

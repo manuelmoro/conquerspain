@@ -14,7 +14,7 @@ import type { ResultadoDeLinea } from '../reglas/mercado.ts';
 import { casarPlaza } from '../reglas/mercado.ts';
 import type { CatalogoDePlazas, Plaza } from '../reglas/plazas.ts';
 import { catalogoDePlazas } from '../reglas/plazas.ts';
-import { nuevoPrecioMil, topeDeVolumen } from '../reglas/precios.ts';
+import { nuevoPrecioMil, precioBaseLocalMil, topeDeVolumen } from '../reglas/precios.ts';
 import type { Solicitud, SolicitudConLinea } from '../reglas/solicitudes.ts';
 import { lineasDeSolicitudes } from '../reglas/solicitudes.ts';
 import { registrarSuceso } from '../sucesos.ts';
@@ -92,7 +92,15 @@ function abrirMercado(ctx: Contexto, plaza: Plaza): void {
       comarca: plaza.comarca,
       tipo: plaza.tipo,
       volumen: plaza.volumen,
-      preciosMil: recursosSegun((r) => ctx.reglas.recursos[r].precioBaseMil),
+      // Una plaza nueva nace en el precio base **de su comarca**, no en el del catalogo.
+      preciosMil: recursosSegun((r) =>
+        precioBaseLocalMil(
+          ctx.reglas.recursos[r].precioBaseMil,
+          ctx.mundo.comarcas[plaza.comarca],
+          r,
+          ctx.reglas.mercado,
+        ),
+      ),
       ultimoVolumen: recursosSegun(() => 0),
     },
   });
@@ -242,21 +250,27 @@ function comisionMilDe(ctx: Contexto, jugador: IdJugador, plaza: Plaza): number 
 }
 
 /**
- * Lo que el catalogo dice de un recurso, con el precio base que le dan los acontecimientos en la
- * region de la comarca: una carestia de sal sube el base hacia el que regresa la plaza.
+ * Lo que el catalogo dice de un recurso en una plaza concreta. Dos capas, en este orden:
+ *
+ * 1. La **abundancia** de la comarca (ficha T-052): la sal es barata donde hay salinas y cara
+ *    donde no las hay. Es fija, la da el mundo y no cambia en toda la partida.
+ * 2. Los **acontecimientos** de la region: una carestia de sal sube ese base unos turnos.
+ *
+ * De aqui cuelgan, sin tocarlas, el suelo y el techo, los limites de los mercaderes menores y el
+ * precio al que regresa la plaza: las tres leen este `DatosRecurso`.
  */
 function recursoEnLaPlaza(ctx: Contexto, comarca: IdComarca, recurso: Recurso): DatosRecurso {
   const datos = ctx.reglas.recursos[recurso];
   const lugar = { region: ctx.mundo.comarcas[comarca]?.region ?? '', comarca };
+  const local = precioBaseLocalMil(
+    datos.precioBaseMil,
+    ctx.mundo.comarcas[comarca],
+    recurso,
+    ctx.reglas.mercado,
+  );
   return {
     ...datos,
-    precioBaseMil: precioBaseEfectivo(
-      datos.precioBaseMil,
-      ctx.estado.acontecimientos,
-      ctx.turno,
-      lugar,
-      recurso,
-    ),
+    precioBaseMil: precioBaseEfectivo(local, ctx.estado.acontecimientos, ctx.turno, lugar, recurso),
   };
 }
 

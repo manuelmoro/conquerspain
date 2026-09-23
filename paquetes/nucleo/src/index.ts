@@ -51,6 +51,7 @@ export {
   desequilibrioMil,
   limitesDePrecio,
   nuevoPrecioMil,
+  precioBaseLocalMil,
   topeDeVolumen,
 } from './reglas/precios.ts';
 export { FASES, resolverTurno } from './resolver.ts';

@@ -8,6 +8,7 @@ import { estacionDe } from '../reglas/calendario.ts';
 import { TURNOS_POR_ANYO } from '../reglas/calendario.ts';
 import { arranqueDeCasa, modificadoresDeCasa, permisosDeCasa } from '../reglas/casas/index.ts';
 import { impedimentoDeConstruir } from '../reglas/obras.ts';
+import { precioBaseLocalMil } from '../reglas/precios.ts';
 import { explotacionesDe } from '../reglas/produccion.ts';
 import type { EstadoComarca } from '../tipos/estado.ts';
 import type { ComarcaMundo } from '../tipos/mundo.ts';
@@ -187,11 +188,18 @@ export function arranqueDe(geografia: ComarcaMundo, casa: Casa, reglas: TablasDe
     }
   }
 
-  // 3. Lo que la tierra no da, se compra: maravedis al precio base del pan.
+  // 3. Lo que la tierra no da, se compra: maravedis al precio del pan **de esta comarca**. Donde
+  // la labor es pobre el pan es caro (T-052), y el colchon tiene que dar para comprarlo alli.
   const produce = panDelAnyo(geografia, edificios, casa, reglas);
   const falta = Math.max(0, come - produce);
   if (falta > 0) {
-    const cuesta = multiplicarFactores(falta, [reglas.recursos.pan.precioBaseMil]);
+    const precioDelPan = precioBaseLocalMil(
+      reglas.recursos.pan.precioBaseMil,
+      geografia,
+      'pan',
+      reglas.mercado,
+    );
+    const cuesta = multiplicarFactores(falta, [precioDelPan]);
     const dinero = Math.min(ajuste.maravedisMaximos, cuesta);
     almacen.maravedis += dinero;
     motivos.push(
