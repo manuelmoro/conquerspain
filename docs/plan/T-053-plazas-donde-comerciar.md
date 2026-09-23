@@ -123,18 +123,47 @@ ser **«hay diferencia de precio, pero comprar, vender y volver no cabe en el po
 bastimento»** (74 turnos de 200; 49 en el arriero). Es decir: **el robot ve por fin un negocio de
 verdad y lo único que lo frena es la logística.**
 
-### Lo que falta
+### Por qué sigue sin haber negocio: el mundo que alcanza el mercader es igual a sí mismo
 
 `negociosRentables` sigue en 0 y el recuento del banco queda plano (114, 109 y 109 filas cumplen,
-frente a 112, 111 y 109 de la base `T-052`). Quedan dos paredes, las dos de **tablas de T-047**:
+frente a 112, 111 y 109 de la base `T-052`). **No es la logística ni el dinero**, y eso está medido:
+cinco ensayos, todos con cero negocios, y el último con una recua generosísima (porte 20, un pan por
+jornada, sal cada doce jornadas, ventas hasta doce jornadas y el colchón del arbitraje en 10).
 
-1. **El porte manda sobre el mapa.** Con porte 10 y dos panes por jornada, la ida y vuelta a una
-   plaza a tres jornadas pide 12 de pan y no cabe. Es el primer punto de T-046 §8, sin resolver.
-2. **Doblar el porte no basta por sí solo**: medido con todo lo demás puesto, `portePorAcemila`
-   1 → 2 sigue dando cero negocios. La otra mitad es el margen contra el coste del bastimento, que
-   es el precio del pan y de la sal en la comarca de partida.
+La causa está en un volcado de la rutina de arbitraje en el turno 120, con nueve plazas ya conocidas:
 
-Las dos se miden juntas, no por separado, y con la base `T-053-*` delante.
+```
+T120 plazas=9 parejas=1 bolsa=2 porte=20
+  plaza segria(f)            sal=16800 pan=2100 hierro=28800
+  plaza bajo-aragon          sal=16800 pan=2700 hierro=28800
+  plaza campo-de-belchite    sal=16800 pan=3000 hierro=28800
+  plaza monegros             sal=16800 pan=3000 hierro=28800
+  … (nueve plazas, todas sal=16800 y hierro=28800)
+  pallars-jussa -> segria  margen=180 (0,18 maravedis por carga)
+```
+
+**La sal cuesta lo mismo en las nueve plazas, y el hierro también.** Solo varía el pan. La razón es
+que T-052 hace depender el precio del **potencial de la propia comarca**, y ninguna de las nueve
+tiene sal ni hierro: todas valen exactamente `base × 1,2`. Una comarca sin sal pegada a una salina
+cotiza igual que otra a trescientos kilómetros.
+
+Eso es justo lo contrario de cómo funcionaba: **la sal era cara tierra adentro porque había que
+llevarla hasta allí**. El precio tiene que depender de lo lejos que esté la comarca de donde se
+produce, no solo de lo que ella misma tenga. Mientras eso no exista, no hay gradiente que recorrer
+y el comercio no puede existir por mucho porte, dinero o plazas que se le den.
+
+**Esto es una decisión de diseño que el usuario debe ver antes de implementarse**, porque amplía
+T-052 y toca la lógica (hace falta el grafo de caminos para medir la distancia a la producción).
+
+### Lo ensayado y descartado, para no repetirlo
+
+| Ensayo | Resultado |
+|---|---|
+| `jornadasPorSalEnVerano` 4 → 12 (la sal del camino costaba más que el pan que conserva) | Cero efecto: no ataba |
+| Logística generosa: porte 2, bastimento 1, sal cada 12 jornadas | **Cero negocios** |
+| Ventas hasta 12 jornadas en vez de 4 | **Cero negocios** |
+| `COLCHON_DE_MARAVEDIS` de `impulsos.ts` 60 → 10 | Cero efecto: **el arbitraje tiene su propio colchón**, que era el que mandaba |
+| `COLCHON` de `arbitraje.ts` 60 → 10 (bolsa de 2 a ~52 maravedís) | **Cero negocios** |
 
 ### Lo que ya se ha descartado, con su medida
 

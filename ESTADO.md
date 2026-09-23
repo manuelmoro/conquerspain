@@ -32,14 +32,25 @@ La que hay en curso: **T-053**, que va por su §8. Después se reanuda **T-047**
 
 Orden: **T-053 → T-047 (se reanuda) → T-060**.
 
-Eso ya está hecho (24-09-2026): la venta tiene ventero y le dice cada turno lo que allí se paga. Lo
-que falta de T-053 son **dos paredes de logística, y se miden juntas**: con porte 10 y dos panes por
-jornada la ida y vuelta a una plaza a tres jornadas pide 12 de pan y no cabe, y **doblar el porte no
-basta por sí solo** (medido: cero negocios), porque la otra mitad es el margen contra lo que cuesta
-el bastimento. Las dos son tablas de T-047.
+Eso ya está hecho (24-09-2026): la venta tiene ventero y le dice cada turno lo que allí se paga, y
+el mercader conoce ya **nueve plazas** en vez de dos.
 
-Lo bueno: el motivo dominante del mercader ya no es «no sé precios» sino **«hay diferencia de
-precio, pero no cabe en el porte»** (74 turnos de 200). El robot ve por fin un negocio de verdad.
+**Y con eso el diagnóstico queda cerrado, pero no como esperaba.** No es la logística ni el dinero:
+cinco ensayos más, todos con cero negocios, incluido uno con una recua generosísima (porte 20, un
+pan por jornada, sal cada doce jornadas, ventas hasta doce jornadas y el colchón del arbitraje en
+10). El volcado del turno 120 lo explica: **la sal cuesta lo mismo en las nueve plazas y el hierro
+también**; solo varía el pan, y la mejor diferencia de la partida son 0,18 maravedís por carga.
+
+La causa es que T-052 hace depender el precio del potencial de **la propia comarca**, y ninguna de
+esas nueve tiene sal ni hierro: **una comarca sin sal pegada a una salina cotiza igual que otra a
+trescientos kilómetros**. Es lo contrario de cómo funcionaba —la sal era cara tierra adentro porque
+había que llevarla hasta allí—, y mientras no haya gradiente no hay comercio posible por mucho
+porte, dinero o plazas que se den.
+
+> **Decisión pendiente del usuario.** Hacer que el precio dependa de la distancia a donde se produce
+> amplía T-052 y toca lógica (hace falta el grafo de caminos). No se ha abierto ficha por cuenta
+> propia: está escrito en [T-053 §8](docs/plan/T-053-plazas-donde-comerciar.md) y en la
+> [bitácora](docs/plan/bitacora-equilibrio.md), con los cinco ensayos descartados y su medida.
 
 La base contra la que comparar ahora es `herramientas/banco/informes/T-053-*`
 (robots **4**, métricas 4, tres semillas: 1492, 1085 y 1212); `npm run banco -- ... --evaluar`
@@ -166,6 +177,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Fecha | Qué pasó |
 |---|---|
 | 23-09-2026 | **T-052 abierta desde dentro de T-047**: la geografía de precios no es una cifra. Al turno 100, entre las diez plazas de una partida, la dispersión de precios es de **0,0 puntos en la lana, 0,4 en el hierro y 0,6 en la sal**: lo que distingue una comarca de otra cuesta lo mismo en todas partes, y la comisión sola es un 2 % por lado. Se ensayaron y descartaron las dos palancas de datos que quedaban (liquidez de los menores a 300, que además **quita el comprador** y hunde el prestigio a 0 de 24 filas; y margen al 2 %, que no mueve la dispersión). La razón se lee en el código: el precio de una plaza solo cambia si alguien compra o vende allí, y la sal, el hierro y la lana no se comercian en ninguna parte, así que se quedan clavados en su único `precioBaseMil` global. **Ninguna cifra puede abaratar la sal de Añana frente a la de Sevilla.** Ficha [T-052](docs/plan/T-052-geografia-de-precios.md) escrita y detallada: precio base por comarca derivado de sus potenciales, con su tabla de abundancia, los cuatro sitios que hoy usan el número global y criterios de aceptación con cifras. T-047 se reanuda después |
+| 24-09-2026 | **Diagnóstico cerrado: el precio no sabe de distancias.** Cinco ensayos más, cinco ceros: la sal del camino (que cuesta más que el pan que conserva, ocho veces fuera de escala con `panPorSal`), la logística generosa (porte 20, un pan por jornada), las ventas a doce jornadas, y los **dos** colchones de maravedís —el arbitraje tenía el suyo propio, que era el que mandaba—. El volcado del turno 120, ya con nueve plazas conocidas: **la sal cuesta 16800 en las nueve y el hierro 28800 en las nueve**; solo varía el pan, y la mejor diferencia de toda la partida son 0,18 maravedís por carga. La causa: T-052 mira el potencial de **la propia comarca**, así que una comarca sin sal pegada a una salina cotiza igual que otra a trescientos kilómetros. Falta que el precio dependa de la **distancia a donde se produce**, que es por lo que la sal era cara tierra adentro. Amplía T-052 y toca lógica: **decisión pendiente del usuario**, sin ficha abierta por cuenta propia. Ninguna tabla cambia; 1021 tests en verde |
 | 24-09-2026 | **T-053: la venta tiene ventero**. `EstadoComarca.ventaDe` guarda quién levantó la venta mientras la comarca es de nadie —se borra al derribarla y **al incorporar la comarca**, porque quien se queda la tierra se queda la venta—, y la crónica le refresca cada turno el conocimiento de la comarca y los precios de su plaza, igual que a una recua parada allí. Sin eso, una venta no servía para decidir ningún viaje: el robot la plantaba y cien turnos después seguía viendo solo las dos plazas de su capital. Cinco pruebas nuevas en `obras.test.ts` y huellas de reproducción regeneradas (el estado gana un campo). **Lo que enseña la medida**: el motivo dominante del mercader deja de ser «no sé precios» y pasa a ser «hay diferencia de precio, pero comprar, vender y volver **no cabe en el porte**» (74 turnos de 200). El robot ve por fin un negocio de verdad y lo único que lo frena es la logística: dos paredes, las dos tablas de T-047, y doblar el porte no basta por sí solo. 1021 tests en verde |
 | 23-09-2026 | **T-053 en curso**: la venta, plaza del camino. Primero, una medición que descarta el camino barato: el catálogo tiene **9 comarcas con feria de 403** y cada feria abre **uno o dos turnos al año**, así que las ferias son el acontecimiento anual y no el mercado de cada quincena. La decisión de diseño: **la venta abre plaza y es el único edificio que se levanta en tierra de nadie** (comarca explorada y sin dueño), sin dar los maravedís ni la lealtad del mercado —el mercado es el pueblo, la venta es el camino—, y lo que se levanta allí no pasa a ser tuyo. Los robots las plantan donde la mercancía cotiza distinto que en casa: las plazas de una partida suben de 10 a 13. Cuatro sospechas más, descartadas **con su medida**: un mercado en cada comarca propia, revertido (el mercader tiene una sola comarca), el porte al doble, el colchón de maravedís a 20 (la casa tiene 65: la bolsa de comercio eran cinco) y más ferias. Queda **un solo eslabón, localizado con un volcado**: un jugador no se entera de lo que él mismo ha construido fuera de su dominio, porque el conocimiento de una comarca ajena es una foto que solo se refresca donde tiene recua. 1016 tests en verde |
 | 23-09-2026 | **T-052 hecha**: la geografía, en el precio. El precio base de cada recurso pasa a ser el de **su comarca**: el del catálogo por la abundancia del potencial que lo produce (la sal mira a las salinas, el hierro a las venas, la lana al pasto, el pan a la labor), anclado en el nivel corriente para que la escasez encarezca poco y la abundancia abarate mucho. La dispersión entre las diez plazas de una partida sube de **0,6 a 40,4 puntos en la sal**, de 0,4 a 40,3 en el hierro y de 0,0 a 30,0 en la lana. Compone con los acontecimientos, el suelo y el techo y los límites de los menores sin tocarlos, y es función pura del catálogo: las huellas de reproducción no cambian. De paso destapa tres defectos de los robots que con un precio único no se veían (límites medidos contra el catálogo, la capital repetida en la ruta cuando se vende en casa, y el bastimento valorado fuera de su plaza) y una prueba de vía que ponía una carestía de sal justo en la comarca con salinas. **Y el hallazgo grande**: aun con precios y con el porte al doble no hay **ni un negocio**, porque hay **diez plazas para 208 comarcas**; de ahí sale T-053. Robots 4. 1016 tests en verde |

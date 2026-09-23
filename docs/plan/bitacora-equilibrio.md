@@ -655,3 +655,57 @@ es el margen contra lo que cuesta el bastimento. Se miden juntas.
 npm run verificar
 npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-053 --revision <sha>+T-053
 ```
+
+## 24-09-2026 · Por qué no hay comercio: el precio no sabe de distancias
+
+**Encargo:** medir juntos el porte y el bastimento, que era lo que T-053 y T-047 se señalaban.
+**Resultado:** no era eso, y ahora hay diagnóstico cerrado. Ninguna tabla cambia.
+
+### Cinco ensayos, cinco ceros
+
+Todos sobre la base `T-053-*`, semilla 1492 con tres repeticiones.
+
+| Ensayo | Hipótesis | Resultado |
+|---|---|---|
+| sal12 | La sal del camino cuesta más que el pan que conserva: `jornadasPorSalEnVerano` 4 → 12 | **Cero efecto**, cifra a cifra. No ataba |
+| logistica | El porte manda sobre el mapa: porte 2, bastimento 1, sal cada 12 jornadas | **Cero negocios** con una recua generosísima |
+| ventas lejos | Las ventas se plantan a 4 jornadas y ahí todo es igual: hasta 12 | **Cero negocios** |
+| colchón (impulsos) | El robot guarda 60 maravedís y le quedan 2 para comerciar | **Cero efecto**: el arbitraje tiene **su propio** colchón, que era el que mandaba |
+| colchón (arbitraje) | Ese, entonces: 60 → 10, bolsa de 2 a ~52 | **Cero negocios** |
+
+La cuenta de la sal merece quedar escrita aunque no atara: una recua gasta una carga de sal por cada
+cuatro jornadas **sea cual sea el pan que lleve**, así que en un viaje de ida y vuelta de tres
+jornadas la sal cuesta unos 34 maravedís y el pan unos 32. Y la propia tabla del juego dice que
+**una carga de sal conserva cincuenta de pan** (`consumo.panPorSal`). Está ocho veces fuera de
+escala con su propia regla; no cambia nada hoy, pero es una incoherencia que conviene arreglar
+cuando se toque el bastimento.
+
+### El volcado que lo explica
+
+Rutina de arbitraje del mercader en el turno 120, ya con nueve plazas conocidas:
+
+```
+T120 plazas=9 parejas=1 bolsa=2 porte=20
+  segria(f)          sal=16800 pan=2100 hierro=28800
+  bajo-aragon        sal=16800 pan=2700 hierro=28800
+  campo-de-belchite  sal=16800 pan=3000 hierro=28800
+  monegros           sal=16800 pan=3000 hierro=28800
+  … las nueve, sal=16800 y hierro=28800
+  pallars-jussa -> segria  margen=180   (0,18 maravedis por carga)
+```
+
+**La sal cuesta lo mismo en las nueve plazas, y el hierro también.** Solo varía el pan, y la mejor
+diferencia de toda la partida son 0,18 maravedís por carga.
+
+### El hallazgo: el precio no sabe de distancias
+
+T-052 hace depender el precio del **potencial de la propia comarca**. Ninguna de esas nueve tiene
+sal ni hierro, así que todas valen exactamente `base × 1,2`: **una comarca sin sal pegada a una
+salina cotiza igual que otra a trescientos kilómetros**. Es lo contrario de cómo funcionaba: la sal
+era cara tierra adentro **porque había que llevarla hasta allí**.
+
+Mientras el precio no dependa de lo lejos que esté la comarca de donde se produce, no hay gradiente
+que recorrer, y el comercio no puede existir por mucho porte, dinero o plazas que se le den. Eso
+amplía T-052 y toca lógica (hace falta el grafo de caminos), así que **es una decisión de diseño que
+el usuario debe ver antes de implementarse**; queda anotada en
+[T-053 §8](T-053-plazas-donde-comerciar.md) y no se ha abierto ficha por cuenta propia.
