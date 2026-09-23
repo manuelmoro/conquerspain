@@ -47,6 +47,30 @@ parte.
   tarea nueva en el índice (siguiente número libre de esa fase) y anótala en `ESTADO.md`.
 - No amplíes el alcance. Lo que no esté en la ficha, se apunta como tarea futura.
 
+## 3.1 Si la tarea es iterativa (ajustar, medir, repetir)
+
+Algunas tareas no se cierran de una sentada por diseño: T-047 (equilibrio) ajusta, mide y repite, y
+la propia ficha dice que **se reabre** cada vez que se añada contenido. En esas tareas no fuerces un
+cierre; avanza en **iteraciones medidas** y deja cada una utilizable:
+
+1. Lee la bitácora de la tarea antes de tocar nada: lo ya ensayado no se vuelve a ensayar sin una
+   razón nueva, y la razón se escribe.
+2. Quédate con **el problema más grande**, escribe la hipótesis en una frase y cambia **un solo
+   grupo de valores**. Nunca dos.
+3. Mide con el mismo comando y la misma base, y **anota también los ensayos que no funcionan**: un
+   resultado nulo bien medido ahorra la próxima sesión entera. Revierte el candidato descartado
+   antes del siguiente.
+4. Antes de invertir en un cambio, comprueba que el cuello de botella es el que crees. Medir el
+   arranque real de una partida cuesta segundos y evita horas de afinar una cifra que no ata.
+5. Si la medición dice que el arreglo exige **lógica** y la ficha solo permite datos, no lo cueles:
+   abre ficha nueva y anótala.
+6. Cierra la iteración como un checkpoint (apartado 6): bitácora, `ESTADO.md` con «Dónde va» y
+   commit `T-0xx (en curso): ...` con push. La tarea sigue abierta y eso está bien.
+
+Un cambio que **no mejora el recuento** puede adoptarse igualmente si corrige algo indefensible
+—una casa que empieza sin el recurso que define su oficio—, pero se dice con esas palabras y se
+deja una prueba que impida que vuelva.
+
 ## 4. Verifica de verdad
 
 Ejecuta los comandos de la ficha (normalmente `npm run verificar`) y **enseña la salida**. Si algo
