@@ -451,15 +451,48 @@ define su oficio, y ahora hay una prueba que lo impide. Lo que el cambio no arre
 recuento no se mueve— es que **el hierro está en tierra pobre y el ferrón sigue sin poder venderlo**:
 produce 446 cargas y vende 6. Su prestigio va de 9 % a 53 % según la tarjeta que le toque.
 
+### Segunda iteración: la geografía de precios no es una cifra
+
+Con la base `T-047-hierro-*`, dos ensayos más sobre el grupo del mercado, el primero de la lista.
+
+| Ensayo | Hipótesis y cambio | Resultado | Decisión |
+|---|---|---|---|
+| liquidez300 | Los menores cubren el cupo entero por los dos lados y aplanan el precio: `mercado.liquidezMercaderesMenoresMil` 1000 → 300 | **Ni un negocio**; el prestigio pasa a 0 de 24 filas y la tierra pisada cae de 264 a 159 comarcas. En una partida donde cada casa comercia casi sola, **los menores son el mercado**: recortarlos no crea precios, quita el comprador | Descartado |
+| margen20 | Con una horquilla estrecha el precio se escapa del base y las plazas se separan: `mercado.margenMercaderesMenoresMil` 100 → 20 | Dispersión de sal 0,5, hierro 0,2 y lana **0,0** puntos; `negociosRentables` sigue en 0 en las ocho casas; 107 filas cumplen frente a 109 | Descartado |
+
+**La medición que cierra el asunto.** Al turno 100, entre las diez plazas de la partida:
+
+| Recurso | Dispersión entre plazas |
+|---|---:|
+| lana | **0,0 puntos** |
+| hierro | 0,4 |
+| sal | 0,6 |
+| madera | 1,6 |
+| piedra | 8,6 |
+| pan | 16,2 |
+
+La sal, el hierro y la lana —lo que distingue una comarca de otra— cuestan lo mismo en las diez
+plazas, y la comisión sola es un 2 % por lado. La razón se lee en el código: el precio de una plaza
+solo se mueve si alguien compra o vende **allí**, y como esos tres recursos no se comercian en
+ninguna parte, se quedan clavados en su único número global. `DATOS_DE_RECURSOS` tiene **un**
+`precioBaseMil` por recurso para toda la península.
+
+**Decisión: ninguna cifra puede abaratar la sal de Añana frente a la de Sevilla, porque solo hay un
+número para la sal.** Eso es lógica del motor, no equilibrio, así que va en ficha aparte como manda
+§3 de T-047: **[T-052 · Geografía de precios](T-052-geografia-de-precios.md)**, el precio base por
+comarca derivado de sus potenciales. **T-047 se reanuda después**, con la base que deje T-052: no
+tiene sentido repartir el prestigio de unas vías comerciales que todavía no existen.
+
+Los siete ensayos de esta sesión dejan los valores del juego **exactamente como estaban**, salvo el
+origen de los ferrones.
+
 ### Lo que esto deja claro para la próxima sesión
 
 El orden de ataque ya no es una lista de sospechas, sino una cadena medida:
 
 1. **Sin geografía de precios no hay comercio**, y sin comercio cuatro casas no convierten su oficio
-   en comida. Ni el porte, ni el bastimento, ni el colchón del arranque lo tocan. Lo que hay que
-   medir es la liquidez de los menores, la regresión al base y la densidad de acontecimientos de
-   precio. Si resulta que hace falta un precio base por región, eso es **lógica**, no una cifra: va
-   en ficha aparte (§3 de T-047).
+   en comida. Medido y resuelto en la segunda iteración de esta misma sesión: hace falta lógica, y
+   está en **[T-052](T-052-geografia-de-precios.md)**.
 2. **Los monjes se disparan** (417–572 % de la mediana) y ganan las nueve repeticiones. Su
    `lealtadMinima: 50` está muy por encima de `lealtadDesleal: 20`, así que ninguna penalización
    territorial les llega nunca: ni la deuda de administración, ni la lejanía, ni el abandono.
