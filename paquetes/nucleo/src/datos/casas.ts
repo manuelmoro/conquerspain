@@ -128,10 +128,10 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
       agotamientoMil: { monte: 1500 },
     },
     permisos: { venderAperos: true },
-    origenes: [
-      origen({ potenciales: { hierro: 1 } }),
-      origen({ vecinaConPotencial: { potencial: 'hierro', nivel: 2 } }),
-    ],
+    // Hierro y monte: sin carbonera no anda la ferreria, y sin monte no hay carbonera. Antes
+    // valia con que una vecina tuviera hierro, y entonces la casa del hierro empezaba donde no
+    // habia ninguno (medido en T-047: cuatro de cada cinco partidas).
+    origenes: [origen({ potenciales: { hierro: 1, monte: 2 } })],
     // Nada: la ferreria necesita una carbonera, y una carbonera regalada se come la madera del
     // arranque (4 por turno) antes de que haya con que levantar la ferreria. Su primera decision
     // es la cadena entera, y para eso empieza con madera y maravedis.

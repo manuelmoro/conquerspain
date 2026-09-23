@@ -1,6 +1,6 @@
 # T-047 · Ajuste de equilibrio v1
 
-**Fase:** 2 · Motor · **Depende de:** T-048, T-049, T-050, T-051 · **Estado:** bloqueada
+**Fase:** 2 · Motor · **Depende de:** T-048, T-049, T-050, T-051 · **Estado:** en curso
 
 ## 1. Contexto
 

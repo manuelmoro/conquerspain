@@ -3,14 +3,16 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 23 de septiembre de 2026 (T-051 hecha)
+**Última actualización:** 23 de septiembre de 2026 (T-047 en curso)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
 
 ## Tarea en curso
 
-Ninguna.
+**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — abierta. Es una tarea
+iterativa por naturaleza (ajustar, medir, repetir); esta sesión deja el diagnóstico medido, cinco
+ensayos aislados y un cambio adoptado. Ver **[Dónde va T-047](#dónde-va-t-047)** más abajo.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -20,25 +22,11 @@ Ninguna.
 
 ## Siguiente tarea
 
-**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — ya **desbloqueada**: sus
-cuatro dependencias (T-048, T-049, T-050 y T-051) están hechas.
+La que hay abierta: **T-047**. Después, **T-060 · Persistencia y esquema de datos**.
 
-Orden: **T-047 → T-060**. La base contra la que comparar es `herramientas/banco/informes/T-051-*`
-(robots 3, métricas 4, tres semillas: 1492, 1085 y 1212);
-`npm run banco -- ... --evaluar` termina con código 2 mientras quede un criterio sin cerrar.
-
-**Lo que T-051 deja en la mesa para T-047**, con cifras en la
-[bitácora de equilibrio](docs/plan/bitacora-equilibrio.md):
-
-- **Prestigio**: 3 de 24 filas dentro de la horquilla 80–120 % en `1492` (2 de 24 en `1085` y
-  `1212`). Monjes y hortelanos arriba; ferrones y Mesta abajo.
-- **Ausencia: cerrada.** 144 de 144 filas al 0,0 % con el mismo plan. Lo que queda es el
-  diagnóstico de frecuencia (decidir cada turno frente a cada seis), que es información nueva
-  —reaccionar a precios— y decisiones de territorio que el mayordomo no automatiza a propósito.
-- Tierra (38–50 % sin usar), primer dominio (T43–T48, antes de la horquilla) y ganadores siguen
-  incumpliendo, igual que en T-050.
-- Hallazgos de reglas ya medidos: el arbitraje no paga el camino con porte 10; desde la sierra no
-  se explora ni malviviendo; Bilbao no sostiene a los ferrones.
+La base contra la que comparar ahora es `herramientas/banco/informes/T-047-hierro-*`
+(robots 3, métricas 4, tres semillas: 1492, 1085 y 1212); `npm run banco -- ... --evaluar` termina
+con código 2 mientras quede un criterio sin cerrar.
 
 ### Cuándo probará el usuario
 
@@ -48,15 +36,49 @@ sesiones humanas reales. Hoy el banco solo ofrece simulaciones automáticas e in
 
 ### Dónde va T-047
 
-- **Desbloqueada el 23-09-2026**: T-048, T-049, T-050 y T-051 están hechas.
-- [Bitácora de equilibrio](docs/plan/bitacora-equilibrio.md): evidencia, hipótesis, resultados,
-  reproducción y el repaso de los criterios. Evita repetir la investigación; los dos experimentos de
-  logística de septiembre están medidos y descartados.
-- Decisiones vigentes: eliminar la dependencia circular con T-065; mantener la semilla privada;
-  distinguir validación estructural, ejecución legal y decisión útil; no confundir cadencia con
-  plan equivalente; no compensar con tablas lo que es un robot mal escrito.
-- Al ensayar: un cambio aislado por ensayo, informe nuevo con su manifiesto y comparación con
-  `npm run banco:comparar`; los robots quedan fijos en la versión 3 mientras dure el ajuste.
+**Hecho y verificado** (23-09-2026). Todo lo de esta sesión está medido y escrito en la
+[bitácora de equilibrio](docs/plan/bitacora-equilibrio.md), incluidos los cuatro ensayos
+descartados; no hace falta repetirlos.
+
+- **El diagnóstico, con cifras.** Cuatro de los nueve capítulos del prestigio —comercio, ganadería,
+  industria y caminos— dan **cero a todas las casas** en las nueve partidas, así que el prestigio es
+  casi exactamente el pan producido. Una capa más abajo: `negociosRentables`, `ventasFuera` e
+  `ingresosDeFeria` valen **0** en las nueve. El precio base de cada recurso es un número global y
+  los mercaderes menores cubren el cupo entero de la plaza por los dos lados, así que **todas las
+  plazas cotizan lo mismo, siempre**: el arbitraje es imposible con cualquier porte.
+- **Descartado como explicación:** administrar territorio no frena a nadie (deuda 0 en las ocho
+  casas al turno 200, con los monjes a 16 comarcas).
+- **Cambio adoptado:** `casas.ferrones.origenes` pasa a una sola tarjeta, `hierro ≥ 1` **y**
+  `monte ≥ 2` en la propia comarca. Antes valía con que una vecina tuviera hierro, y en cuatro de
+  cada cinco semillas la casa del hierro empezaba con `hierro: 0`. El segundo defecto (hierro sin
+  monte, es decir ferrería sin carbonera) lo cazó `solvencia.test.ts`.
+- **Archivos tocados:** `paquetes/nucleo/src/datos/casas.ts`,
+  `paquetes/nucleo/pruebas/origenes.test.ts`, `docs/plan/bitacora-equilibrio.md` y los informes
+  `herramientas/banco/informes/T-047-hierro-*` y `E1-bastimento1-1492`.
+- `npm run verificar` pasa: 58 archivos, **1010 pruebas** en verde, y el atlas coincide.
+
+**Lo que falta, en orden.** Ninguno de los tres es un ajuste suelto: son las tres causas medidas.
+
+1. **La geografía de precios.** Sin ella no hay comercio, y sin comercio cuatro casas no convierten
+   su oficio en comida. Medir, en este orden: `mercado.liquidezMercaderesMenoresMil` (hoy 1000, el
+   cupo entero), `mercado.regresionAlBaseMil` y la densidad de acontecimientos de precio
+   (`acontecimientos.sorteo`, hoy 2–4 al año y solo la carestía de sal toca precios). **Si la
+   medición dice que hace falta un precio base por región, eso es lógica del motor, no una cifra**:
+   se abre ficha nueva (siguiente número libre de fase 2, hoy T-052) como manda §3 de la ficha.
+2. **Los monjes.** 417–572 % de la mediana y ganan las nueve repeticiones. Su `lealtadMinima: 50`
+   está muy por encima de `lealtadDesleal: 20`, así que ninguna penalización territorial les llega:
+   ni la deuda de administración, ni la lejanía, ni el abandono. Cualquier valor de
+   `lealtadMinima` por encima de 20 los deja igual de inmunes: decidir el privilegio, no la cifra.
+3. **El marcador.** 20 por comarca y 1 por cada cinco vecinos frente a 10 por un año trashumante o
+   30 por una feria destacada. Mientras los capítulos del oficio valgan un orden de magnitud menos
+   que ocupar tierra, ninguna vía compite con crecer. Se ajusta **después** de (1), porque hoy esos
+   capítulos valen cero y reescalarlos no movería nada.
+
+**Cómo se trabaja esta tarea** (lo dice §4 de la ficha, y se ha respetado): un solo grupo de valores
+por ensayo, informe nuevo con su manifiesto, comparación con `npm run banco:comparar`, anotación en
+la bitácora con hipótesis, cambio, resultado y decisión, y revertir el candidato descartado antes
+del siguiente. Los robots quedan fijos en la versión 3 mientras dure el ajuste. Una campaña de tres
+repeticiones tarda unos 80 segundos, así que se puede iterar de verdad.
 
 ## Cómo continuar (resumen)
 
@@ -76,7 +98,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) queda pendiente; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso**: de momento solo ha cambiado el origen de los ferrones, que ahora exige hierro y monte propios; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -122,6 +144,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 23-09-2026 | **T-047 en curso**: el marcador solo paga por crecer. Diagnóstico medido sobre las nueve partidas de T-051: cuatro de los nueve capítulos del prestigio —comercio, ganadería, industria y caminos— dan **cero a todas las casas**, así que el prestigio es casi exactamente el pan producido (monjes 417 %, hortelanos 379 %, ferrones 14 % de la mediana). Una capa más abajo, el comercio **no existe**: `negociosRentables`, `ventasFuera` e `ingresosDeFeria` valen 0 en las nueve, porque el precio base es un número global y los mercaderes menores cubren el cupo entero de la plaza por los dos lados. Cinco ensayos aislados: bastimento a la mitad, colchón del arranque, sal de la lonja y `compraElPan` del ferrón, **descartados con su medida**; adoptado que **la casa del hierro empiece donde hay hierro y monte** (antes bastaba con que lo tuviera una vecina, y en cuatro de cada cinco semillas arrancaba con `hierro: 0`; el segundo defecto, ferrería sin carbonera posible, lo cazó `solvencia.test.ts`). Ferrones de 5–14 % a 28–53 %. El recuento global no se mueve porque los monjes se lo comen: es lo siguiente. 1010 tests en verde |
 | 23-09-2026 | **T-051 hecha**: jugar sin estar, demostrado. Arnés de equivalencia que juega el mismo plan de dos maneras —dejado por bloques de seis turnos o entregado a mano día a día— y compara el dominio turno a turno; los seis escenarios mínimos de la ficha y las ocho vías con el plan de sus robots. **144 de 144 filas al 0,0 %** en 1492, 1085 y 1212, con igualdad exacta del dominio en siete de las nueve partidas; el criterio de ausencia pasa de 1 a 48 filas cumpliendo por semilla. Para llegar ahí, los robots dicen el plan entero con lo que el motor ya daba: colas de una obra por turno, el trato de cada turno fechado, viajes completos de ida y vuelta y el regreso del emisario con fecha. Hallazgo escrito en docs/02 §2.5.6: una orden suelta se cancela si al darla no hay con qué pagarla y la misma en cola espera; sin colas, el plan a mano se retrasaba un turno en cada obra apretada. **Ningún cambio del motor ni de las tablas.** 1010 tests en verde |
 | 22-09-2026 | **T-050 hecha**: los robots juegan su vía y dicen por qué no. Previsión de viajes con las mismas funciones del motor (el núcleo solo exporta más; ninguna regla cambia), recuas que vuelven y se rehacen sin perder su papel, expedición arriesgada deliberada, trashumancia planificada (en Sayago, Aliste ↔ Bragança con calidad 833 y cinco rebaños), arbitraje con ganancia neta fuera del dominio, solvencia de los planes en todos los perfiles de origen, motivos por categoría y «decisiones útiles» por fin medible. Campaña `T-050-1492`: 15 de 24 vías; las nueve ausentes, explicadas (el arbitraje no paga el camino con porte 10, pastos o plazas que el mapa no da, Bilbao no sostiene a los ferrones); 71 filas cumplen, 86 incumplen, 0 sin evaluar. La ausencia empeora porque el robot diligente juega mejor: es T-051. 1000 tests en verde |
 | 21-09-2026 | **T-049 hecha**: el mapa que se juega y con qué se empieza. Recorte conexo por partida (403 → 208 comarcas con ocho casas) con sal, hierro, pan, feria y los dos pastos dentro, crecido desde un centro sorteado entre los orígenes de la casa que menos sitio tiene; tres tarjetas de origen por jugador, separadas seis jornadas de las de cualquier otro, con el orden de elección por escasez y no por llegada; arranque calculado con la comarca delante, con su prueba de viabilidad de un año **sin dar una sola orden** para un origen de cada perfil y casa. El banco pasa a ser un adaptador del mismo contrato que usará el servidor. Tres hallazgos: quitarle las granjas a quien «vive de comprar» lo condena, una carbonera regalada deja al ferrón sin madera para su ferrería, y el recorte **no** puede cerrar el criterio de tierra (hacen falta robots que anden, T-050). 978 tests en verde |

@@ -1,0 +1,91 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 4,
+    "robots": 3,
+    "reglas": 1
+  },
+  "revision": "e6447fd65077e24df8e5a0e1e8de20bd5879f7e7",
+  "etiqueta": "T-047-hierro-1085",
+  "cambios": "casas.ferrones.origenes: hierro 1 y monte 2 en la propia comarca (antes valia una vecina con hierro 2)",
+  "campanya": {
+    "semilla": "1085",
+    "semillas": [
+      "1085",
+      "1085-2",
+      "1085-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "585d18bcbc132a1fcfc86fdf6b45053256d25e49c3483ad89ae5606f6dc1371f"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1085",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "10960675f46a0f3431a3c249fa88033720e9ab2c20878dec6972c587eb724844",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 1,
+      "comarcas": 249,
+      "huellaFinal": "a22c4e13c6b8288e812617ebc4aa92e4ed851fb8ef38bd3399c8c2f83b9746cc",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "168b4240410268ab218f403fd4561015e6ba8878f0826a2a0f8b0c0893b5d905",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1085",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "61614af82fc8d844481f09777334658175175d6cc0cc59f132eec1f386c1763d",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 6,
+      "comarcas": 249,
+      "huellaFinal": "62788fac9fef4f82b9c9d52149dfe3143514dfab11eb22a42ec4bcc6296e3553",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "3082a2822c05e77e52d8b8131b609b63b7d9c40521f8efcdb15cbeb85aa82e45",
+      "visitasCompletas": true
+    }
+  ]
+}

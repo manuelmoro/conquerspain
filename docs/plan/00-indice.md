@@ -59,7 +59,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-044](T-044-cronica-y-niebla.md) | Fase 12: crónica, niebla e información fechada | **hecha** | T-034 |
 | [T-045](T-045-mayordomo-y-colas.md) | Colas, rutas permanentes, mayordomo y plan de temporada | **hecha** | T-044 |
 | [T-046](T-046-banco-de-pruebas.md) | Banco de pruebas: robots por casa e informes | **hecha** | T-045 |
-| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | pendiente | T-048, T-049, T-050, T-051 |
+| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | en curso | T-048, T-049, T-050, T-051 |
 | [T-048](T-048-auditoria-del-banco.md) | Métricas auditables del banco | **hecha** | T-046 |
 | [T-049](T-049-preparacion-pura-de-partidas.md) | Preparación de partidas sin servidor | **hecha** | T-048 |
 | [T-050](T-050-robots-viables.md) | Robots que ejecutan sus vías | **hecha** | T-048, T-049 |

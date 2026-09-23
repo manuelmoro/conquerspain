@@ -32,9 +32,7 @@ const comarca = (id: string): ComarcaMundo => {
 /** Lo que pide cada casa, escrito otra vez y a mano, sin pasar por la tabla. */
 const PIDE: Readonly<Record<Casa, (c: ComarcaMundo) => boolean>> = {
   mesta: (c) => c.potenciales.pasto >= 3,
-  ferrones: (c) =>
-    c.potenciales.hierro >= 1 ||
-    (mundo.vecinos[c.id] ?? []).some((v) => comarca(v).potenciales.hierro >= 2),
+  ferrones: (c) => c.potenciales.hierro >= 1 && c.potenciales.monte >= 2,
   canteros: (c) => c.potenciales.piedra >= 3,
   mercaderes: (c) => c.rasgos.includes('villa-de-feria') || c.rasgos.includes('puerto-de-mar'),
   monjes: (c) => c.potenciales.labor >= 4,
@@ -62,7 +60,7 @@ describe('los orígenes posibles', () => {
     expect(new Set(conjuntos).size).toBe(CASAS.length);
   });
 
-  it('a los ferrones no se les ofrece una comarca sin hierro cerca', () => {
+  it('a los ferrones no se les ofrece una comarca sin hierro y monte propios', () => {
     for (const id of origenesPosibles(mundo, 'ferrones', REAL).map((c) => c.id)) {
       expect(PIDE.ferrones(comarca(id))).toBe(true);
     }

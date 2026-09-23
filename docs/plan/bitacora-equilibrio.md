@@ -382,3 +382,101 @@ npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-051 --re
 npm run banco -- --semilla 1085 --turnos 200 --repeticiones 3 --fecha T-051 --revision <sha>+T-051
 npm run banco -- --semilla 1212 --turnos 200 --repeticiones 3 --fecha T-051 --revision <sha>+T-051
 ```
+
+## 23-09-2026 · T-047 (en curso): el marcador solo paga por crecer
+
+**Encargo:** ajustar las tablas hasta cumplir los criterios de §5. **Estado:** abierto. Esta sesión
+deja el diagnóstico medido, cinco ensayos aislados y **un cambio adoptado**.
+
+### El diagnóstico, con cifras
+
+Sobre la base de T-051 (robots 3, métricas 4, nueve partidas de las campañas 1492, 1085 y 1212):
+
+| Capítulo del prestigio | Media de las ocho casas |
+|---|---:|
+| población | 71 |
+| territorio | 92 |
+| obras | 38 |
+| hitos | 89 |
+| exploración | 45 |
+| **comercio, ganadería, industria, caminos** | **0, 1, 0 y 0** |
+
+Cuatro de los nueve capítulos dan **cero a todo el mundo**, así que el prestigio de una casa es casi
+exactamente su pan producido: monjes 28 376 y hortelanos 28 153 de pan frente a 1 125 de los
+ferrones, y el prestigio va en el mismo orden (417 %, 379 % y 14 % de la mediana).
+
+Una capa más abajo está la causa: **el comercio no existe**. En las nueve partidas,
+`negociosRentables`, `ventasFuera` e `ingresosDeFeria` valen **0**. El precio base de cada recurso es
+un número global —el mismo en Añana que en Sevilla— y lo único que lo mueve por regiones es la
+carestía de sal, un acontecimiento de cinco turnos que cae como mucho una vez al año. Con los
+mercaderes menores cubriendo el cupo entero de la plaza en los dos lados (`liquidez` 1000) y la
+regresión devolviendo el precio al base, **todas las plazas cotizan lo mismo, siempre**. Por eso las
+tres casas que viven de comerciar no tienen economía, y por eso ganar es producir pan.
+
+Medido también, y descartado como explicación: **administrar no frena a nadie**. Al turno 200 la
+deuda de administración es 0 en las ocho casas, incluidos los monjes con 16 comarcas.
+
+### Los ensayos
+
+Todos sobre la base `T-051-*`, un grupo de valores por ensayo, semilla 1492 con tres repeticiones
+salvo donde se diga.
+
+| Ensayo | Hipótesis y cambio | Resultado | Decisión |
+|---|---|---|---|
+| bastimento1 | Una recua se come su porte: `movimiento.bastimentoPorJornada` 2 → 1 | **Ni un negocio**: `negociosRentables` sigue en 0. Mesta 49 → 62 %, tierra pisada 239 → 266, pero los criterios bajan de 113 a 111 | Descartado: no es un problema de capacidad |
+| colchon | El arranque topa en 400 maravedís lo que promete compensar del año: `arranque.ajuste.maravedisMaximos` 400 → 1200 | **Cero diferencia**, byte a byte: el tope no ataba. El almacén del ferrón al turno 10 es idéntico | Descartado |
+| lonja | Una lonja gasta 28 maravedís de sal para salvar 18 de pan: `edificios.lonja.consumo.sal` 2 → 1 | Ferrones 14 → 12 %; el resto igual | Descartado: la sal no era lo que ataba |
+| hierro | **La casa del hierro empieza donde no hay hierro**: su segunda tarjeta solo pedía que una *vecina* tuviera hierro 2 | Ferrones 14 → 59 % (1492), 5 → 57 % (1085), 5 → 49 % (1212); escasez 60 → 10 turnos; hierro producido 171 → 446 | **Adoptado**, y afinado abajo |
+| ferron-compra | El ferrón vive de comprar el pan: `compraElPan` true | **Cero diferencia**: en una comarca de labor 1 da igual apuntar al 95 % del año que al 70 %, la tierra no llega a ninguno | Descartado |
+
+### El cambio adoptado
+
+`casas.ferrones.origenes`: una sola tarjeta, `hierro ≥ 1` **y** `monte ≥ 2` en la propia comarca.
+
+Dos defectos en uno:
+
+1. La tarjeta `vecinaConPotencial: hierro 2` hacía que en **cuatro de cada cinco semillas** el ferrón
+   empezara con `hierro: 0` en su capital: su vía era imposible sin conquistar antes una vecina, y
+   con una sola comarca en 200 turnos no la conquistaba nunca.
+2. Al quitarla apareció el segundo: `campo-de-calatrava` tiene hierro pero no monte, y **sin
+   carbonera no anda la ferrería**. Lo cazó `solvencia.test.ts` —el instrumento de T-050 funcionando
+   como debía—, no una lectura a ojo. Por eso el origen pide la cadena entera.
+
+Quedan cuatro orígenes posibles (Bilbao, Ripollés, Señorío de Molina y Valle de Alcudia), suficientes
+para las tres tarjetas por casa.
+
+**El recuento no mejora**: 109, 115 y 113 filas cumplen frente a 113, 113 y 112 de la base. Se adopta
+igualmente porque es una corrección, no un ajuste: una casa no puede empezar sin el recurso que
+define su oficio, y ahora hay una prueba que lo impide. Lo que el cambio no arregla —y por eso el
+recuento no se mueve— es que **el hierro está en tierra pobre y el ferrón sigue sin poder venderlo**:
+produce 446 cargas y vende 6. Su prestigio va de 9 % a 53 % según la tarjeta que le toque.
+
+### Lo que esto deja claro para la próxima sesión
+
+El orden de ataque ya no es una lista de sospechas, sino una cadena medida:
+
+1. **Sin geografía de precios no hay comercio**, y sin comercio cuatro casas no convierten su oficio
+   en comida. Ni el porte, ni el bastimento, ni el colchón del arranque lo tocan. Lo que hay que
+   medir es la liquidez de los menores, la regresión al base y la densidad de acontecimientos de
+   precio. Si resulta que hace falta un precio base por región, eso es **lógica**, no una cifra: va
+   en ficha aparte (§3 de T-047).
+2. **Los monjes se disparan** (417–572 % de la mediana) y ganan las nueve repeticiones. Su
+   `lealtadMinima: 50` está muy por encima de `lealtadDesleal: 20`, así que ninguna penalización
+   territorial les llega nunca: ni la deuda de administración, ni la lejanía, ni el abandono.
+3. **El marcador paga 20 por comarca y 1 por cada cinco vecinos, y 10 por un año trashumante o 30
+   por una feria destacada.** Mientras los capítulos del oficio valgan un orden de magnitud menos que
+   ocupar tierra, ninguna vía compite con crecer.
+
+### Reproducción
+
+```bash
+npm run verificar
+npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --fecha T-047-hierro --revision <sha>+T-047
+npm run banco -- --semilla 1085 --turnos 200 --repeticiones 3 --fecha T-047-hierro --revision <sha>+T-047
+npm run banco -- --semilla 1212 --turnos 200 --repeticiones 3 --fecha T-047-hierro --revision <sha>+T-047
+npm run banco:comparar -- herramientas/banco/informes/T-051-1492.csv herramientas/banco/informes/T-047-hierro-1492.csv
+```
+
+Los informes de los ensayos descartados que cambiaron alguna cifra se conservan
+(`E1-bastimento1-1492`, con su manifiesto); los que salieron idénticos a la base no, porque su resultado es esta
+tabla.
