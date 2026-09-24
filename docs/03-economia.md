@@ -392,7 +392,7 @@ Una **plaza** es un mercado abierto este turno:
 - **Ferias**: en comarcas con derecho de feria, solo en sus turnos de calendario. Volumen grande,
   mejores precios, y son el punto de encuentro (y de rumores) entre jugadores. Hay once en toda la
   península y cada una abre uno o dos turnos al año: son el acontecimiento anual, no el mercado de
-  cada quincena.
+  cada quincena. Todos saben de oídas dónde están desde el principio (T-059).
 
 Esto es lo que da un mapa donde comerciar. Sin ventas, una partida de ocho casas tiene **diez
 plazas para unas 208 comarcas** —un mercado por capital, y las capitales se reparten a seis

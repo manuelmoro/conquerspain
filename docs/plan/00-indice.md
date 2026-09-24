@@ -71,6 +71,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-056](T-056-el-negocio-en-limpio.md) | El negocio se cuenta con el precio que se espera | **hecha** | T-055 (su mecánica), T-057 |
 | [T-057](T-057-la-distancia-paga-el-camino.md) | La distancia paga el camino | **hecha** | T-054 |
 | [T-058](T-058-la-mesta-conoce-sus-canyadas.md) | La Mesta conoce sus cañadas | **hecha** | T-049 |
+| [T-059](T-059-las-ferias-se-conocen.md) | Las ferias se conocen y se buscan | en curso | T-053 |
 
 > **19-09-2026 · revisión del plan solicitada por el usuario.** Antes de seguir construyendo,
 > corregir el diagnóstico del equilibrio: **T-048 → T-049 → T-050 → T-051 → T-047 → T-060**.

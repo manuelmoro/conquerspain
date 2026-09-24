@@ -14,6 +14,7 @@ import type {
   Casa,
   ComarcaMundo,
   EstadoPartida,
+  IdComarca,
   IdFeria,
   IdJugador,
   Mundo,
@@ -58,10 +59,15 @@ function geografiaConocida(vista: VistaJugador, id: string): boolean {
   return nivel === 'explorada' || nivel === 'propia';
 }
 
-/** El mundo con todo lo que el jugador no conoce cambiado: potenciales, rasgos, ferias y caminos. */
+/**
+ * El mundo con todo lo que el jugador no conoce cambiado: potenciales, rasgos, ferias, caminos y,
+ * de lo desconocido, hasta el sitio. De una comarca oida se conservan su centro y sus ferias, que
+ * son publicos: el atlas y el calendario de ferias los ve todo el mundo (T-059).
+ */
 function mundoManipulado(original: Mundo, vista: VistaJugador): Mundo {
   const comarcas: Record<string, ComarcaMundo> = {};
   for (const [id, comarca] of Object.entries(original.comarcas)) {
+    const oida = vista.comarcas[id]?.nivel === 'oida';
     comarcas[id] = geografiaConocida(vista, id)
       ? comarca
       : {
@@ -71,15 +77,18 @@ function mundoManipulado(original: Mundo, vista: VistaJugador): Mundo {
           rasgos: [...RASGOS],
           solares: 9,
           poblacionInicial: 999,
-          ferias: [
-            {
-              id: `falsa-${id}` as IdFeria,
-              nombre: 'Feria que no existe',
-              turnos: [1, 2, 3],
-              volumen: 'grande',
-              recursosDestacados: [],
-            },
-          ],
+          centro: oida ? comarca.centro : [0, 0],
+          ferias: oida
+            ? comarca.ferias
+            : [
+                {
+                  id: `falsa-${id}` as IdFeria,
+                  nombre: 'Feria que no existe',
+                  turnos: [1, 2, 3],
+                  volumen: 'grande',
+                  recursosDestacados: [],
+                },
+              ],
         };
   }
   const caminos = original.caminos.map((camino) =>
@@ -144,6 +153,23 @@ describe('los robots juegan limpio', () => {
     const trucada = vistaDeJugador(estadoManipulado(estado, jugador(casa)), jugador(casa), mundo);
     expect(trucada).toEqual(vista);
     expect(robot.decidir(trucada, mundo, REGLAS)).toEqual(robot.decidir(vista, mundo, REGLAS));
+  });
+
+  it('de una comarca oída sabe dónde está y su feria, y nada de su geografía (T-059)', () => {
+    const vista = vistaDeJugador(estado, jugador('mesta'), mundo);
+    const t = new Tablero(vista, mundo, REGLAS);
+    const conFeria = Object.keys(vista.comarcas).find(
+      (id) => vista.comarcas[id]?.nivel === 'oida' && (mundo.comarcas[id]?.ferias.length ?? 0) > 0,
+    );
+    if (conFeria === undefined) throw new Error('la Mesta deberia saber de oidas alguna feria');
+    const id = conFeria as IdComarca;
+    expect(t.centroDe(id)).toEqual(mundo.comarcas[id]?.centro);
+    expect(t.feriasDe(id)).toEqual(mundo.comarcas[id]?.ferias);
+    expect(t.geografia(id)).toBeNull();
+    const desconocida = Object.keys(mundo.comarcas).find((c) => vista.comarcas[c] === undefined);
+    if (desconocida === undefined) throw new Error('la Mesta no puede conocer toda la peninsula');
+    expect(t.centroDe(desconocida as IdComarca)).toBeNull();
+    expect(t.feriasDe(desconocida as IdComarca)).toEqual([]);
   });
 
   it('la prueba descubre a un robot que mira donde no debe', () => {

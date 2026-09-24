@@ -474,7 +474,7 @@ export function formarRecuas(d: Decision): void {
   const coste = costeDeRecua(t.casa, t.reglas);
   const holgado = !t.yo.escasez && t.disponible('pan') >= coste.pan + t.consumoDePan() * 2;
   const puede =
-    sede.poblacion >= (comprador ? 10 : 40) && (comprador || holgado) && p.alcanza(coste);
+    sede.poblacion >= (comprador ? 10 : 25) && (comprador || holgado) && p.alcanza(coste);
   if (!puede) {
     d.m.anotar('recua-sin-formar');
     return;

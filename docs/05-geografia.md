@@ -125,7 +125,9 @@ generación; `puerto-de-mar` no exige terreno de costa, porque una huerta de veg
 
 ## 5.6 Ferias
 
-Las ferias son citas fijas del calendario. Llegar a tiempo es media estrategia.
+Las ferias son citas fijas del calendario. Llegar a tiempo es media estrategia. Y se saben: **todo
+jugador empieza conociendo de oídas las comarcas con feria**, porque el calendario es público
+(T-059). De oídas no se sabe su geografía; para llegar hay que ir abriendo camino.
 
 | Feria | Comarca | Turnos | Volumen |
 |---|---|---|---|

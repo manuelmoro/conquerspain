@@ -72,3 +72,27 @@ próxima**, en vez de la más cercana a la recua. Así cada salida abre camino h
 npm run verificar
 npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --evaluar --fecha T-059
 ```
+
+## 7. Dónde va (24-09-2026)
+
+**Entregado y verificado:** §4.1 a §4.3. Las ferias se saben de oídas al fundar (prueba en
+`canyadas.test.ts`); el tablero da el centro y la feria de una comarca oída y nada de su geografía
+(prueba en `robots.test.ts`, cuya manipulación del mundo conserva ya lo público de lo oído); y el
+explorador de una casa con mercancía de feria abre camino hacia la más cercana. Robots 9.
+
+**Lo medido** (`T-059-*` frente a `T-047-metricas5-*`): recuento **355** (120 / 117 / 118) frente a
+353. Pero **sigue sin haber una sola venta en feria**. La traza de motivos de una partida lo explica:
+
+| Casa | Lo que la frena |
+|---|---|
+| Mesta | «no conoce ninguna feria a la que llegar y volver» (126 turnos). Su exploradora no existe: se mermó y no se vuelve a formar («recua-sin-formar», 17) |
+| Ferrones | «ninguna oída al alcance del porte y el bastimento» (107 turnos) |
+| Salineros | lo mismo (132 turnos), y además sin mercado propio en 199 |
+
+**El cuello de botella es el alcance de exploración**: con diez cargas de porte y dos panes por
+jornada, una exploradora no pasa del primer anillo alrededor de lo propio. Es el mismo que deja
+entre el 38 % y el 62 % del mapa sin tocar (criterio `tierra` de T-047).
+
+**Criterios:** 1, 2, 4 y 5 se cumplen; **el 3 no**. **Falta:** que una exploradora pueda ir más
+lejos que su pan, que es trabajo de T-047 (comer en las ventas con bolsa, como el arbitraje desde
+T-055, o reponer en plazas por el camino).
