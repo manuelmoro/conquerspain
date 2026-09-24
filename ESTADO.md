@@ -38,6 +38,11 @@ La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invi
 3. **Tierra** (9 de 9; medida ya exacta: entre el 38 % y el 62 % del mapa sin tocar) y **dominio** (9 de 9, el primer «pequeño
    dominio» en T43–48, antes de la horquilla): el ritmo espera una decisión del usuario (ver abajo).
 
+**Última iteración (24-09-2026):** la exploradora que come la mitad no cambia nada (119 frente a 120
+filas, tierra idéntica): el pan no frena la exploración. El volcado dice que ferrones y mercaderes
+dan `sin-tierra-que-ganar` unos 85 turnos de 100. **Lo siguiente:** leer `objetivoDeTierra` y medir
+por qué devuelve `null` (bitácora de equilibrio, última entrada).
+
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 
 > **Decisión pendiente del usuario: la puerta de T-047.** T-060 (fase 3) depende de T-047, y T-047

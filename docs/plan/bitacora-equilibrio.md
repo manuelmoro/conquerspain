@@ -1255,3 +1255,21 @@ autonomía, y el primer anillo alrededor de lo propio es todo lo que explora una
 Es la causa común de la `tierra` (38–64 % del mapa sin tocar) y de que nadie llegue a una feria. No
 se arregla con una cifra sin romper otra cosa (el bastimento de las recuas ya se ensayó y hunde la
 escasez): pide decidir cómo explora una casa pequeña.
+
+## 24-09-2026 · Ensayo descartado: la exploradora come la mitad (T-059)
+
+Hipótesis: con diez cargas y dos panes por jornada una exploradora no pasa del primer anillo, así que
+una avanzada ligera («vive de lo que encuentra») que coma la mitad debería llegar el doble de lejos.
+Implementado como `movimiento.bastimentoExploradoraMil: 500` aplicado por cometido en el motor y en
+la previsión del robot (`E-exploradora500`, robots 10, solo 1492): **119 filas frente a 120, la
+tierra sin tocar idéntica** (38 % y 42 % en dos semillas, a la décima) y ningún ingreso de feria.
+Refutada: **el pan no es lo que frena la exploración.** Revertido entero.
+
+**Lo que enseña el volcado** (100 turnos, 1492, motivos por casa): los mercaderes y los ferrones dan
+`sin-tierra-que-ganar` **84 y 86 turnos de 100**, y `sin-oida-al-alcance` solo 2 y 3. Es decir, el
+robot no está quedándose sin pan para explorar: **no encuentra un objetivo de tierra** en `objetivoDeTierra`
+(la elección de a qué comarca ir a ganar presencia o incorporar). Mercaderes con 90 vecinos, pan y
+maravedís, y una sola comarca durante toda la partida.
+
+**Siguiente:** leer `objetivoDeTierra` y medir por qué devuelve `null` con comarcas exploradas
+alrededor (qué filtro las descarta: valor, influencia, distancia, conocimiento), antes de tocar nada.
