@@ -21,7 +21,13 @@ import {
 } from '../ordenes.ts';
 import { cargarDelAlmacen, descargarEnAlmacen } from '../porteo.ts';
 import type { OrdenDe } from '../ordenes.ts';
-import { bastimentoDe, costeEnLaVenta, hayVentaEn, ventaDelTurno } from '../reglas/bastimento.ts';
+import {
+  bastimentoDe,
+  bastimentoDeLaRecuaMil,
+  costeEnLaVenta,
+  hayVentaEn,
+  ventaDelTurno,
+} from '../reglas/bastimento.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
 import { precioBaseLocalMil } from '../reglas/precios.ts';
 import { esDesleal } from '../reglas/lealtad.ts';
@@ -245,6 +251,7 @@ function formarRecua(ctx: Contexto, orden: OrdenDe<'formar-recua'>): void {
       cometido: null,
       turnosDeCometido: 0,
       avisadaSinBastimento: false,
+      enExpedicion: false,
       fallosDePrecio: 0,
     },
   });
@@ -355,6 +362,7 @@ function fijarRuta(ctx: Contexto, orden: OrdenDe<'ruta'>): void {
     recua: recua.id,
     ruta: comarcas,
     circular: orden.circular,
+    expedicion: orden.expedicion,
     paradas: orden.paradas,
   });
   empezarOrden(ctx, orden, 'terminada');
@@ -433,7 +441,11 @@ function moverRecua(ctx: Contexto, id: string): void {
     previsto.andadoMil,
     ctx.estacional.estacion,
     ctx.reglas,
-    modificadoresDelJugador(jugador, ctx.reglas).bastimentoMil,
+    bastimentoDeLaRecuaMil(
+      recua.enExpedicion,
+      modificadoresDelJugador(jugador, ctx.reglas).bastimentoMil,
+      ctx.reglas,
+    ),
   );
   // En ruta circular, la recua repone en cualquier comarca propia por la que pase este turno.
   const casa =

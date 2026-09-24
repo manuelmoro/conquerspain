@@ -5,9 +5,9 @@
     "robots": 10,
     "reglas": 1
   },
-  "revision": "9f67437+ensayo",
-  "etiqueta": "E-exploradora500-1492-1492",
-  "cambios": "movimiento.bastimentoExploradoraMil=500 (ensayo T-059)",
+  "revision": "44f3472+T-059-8",
+  "etiqueta": "E-exp250-1492",
+  "cambios": "movimiento.bastimentoExploradoraMil=250 (T-059 §8)",
   "campanya": {
     "semilla": "1492",
     "semillas": [
@@ -39,7 +39,7 @@
     "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
   },
   "reglas": {
-    "huella": "af0dddb076525134606001e88613544f6c883c7d1db8e456ffe8808d921a6e8f"
+    "huella": "a38ce4c04bba1ea63831be746057d7e4304afbdfa2e788174fa8fa6ed4aa3962"
   },
   "objetivos": {
     "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
@@ -49,37 +49,37 @@
       "semilla": "1492",
       "cadencia": 1,
       "comarcas": 208,
-      "huellaFinal": "38594f152453fb5c46bf568564778ae20327ff03d3c3dbf53717bd9389484370"
+      "huellaFinal": "d89646dfb3ebbb7760a0219f49a59d9b83267f29bc0356bc5f066fdc2a9a3c11"
     },
     {
       "semilla": "1492-2",
       "cadencia": 1,
       "comarcas": 208,
-      "huellaFinal": "041a8defb5d4329b521b1406ffd4190e66828ad518449e4aabe8d06085aa75d6"
+      "huellaFinal": "2fccf7ccc05a3a4b573901fad6ce1dc47aa8aaaa6f1f8d61ce0e0ca0ee33eb3e"
     },
     {
       "semilla": "1492-3",
       "cadencia": 1,
       "comarcas": 208,
-      "huellaFinal": "38124df928deb39f37e7e25ddff010d0e7a1412900b4eb186d9db8d0812a6248"
+      "huellaFinal": "91a399a014d820920bb89dd5d2b233e91fd90bcbd14464918e8f27f6bce19c2f"
     },
     {
       "semilla": "1492",
       "cadencia": 6,
       "comarcas": 208,
-      "huellaFinal": "947a536d01ccf6f5e7abb702a48956795d1f055c507117abc279679022ee995c"
+      "huellaFinal": "a5f1a8b0f72c8fbca35cea9006f237ceefc9799288f58ec6df069856aac49b93"
     },
     {
       "semilla": "1492-2",
       "cadencia": 6,
       "comarcas": 208,
-      "huellaFinal": "8851e9e6a6f5b6d498eb6fb083d31c65cf9697113d4a93fa714f5f8eeb2cf3c1"
+      "huellaFinal": "15c80e06c665393fdac9b09a6c8d98ee573ad211dd59fc86914312141f6b086b"
     },
     {
       "semilla": "1492-3",
       "cadencia": 6,
       "comarcas": 208,
-      "huellaFinal": "fef6408add2b8ef8e899646593c83bd12876e4d7c745ceb68ea7f31e0b7563bd"
+      "huellaFinal": "3ae3854a489a7230a3ca373b489bea07ceaf2aba11faf72aa0f8865d6f0b0f9b"
     }
   ]
 }

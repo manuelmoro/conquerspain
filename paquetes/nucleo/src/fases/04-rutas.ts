@@ -13,7 +13,14 @@ import type { Recua } from '../tipos/estado.ts';
  */
 export function detenerRuta(ctx: Contexto, recua: Recua, motivo: string): void {
   const ruta = recua.situacion.donde === 'camino' ? [recua.situacion.hasta] : [];
-  aplicar(ctx, { tipo: 'recua-ruta', recua: recua.id, ruta, circular: false, paradas: [] });
+  aplicar(ctx, {
+    tipo: 'recua-ruta',
+    recua: recua.id,
+    ruta,
+    circular: false,
+    expedicion: false,
+    paradas: [],
+  });
   registrarSuceso(
     ctx.sucesos,
     ctx.fase,

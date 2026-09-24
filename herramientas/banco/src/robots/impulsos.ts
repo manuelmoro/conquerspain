@@ -539,7 +539,7 @@ export function volverACasa(d: Decision, recua: Recua): void {
 function volverAlDominio(d: Decision, recua: Recua): void {
   const { t, p } = d;
   const aqui = Tablero.donde(recua);
-  if (!t.esPropia(aqui)) p.ir(recua.id, t.casaMasCercana(aqui));
+  if (!t.esPropia(aqui)) p.ir(recua.id, t.casaMasCercana(aqui), recua.enExpedicion);
   p.carga(recua.id, {}, todoMenos(recua, ['pan', 'sal']));
 }
 
@@ -635,11 +635,13 @@ function feriaQueBuscar(d: Decision, recua: Recua): readonly [number, number] | 
  */
 function siguienteAExplorar(
   d: Decision,
-  recua: Recua,
+  parada: Recua,
   /** Las que ya van en el plan de este turno: no se manda dos veces a la misma. */
   planeadas: ReadonlySet<string> = new Set(),
 ): { id: IdComarca; provision: Provision | null; arriesgada: boolean } | null {
   const { t } = d;
+  // Se cuenta con lo que comera de expedicion, que es lo que le cobrara el motor al salir.
+  const recua: Recua = { ...parada, enExpedicion: true };
   const aqui = Tablero.donde(recua);
   const enCasa = t.esPropia(aqui);
   const distancias = t.jornadasDesde(aqui);
@@ -736,11 +738,11 @@ function viajeDeExploracion(d: Decision, recua: Recua, planeadas: Set<string>): 
     ...(cargarSal > 0 ? { sal: cargarSal } : {}),
   };
   p.carga(recua.id, cargar, todoMenos(recua, ['pan', 'sal']));
-  p.ir(recua.id, destino.id);
+  p.ir(recua.id, destino.id, true);
   p.cometido(recua.id, 'explorar');
   planeadas.add(destino.id);
   // La vuelta va dicha desde ya: una recua no se queda parada esperando a que alguien entre.
-  p.ir(recua.id, t.casaMasCercana(destino.id));
+  p.ir(recua.id, t.casaMasCercana(destino.id), true);
   p.carga(recua.id, {}, {});
   return prevision.turnos;
 }
@@ -759,7 +761,7 @@ const explorar: Rutina = (d, recua) => {
       volverAlDominio(d, recua);
       return;
     }
-    p.ir(recua.id, siguiente.id);
+    p.ir(recua.id, siguiente.id, true);
     p.cometido(recua.id, 'explorar');
     return;
   }

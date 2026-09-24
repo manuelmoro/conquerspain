@@ -41,6 +41,7 @@ export function recua(id: string, cambios: Partial<Recua> = {}): Recua {
     cometido: null,
     turnosDeCometido: 0,
     avisadaSinBastimento: false,
+    enExpedicion: false,
     fallosDePrecio: 0,
     ...cambios,
   };
@@ -117,6 +118,7 @@ export function ordenRuta(
   recuaId: string,
   paradas: readonly (string | ParadaDeRuta)[],
   circular = false,
+  expedicion = false,
 ): Orden {
   return {
     ...base(turno),
@@ -125,6 +127,7 @@ export function ordenRuta(
     rebanyo: null,
     paradas: paradas.map((p) => (typeof p === 'string' ? parada(p) : p)),
     circular,
+    expedicion,
   };
 }
 

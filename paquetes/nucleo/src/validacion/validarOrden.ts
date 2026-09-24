@@ -215,6 +215,7 @@ const ruta: Validador<OrdenRuta> = objeto<OrdenRuta>({
   rebanyo: oNulo(identificador<IdRebanyo>()),
   paradas: lista(validarParada, { minimo: 1, maximo: 12 }),
   circular: booleano(),
+  expedicion: booleano(),
 });
 
 const carga: Validador<OrdenCarga> = objeto<OrdenCarga>({

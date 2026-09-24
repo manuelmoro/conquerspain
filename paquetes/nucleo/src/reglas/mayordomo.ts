@@ -150,6 +150,7 @@ export function ordenDeAccion(
         rebanyo: null,
         paradas: [parada(accion.comarca)],
         circular: false,
+        expedicion: false,
       };
     case 'mover-rebanyo':
       return {
@@ -159,6 +160,7 @@ export function ordenDeAccion(
         rebanyo: accion.rebanyo,
         paradas: [parada(accion.comarca)],
         circular: false,
+        expedicion: false,
       };
     case 'carga-fiscal':
       return {

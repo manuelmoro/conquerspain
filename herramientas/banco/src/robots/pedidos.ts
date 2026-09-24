@@ -159,6 +159,7 @@ export class Pedidos {
     paradas: readonly ParadaDeRuta[],
     circular = false,
     enTurno: number | null = null,
+    expedicion = false,
   ): Orden {
     return this.dar({
       ...this.base({ cola: `recua:${recua}`, turnoProgramado: enTurno }),
@@ -167,12 +168,13 @@ export class Pedidos {
       rebanyo: null,
       paradas,
       circular,
+      expedicion,
     });
   }
 
-  /** Ir a una comarca sin mas. */
-  ir(recua: IdRecua, comarca: IdComarca): Orden {
-    return this.ruta(recua, [parada(comarca)]);
+  /** Ir a una comarca sin mas; con `expedicion`, el viaje es de exploracion (T-059 §8). */
+  ir(recua: IdRecua, comarca: IdComarca, expedicion = false): Orden {
+    return this.ruta(recua, [parada(comarca)], false, null, expedicion);
   }
 
   moverRebanyo(rebanyo: IdRebanyo, comarca: IdComarca): Orden {
@@ -183,6 +185,7 @@ export class Pedidos {
       rebanyo,
       paradas: [parada(comarca)],
       circular: false,
+      expedicion: false,
     });
   }
 

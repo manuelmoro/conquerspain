@@ -220,6 +220,7 @@ const validarRecua: Validador<Recua> = objeto<Recua>({
   cometido: oNulo(unoDe(COMETIDOS)),
   turnosDeCometido: enteroNoNegativo(),
   avisadaSinBastimento: booleano(),
+  enExpedicion: booleano(),
   fallosDePrecio: enteroNoNegativo(),
 });
 

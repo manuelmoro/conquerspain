@@ -188,6 +188,7 @@ export type Cambio =
       readonly recua: IdRecua;
       readonly ruta: readonly IdComarca[];
       readonly circular: boolean;
+      readonly expedicion: boolean;
       readonly paradas: readonly ParadaDeRuta[];
     }
   | {
@@ -1199,6 +1200,15 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       recua.ruta = [...cambio.ruta];
       recua.siguienteParada = cambio.siguienteParada;
       recua.enParada = cambio.enParada;
+      // La expedicion termina al pisar lo propio con la ruta hecha: alli se come del almacen.
+      if (
+        recua.enExpedicion &&
+        cambio.ruta.length === 0 &&
+        cambio.situacion.donde === 'comarca' &&
+        ctx.estado.comarcas[cambio.situacion.comarca]?.duenyo === recua.jugador
+      ) {
+        recua.enExpedicion = false;
+      }
       return;
     }
 
@@ -1207,6 +1217,7 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
       comprobarRuta(cambio.recua, recua.situacion, cambio.ruta);
       recua.ruta = [...cambio.ruta];
       recua.rutaCircular = cambio.circular;
+      recua.enExpedicion = cambio.expedicion;
       recua.paradas = comoBorrador(cambio.paradas);
       recua.siguienteParada = 0;
       recua.enParada = null;

@@ -8,6 +8,7 @@
 import {
   avanzar,
   bastimentoDe,
+  bastimentoDeLaRecuaMil,
   bastimentoDePresencia,
   costeEnLaVenta,
   pasoDeRebanyo,
@@ -147,7 +148,7 @@ export function preverViaje(
       avance.andadoMil,
       estacional.estacion,
       t.reglas,
-      t.casa.bastimentoMil,
+      bastimentoDeLaRecuaMil(recua.enExpedicion, t.casa.bastimentoMil, t.reglas),
     );
     const empieza = situacion.donde === 'comarca' ? situacion.comarca : null;
     const enCasa = empieza !== null && t.esPropia(empieza);

@@ -129,6 +129,8 @@ export interface OrdenRuta extends OrdenBase {
   readonly rebanyo: IdRebanyo | null;
   readonly paradas: readonly ParadaDeRuta[];
   readonly circular: boolean;
+  /** Viaje de exploracion: la recua vive de la tierra hasta volver a lo propio (ficha T-059 §8). */
+  readonly expedicion: boolean;
 }
 
 export interface OrdenCarga extends OrdenBase {

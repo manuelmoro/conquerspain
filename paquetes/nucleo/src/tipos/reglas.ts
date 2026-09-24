@@ -375,6 +375,11 @@ export interface DatosMovimiento {
   readonly pasoMinimoMil: number;
   readonly cargaPesadaMil: number;
   readonly bastimentoPorJornada: number;
+  /**
+   * Lo que come una recua en expedicion, en milesimas del bastimento corriente: quien sale a explorar
+   * vive en parte de la tierra que pisa (ficha T-059 §8).
+   */
+  readonly bastimentoExploradoraMil: number;
   /** En verano, una carga de sal de conservas por cada tantas jornadas (o fraccion). */
   readonly jornadasPorSalEnVerano: number;
   /** Lo que cobra el ventero por el bastimento, sobre el precio de su plaza, en milesimas (T-055). */

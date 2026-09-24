@@ -1345,3 +1345,13 @@ la recua comía lo de siempre. Una traza de los ferrones lo enseña: sale con 10
 42,8 % sin tocar, sin ventas en feria) **no mide la regla**. Refutado el diagnóstico de la entrada
 anterior («el pan no frena la exploración»): sí la frena (`no-cabe`), solo que el ensayo estaba mal
 montado. Diseño correcto en [T-059 §8](T-059-las-ferias-se-conocen.md). Revertido todo el código.
+
+## 24-09-2026 · La expedición vive de la tierra: implementada (T-059 §8)
+
+`OrdenRuta.expedicion` → `Recua.enExpedicion` (se apaga al pisar comarca propia) →
+`bastimentoDeLaRecuaMil`, una cuenta para el motor y para la previsión del robot. Fracción medida
+con 250 y 0 en 1492: la tierra sin tocar baja **34 → 30 puntos de diferencia** entre 250 y 0 solo
+por una décima en la mejor semilla, así que el pan ya no ata y se elige 250. **Las nueve partidas
+mejoran la tierra** (6 a 11 puntos: 44 → 36, 58 → 47, 55 → 45 %), el recuento pasa de 355 a 350 y sigue
+sin haber ventas en feria. Explorar pasa de 2–17 a 9–24 comarcas conocidas por casa a los 200 turnos.
+Los informes `E-vive0` y `E-exploradora500` (montados sin la bandera) se han borrado.

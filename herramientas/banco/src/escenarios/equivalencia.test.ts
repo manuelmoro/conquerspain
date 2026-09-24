@@ -94,7 +94,15 @@ const orden = {
     paradas: readonly ParadaDeRuta[],
     cola: string | null = null,
   ): Orden {
-    return { ...e.base({ cola }), tipo: 'ruta', recua, rebanyo, paradas, circular: false };
+    return {
+      ...e.base({ cola }),
+      tipo: 'ruta',
+      recua,
+      rebanyo,
+      paradas,
+      circular: false,
+      expedicion: false,
+    };
   },
   carga(
     e: Emisor,

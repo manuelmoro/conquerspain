@@ -2,7 +2,7 @@
 // recua y la independencia del orden en que llegan.
 import { describe, expect, it } from 'vitest';
 
-import { bastimentoDe } from '../src/reglas/bastimento.ts';
+import { bastimentoDe, bastimentoDeLaRecuaMil } from '../src/reglas/bastimento.ts';
 import { avanzar, pasoDeRecua } from '../src/reglas/movimiento.ts';
 import type { EstadoJugador, EstadoPartida, Recua, SituacionMovil } from '../src/tipos/estado.ts';
 import type { IdComarca, IdJugador, IdRecua } from '../src/tipos/ids.ts';
@@ -170,6 +170,53 @@ describe('el bastimento', () => {
     const { estado } = turno(escenario({ turno: VERANO, recuas: [fuera] }));
     // Va cargada (11 de 10 cargas): anda 2 jornadas, 4 panes y una carga de sal.
     expect(de(estado, 'recua-1').carga).toMatchObject({ pan: 5, sal: 1 });
+  });
+
+  it('una expedicion come la fraccion de la tabla, y las demas recuas lo de siempre (T-059 §8)', () => {
+    const fraccion = reglas.movimiento.bastimentoExploradoraMil;
+    expect(fraccion).toBeGreaterThan(0);
+    expect(fraccion).toBeLessThan(1000);
+    expect(bastimentoDeLaRecuaMil(false, 1000, reglas)).toBe(1000);
+    expect(bastimentoDeLaRecuaMil(true, 1000, reglas)).toBe(fraccion);
+    // Se compone con el factor de la casa.
+    expect(bastimentoDeLaRecuaMil(true, 700, reglas)).toBe(Math.floor((700 * fraccion) / 1000));
+
+    const fuera = (enExpedicion: boolean): Recua =>
+      recua('recua-1', {
+        situacion: { donde: 'comarca', comarca: c('prueba-vega') },
+        ruta: [c('prueba-rio')],
+        carga: recursos({ pan: 9 }),
+        enExpedicion,
+      });
+    // De la vega al rio son 2 jornadas: 4 panes de siempre, o su fraccion.
+    const normal = de(turno(escenario({ recuas: [fuera(false)] })).estado, 'recua-1');
+    const ligera = de(turno(escenario({ recuas: [fuera(true)] })).estado, 'recua-1');
+    expect(normal.carga.pan).toBe(5);
+    expect(ligera.carga.pan).toBe(9 - Math.floor((4 * fraccion) / 1000));
+    expect(ligera.acemilas).toBe(10);
+  });
+
+  it('la orden de ruta con expedicion la marca, y se apaga al pisar comarca propia', () => {
+    const quieta = recua('recua-1', { carga: recursos({ pan: 4 }) });
+    const estado = escenario({ recuas: [quieta] });
+    const orden = ordenRuta(estado.turno, 'recua-1', ['prueba-vega'], false, true);
+    const fuera = de(turno(estado, [orden]).estado, 'recua-1');
+    expect(fuera.situacion).toEqual({ donde: 'comarca', comarca: 'prueba-vega' });
+    expect(fuera.enExpedicion).toBe(true);
+
+    const desde = (destino: string): Recua =>
+      recua('recua-1', {
+        situacion: { donde: 'comarca', comarca: c('prueba-vega') },
+        ruta: [c(destino)],
+        carga: recursos({ pan: 4 }),
+        enExpedicion: true,
+      });
+    // Volver a lo propio (el llano) la apaga; llegar a otra comarca no.
+    const enCasa = de(turno(escenario({ recuas: [desde('prueba-llano')] })).estado, 'recua-1');
+    expect(enCasa.situacion).toEqual({ donde: 'comarca', comarca: 'prueba-llano' });
+    expect(enCasa.enExpedicion).toBe(false);
+    const sigueFuera = de(turno(escenario({ recuas: [desde('prueba-rio')] })).estado, 'recua-1');
+    expect(sigueFuera.enExpedicion).toBe(true);
   });
 
   it('sin bastimento: aviso y parada; despues pierde acemilas y malvive al paso minimo', () => {

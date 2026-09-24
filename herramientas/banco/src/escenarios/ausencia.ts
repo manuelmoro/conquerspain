@@ -116,6 +116,7 @@ class Jugador {
         { comarca: comarca as IdComarca, cargar: {}, descargar: {}, vender: {}, comprar: {} },
       ],
       circular: false,
+      expedicion: false,
     };
   }
 

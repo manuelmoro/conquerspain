@@ -126,11 +126,11 @@ acortar los saltos del catálogo (reescribe la geografía por un problema de log
 
 1. `OrdenRuta` gana `expedicion: boolean` (por defecto `false`). La orden es la que sabe que el
    viaje es de exploración: la ejecuta el motor **antes** de que la recua ande.
-2. `Recua` gana `enExpedicion: boolean`. Se pone a `true` al ejecutarse una `ruta` con
-   `expedicion` y se apaga cuando la recua está quieta en una comarca **propia** con la ruta vacía.
-   Cambio nuevo `recua-expedicion` con su invariante y sucesos como el resto.
-3. `bastimentoDelCometidoMil` (ya probada en el ensayo) pasa a `bastimentoDeLaRecuaMil(recua, …)`:
-   la fracción se aplica si `recua.enExpedicion` o `recua.cometido === 'explorar'`. El motor
+2. `Recua` gana `enExpedicion: boolean`. Lo fija el cambio `recua-ruta` (que ya lleva `circular`)
+   con lo que diga la orden, y lo apaga `recua-mover` cuando la recua queda quieta en una comarca
+   **propia** con la ruta vacía. No hace falta un cambio nuevo.
+3. `bastimentoDeLaRecuaMil(enExpedicion, casaMil, reglas)`: la fracción se aplica si la recua va de
+   expedición (no depende del cometido, que se fija al llegar). El motor
    (`fases/04-movimiento.ts`) y la previsión del robot (`robots/viaje.ts`) llaman a la misma
    función, y `metricas.ts` cuenta con ella el bastimento trazado.
 4. El robot pide `expedicion: true` en las dos rutas del viaje de exploración (ida y vuelta a lo
@@ -150,3 +150,36 @@ acortar los saltos del catálogo (reescribe la geografía por un problema de log
 4. Tres campañas con la fracción elegida: **la tierra sin tocar baja** frente a 38–64 %, alguna casa
    vende en feria (criterio 3 de §5) y el recuento no baja de 355.
 5. `npm run verificar` en verde y el núcleo sigue puro.
+
+### 8.5 Dónde va (24-09-2026)
+
+**Implementado y verificado** (`npm run verificar`: 1054 pruebas). `OrdenRuta.expedicion`,
+`Recua.enExpedicion`, `bastimentoDeLaRecuaMil` compartida por el motor y la previsión del robot,
+`movimiento.bastimentoExploradoraMil: 250` y robots 10 (la exploradora planifica y pide sus
+rutas con `expedicion`). Pruebas: función pura y cobro reducido en el motor, la bandera se fija con
+la orden y se apaga solo al pisar comarca propia, y la previsión del robot pide menos pan.
+Huellas de `humo-02` regeneradas (el estado gana un campo).
+
+**La fracción, medida** (1492, tres semillas; `E-exp250`, `E-exp0`): con 0 la tierra mejora solo una
+décima más que con 250 (35,1 frente a 35,6 % sin tocar en la primera semilla), así que **el pan ya
+no es el freno** y se queda 250 —salir cuesta algo—. La 500 no se ha medido: 250 ya no es el cuello.
+
+**Resultado, tres campañas** (`E-exp250-*` frente a `T-059-*`):
+
+| Campaña | Filas que cumplen | Tierra sin tocar (por semilla) |
+|---|---|---|
+| 1492 | 120 → 116 | 44,2 / 38,0 / 41,8 → 35,6 / 30,3 / 32,7 |
+| 1085 | 117 → 118 | 43,8 / 57,8 / 42,8 → 36,1 / 46,6 / 36,1 |
+| 1212 | 118 → 116 | 55,4 / 63,9 / 50,6 → 45,4 / 54,6 / 39,4 |
+
+Total **355 → 350**. Las filas perdidas son de escasez en el borde de la horquilla y una de
+prestigio, sin patrón. **Adoptado por corregir algo indefendible** (media docena de casas no podían
+explorar) y con una prueba que impide que vuelva; no mejora el recuento.
+
+**Criterios de §8.4:** 1, 2, 3 y 5 se cumplen; **4 a medias** (la tierra baja en las nueve partidas,
+pero ninguna casa vende en feria y el recuento queda en 350, no en 355).
+
+**Lo que falta para las ferias:** la exploración sigue siendo lenta (8–24 comarcas conocidas por casa
+a los 200 turnos) y los motivos que quedan son otros: la Mesta `sin-feria-al-alcance` (83 turnos) y
+`sin-lana-que-vender` (102), los salineros `sin-pan-para-el-viaje` (64), y `esencial-sin-recursos`
+en dos casas pobres. Es el mismo estudio de «qué frena a cada casa», ya sin el freno del pan.

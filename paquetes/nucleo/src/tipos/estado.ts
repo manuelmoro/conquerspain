@@ -241,6 +241,8 @@ export interface Recua {
   /** Turnos que lleva cumpliendo su cometido en destino. */
   readonly turnosDeCometido: number;
   readonly avisadaSinBastimento: boolean;
+  /** Sale a explorar y vuelve: come `bastimentoExploradoraMil` hasta que pisa comarca propia. */
+  readonly enExpedicion: boolean;
   /** Paradas seguidas de una ruta circular en las que no se cumplio un precio limite. */
   readonly fallosDePrecio: number;
 }

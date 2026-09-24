@@ -155,7 +155,8 @@ describe('la prevision de un viaje usa las reglas del nucleo', () => {
   });
 
   it('carga insuficiente: si el pan de ida y vuelta no cabe, no se sale', () => {
-    const { estado, recua } = preparar(PRIMAVERA);
+    const { estado, recua: preparada } = preparar(PRIMAVERA);
+    const recua = { ...preparada, enExpedicion: false };
     const t = tablero(estado);
     const lejos = destinos(t).map((d) => provisionPara(t, recua, idaYVuelta(t, d)));
     expect(lejos.some((r) => !r.ok && r.motivo === 'no-cabe')).toBe(true);
@@ -163,6 +164,22 @@ describe('la prevision de un viaje usa las reglas del nucleo', () => {
     for (const r of lejos) {
       if (r.ok) expect(r.valor.pan + r.valor.sal).toBeLessThanOrEqual(recua.porte);
     }
+  });
+
+  it('una recua en expedicion come la fraccion de la tabla: el mismo viaje pide menos pan (T-059 §8)', () => {
+    const { estado, recua } = preparar(PRIMAVERA);
+    const t = tablero(estado);
+    const normal = { ...recua, enExpedicion: false };
+    const ligera = { ...recua, enExpedicion: true };
+    let comparados = 0;
+    for (const destino of destinos(t)) {
+      const a = preverViaje(t, normal, idaYVuelta(t, destino), { ...recua.carga, pan: 0 });
+      const b = preverViaje(t, ligera, idaYVuelta(t, destino), { ...recua.carga, pan: 0 });
+      if (!a.ok || !b.ok) continue;
+      comparados += 1;
+      expect(b.valor.pan).toBeLessThan(a.valor.pan);
+    }
+    expect(comparados).toBeGreaterThan(0);
   });
 
   it('sal de verano: sin sal en el almacén no se sale, con sal se carga la que pide el camino', () => {

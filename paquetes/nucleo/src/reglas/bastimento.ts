@@ -31,6 +31,20 @@ export function bastimentoDe(
   return { pan, sal };
 }
 
+/**
+ * El factor de bastimento de una recua: el de su casa, y la fraccion `bastimentoExploradoraMil` de
+ * eso si va de expedicion. Una sola cuenta para el motor, la prevision de los robots y el banco.
+ */
+export function bastimentoDeLaRecuaMil(
+  enExpedicion: boolean,
+  bastimentoDeCasaMil: Milesimas,
+  reglas: TablasDeReglas,
+): Milesimas {
+  return enExpedicion
+    ? multiplicarFactores(MIL, [bastimentoDeCasaMil, reglas.movimiento.bastimentoExploradoraMil])
+    : bastimentoDeCasaMil;
+}
+
 /** La comarca tiene una venta en pie: alli come cualquier recua que pase, sea de quien sea. */
 export function hayVentaEn(estado: EstadoPartida, comarca: IdComarca): boolean {
   return (estado.comarcas[comarca]?.edificios['venta'] ?? 0) > 0;

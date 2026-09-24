@@ -250,6 +250,14 @@ maravedís bastantes, come de su carga como siempre. Así un viaje largo deja de
 su comida y queda sitio para la mercancía, sin que el pan salga de la nada: la venta cambia porte
 por dinero. Lo que cobra el ventero no es de nadie hasta que haya portazgos (T-103).
 
+**Una expedición vive de la tierra** (T-059 §8). La recua que sale a explorar —la orden `ruta` con
+`expedicion`— come una fracción del bastimento (`bastimentoExploradoraMil`, hoy un cuarto) desde que
+sale hasta que vuelve a pisar comarca propia: quien va por tierra desconocida pide posada y come de
+lo que encuentra. Sin esto, con las oídas a 4 o 10 jornadas de la capital y pan para cinco, ninguna
+casa pequeña podía explorar ni una sola comarca (el viaje redondo no cabía en el porte); con ello
+explora entre dos y cuatro veces más. La fracción no es cero para que salir siga costando pan, y no
+abarata ningún otro viaje.
+
 Sin bastimento, el primer turno la recua se para y la crónica lo avisa. Desde el segundo **malvive**:
 anda al paso mínimo sin pagar y pierde una acémila por turno (una carga menos de porte), hasta
 quedarse con una. Nunca desaparece sola y siempre puede volver a casa.

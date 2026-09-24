@@ -38,13 +38,12 @@ La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invi
 3. **Tierra** (9 de 9; medida ya exacta: entre el 38 % y el 62 % del mapa sin tocar) y **dominio** (9 de 9, el primer «pequeño
    dominio» en T43–48, antes de la horquilla): el ritmo espera una decisión del usuario (ver abajo).
 
-**Última iteración (24-09-2026):** la causa de que casi nadie explore es de logística (`no-cabe`: la
-oída más cercana está a 4–10 jornadas y una recua lleva pan para 5). Los dos ensayos de bastimento
-eran **inválidos**: el motor no sabe que la recua va de exploración mientras anda (el `cometido` se
-fija al llegar) y la recua perdía acemillas. **Diseño escrito:** [T-059 §8](docs/plan/T-059-las-ferias-se-conocen.md)
-—la expedición vive de la tierra—, con un campo `enExpedicion` en la recua. **Lo siguiente:**
-implementarlo (orden `ruta` con `expedicion`, cambio `recua-expedicion`, función común de
-bastimento, robots 10, huellas) y medir la fracción con 0, 250 y 500.
+**Última iteración (24-09-2026): la expedición vive de la tierra** ([T-059 §8](docs/plan/T-059-las-ferias-se-conocen.md)),
+implementada y verificada (1054 pruebas): `OrdenRuta.expedicion`, `Recua.enExpedicion`, fracción
+`bastimentoExploradoraMil: 250`, robots 10. La tierra sin tocar baja en las nueve partidas (44 → 36 %,
+58 → 47 %, 55 → 45 %); el recuento pasa de 355 a **350** y sigue sin haber ventas en feria. **Base
+nueva: `E-exp250-*`.** **Lo siguiente:** qué frena ahora a cada casa para llegar a una feria
+(Mesta `sin-feria-al-alcance` 83 turnos y `sin-lana-que-vender` 102; salineros `sin-pan-para-el-viaje`).
 
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 

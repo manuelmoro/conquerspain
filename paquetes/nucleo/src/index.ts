@@ -12,7 +12,13 @@ export type { Contexto, EstadoBorrador } from './contexto.ts';
 export { ErrorDeMotor } from './errores.ts';
 export type { CodigoDeError } from './errores.ts';
 export { registrarSuceso } from './sucesos.ts';
-export { bastimentoDe, costeEnLaVenta, hayVentaEn, ventaDelTurno } from './reglas/bastimento.ts';
+export {
+  bastimentoDe,
+  bastimentoDeLaRecuaMil,
+  costeEnLaVenta,
+  hayVentaEn,
+  ventaDelTurno,
+} from './reglas/bastimento.ts';
 export type { Bastimento } from './reglas/bastimento.ts';
 export { JORNADAS_DE_PUERTO, jornadasDeTramo } from './reglas/jornadas.ts';
 export {

@@ -175,6 +175,7 @@ describe('validacion de ordenes', () => {
       recua: null,
       rebanyo: null,
       circular: false,
+      expedicion: false,
       paradas: [{ comarca: 'prueba-llano', cargar: {}, descargar: {}, vender: {}, comprar: {} }],
     });
     const sinEdificio = { ...ruta };
