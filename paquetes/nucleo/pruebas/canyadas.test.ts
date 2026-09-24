@@ -10,6 +10,8 @@ import { caminoMasCorto } from '../src/partidas/distancias.ts';
 import { fundarPartida } from '../src/partidas/fundar.ts';
 import type { Participante } from '../src/partidas/ofertas.ts';
 import { prepararPartida } from '../src/partidas/preparar.ts';
+import { hitosNuevos } from '../src/reglas/hitos.ts';
+import { prestigioDe } from '../src/reglas/prestigio.ts';
 import type { EstadoPartida } from '../src/tipos/estado.ts';
 import type { IdComarca, IdJugador, IdPartida } from '../src/tipos/ids.ts';
 import type { Camino, Mundo } from '../src/tipos/mundo.ts';
@@ -203,6 +205,23 @@ describe('al fundar la partida', () => {
         expect(yo.conocimiento[vecina]?.nivel, vecina).not.toBeUndefined();
       }
     }
+  });
+
+  it('lo que sabe al empezar no es mérito: ni prestigio de exploración ni primer horizonte', () => {
+    const base = mundoMini();
+    const mundo = miniConCanyadas({ [tramoDe(base, 'prueba-costa', '')]: 'Cañada de la Costa' });
+    const estado = fundar('mesta', mundo);
+    const yo = estado.jugadores['uno'];
+    if (yo === undefined) throw new Error('falta el jugador');
+    const reglas = reglasDe();
+    expect(yo.registro.conocidasAlEmpezar).toEqual(comarcasDeSuCanyada(mundo, yo.capital));
+    // Solo cuenta la capital, como a cualquier casa recién fundada.
+    expect(prestigioDe(estado, yo, reglas).capitulos.exploracion).toBe(
+      reglas.prestigio.porComarcaExplorada,
+    );
+    expect(hitosNuevos(estado, yo, { mejorEsquileoMil: 0, prestigio: 0 }, reglas)).not.toContain(
+      'primer-horizonte',
+    );
   });
 
   it('una casa sin el permiso solo conoce su capital y, de oídas, sus vecinas', () => {

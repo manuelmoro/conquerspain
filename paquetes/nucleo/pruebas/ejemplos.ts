@@ -190,6 +190,7 @@ export function estadoDeEjemplo(): Registro {
           comarcasPerdidas: 0,
           turnosConEscasez: 0,
           turnosDeDespensaEstable: 0,
+          conocidasAlEmpezar: [],
         },
         conocimiento: {
           'prueba-llano': { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },

@@ -97,6 +97,7 @@ function apuntarElTurno(ctx: Contexto, jugador: EstadoJugador): void {
       antes.comarcasPerdidas + delTurno(ctx, jugador, 'comarca.vuelve-neutral').length,
     turnosConEscasez: antes.turnosConEscasez + (jugador.escasez ? 1 : 0),
     turnosDeDespensaEstable: despensaEstable ? antes.turnosDeDespensaEstable + 1 : 0,
+    conocidasAlEmpezar: antes.conocidasAlEmpezar,
   };
   aplicar(ctx, { tipo: 'registro', jugador: jugador.id, registro });
 }

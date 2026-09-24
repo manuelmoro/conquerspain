@@ -8,6 +8,7 @@ import type {
   EstadoComarca,
   EstadoJugador,
   EstadoPartida,
+  NivelDeConocimiento,
 } from '../tipos/estado.ts';
 import type { IdComarca, IdJugador } from '../tipos/ids.ts';
 import type { ComarcaMundo, Mundo } from '../tipos/mundo.ts';
@@ -24,6 +25,20 @@ export function datosConocidosDe(comarca: EstadoComarca, geografia: ComarcaMundo
     potenciales: { ...comarca.potenciales },
     edificios: { ...comarca.edificios },
   };
+}
+
+/**
+ * Comarcas que el jugador conoce a esos niveles **por merito propio**: sin las que ya sabia al
+ * empezar (T-058). Es lo que cuentan el capitulo de exploracion y el hito del primer horizonte.
+ */
+export function conocidasPorMerito(
+  jugador: EstadoJugador,
+  niveles: readonly NivelDeConocimiento[],
+): number {
+  const deSalida = new Set<string>(jugador.registro.conocidasAlEmpezar);
+  return Object.entries(jugador.conocimiento).filter(
+    ([id, conocimiento]) => niveles.includes(conocimiento.nivel) && !deSalida.has(id),
+  ).length;
 }
 
 /** Vecinas de las que el jugador todavia no sabia nada: pasan a `oida`. */

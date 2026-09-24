@@ -98,6 +98,11 @@ export interface RegistroDeJugador {
   readonly turnosConEscasez: number;
   /** Turnos seguidos sin perder pan y con reserva: para el hito de la despensa. */
   readonly turnosDeDespensaEstable: number;
+  /**
+   * Comarcas que el jugador ya conocia al empezar sin haberlas explorado (la canyada de la Mesta,
+   * T-058): no cuentan como exploradas ni para el prestigio ni para los hitos.
+   */
+  readonly conocidasAlEmpezar: readonly IdComarca[];
 }
 
 export interface EstadoJugador {

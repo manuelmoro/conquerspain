@@ -3,6 +3,7 @@
 // Funciones puras: que hitos logra un jugador con lo que tiene al final del turno y quien se lleva
 // la primicia cuando varios llegan a la vez. Los umbrales estan en la tabla de hitos.
 import type { EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
+import { conocidasPorMerito } from './explorar.ts';
 import type { IdJugador } from '../tipos/ids.ts';
 import type { Hito, TablasDeReglas } from '../tipos/reglas.ts';
 import { HITOS } from '../tipos/reglas.ts';
@@ -28,9 +29,7 @@ function cumple(
   const r = jugador.registro;
   switch (hito) {
     case 'primer-horizonte':
-      return (
-        Object.values(jugador.conocimiento).filter((c) => c.nivel === 'explorada').length >= umbral
-      );
+      return conocidasPorMerito(jugador, ['explorada']) >= umbral;
     case 'despensa-estable':
       return r.turnosDeDespensaEstable >= umbral;
     case 'villa':

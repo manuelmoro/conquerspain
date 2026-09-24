@@ -245,9 +245,9 @@ export interface PlanDeRobot {
 }
 
 /**
- * El turno en que cada orden **empieza a trabajar**: el que la pone en curso o la termina. No vale
- * el turno en que se dio: una orden en cola no reserva nada hasta que empieza, y darla a mano antes
- * de tiempo si reservaria. Lo que nunca llegó a trabajar se entrega el día en que se dio.
+ * El turno en que cada orden **empieza a trabajar**: el que la pone en curso o la termina. Para una
+ * orden en cola o fechada no vale el turno en que se dio: no reserva nada hasta que empieza, y darla
+ * a mano antes de tiempo si reservaria.
  */
 function turnoDeTrabajo(sucesos: readonly (readonly [number, Suceso])[]): Map<string, number> {
   const empieza = new Map<string, number>();
@@ -269,10 +269,13 @@ export function planDeRobot(
   const ejecucion = jugarConRobots(robots, opciones);
   const empieza = turnoDeTrabajo(ejecucion.sucesos);
   const ordenes = new Map<number, Orden[]>();
-  for (const delTurno of ejecucion.enviadas.values()) {
+  for (const [dada, delTurno] of ejecucion.enviadas) {
     for (const orden of delTurno) {
-      // Lo que nunca llegó a trabajar todavía no se habría dado a mano: se deja fuera del plan.
-      const turno = empieza.get(orden.id);
+      // Una orden sin cola ni fecha reserva al darse, trabaje o no: el diligente la da ese mismo
+      // día. Las de cola o fechadas no reservan hasta empezar, así que a mano se dan cuando
+      // empiezan a trabajar, y las que nunca trabajaron no se habrían dado.
+      const alDarse = orden.cola === null && orden.turnoProgramado === null;
+      const turno = alDarse ? dada : empieza.get(orden.id);
       if (turno === undefined) continue;
       // A mano se da el día en que hace falta, sin fecha por delante. La cola se conserva: es
       // parte de cómo se dice el plan y la tiene igual quien entra cada día (T-045), no un privilegio

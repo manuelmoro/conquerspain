@@ -30,6 +30,7 @@ import type {
   Recurso,
   Recursos,
   Suceso,
+  TablasDeReglas,
   Tradicion,
 } from '@conquer/nucleo';
 
@@ -59,13 +60,18 @@ function motivosDe(partida: MetricasDePartida): Set<Motivo> {
  * La casa sola en la peninsula entera, **sin recortar** y en la comarca que se le diga (T-049):
  * esto prueba que su via es posible donde su via tiene sentido, no que el sorteo se la ponga a tiro.
  */
-function sola(casa: Casa, origen: string, turnos: number): MetricasDePartida {
+function sola(
+  casa: Casa,
+  origen: string,
+  turnos: number,
+  reglas: TablasDeReglas = REGLAS,
+): MetricasDePartida {
   return jugarPartida({
     semilla: '1492',
     turnos,
     casas: [casa],
     cadencia: 1,
-    reglas: REGLAS,
+    reglas,
     mundo: mundoPeninsula(),
     estados: null,
     recortar: false,
@@ -202,8 +208,22 @@ describe('la Mesta hace la trashumancia', () => {
     );
   }, 60_000);
 
-  it('en Zafra, sin agostadero conocido, cria un solo rebaño y dice por qué no trashuma', () => {
-    const partida = sola('mesta', 'zafra-rio-bodion', 72);
+  it('en Zafra trashuma sin preparar nada: conoce su cañada desde el principio (T-058)', () => {
+    const cifras = cifrasDe(sola('mesta', 'zafra-rio-bodion', 72));
+    expect(cifras['lanaEsquilada'], JSON.stringify(cifras)).toBeGreaterThan(0);
+    expect(cifras['trashumancias'], JSON.stringify(cifras)).toBeGreaterThan(0);
+  }, 60_000);
+
+  it('sin conocer su cañada, en Zafra cria un solo rebaño y dice por qué no trashuma', () => {
+    const mesta = REGLAS.casas.mesta;
+    const sinCanyada: TablasDeReglas = {
+      ...REGLAS,
+      casas: {
+        ...REGLAS.casas,
+        mesta: { ...mesta, permisos: { ...mesta.permisos, conoceLasCanyadas: false } },
+      },
+    };
+    const partida = sola('mesta', 'zafra-rio-bodion', 72, sinCanyada);
     const cifras = cifrasDe(partida);
     expect(cifras['lanaEsquilada'], JSON.stringify(cifras)).toBeGreaterThan(0);
     expect(cifras['trashumancias']).toBe(0);

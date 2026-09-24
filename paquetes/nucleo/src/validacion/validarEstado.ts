@@ -110,6 +110,7 @@ const validarRegistro: Validador<RegistroDeJugador> = objeto<RegistroDeJugador>(
   comarcasPerdidas: enteroNoNegativo(),
   turnosConEscasez: enteroNoNegativo(),
   turnosDeDespensaEstable: enteroNoNegativo(),
+  conocidasAlEmpezar: lista(identificador<IdComarca>()),
 });
 
 const validarPuesto: Validador<PuestoEnLaClasificacion> = objeto<PuestoEnLaClasificacion>({

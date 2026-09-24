@@ -4,6 +4,7 @@
 // deducir del estado (obras terminadas, anyos trashumantes, ferias, perdidas, escaseces, hitos) se
 // lee del registro del jugador, que no se deriva de nada. Asi no hay derivas por acumular.
 import type { EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
+import { conocidasPorMerito } from './explorar.ts';
 import type { Hito, TablasDeReglas } from '../tipos/reglas.ts';
 import { HITOS, TIPOS_DE_OBRA_MAYOR } from '../tipos/reglas.ts';
 
@@ -41,9 +42,7 @@ export function prestigioDe(
   const r = jugador.registro;
   const propias = Object.values(estado.comarcas).filter((c) => c.duenyo === jugador.id);
   const vecinos = propias.reduce((total, comarca) => total + comarca.poblacion, 0);
-  const exploradas = Object.values(jugador.conocimiento).filter(
-    (c) => c.nivel === 'explorada' || c.nivel === 'propia',
-  ).length;
+  const exploradas = conocidasPorMerito(jugador, ['explorada', 'propia']);
   const hitos = HITOS.filter((hito) => jugador.hitos[hito] !== undefined);
 
   const capitulos: Record<CapituloDePrestigio, number> = {

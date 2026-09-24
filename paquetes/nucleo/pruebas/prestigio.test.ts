@@ -34,6 +34,7 @@ const REGISTRO_VACIO: RegistroDeJugador = {
   comarcasPerdidas: 0,
   turnosConEscasez: 0,
   turnosDeDespensaEstable: 0,
+  conocidasAlEmpezar: [],
 };
 
 function jugadorDe(estado: EstadoPartida, id: IdJugador = UNO): EstadoJugador {

@@ -381,7 +381,8 @@
           "volumenEnFerias": {},
           "comarcasPerdidas": 0,
           "turnosConEscasez": 0,
-          "turnosDeDespensaEstable": 0
+          "turnosDeDespensaEstable": 0,
+          "conocidasAlEmpezar": []
         },
         "id": "casa-uno",
         "nombre": "Casa Uno",
@@ -419,17 +420,17 @@
     {
       "turno": 1,
       "ordenes": [],
-      "huellaEsperada": "4dd4e61ca71e88673dfbf10428417753fa9e036e6ff9a727d90c7a3cdd8c6ffc"
+      "huellaEsperada": "11555d98f4c28a34120fb600669e1b44f0f24952b948989011db77bad7a3ff47"
     },
     {
       "turno": 2,
       "ordenes": [],
-      "huellaEsperada": "e18f7baed60e0b7fd70149d8ed10ea56b532ca4760b705432d40d78367303894"
+      "huellaEsperada": "0497a9b9c0bdf5b7854e67481ed8fa040accb4b9c3260988bb22772036d5369f"
     },
     {
       "turno": 3,
       "ordenes": [],
-      "huellaEsperada": "050a26c97dd81e481ecc8108418eb3eb934db50eca6c701ae0bf9db504d8886c"
+      "huellaEsperada": "ba9030fdda72972a9f6677020c16a37310c2b188992792c10665a668bc8dd82c"
     }
   ]
 }

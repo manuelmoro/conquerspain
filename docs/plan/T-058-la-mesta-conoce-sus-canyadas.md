@@ -87,3 +87,40 @@ npm run verificar
 npm run banco -- --semilla 1492 --turnos 200 --repeticiones 3 --evaluar --fecha T-058
 npm run banco:comparar -- herramientas/banco/informes/T-057-1492.csv herramientas/banco/informes/T-058-1492.csv
 ```
+
+## 7. Dónde va (24-09-2026)
+
+**Entregado y verificado:** el permiso, la regla (`partidas/canyadas.ts`) y su aplicación al fundar,
+con ocho pruebas en `canyadas.test.ts`: Cameros conoce la Galiana hasta el Valle de Alcudia, el
+cruce de dos cañadas, el camino desde lejos, el empate, el mapa sin cañadas, la fundación con y sin
+el permiso y **que lo sabido al empezar no puntúa**.
+
+**Una corrección que salió al medir.** El capítulo de exploración y el hito del primer horizonte
+cuentan las comarcas exploradas, y la Mesta recibía la veintena de su cañada gratis: unos 160
+puntos por saber algo desde el principio, contra la regla del marcador («mide lo que dejas hecho»).
+Ahora el registro del jugador apunta `conocidasAlEmpezar` y los dos lo descuentan
+(`conocidasPorMerito`). El estado gana un campo: huellas de reproducción regeneradas.
+
+**Otra, en el banco, que la Mesta destapó.** La prueba de equivalencia (T-051) dejaba fuera del
+plan «a mano» las órdenes que nunca llegaron a trabajar, pero una orden sin cola ni fecha **reserva
+al darse**: una `incorporar` en espera por escasez dejaba 40 panes reservados que la población no
+podía comer. Ahora esas órdenes se dan a mano el día en que se dieron.
+
+**Lo medido** (`T-058-*` frente a `T-057-*`):
+
+| | `T-057` | `T-058` |
+|---|---|---|
+| Filas que cumplen (1492 / 1085 / 1212) | 120 / 110 / 111 = 341 | 120 / 112 / 116 = **348** |
+| Escasez | 32 | 31 |
+| Prestigio de la Mesta (% de la mediana) | 15–57 | 15–31 en 1492 y 1085; **246 y 169** en 1212-2 y 1212-3 |
+
+Con el prestigio regalado todavía dentro, el recuento daba 349 y la Mesta entre 61 y 273 %: la
+diferencia era el artefacto.
+
+**Criterios:** 1 y 4 se cumplen; el 3, a medias (el recuento sube, la Mesta solo en 1212). **El 2
+no**: la Mesta solo trashuma en la campaña 1212. En 1492 y 1085 su capital es Cameros y el robot
+dice «los pastos conocidos quedan tan lejos que el ganado pasaría el año en el camino»: el Valle de
+Alcudia está a unos 7 turnos por trayecto con `pasoCanyadaMil: 1000`, y el robot no acepta más de
+12 al año. Las merinas bajaban de Soria a Extremadura en dos o tres quincenas.
+
+**Falta:** el ensayo del paso por cañada (una cifra de T-047) y volver a medir.

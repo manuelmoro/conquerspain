@@ -109,6 +109,7 @@ function jugadorInicial(
       comarcasPerdidas: 0,
       turnosConEscasez: 0,
       turnosDeDespensaEstable: 0,
+      conocidasAlEmpezar: [],
     },
     conocimiento,
     plazas: {},
@@ -212,7 +213,11 @@ function conSuCanyada(
       conocimiento[vecina] = { nivel: 'oida', turnoUltimaNoticia: 1, datos: null };
     }
   }
-  return { ...jugador, conocimiento };
+  return {
+    ...jugador,
+    conocimiento,
+    registro: { ...jugador.registro, conocidasAlEmpezar: exploradas },
+  };
 }
 
 /** Que una eleccion no valga se dice con su ruta y su motivo, no con una excepcion. */
