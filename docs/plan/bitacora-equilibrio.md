@@ -1219,3 +1219,22 @@ una casa de 250–300 puntos**, no un efecto sistemático del precio: en 1085 y 
 **Decisión:** el recuento de T-057 se acepta como **nueva base (341)**, por lo ya adoptado el
 mismo día (el comercio era imposible por construcción). No se cierran T-056/T-057 hasta que el
 prestigio cuente comercio (T-053, criterio 3): el orden pasa a **T-053 → T-047 (monjes, ritmo)**.
+
+## 24-09-2026 · T-053, criterio 3: nadie vende en feria, y la Mesta ni arranca
+
+Base `T-057`, 1492: `ingresosDeFeria` vale **0 en las ocho casas** y `capitulo_comercio` también; el
+umbral de feria destacada es de 500 maravedís de volumen propio en una feria y un año. El origen de
+esto no está en el motor: la casa que vive de feriar, **la Mesta, esquila 2 de lana de media en 200
+turnos**. Sus tres semillas se quedan en **1 comarca, 33–47 vecinos y unos 95–115 maravedís** desde
+el turno 50 al 200, con el pan cayendo de 49 a 10–16. Los motivos: «no tiene la gente, el pan o los
+maravedís para formar la recua que le falta» (194–198 turnos de 200) y «no conoce ningún invernadero
+al que pueda llegar el ganado» (178–192).
+
+En `formarRecuas` la recua de tratante exige 10 vecinos y mercado en la sede, y las demás 40
+vecinos **y despensa holgada**; con el pan de la Mesta bajo el coste de la recua más dos turnos de
+consumo, nunca se forma. Es un problema del robot y de la vía de la Mesta, no del precio: la cifra
+de esquileo ya estaba así en `T-050`. **No se ha ensayado nada todavía.**
+
+**Siguiente:** un volcado de la Mesta en los turnos 20, 50 y 100 (vecinos, pan, maravedís, coste de
+la recua, mercado en la sede, recuas formadas y motivo por turno) para ver **qué condición** de
+`formarRecuas` falla, antes de tocar una sola cifra.
