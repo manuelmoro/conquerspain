@@ -1,0 +1,85 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 5,
+    "robots": 10,
+    "reglas": 1
+  },
+  "revision": "36514d5d236b3c95c87e32b8b89b1cf4cd4645d6",
+  "etiqueta": "E-exploraConBolsa-1085",
+  "cambios": "robots 10: la exploradora lleva bolsa para las ventas",
+  "campanya": {
+    "semilla": "1085",
+    "semillas": [
+      "1085",
+      "1085-2",
+      "1085-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "fea056aae1d16f6f1465a0628f25e179c432f8e84c7d4cf2ea9f43116ddcf113"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1085",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "1eb73fed6ce2171d5c8cf2f8972d477c805f7b324e333b35279249400c6c9dac"
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 1,
+      "comarcas": 249,
+      "huellaFinal": "fddf4a3f5e9b1b0697f85360bc4ea6052489c0cbd1722f32980202150edf0620"
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "adc5ca540d344f779c954c1c08c73f78b686c9234f319a7b09b73f01fbfdbbc4"
+    },
+    {
+      "semilla": "1085",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "abdf0b937f2ab0eb0bcccbd40c413d8088467acd28f845607299c2539466db0c"
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 6,
+      "comarcas": 249,
+      "huellaFinal": "62caf214119f52954039d508551f8577a185cf32e052c6fbb383845d32a5fc49"
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "d6a2d23add1b25e24ac61dcf86d483c99a84cff0b95ff3ec22621c5f502d37ee"
+    }
+  ]
+}

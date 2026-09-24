@@ -1238,3 +1238,20 @@ de esquileo ya estaba así en `T-050`. **No se ha ensayado nada todavía.**
 **Siguiente:** un volcado de la Mesta en los turnos 20, 50 y 100 (vecinos, pan, maravedís, coste de
 la recua, mercado en la sede, recuas formadas y motivo por turno) para ver **qué condición** de
 `formarRecuas` falla, antes de tocar una sola cifra.
+
+## 24-09-2026 · El alcance de la exploración (T-059)
+
+Con T-059 las ferias se saben de oídas y el explorador de una casa con mercancía de feria abre
+camino hacia la más cercana: recuento **355** (base `T-059`), pero ninguna venta en feria. Los
+motivos de una partida: la Mesta sin exploradora (se merma y no se rehace), ferrones y salineros
+con «ninguna oída al alcance» más de cien turnos.
+
+**Ensayo descartado: la exploradora lleva bolsa para comer en las ventas** (`E-exploraConBolsa`,
+robots 10): cifras idénticas. Las ventas las plantan las casas comerciantes cerca de su tierra, y
+en el camino de una exploradora no hay ninguna. Revertido.
+
+**Lo que queda claro:** con diez cargas y dos panes por jornada, una recua tiene cinco jornadas de
+autonomía, y el primer anillo alrededor de lo propio es todo lo que explora una casa que no crece.
+Es la causa común de la `tierra` (38–64 % del mapa sin tocar) y de que nadie llegue a una feria. No
+se arregla con una cifra sin romper otra cosa (el bastimento de las recuas ya se ensayó y hunde la
+escasez): pide decidir cómo explora una casa pequeña.
