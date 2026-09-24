@@ -1,0 +1,85 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 5,
+    "robots": 10,
+    "reglas": 1
+  },
+  "revision": "142ebc1+ensayo",
+  "etiqueta": "E-vive0-1492",
+  "cambios": "movimiento.bastimentoExploradoraMil=0 (ensayo T-061)",
+  "campanya": {
+    "semilla": "1492",
+    "semillas": [
+      "1492",
+      "1492-2",
+      "1492-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "77e193f85374e8aadd1ae65519dde13ffdea514a6612ce737911b6365a4a1d32"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1492",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "46518ce705ee5ac83e8216e06e99427ecce853c7fb042a15efc9e2ac21742163"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "28d2f0816ba9d9673f077a33476a6e3d7a0379382f787f9baeed6362e8b3bcb4"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "8f3f4810b215bf53a5eaea8ba82aaccedee20681bef0781f8ec92733c61e190b"
+    },
+    {
+      "semilla": "1492",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "d094c42b891defe31c49e768a3d78d0cad2cec43fcaededb29e52c0f33d532c1"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "9f08d020059b82797c55e2cbcea8b2d764ab14a6b97e590f1ac6f1cf7ffe336e"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "ccc3fe76679a79b039b2c6a450cec4a7957a63dd6bcf31aec140e9711cc290da"
+    }
+  ]
+}

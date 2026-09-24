@@ -1335,3 +1335,13 @@ parada en casa y `no-cabe` 132 turnos de 200, tienen las tres recuas quietas en 
 3. **Acortar los saltos** (jornadas del catálogo): reescribe la geografía por un problema de
    logística. Descartado de entrada.
 4. **Más porte** (`portePorAcemila`): ya ensayado varias veces sin efecto neto.
+
+## 24-09-2026 · Corrección: los ensayos del bastimento de exploración eran inválidos
+
+`E-exploradora500` y `E-vive0` daban el bastimento menor **solo en la previsión del robot**: el motor
+lo aplicaba cuando `recua.cometido === 'explorar'`, y el cometido se fija **al llegar**, así que en ruta
+la recua comía lo de siempre. Una traza de los ferrones lo enseña: sale con 10 acemillas y llega con
+1 (10 → 9 → 7 → 4 → 1) por malvivir. Resultado real de `E-vive0` (123 filas, tierra 47,6 / 39,9 /
+42,8 % sin tocar, sin ventas en feria) **no mide la regla**. Refutado el diagnóstico de la entrada
+anterior («el pan no frena la exploración»): sí la frena (`no-cabe`), solo que el ensayo estaba mal
+montado. Diseño correcto en [T-059 §8](T-059-las-ferias-se-conocen.md). Revertido todo el código.

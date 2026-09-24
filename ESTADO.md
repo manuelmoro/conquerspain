@@ -38,12 +38,13 @@ La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invi
 3. **Tierra** (9 de 9; medida ya exacta: entre el 38 % y el 62 % del mapa sin tocar) y **dominio** (9 de 9, el primer «pequeño
    dominio» en T43–48, antes de la horquilla): el ritmo espera una decisión del usuario (ver abajo).
 
-**Última iteración (24-09-2026):** la causa de que casi nadie explore está cerrada: el viaje redondo
-**no cabe en el porte** (`no-cabe`). La oída más cercana está a 10 jornadas para ferrones y Mesta, 6
-para arrieros y 4 para salineros; una recua lleva pan para unas 5. **Decisión pendiente del
-usuario:** cómo explora una casa pequeña (opciones y recomendación en la última entrada de la
-[bitácora de equilibrio](docs/plan/bitacora-equilibrio.md)). Recomendación: las tierras habitadas
-dan de comer a quien paga, como la venta (T-055).
+**Última iteración (24-09-2026):** la causa de que casi nadie explore es de logística (`no-cabe`: la
+oída más cercana está a 4–10 jornadas y una recua lleva pan para 5). Los dos ensayos de bastimento
+eran **inválidos**: el motor no sabe que la recua va de exploración mientras anda (el `cometido` se
+fija al llegar) y la recua perdía acemillas. **Diseño escrito:** [T-059 §8](docs/plan/T-059-las-ferias-se-conocen.md)
+—la expedición vive de la tierra—, con un campo `enExpedicion` en la recua. **Lo siguiente:**
+implementarlo (orden `ruta` con `expedicion`, cambio `recua-expedicion`, función común de
+bastimento, robots 10, huellas) y medir la fracción con 0, 250 y 500.
 
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 
