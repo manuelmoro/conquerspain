@@ -1,10 +1,10 @@
-// Formacion de precios de una plaza (docs/03-economia.md §3.10.2 y §3.10.3; fichas T-037 §4.3 y
-// T-052 §4.1).
+// Formacion de precios de una plaza (docs/03-economia.md §3.10.2 y §3.10.3; fichas T-037 §4.3,
+// T-052 §4.1 y T-057 §4.1).
 //
 // El precio de una plaza se mueve por el desequilibrio entre lo que se quiere comprar y lo que se
 // quiere vender, vuelve poco a poco al precio base y nunca se sale de la horquilla que la protege.
 import { ErrorDeMotor } from '../errores.ts';
-import type { ComarcaMundo, NivelPotencial, Potencial, VolumenFeria } from '../tipos/mundo.ts';
+import type { ComarcaMundo, Potencial, VolumenFeria } from '../tipos/mundo.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import type { DatosMercado, DatosRecurso } from '../tipos/reglas.ts';
 import { MIL, limitar, multiplicarFactores, porcentaje } from '../utiles/enteros.ts';
@@ -23,15 +23,18 @@ export function precioBaseLocalMil(
   recurso: Recurso,
   tabla: DatosMercado,
   /**
-   * El nivel que **alcanza** la comarca contando lo que hay cerca (ficha T-054). Sin el, se usa el
-   * potencial de la propia comarca: es lo que vale para una plaza suelta o una cuenta de tanteo.
+   * El factor que **alcanza** la comarca contando lo que hay en el mapa (ficha T-057). Sin el, se
+   * usa el potencial de la propia comarca: es lo que vale para una plaza suelta o una cuenta de
+   * tanteo.
    */
-  nivelAlcanzado?: NivelPotencial,
+  factorAlcanzadoMil?: number,
 ): number {
   const potencial = tabla.potencialDeRecurso[recurso];
   // Los maravedis, y cualquier recurso sin potencial, valen lo mismo en todas partes.
   if (potencial === undefined || comarca === undefined) return precioBaseMil;
-  const nivel = nivelAlcanzado ?? comarca.potenciales[potencial];
+  if (factorAlcanzadoMil !== undefined)
+    return Math.max(1, porcentaje(precioBaseMil, factorAlcanzadoMil));
+  const nivel = comarca.potenciales[potencial];
   const factor = tabla.abundanciaMil[nivel];
   if (factor === undefined) {
     throw new ErrorDeMotor(
@@ -44,28 +47,30 @@ export function precioBaseLocalMil(
 }
 
 /**
- * El nivel de un potencial que **alcanza** una comarca (ficha T-054): el mejor que hay en el mapa,
- * descontando un escalon por cada `jornadasPorEscalonDeAbundancia` que haya que andar hasta el.
+ * El factor de precio que **alcanza** una comarca para un potencial (ficha T-057 §4.1): lo que vale
+ * en la fuente mas barata puesta alli. Cada fuente vende a lo que dice su abundancia y cada jornada
+ * de camino le suma `recargoPorJornadaMil`; manda la mas barata, sea o no la mas cercana, y nada
+ * pasa del techo. Sin ninguna fuente alcanzable, el techo: lo que no hay cuesta traerlo de lejos.
  *
- * Es lo que hace que dos comarcas vecinas sin sal no coticen igual: manda cual de las dos esta mas
- * cerca de la salina. Las jornadas llegan medidas en verano y sin mejoras, como las de la
- * administracion, para que el precio base no oscile con la estacion ni con un puente nuevo.
+ * Las jornadas llegan medidas en verano y sin mejoras, como las de la administracion, para que el
+ * precio base no oscile con la estacion ni con un puente nuevo. La propia comarca va en el mapa a
+ * cero jornadas: si tiene el potencial, es su propia fuente.
  */
-export function nivelAlcanzadoMil(
+export function factorAlcanzadoMil(
   potencial: Potencial,
   jornadasMil: ReadonlyMap<string, number>,
   comarcas: Readonly<Record<string, ComarcaMundo>>,
   tabla: DatosMercado,
-): NivelPotencial {
-  const escalonMil = tabla.jornadasPorEscalonDeAbundancia * MIL;
-  let mejor = 0;
+): number {
+  let mejor = tabla.techoDeLejaniaMil;
   for (const [id, lejosMil] of jornadasMil) {
-    const fuente = comarcas[id]?.potenciales[potencial] ?? 0;
-    if (fuente <= mejor) continue;
-    const alcanzado = fuente - Math.floor(lejosMil / escalonMil);
-    if (alcanzado > mejor) mejor = alcanzado;
+    const nivel = comarcas[id]?.potenciales[potencial] ?? 0;
+    if (nivel <= 0) continue;
+    const enLaFuente = tabla.abundanciaMil[nivel] ?? tabla.techoDeLejaniaMil;
+    const puesto = enLaFuente + Math.floor((tabla.recargoPorJornadaMil * lejosMil) / MIL);
+    if (puesto < mejor) mejor = puesto;
   }
-  return Math.max(0, Math.min(5, mejor)) as NivelPotencial;
+  return mejor;
 }
 
 /** Cargas por recurso y turno que absorbe una plaza: la base por el multiplicador de su volumen. */

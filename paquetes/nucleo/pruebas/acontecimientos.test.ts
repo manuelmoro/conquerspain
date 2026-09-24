@@ -15,7 +15,6 @@ import {
   ultimoTurnoDe,
 } from '../src/reglas/acontecimientos.ts';
 import { jornadasAdministrativasMil, jornadasDesde } from '../src/reglas/administracion.ts';
-import { nivelAlcanzadoMil } from '../src/reglas/precios.ts';
 import { estadoEstacionalDe } from '../src/reglas/calendario.ts';
 import {
   calendarioDeAcontecimientos,
@@ -636,13 +635,21 @@ function baseEn(comarca: string, recurso: Recurso): number {
   const base = reglas.recursos[recurso].precioBaseMil;
   const potencial = reglas.mercado.potencialDeRecurso[recurso];
   if (potencial === undefined) return base;
-  // La regla de T-054, escrita otra vez a mano: el mejor potencial del mapa menos un escalon por
-  // cada tres jornadas de verano que haya que andar hasta el.
+  // La regla de T-057, escrita otra vez a mano: la fuente mas barata puesta alli, con lo que vale
+  // en ella mas un recargo por jornada de verano, y nunca por encima del techo.
   const jornadas = jornadasDesde(comarca, mundo, (camino) =>
     jornadasAdministrativasMil(camino, reglas, {}),
   );
-  const nivel = nivelAlcanzadoMil(potencial, jornadas, mundo.comarcas, reglas.mercado);
-  return Math.max(1, Math.floor((base * (reglas.mercado.abundanciaMil[nivel] ?? 1000)) / 1000));
+  const { abundanciaMil, recargoPorJornadaMil, techoDeLejaniaMil } = reglas.mercado;
+  let factor = techoDeLejaniaMil;
+  for (const [id, lejosMil] of jornadas) {
+    const nivel = mundo.comarcas[id]?.potenciales[potencial] ?? 0;
+    if (nivel === 0) continue;
+    const puesto =
+      (abundanciaMil[nivel] ?? 0) + Math.floor((recargoPorJornadaMil * lejosMil) / 1000);
+    factor = Math.min(factor, puesto);
+  }
+  return Math.max(1, Math.floor((base * factor) / 1000));
 }
 
 describe('mercado', () => {
@@ -934,13 +941,13 @@ describe('validación y cambios', () => {
         ultimoVolumen: recursos(),
       },
     });
-    // El techo es el 250 % del base local con la carestia encima. Prueba-llano no tiene sal, pero
-    // **alcanza** la de la costa a dos jornadas (T-054), asi que su base es 12600 y el techo
-    // 12600 x 1,5 x 2,5 = 47250. Sin la carestia seria 31500, y con el base del catalogo, 35000.
+    // El techo es el 250 % del base local con la carestia encima. Prueba-llano no tiene sal: la
+    // mas barata puesta alli es la del rio (sal 3, al 90 %) a 1,8 jornadas, que le suman un 36 %
+    // (T-057). Su base es 17640 y el techo 17640 x 1,5 x 2,5 = 66150. Sin la carestia seria 44100.
     const techo = Math.floor(
       (Math.floor((baseEn('prueba-llano', 'sal') * 1500) / 1000) * 2500) / 1000,
     );
-    expect(techo).toBe(47250);
+    expect(techo).toBe(66150);
     expect(() => {
       aplicar(ctx, {
         tipo: 'mercado-precio',

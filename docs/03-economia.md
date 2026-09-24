@@ -425,23 +425,30 @@ mercancía. Un puerto de mar come pescado, pero su pan sigue mirando a la labor:
 grano y lo pagaba caro, y esa es justo la decisión que se quiere.
 
 Esto es lo que hace que la geografía mande en el comercio. La sal está en 12 comarcas de 403 y el
-hierro en 17: entre una salina y el secano hay un 70 % de diferencia de precio, mientras que el pan
-y la lana, que se dan en casi todas partes, apenas se mueven. Medido en una partida de 200 turnos,
-la diferencia entre la plaza más barata y la más cara pasó de **0,6 puntos a 40,4 en la sal** y de
-0,4 a 40,3 en el hierro.
+hierro en 17, así que entre la fuente y la plaza lejana la diferencia es grande; el pan y la lana,
+que se dan en casi todas partes, apenas se mueven. La tabla es el precio **en la fuente**; lo que
+vale lejos de ella lo dice el camino, a continuación.
 
-**Y no basta con lo que tiene la comarca: cuenta lo que alcanza.** La sal era cara tierra adentro
-*porque había que llevarla hasta allí*. El nivel que manda en el precio es el mejor del mapa
-descontando un escalón por cada **tres jornadas** que haya que andar hasta él:
+**Y no basta con lo que tiene la comarca: cuenta lo que alcanza, y el camino se paga.** La sal era
+cara tierra adentro *porque había que llevarla hasta allí*. La tabla de arriba dice lo que vale cada
+recurso **en su fuente**; en cualquier otra plaza vale lo de la fuente más barata puesta allí, y cada
+jornada de camino le suma un **20 % del precio corriente**, hasta **el doble** (T-057):
 
 ```
-nivel que alcanza = máx sobre las comarcas c de:  potencial(c) − ⌊jornadas hasta c / 3⌋
+factor de la plaza = mín( 200 %,  mín sobre las fuentes c de:  abundancia(c) + 20 % × jornadas hasta c )
 ```
 
-Así una salina de nivel 5 hace que una comarca a tres jornadas cotice como nivel 4, a seis como
-nivel 3, y así hasta apagarse. **Dos comarcas vecinas sin sal ya no cotizan igual**: manda cuál de
-las dos está más cerca de la salina. Medido en una partida de 200 turnos, la sal pasa de valer el
-120 % en veintiuna de veintitrés plazas —un muro plano— a escalonarse en 70, 80, 90, 100 y 120.
+Manda la fuente más barata **puesta en la plaza**, no la más cercana: una salina pequeña al lado
+(110 % + 20 %) pierde frente a una grande a jornada y media (70 % + 30 %). Una comarca con el
+potencial es su propia fuente a cero jornadas; donde no llega ninguna, el techo.
+
+**Por qué un 20 % por jornada.** Es lo que hace que llevar mercancía sea una decisión y no una
+pérdida segura. Una recua come dos panes por jornada: repartidos entre sus diez cargas y contando la
+vuelta en vacío, unos **1,2 maravedís por carga y jornada**. Con el 20 %, una carga de sal gana 2,8
+por jornada y una de hierro 4,8. Con escalones de nivel cada tres jornadas (T-054) la sal ganaba
+0,47 y **no había comercio posible**: cero negocios en nueve partidas. Con este recargo, los
+arrieros cierran unos treinta por partida con ganancia. Lo vigila una prueba sobre las propias
+tablas.
 
 El factor se toma del potencial **del mundo**, no del agotamiento de la comarca, y las jornadas se
 miden en verano y sin mejoras, igual que la administración: el precio base no oscila turno a turno

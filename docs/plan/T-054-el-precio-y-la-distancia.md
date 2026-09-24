@@ -2,6 +2,13 @@
 
 **Fase:** 2 · Motor · **Depende de:** T-052 · **Estado:** hecha (24-09-2026)
 
+
+> **24-09-2026 · Regla sustituida por [T-057](T-057-la-distancia-paga-el-camino.md).** Los
+> escalones de nivel cada tres jornadas dejaban la sal ganando 0,47 maravedís por carga y jornada,
+> menos de lo que come la recua: el comercio era imposible por construcción. Desde T-057 el precio
+> sube un tanto fijo por jornada desde la fuente más barata, hasta el doble. Lo de abajo se conserva
+> como historia de la decisión.
+
 ## 1. Contexto
 
 Nace de una medición de [T-053](T-053-plazas-donde-comerciar.md), anotada en la

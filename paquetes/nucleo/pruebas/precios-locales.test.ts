@@ -3,21 +3,25 @@
 import { describe, expect, it } from 'vitest';
 
 import { MERCADO } from '../src/datos/mercado.ts';
+import { MOVIMIENTO } from '../src/datos/movimiento.ts';
 import { DATOS_DE_RECURSOS } from '../src/datos/recursos.ts';
-import { precioBaseLocalMil } from '../src/reglas/precios.ts';
+import { factorAlcanzadoMil, precioBaseLocalMil } from '../src/reglas/precios.ts';
 import type { ComarcaMundo, NivelPotencial, Potencial } from '../src/tipos/mundo.ts';
 import { POTENCIALES } from '../src/tipos/mundo.ts';
 import type { IdComarca } from '../src/tipos/ids.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
 
 /** Una comarca de mentira con los potenciales que se digan: aqui solo se miran esos. */
-function comarcaCon(potenciales: Partial<Record<Potencial, NivelPotencial>>): ComarcaMundo {
+function comarcaCon(
+  potenciales: Partial<Record<Potencial, NivelPotencial>>,
+  id = 'inventada',
+): ComarcaMundo {
   const llenos = Object.fromEntries(POTENCIALES.map((p) => [p, potenciales[p] ?? 0])) as Record<
     Potencial,
     NivelPotencial
   >;
   return {
-    id: 'inventada' as IdComarca,
+    id: id as IdComarca,
     nombre: 'Inventada',
     cabecera: 'Inventada',
     region: '00-prueba',
@@ -94,5 +98,87 @@ describe('el precio base de una comarca', () => {
   it('la tabla tiene una entrada por nivel, de 0 a 5', () => {
     expect(MERCADO.abundanciaMil).toHaveLength(6);
     expect(MERCADO.abundanciaMil.every((f) => f > 0)).toBe(true);
+  });
+});
+
+describe('el factor que alcanza una plaza (T-057)', () => {
+  const { abundanciaMil, recargoPorJornadaMil, techoDeLejaniaMil } = MERCADO;
+
+  /** Un mapa de comarcas con su nivel de sal, y las jornadas desde la plaza hasta cada una. */
+  function factorDeSal(fuentes: readonly [string, NivelPotencial, number][]): number {
+    const comarcas = Object.fromEntries(
+      fuentes.map(([id, nivel]) => [id, comarcaCon({ sal: nivel }, id)]),
+    );
+    const jornadas = new Map(fuentes.map(([id, , lejos]) => [id, lejos]));
+    return factorAlcanzadoMil('sal', jornadas, comarcas, MERCADO);
+  }
+
+  it('en la fuente vale lo que dice su abundancia', () => {
+    expect(factorDeSal([['salina', 5, 0]])).toBe(abundanciaMil[5]);
+    expect(factorDeSal([['salina', 1, 0]])).toBe(abundanciaMil[1]);
+  });
+
+  it('cada jornada de camino suma el recargo, y los trozos de jornada tambien', () => {
+    expect(recargoPorJornadaMil).toBe(200);
+    expect(factorDeSal([['salina', 5, 1000]])).toBe(700 + 200);
+    expect(factorDeSal([['salina', 5, 2500]])).toBe(700 + 500);
+    // 1,8 jornadas suman 360; una milesima de jornada no llega a una milesima de precio.
+    expect(factorDeSal([['salina', 5, 1800]])).toBe(700 + 360);
+    expect(factorDeSal([['salina', 5, 4]])).toBe(700);
+  });
+
+  it('manda la fuente mas barata puesta en la plaza, no la mas cercana', () => {
+    // Una salina pequenya al lado (110 % + 20 %) pierde frente a una grande a jornada y media
+    // (70 % + 30 %); a tres jornadas, la grande ya no compensa (70 % + 60 %).
+    expect(
+      factorDeSal([
+        ['pequenya', 1, 1000],
+        ['grande', 5, 1500],
+      ]),
+    ).toBe(1000);
+    expect(
+      factorDeSal([
+        ['pequenya', 1, 1000],
+        ['grande', 5, 3000],
+      ]),
+    ).toBe(1300);
+  });
+
+  it('nunca pasa del techo, que es tambien el precio donde no llega ninguna fuente', () => {
+    expect(techoDeLejaniaMil).toBe(2000);
+    expect(factorDeSal([['salina', 5, 10000]])).toBe(2000);
+    expect(factorDeSal([['secano', 0, 0]])).toBe(2000);
+    expect(factorDeSal([])).toBe(2000);
+  });
+
+  it('una comarca sin el potencial no es fuente, aunque este en la plaza', () => {
+    expect(
+      factorDeSal([
+        ['secano', 0, 0],
+        ['salina', 4, 2000],
+      ]),
+    ).toBe(800 + 400);
+  });
+
+  it('el precio base de la plaza es el del catalogo por ese factor', () => {
+    const plaza = comarcaCon({});
+    expect(precioBaseLocalMil(base('sal'), plaza, 'sal', MERCADO, 1260)).toBe(
+      Math.floor((base('sal') * 1260) / 1000),
+    );
+  });
+});
+
+describe('la distancia paga el camino (guarda de T-057)', () => {
+  it('una carga de sal o de hierro gana por jornada mas de lo que come la recua, ida y vuelta', () => {
+    // Lo que come una recua por jornada, repartido entre sus cargas y contando la vuelta en vacio:
+    // si esto supera a lo que gana la mercancia, el comercio es imposible por construccion, que es
+    // lo que midio T-056 con los escalones de T-054 (0,47 maravedis frente a 1,2).
+    const comePorCargaYJornadaMil =
+      (2 * MOVIMIENTO.bastimentoPorJornada * base('pan')) /
+      (MOVIMIENTO.acemilasPorRecua * MOVIMIENTO.portePorAcemila);
+    for (const recurso of ['sal', 'hierro'] as const) {
+      const ganaPorJornadaMil = (MERCADO.recargoPorJornadaMil * base(recurso)) / 1000;
+      expect(ganaPorJornadaMil, recurso).toBeGreaterThan(comePorCargaYJornadaMil);
+    }
   });
 });

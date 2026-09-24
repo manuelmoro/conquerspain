@@ -162,3 +162,35 @@ que come la recua: un gradiente de precio que pague el camino (y con él un fond
 solo sirve si hay negocio), abaratar lo que cuesta llevar la carga, o aceptar que el arbitraje
 suelto no es vía hasta que lleguen los caminos y las ferias (T-013, T-014) y dar a los mercaderes
 otra. Escrito con cifras en la [bitácora de equilibrio](bitacora-equilibrio.md).
+
+### Después de la decisión del usuario (24-09-2026)
+
+El usuario eligió **que la distancia pague el camino**, con un fondo de comercio. El gradiente va
+en [T-057](T-057-la-distancia-paga-el-camino.md), porque es regla del motor; aquí queda el fondo.
+
+**El fondo de comercio** (§4.3, robots 8). La bolsa de la recua de comercio **viaja cargada y no se
+descarga al volver**: en el almacén se la comerían las obras de la cola en cuanto hubiera con qué
+empezarlas, y los maravedís de una recua no los toca ninguna. Sin negocio a la vista, la recua la
+rellena con lo que sobra por encima del colchón, hasta 200. Si la casa pasa hambre, la bolsa vuelve
+al almacén. Dos ensayos para llegar ahí, los dos medidos:
+
+| Regla del fondo | Resultado |
+|---|---|
+| Se guarda siempre | Los arrieros de Lugo guardan 400 maravedís en dos recuas paradas mientras la casa pasa 31 turnos de escasez (1085-2): 118 → 111 en esa campaña |
+| Vuelve a casa si hay escasez **o** el almacén baja del colchón | Lo segundo pasa casi siempre en una casa que construye: la bolsa vuelve cada turno y **no queda un solo negocio** en 1492 |
+| **Vuelve a casa solo si hay escasez** | Adoptada. Con T-057, 181 negocios en nueve partidas |
+
+Medido aparte, el fondo **ayuda**: sin él, con el precio de T-057, 1085 y 1212 dan 111 y 111; con
+él, 110 y 111 pero con el comercio funcionando (en 1085 sin fondo no hay ni un negocio).
+
+**Criterios, con `T-057-*`:**
+
+| # | Criterio | Estado |
+|---|---|---|
+| 1 | `negociosRentables` > 0 | **Cumple**: arrieros en las tres campañas (9 a 48 por partida), mercaderes en las tres |
+| 2 | Ganancia media positiva | **Cumple**: +7209 en 181 negocios; una sola partida en negativo (mercaderes 1085, −44 en 4) |
+| 3 | El recuento no empeora (116 / 118 / 114) | **No cumple**: 120 / 110 / 111 |
+| 4 | `verificar` | **Cumple** |
+
+**Falta:** el criterio 3. La pérdida no viene del robot ni del fondo, sino del precio nuevo (T-057
+§7): se cierra cuando T-047 recupere el recuento.

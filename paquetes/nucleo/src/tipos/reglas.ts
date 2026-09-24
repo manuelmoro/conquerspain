@@ -558,11 +558,13 @@ export interface DatosMercado {
   /** Que potencial abarata cada recurso. Sin entrada, el recurso vale igual en todas partes. */
   readonly potencialDeRecurso: Readonly<Partial<Record<Recurso, Potencial>>>;
   /**
-   * Jornadas que hay que andar para que la abundancia baje un escalon (ficha T-054): la sal era
-   * cara tierra adentro **porque habia que llevarla hasta alli**. Una salina de nivel 5 hace que
-   * una comarca a esa distancia cotice como nivel 4, al doble como nivel 3, y asi hasta apagarse.
+   * Lo que sube el factor de precio por cada jornada desde la fuente, en milesimas del precio del
+   * catalogo (ficha T-057): la sal era cara tierra adentro **porque habia que llevarla hasta alli**,
+   * y ese camino es lo que paga a quien la lleva.
    */
-  readonly jornadasPorEscalonDeAbundancia: number;
+  readonly recargoPorJornadaMil: number;
+  /** Lo mas que encarece la lejania: el factor de una plaza sin ninguna fuente cerca. */
+  readonly techoDeLejaniaMil: number;
 }
 
 export interface DatosInfluencia {

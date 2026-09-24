@@ -127,10 +127,44 @@ function valorDelBastimento(t: Tablero, provision: Provision): number {
   );
 }
 
-/** Lo que la recua puede llevarse del almacen: sin lo reservado ni el colchon, y con tope. */
-function bolsaLibre(d: Decision): number {
+/** Lo que sobra en el almacen por encima del colchon, sin lo que ya reservan las ordenes de hoy. */
+function sobranteDelAlmacen(d: Decision): number {
   const { t, p } = d;
-  return Math.min(t.disponible('maravedis') - p.reservado('maravedis') - COLCHON, BOLSA_MAXIMA);
+  return Math.max(0, t.disponible('maravedis') - p.reservado('maravedis') - COLCHON);
+}
+
+/**
+ * El fondo de comercio (T-056 §4.3): la bolsa que lleva la recua y lo que sobra en casa, con tope.
+ * La bolsa viaja cargada y no se descarga al volver, porque en el almacen se la comerian las obras
+ * de la cola en cuanto hubiera con que empezarlas: los maravedis de una recua no los toca ninguna.
+ */
+function fondoDelViaje(d: Decision, recua: Recua): number {
+  return Math.min(recua.carga.maravedis + sobranteDelAlmacen(d), BOLSA_MAXIMA);
+}
+
+/**
+ * La casa pasa hambre: no es momento de ahorrar. Solo eso: con el almacen bajo el colchon, que es
+ * lo corriente en una casa que construye, la bolsa volveria a casa cada turno y no habria comercio
+ * (medido, T-056 §7).
+ */
+function apuros(d: Decision): boolean {
+  return d.t.yo.escasez;
+}
+
+/**
+ * La provision de un viaje de comercio, contada con la recua **sin** su bolsa: la bolsa entera se
+ * reparte entre las ventas del camino y la compra, y lo que ya lleva se descuenta al cargar.
+ */
+function provisionDelComercio(
+  t: Tablero,
+  recua: Recua,
+  paradas: readonly Parada[],
+  mercancia: Partial<Record<Recurso, number>> = {},
+  salida = 0,
+  bolsa = 0,
+): ReturnType<typeof provisionPara> {
+  const sinBolsa: Recua = { ...recua, carga: { ...recua.carga, maravedis: 0 } };
+  return provisionPara(t, sinBolsa, paradas, mercancia, salida, bolsa);
 }
 
 /** Las plazas conocidas a las que se llega, con precio sabido y reciente. */
@@ -220,7 +254,14 @@ function conLaCarga(
   salida = 0,
 ): Negocio | null {
   for (let cargas = tanteo.cantidad; cargas > 0; cargas -= 1) {
-    const llena = provisionPara(t, recua, paradas, { [tanteo.recurso]: cargas }, salida, bolsa);
+    const llena = provisionDelComercio(
+      t,
+      recua,
+      paradas,
+      { [tanteo.recurso]: cargas },
+      salida,
+      bolsa,
+    );
     if (!llena.ok) continue;
     const final = negocioDe(
       t,
@@ -277,7 +318,7 @@ function mejorNegocio(d: Decision, recua: Recua, bolsa: number, enCasa: Tanteo):
   let mejor: Negocio | null = null;
   let algunViaje = false;
   for (const [compra, venta] of parejas.slice(0, PAREJAS_QUE_SE_PREVEN)) {
-    const vacia = provisionPara(t, recua, paradasDe(t, compra, venta), {}, 0, bolsa);
+    const vacia = provisionDelComercio(t, recua, paradasDe(t, compra, venta), {}, 0, bolsa);
     if (!vacia.ok) continue;
     algunViaje = true;
     const hueco = recua.porte - vacia.valor.pan - vacia.valor.sal;
@@ -317,7 +358,7 @@ function negocioEnCasa(d: Decision, recua: Recua, bolsa: number): Tanteo {
       { comarca: t.capital, detiene: false },
     ];
     // Se compra hoy en la plaza y se sale el turno que viene: la prevision empieza entonces.
-    const vacia = provisionPara(t, recua, paradas, {}, 1, bolsa);
+    const vacia = provisionDelComercio(t, recua, paradas, {}, 1, bolsa);
     if (!vacia.ok) continue;
     algunViaje = true;
     const hueco = recua.porte - vacia.valor.pan - vacia.valor.sal;
@@ -330,7 +371,8 @@ function negocioEnCasa(d: Decision, recua: Recua, bolsa: number): Tanteo {
     }
   }
   if (mejor === null) return conDiferencia && !algunViaje ? 'sin-viaje' : 'ninguno';
-  p.carga(recua.id, { maravedis: mejor.bolsa }, {});
+  const falta = mejor.bolsa - recua.carga.maravedis;
+  if (falta > 0) p.carga(recua.id, { maravedis: falta }, {});
   if (recua.cometido !== 'tratar') p.cometido(recua.id, 'tratar');
   p.mercado(
     recua.id,
@@ -356,13 +398,13 @@ function mercancias(recua: Recua): Recurso[] {
 function venderLoQueLleva(d: Decision, recua: Recua, recurso: Recurso): void {
   const { t, p } = d;
   const cantidad = recua.carga[recurso];
-  const bolsa = Math.max(0, bolsaLibre(d));
+  const bolsa = fondoDelViaje(d, recua);
   let mejor: { plaza: PlazaConocida; precio: number; provision: Provision } | null = null;
   // En la plaza de casa no: es donde se compro, y alli la vende el tratante si sobra.
   for (const plaza of plazasConPrecio(t).filter((pl) => pl.comarca !== t.capital)) {
     const precio = precioSabido(t, plaza.id, recurso);
     if (precio === null || (mejor !== null && precio <= mejor.precio)) continue;
-    const provision = provisionPara(
+    const provision = provisionDelComercio(
       t,
       recua,
       [
@@ -394,13 +436,13 @@ function venderLoQueLleva(d: Decision, recua: Recua, recurso: Recurso): void {
 }
 
 /**
- * Carga el pan y la sal que le falten a la recua para el viaje previsto, los maravedis de las
- * ventas donde comera y, si va a comprar, su bolsa.
+ * Carga el pan y la sal que le falten a la recua para el viaje previsto, y los maravedis de las
+ * ventas donde comera y, si va a comprar, de su compra, descontando la bolsa que ya lleva.
  */
 function cargarBastimento(d: Decision, recua: Recua, provision: Provision, bolsa = 0): void {
   const pan = provision.pan - recua.carga.pan;
   const sal = provision.sal - recua.carga.sal;
-  const maravedis = provision.maravedis + bolsa;
+  const maravedis = provision.maravedis + bolsa - recua.carga.maravedis;
   const cargar: Partial<Record<Recurso, number>> = {
     ...(pan > 0 ? { pan } : {}),
     ...(sal > 0 ? { sal } : {}),
@@ -413,7 +455,7 @@ function cargarBastimento(d: Decision, recua: Recua, provision: Provision, bolsa
 function plazaPorConocer(d: Decision, recua: Recua): Provision | null {
   const { t, p } = d;
   const alcance = t.jornadasDesdeLoPropio();
-  const bolsa = Math.max(0, bolsaLibre(d));
+  const bolsa = fondoDelViaje(d, recua);
   const porConocer = t
     .plazasConocidas()
     .filter((pl) => precioSabido(t, pl.id, 'pan') === null && alcance.has(pl.comarca))
@@ -424,7 +466,7 @@ function plazaPorConocer(d: Decision, recua: Recua): Provision | null {
     );
   for (const plaza of porConocer) {
     // Se va cuando llegaria con la plaza abierta: una feria cerrada no dice sus precios.
-    const provision = provisionPara(
+    const provision = provisionDelComercio(
       t,
       recua,
       [
@@ -457,7 +499,7 @@ export const arbitraje: Rutina = (d, recua) => {
     venderLoQueLleva(d, recua, lleva);
     return;
   }
-  const bolsa = bolsaLibre(d);
+  const bolsa = fondoDelViaje(d, recua);
   if (bolsa <= 0) {
     d.m.anotar('sin-bolsa-para-comprar');
     return;
@@ -489,6 +531,13 @@ export const arbitraje: Rutina = (d, recua) => {
     return;
   }
   if (plazaPorConocer(d, recua) !== null) return;
-  // Sin negocio a la vista la recua espera en casa, con la bolsa en el almacen.
-  if (recua.carga.maravedis > 0) p.carga(recua.id, {}, { maravedis: recua.carga.maravedis });
+  // Sin negocio a la vista la recua espera en casa y ahorra: guarda la bolsa y la rellena con lo
+  // que sobre por encima del colchon, hasta el tope (el fondo de comercio, T-056 §4.3). Pero si la
+  // casa pasa hambre, la bolsa vuelve al almacen: el comercio espera, comer no.
+  if (apuros(d)) {
+    if (recua.carga.maravedis > 0) p.carga(recua.id, {}, { maravedis: recua.carga.maravedis });
+    return;
+  }
+  const ahorro = Math.min(BOLSA_MAXIMA - recua.carga.maravedis, sobranteDelAlmacen(d));
+  if (ahorro > 0) p.carga(recua.id, { maravedis: ahorro }, {});
 };

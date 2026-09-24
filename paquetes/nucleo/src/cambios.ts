@@ -40,7 +40,7 @@ import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
 import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
-import { alcanceDe } from './contexto.ts';
+import { factorAlcanzadoDe } from './contexto.ts';
 import { precioBaseLocalMil } from './reglas/precios.ts';
 import { modificadoresDe } from './reglas/casas/index.ts';
 import { impedimentoDeTradicion, opcionesDeTradicion } from './reglas/tradiciones.ts';
@@ -1781,7 +1781,7 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
           ctx.mundo.comarcas[mercado.comarca],
           cambio.recurso,
           ctx.reglas.mercado,
-          alcanceDe(ctx, mercado.comarca, cambio.recurso),
+          factorAlcanzadoDe(ctx, mercado.comarca, cambio.recurso),
         ),
         ctx.estado.acontecimientos,
         ctx.turno,

@@ -7,7 +7,7 @@
 import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
-import { alcanceDe } from '../contexto.ts';
+import { factorAlcanzadoDe } from '../contexto.ts';
 import { ErrorDeMotor } from '../errores.ts';
 import { detenerRuta } from './04-rutas.ts';
 import {
@@ -524,7 +524,7 @@ function preciosDeLaVenta(ctx: Contexto, comarca: IdComarca): Readonly<Record<Re
       ctx.mundo.comarcas[comarca],
       r,
       ctx.reglas.mercado,
-      alcanceDe(ctx, comarca, r),
+      factorAlcanzadoDe(ctx, comarca, r),
     ),
   );
 }

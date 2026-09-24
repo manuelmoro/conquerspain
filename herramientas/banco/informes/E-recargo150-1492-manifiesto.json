@@ -1,0 +1,91 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 4,
+    "robots": 8,
+    "reglas": 1
+  },
+  "revision": "bfcf751b6b84f17bb104ff27b853a18f2f561707",
+  "etiqueta": "E-recargo150-1492",
+  "cambios": "mercado.recargoPorJornadaMil=150 (ensayo, revertido)",
+  "campanya": {
+    "semilla": "1492",
+    "semillas": [
+      "1492",
+      "1492-2",
+      "1492-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "ab8c3cc711a45268bab8d87df3fe39d2df23f7e722abf25849c0141ce57f6a57"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1492",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "748572ea8e1eabf758a330f99ffc9b2c896c804a5a0779b7b4092279d68be019",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "02f12c3e3d1f426d6ccdb0708bce4d7407e34f6252c45c8fe6b30a12a31ed870",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "75251129842e14c57dffb4a8b606a365575c02c404cd2b96c5b527f750057555",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "d95dd58698414ae2348bd3a866bfbab3c43364521a3889bdedf0d9ac02a5f58d",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "759969cea128dffe8321e0b4688c4687ce67c6f5ef18b6ec27e3e69b85f1aabc",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "3feeb83f22c3e1e5dd7e1f8846a2c99a4825bd6a70c3da8b06cab6b5e737d297",
+      "visitasCompletas": true
+    }
+  ]
+}

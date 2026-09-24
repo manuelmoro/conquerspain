@@ -986,3 +986,42 @@ Llevar sal o hierro **pierde dinero por construcción**, antes de comisiones y d
 115 filas, escasez 10 (antes 9): con más margen, sigue sin haber bolsa. **Dos muros a la vez**, el
 margen y el dinero; arreglar uno solo no enseña nada, y arreglar los dos es decidir cuánto debe
 valer el comercio en el juego. **Decisión pendiente del usuario.**
+
+## 24-09-2026 · La distancia paga el camino (T-057), y el comercio existe
+
+**Decisión del usuario:** que la distancia pague el camino, con un fondo de comercio.
+
+**Lo que descubrió la medición antes de elegir cifra.** Con los seis niveles de abundancia no hay a
+la vez un gradiente empinado y largo: con un escalón por jornada (`E-fondo-escalon1`, ya con el
+fondo lleno a 200 maravedís en dos recuas) el precio se **satura en el 120 % a cinco jornadas**, las
+plazas del mercader vuelven a cotizar casi igual y no sale un negocio. El techo del 120 % limita la
+diferencia de la sal a unos 7 maravedís por carga en cualquier distancia.
+
+**Cambio adoptado** (T-057): el factor de una plaza es el de la fuente más barata puesta allí,
+`abundancia(fuente) + 20 % × jornadas`, hasta el 200 %. Probado primero con una versión provisional
+(`E-recargo120`, `E-recargo200`) y después con el código definitivo en las tres campañas:
+
+| Recargo | Filas (1492 / 1085 / 1212) | Total | Negocios | Margen neto |
+|---:|---|---:|---:|---:|
+| Base `T-056` | 116 / 118 / 114 | 348 | 0 | 0 |
+| 150 (`E-recargo150`) | 117 / 112 / 111 | 340 | 29 | +647 |
+| **200 (`T-057`)** | **120 / 110 / 111** | **341** | **181** | **+7209** |
+| 250 (`E-recargo250`) | 117 / 109 / 111 | 337 | 260 | +10 221 |
+
+**Primer comercio de verdad de toda la investigación**: arrieros en las tres campañas (hasta 48
+negocios y +1957 en una partida) y mercaderes en las tres. La escasez mejora (12 / 11 / 9 frente a
+9 / 11 / 8).
+
+**Lo que cuesta:** el recuento baja de 348 a 341 **con cualquier recargo**. No es el comercio: es
+que lejos de la fuente la sal y el hierro valen el doble (mediana de 1085 al turno 100: sal de
+12 600 a 27 110, hierro de 26 400 a 48 000, pan +12 %, madera +18 %). Se pierden `ganadores` y `obra
+mayor` en 1085 (los monjes ganan las tres), cinco horquillas de prestigio y dos filas de ausencia de
+los salineros. **Adoptado igualmente**: el comercio era imposible por construcción, y queda una
+prueba sobre las tablas que impide que vuelva a serlo. Recuperar el recuento es lo siguiente.
+
+**Fondo de comercio** (T-056, robots 8): dos reglas descartadas antes de la buena —guardar siempre
+mata de hambre a los arrieros de Lugo; devolverla con el almacén bajo el colchón deja 1492 sin un
+negocio—. La adoptada: la bolsa viaja cargada y solo vuelve a casa si hay escasez.
+
+**Aparte:** el capítulo de comercio del prestigio sigue a 0 en todas las casas, porque solo cuenta
+**ferias destacadas**, no negocios. Es el criterio 3 de T-053.

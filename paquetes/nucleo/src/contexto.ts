@@ -3,10 +3,10 @@ import type { Calendario, ClimaAnual, EstadoEstacional } from './reglas/calendar
 import { calendarioDe, climaDelAnyo, estadoEstacionalDe } from './reglas/calendario.ts';
 import type { EstadoPartida } from './tipos/estado.ts';
 import { jornadasAdministrativasMil, jornadasDesde } from './reglas/administracion.ts';
-import { nivelAlcanzadoMil } from './reglas/precios.ts';
+import { factorAlcanzadoMil } from './reglas/precios.ts';
 import type { IdComarca } from './tipos/ids.ts';
 import type { Recurso } from './tipos/recursos.ts';
-import type { Mundo, NivelPotencial } from './tipos/mundo.ts';
+import type { Mundo } from './tipos/mundo.ts';
 import type { Orden } from './tipos/ordenes.ts';
 import type { TablasDeReglas } from './tipos/reglas.ts';
 import type { NombreFase, Suceso } from './tipos/cronica.ts';
@@ -39,11 +39,11 @@ export interface Contexto {
   fase: NombreFase;
   /**
    * Memoria del turno para el precio base de las plazas (ficha T-054): jornadas de verano desde
-   * cada plaza y nivel de potencial que alcanza. Es solo velocidad —la cuenta es pura y siempre da
+   * cada plaza y factor de precio que alcanza (T-057). Es solo velocidad —la cuenta es pura y siempre da
    * lo mismo—, y se tira al acabar el turno.
    */
   readonly jornadasDesdePlaza: Map<string, ReadonlyMap<string, number>>;
-  readonly alcances: Map<string, NivelPotencial>;
+  readonly alcances: Map<string, number>;
 }
 
 /**
@@ -79,15 +79,15 @@ export function crearContexto(
 }
 
 /**
- * El nivel de potencial que alcanza una comarca, con la memoria del turno (ficha T-054). Solo las
- * plazas necesitan precio —diez o veinte por partida—, asi que se mide desde cada una y no desde
- * las doscientas comarcas del mapa. La memoria es solo velocidad: la cuenta es pura.
+ * El factor de precio que alcanza una comarca, con la memoria del turno (fichas T-054 y T-057).
+ * Solo las plazas necesitan precio —diez o veinte por partida—, asi que se mide desde cada una y no
+ * desde las doscientas comarcas del mapa. La memoria es solo velocidad: la cuenta es pura.
  */
-export function alcanceDe(
+export function factorAlcanzadoDe(
   ctx: Contexto,
   comarca: IdComarca,
   recurso: Recurso,
-): NivelPotencial | undefined {
+): number | undefined {
   const potencial = ctx.reglas.mercado.potencialDeRecurso[recurso];
   if (potencial === undefined) return undefined;
   const clave = `${comarca}|${potencial}`;
@@ -101,7 +101,7 @@ export function alcanceDe(
     );
     ctx.jornadasDesdePlaza.set(comarca, jornadas);
   }
-  const nivel = nivelAlcanzadoMil(potencial, jornadas, ctx.mundo.comarcas, ctx.reglas.mercado);
-  ctx.alcances.set(clave, nivel);
-  return nivel;
+  const factor = factorAlcanzadoMil(potencial, jornadas, ctx.mundo.comarcas, ctx.reglas.mercado);
+  ctx.alcances.set(clave, factor);
+  return factor;
 }

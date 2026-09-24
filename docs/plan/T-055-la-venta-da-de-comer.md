@@ -1,6 +1,6 @@
 # T-055 · La venta da de comer a las recuas
 
-**Fase:** 2 · Motor · **Depende de:** T-053, T-054, T-056 · **Estado:** en curso
+**Fase:** 2 · Motor · **Depende de:** T-053, T-054, T-056, T-057 · **Estado:** hecha (24-09-2026)
 
 ## 1. Contexto
 
@@ -113,8 +113,8 @@ npm run banco:comparar -- herramientas/banco/informes/T-055-1492.csv herramienta
 | # | Criterio | Estado |
 |---|---|---|
 | 1 | La misma carga llega más lejos con una venta en el camino | **Cumple.** Seis panes y 40 maravedís, de la vega a la costa: sin venta, el segundo turno se queda con hambre en el camino; con venta en el río, llega con 10 acémilas y 4 panes, y ha pagado 18 maravedís |
-| 2 | `negociosRentables` > 0 | **No cumple.** Pasa a [T-056](T-056-el-negocio-en-limpio.md) |
-| 3 | La escasez no empeora | **Cumple.** 9 / 11 / 8 filas, igual que la base |
+| 2 | `negociosRentables` > 0 | **Cumple** desde T-056 y T-057: 181 negocios en las nueve partidas, margen neto +7209, con negocios en las tres campañas |
+| 3 | La escasez no empeora | **Cumple.** 9 / 11 / 8 filas con la venta; 12 / 11 / 9 con el comercio en marcha (`T-057-*`) |
 | 4 | `npm run verificar` | **Cumple** |
 
 **Lo medido** (base `T-055-*`, nueva `T-055b-*`, robots 5): el recuento pasa de 116 / 118 / 112 a
@@ -127,4 +127,4 @@ ganancia» (134 turnos). El sitio ya no es el muro: el robot cuenta la ganancia 
 acolchados de la orden y tiene 47 maravedís de bolsa. Eso es lógica del robot, fuera del alcance de
 esta ficha, y está en [T-056](T-056-el-negocio-en-limpio.md).
 
-**Falta:** hacer T-056 y volver aquí a comprobar el criterio 2 con la campaña de §7.
+**Cerrada el 24-09-2026**, con los cuatro criterios cumplidos. El criterio 2 necesitó dos fichas más: que el robot contara la ganancia con el precio esperado y guardara un fondo de comercio ([T-056](T-056-el-negocio-en-limpio.md)), y que la distancia pagara el camino ([T-057](T-057-la-distancia-paga-el-camino.md)).

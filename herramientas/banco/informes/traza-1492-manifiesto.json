@@ -1,0 +1,61 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 4,
+    "robots": 7,
+    "reglas": 1
+  },
+  "revision": "bfcf751b6b84f17bb104ff27b853a18f2f561707",
+  "etiqueta": "traza-1492",
+  "cambios": "",
+  "campanya": {
+    "semilla": "1492",
+    "semillas": [
+      "1492"
+    ],
+    "turnos": 161,
+    "repeticiones": 1,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "d7f79e6ba4f07f4859c83228a86a8d1881c5567e83eff86511711ca4768c0d54"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1492",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "c407944e636adf9199ba73584e13bcbb41f70f8a9d438ee56e942c3c6f0b5209",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1492",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "daa5d329b57cd48581e0bda047cc1d53300da5e3b8ffba975b1ebfdcbf9ec328",
+      "visitasCompletas": true
+    }
+  ]
+}

@@ -19,18 +19,21 @@ export const MERCADO: DatosMercado = {
   // En solitario los menores cubren todo el tope; con mucho comercio entre jugadores desaparecen.
   liquidezMercaderesMenoresMil: 1000,
   margenMercaderesMenoresMil: 100,
-  // Lo que sobra vale menos donde sobra, y lo que no hay cuesta mas traerlo (ficha T-052 §4.2).
-  // Indexada por el nivel de potencial de la comarca, de 0 a 5. El precio del catalogo es el de
-  // una comarca corriente (potencial 2): desde ahi, la escasez encarece poco y la abundancia
-  // abarata mucho, porque lo que mueve el comercio es de donde **sale** la mercancia. La sal
-  // existe en 12 comarcas de 403 y el hierro en 17: entre una salina y el secano hay un 70 % de
-  // diferencia, mientras que el pan y la lana, que se dan en todas partes, apenas se mueven.
+  // Lo que vale un recurso **en su fuente**, por el nivel de potencial, de 1 a 5 (fichas T-052
+  // §4.2 y T-057): la abundancia abarata, porque lo que mueve el comercio es de donde **sale** la
+  // mercancia. El nivel 2 es el precio del catalogo. Una comarca de nivel 0 no es fuente; su
+  // entrada es la de una plaza que se tantea sin mirar el mapa. Lejos de la fuente manda el
+  // recargo por jornada de mas abajo.
   abundanciaMil: [1200, 1100, 1000, 900, 800, 700],
   // Un puerto de mar come pescado, pero su pan sigue mirando a la labor: Bilbao importaba grano
   // y lo pagaba caro, y esa es justo la decision que se quiere. Los maravedis son la moneda y no
   // estan aqui: valen lo mismo en todas partes.
-  // Tres jornadas por escalon: el hierro de Vizcaya llega barato a sus vecinas y caro a Castilla.
-  jornadasPorEscalonDeAbundancia: 3,
+  // Cada jornada desde la fuente suma un 20 % del precio corriente, hasta el doble (ficha T-057):
+  // la sal gana 2,8 maravedis por carga y jornada y el hierro 4,8, por encima de lo que come la
+  // recua (hasta 1,2 contando la vuelta en vacio). Con 120 apenas hay negocios; con 200, los
+  // arrieros cierran unos treinta por partida.
+  recargoPorJornadaMil: 200,
+  techoDeLejaniaMil: 2000,
   potencialDeRecurso: {
     pan: 'labor',
     madera: 'monte',

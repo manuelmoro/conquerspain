@@ -59,7 +59,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-044](T-044-cronica-y-niebla.md) | Fase 12: crónica, niebla e información fechada | **hecha** | T-034 |
 | [T-045](T-045-mayordomo-y-colas.md) | Colas, rutas permanentes, mayordomo y plan de temporada | **hecha** | T-044 |
 | [T-046](T-046-banco-de-pruebas.md) | Banco de pruebas: robots por casa e informes | **hecha** | T-045 |
-| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | en curso | T-048, T-049, T-050, T-051, T-052, T-053, T-055, T-056 |
+| [T-047](T-047-equilibrio-v1.md) | Ajuste de equilibrio v1 hasta cumplir criterios | en curso | T-048, T-049, T-050, T-051, T-052, T-053, T-055, T-056, T-057 |
 | [T-048](T-048-auditoria-del-banco.md) | Métricas auditables del banco | **hecha** | T-046 |
 | [T-049](T-049-preparacion-pura-de-partidas.md) | Preparación de partidas sin servidor | **hecha** | T-048 |
 | [T-050](T-050-robots-viables.md) | Robots que ejecutan sus vías | **hecha** | T-048, T-049 |
@@ -67,8 +67,9 @@ mapa completo; ESTADO.md es la aguja.
 | [T-052](T-052-geografia-de-precios.md) | Geografía de precios: el precio base, por comarca | **hecha** | T-048, T-050 |
 | [T-053](T-053-plazas-donde-comerciar.md) | Plazas donde comerciar: densidad y cómo se abre una | en curso | T-049, T-052 |
 | [T-054](T-054-el-precio-y-la-distancia.md) | El precio y la distancia a donde se produce | **hecha** | T-052 |
-| [T-055](T-055-la-venta-da-de-comer.md) | La venta da de comer a las recuas | en curso | T-053, T-054, T-056 |
-| [T-056](T-056-el-negocio-en-limpio.md) | El negocio se cuenta con el precio que se espera | en curso | T-055 (su mecánica) |
+| [T-055](T-055-la-venta-da-de-comer.md) | La venta da de comer a las recuas | **hecha** | T-053, T-054, T-056, T-057 |
+| [T-056](T-056-el-negocio-en-limpio.md) | El negocio se cuenta con el precio que se espera | en curso | T-055 (su mecánica), T-057 |
+| [T-057](T-057-la-distancia-paga-el-camino.md) | La distancia paga el camino | en curso | T-054 |
 
 > **19-09-2026 · revisión del plan solicitada por el usuario.** Antes de seguir construyendo,
 > corregir el diagnóstico del equilibrio: **T-048 → T-049 → T-050 → T-051 → T-047 → T-060**.

@@ -6,7 +6,7 @@
 // recursos en el orden de `RECURSOS`, asi que el resultado no depende del orden de llegada.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
-import { alcanceDe } from '../contexto.ts';
+import { factorAlcanzadoDe } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { factorDeAcontecimientos, precioBaseEfectivo } from '../reglas/acontecimientos.ts';
@@ -102,7 +102,7 @@ function abrirMercado(ctx: Contexto, plaza: Plaza): void {
           ctx.mundo.comarcas[plaza.comarca],
           r,
           ctx.reglas.mercado,
-          alcanceDe(ctx, plaza.comarca, r),
+          factorAlcanzadoDe(ctx, plaza.comarca, r),
         ),
       ),
       ultimoVolumen: recursosSegun(() => 0),
@@ -271,7 +271,7 @@ function recursoEnLaPlaza(ctx: Contexto, comarca: IdComarca, recurso: Recurso): 
     ctx.mundo.comarcas[comarca],
     recurso,
     ctx.reglas.mercado,
-    alcanceDe(ctx, comarca, recurso),
+    factorAlcanzadoDe(ctx, comarca, recurso),
   );
   return {
     ...datos,
