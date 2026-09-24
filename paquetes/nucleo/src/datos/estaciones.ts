@@ -12,8 +12,10 @@ function estacionDelMes(mes: number): Estacion {
 export const ESTACIONES: DatosEstaciones = {
   turnosPorAnyo: 24,
   estacionPorTurno: Array.from({ length: 24 }, (_, i) => estacionDelMes(Math.floor(i / 2) + 1)),
-  // El pan sigue la estacion: el verano llena el granero y el invierno lo vacia (docs/03 §3.4).
-  factorPanMil: { primavera: 800, verano: 1600, otonyo: 1000, invierno: 600 },
+  // El pan sigue la estacion: el verano llena el granero y el invierno lo vacia (docs/03 §3.4). Con
+  // el invierno al 60 %, seis turnos de despensa lo absorbian todo y la mitad de las casas no pasaba
+  // un turno de hambre en doscientos; al 50 %, el ano aprieta sin ahogar (T-047).
+  factorPanMil: { primavera: 800, verano: 1600, otonyo: 1000, invierno: 500 },
   factorObraPiedraMil: { primavera: 1000, verano: 1000, otonyo: 1000, invierno: 2000 },
   factorObraMaderaMil: { primavera: 1000, verano: 1000, otonyo: 1000, invierno: 1500 },
   // Primera quincena de marzo y de noviembre: los caminos se embarran.

@@ -1,6 +1,6 @@
 # T-056 · El negocio se cuenta con el precio que se espera
 
-**Fase:** 2 · Motor (banco de pruebas) · **Depende de:** T-055 (su mecánica) · **Estado:** en curso
+**Fase:** 2 · Motor (banco de pruebas) · **Depende de:** T-055 (su mecánica) · **Estado:** hecha (24-09-2026)
 
 ## 1. Contexto
 
@@ -194,3 +194,11 @@ Medido aparte, el fondo **ayuda**: sin él, con el precio de T-057, 1085 y 1212 
 
 **Falta:** el criterio 3. La pérdida no viene del robot ni del fondo, sino del precio nuevo (T-057
 §7): se cierra cuando T-047 recupere el recuento.
+
+## Cierre (24-09-2026)
+
+El criterio 3 se cumple con las iteraciones de T-047 que vinieron después: la Mesta conoce sus
+cañadas y trashuma (T-058) y el invierno aprieta al 50 %. Base `E-invierno500` (robots 8):
+**118 / 116 / 119 = 353**, frente a los 348 de la base de antes del comercio (116 / 118 / 114). En
+total queda por encima; por semillas, 1492 y 1212 por encima y 1085 dos filas por debajo (116
+frente a 118). El comercio sigue en marcha en las tres campañas.

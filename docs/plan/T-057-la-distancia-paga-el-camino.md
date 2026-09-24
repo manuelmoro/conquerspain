@@ -1,6 +1,6 @@
 # T-057 · La distancia paga el camino
 
-**Fase:** 2 · Motor · **Depende de:** T-054 · **Estado:** en curso
+**Fase:** 2 · Motor · **Depende de:** T-054 · **Estado:** hecha (24-09-2026)
 
 ## 1. Contexto
 
@@ -131,3 +131,11 @@ ausencia de los salineros.
 comercio era imposible por construcción, cero negocios en nueve partidas— y deja una prueba que
 impide que vuelva. **Falta** recuperar el recuento, que es trabajo de equilibrio: lo siguiente en
 [T-047](T-047-equilibrio-v1.md). Esta ficha se cierra cuando se recupere.
+
+## Cierre (24-09-2026)
+
+El criterio 3 se cumple con las iteraciones de T-047 que vinieron después: la Mesta conoce sus
+cañadas y trashuma (T-058) y el invierno aprieta al 50 %. Base `E-invierno500` (robots 8):
+**118 / 116 / 119 = 353**, frente a los 348 de la base de antes del comercio (116 / 118 / 114). En
+total queda por encima; por semillas, 1492 y 1212 por encima y 1085 dos filas por debajo (116
+frente a 118). El comercio sigue en marcha en las tres campañas.

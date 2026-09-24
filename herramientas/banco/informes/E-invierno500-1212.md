@@ -1,0 +1,468 @@
+# Banco de pruebas · semilla 1212
+
+200 turnos · 3 partida(s) · casas: Mesta, Ferrones, Canteros, Mercaderes, Monjes, Salineros, Arrieros, Hortelanos · escenario **normal** (Las reglas del juego tal cual.) · mundo `v1`
+
+## Resumen
+
+Tras 200 turnos, **Hortelanos** va en cabeza con 874 de prestigio (218,0 % de la mediana) y **Ferrones** cierra la clasificación con 42 (10,5 % de la mediana). La mediana de prestigio es 401. 3 de las 5 alertas de salud están en rojo.
+
+## Procedencia
+
+Con qué se sacó este informe. Dos informes con distinta procedencia no se comparan sin más (ficha T-048 §4.1).
+
+| Dato | Valor |
+| --- | --- |
+| Revisión del código | `702fb5cd45e685534e9c7ff703e7c5ede73f1005` |
+| Etiqueta del informe | E-invierno500-1212 |
+| Cambios experimentales | estaciones.factorPanMil.invierno=500 (ensayo T-047) |
+| Versiones | banco 0.1.0 · métricas 4 · robots 8 · reglas 1 |
+| Semillas | 1212, 1212-2, 1212-3 |
+| Campaña | 200 turnos · 3 repetición(es) · cadencias 1 y 6 · escenario normal |
+| Mundo | v1, 403 comarcas, huella `aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550` |
+| Tablas del juego | huella `fea056aae1d16f6f1465a0628f25e179c432f8e84c7d4cf2ea9f43116ddcf113` |
+| Objetivos de T-047 | huella `534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989` |
+
+## Evaluación de los criterios de T-047
+
+El juicio, criterio a criterio y partida a partida. Un «no evaluable» impide cerrar el equilibrio igual que un «incumple».
+
+Quedan 38 filas sin cerrar de 157.
+
+119 cumplen, 35 incumplen y 3 no se pueden evaluar.
+Ninguna fila depende de una tarea sin terminar.
+
+| Criterio | Ámbito | Semilla | Casa | Turno | Observado | Unidad | Objetivo | Estado | Evidencia |
+| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- |
+| prestigio | casa y partida | 1212 | arrieros | — | 96,9 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🟢 cumple | prestigio 354 sobre una mediana exacta de 365,5 |
+| prestigio | casa y partida | 1212 | canteros | — | 103,1 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🟢 cumple | prestigio 377 sobre una mediana exacta de 365,5 |
+| prestigio | casa y partida | 1212 | ferrones | — | -2,5 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio -9 sobre una mediana exacta de 365,5 |
+| prestigio | casa y partida | 1212 | hortelanos | — | 338,4 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 1237 sobre una mediana exacta de 365,5 |
+| prestigio | casa y partida | 1212 | mercaderes | — | 52,0 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 190 sobre una mediana exacta de 365,5 |
+| prestigio | casa y partida | 1212 | mesta | — | 178,9 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 654 sobre una mediana exacta de 365,5 |
+| prestigio | casa y partida | 1212 | monjes | — | 189,3 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 692 sobre una mediana exacta de 365,5 |
+| prestigio | casa y partida | 1212 | salineros | — | 30,9 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 113 sobre una mediana exacta de 365,5 |
+| actividad | casa y partida | 1212 | arrieros | — | 1,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 3 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | arrieros | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212 | canteros | — | 1 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 2 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | canteros | — | 1 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 2 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212 | ferrones | — | 3,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 7 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | ferrones | — | 1,5 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 3 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212 | hortelanos | — | 2 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 4 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | hortelanos | — | 2 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 4 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212 | mercaderes | — | 0,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 1 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | mercaderes | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212 | mesta | — | 4,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 9 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | mesta | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212 | monjes | — | 1,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 3 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | monjes | — | 1,5 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 3 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212 | salineros | — | 4 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 8 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212 | salineros | — | 1 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 2 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| escasez | casa y partida | 1212 | arrieros | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| escasez | casa y partida | 1212 | canteros | — | 3 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 6 de 200 turnos |
+| escasez | casa y partida | 1212 | ferrones | — | 34,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 69 de 200 turnos |
+| escasez | casa y partida | 1212 | hortelanos | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| escasez | casa y partida | 1212 | mercaderes | — | 6,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 13 de 200 turnos |
+| escasez | casa y partida | 1212 | mesta | — | 7,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 15 de 200 turnos |
+| escasez | casa y partida | 1212 | monjes | — | 5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 10 de 200 turnos |
+| escasez | casa y partida | 1212 | salineros | — | 8,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 17 de 200 turnos |
+| precios | partida | 1212 | — | — | 0 | turnos seguidos de mercado abierto en un extremo | < 10 turnos | 🟢 cumple | ningún precio se quedó más de un turno en un extremo |
+| tierra | partida | 1212 | — | — | 55,0 | % de comarcas del mapa jugado que no toca nadie | < 5 % | ⚪ no evaluable | 137 de 249 comarcas sin tocar; hay pasos sin reconstruir, así que es una cota superior |
+| ausencia | casa y partida | 1212 | arrieros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 107 · a mano 107 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | arrieros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 122 · a mano 122 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | canteros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 316 · a mano 316 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | canteros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 375 · a mano 375 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | ferrones | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques -51 · a mano -51 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | ferrones | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques -55 · a mano -55 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | hortelanos | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 383 · a mano 383 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | hortelanos | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 898 · a mano 898 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | mercaderes | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 61 · a mano 61 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | mercaderes | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 155 · a mano 155 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | mesta | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 167 · a mano 167 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | mesta | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 334 · a mano 334 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | monjes | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 307 · a mano 307 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | monjes | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 640 · a mano 640 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | salineros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 257 · a mano 257 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212 | salineros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 194 · a mano 194 · el dominio coincide turno a turno |
+| dominio | partida | 1212 | — | — | 54 | turno del primer «Un pequeño dominio» | 60–100 turnos (extremos incluidos) | 🔴 incumple | 4 de 8 casas lo alcanzan; la primera en T54 |
+| obra mayor | partida | 1212 | — | — | 105 | turno de la primera obra mayor terminada | 80–130 turnos (extremos incluidos) | 🟢 cumple | 5 de 8 casas lo alcanzan; la primera en T105 |
+| prestigio | casa y partida | 1212-2 | arrieros | — | 35,3 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 152 sobre una mediana exacta de 430 |
+| prestigio | casa y partida | 1212-2 | canteros | — | 97,7 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🟢 cumple | prestigio 420 sobre una mediana exacta de 430 |
+| prestigio | casa y partida | 1212-2 | ferrones | — | -4,0 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio -17 sobre una mediana exacta de 430 |
+| prestigio | casa y partida | 1212-2 | hortelanos | — | 151,2 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 650 sobre una mediana exacta de 430 |
+| prestigio | casa y partida | 1212-2 | mercaderes | — | 39,8 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 171 sobre una mediana exacta de 430 |
+| prestigio | casa y partida | 1212-2 | mesta | — | 102,3 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🟢 cumple | prestigio 440 sobre una mediana exacta de 430 |
+| prestigio | casa y partida | 1212-2 | monjes | — | 150,2 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 646 sobre una mediana exacta de 430 |
+| prestigio | casa y partida | 1212-2 | salineros | — | 129,1 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 555 sobre una mediana exacta de 430 |
+| actividad | casa y partida | 1212-2 | arrieros | — | 1,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 3 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | arrieros | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-2 | canteros | — | 4,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 9 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | canteros | — | 1 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 2 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-2 | ferrones | — | 3,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 7 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | ferrones | — | 1,5 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 3 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-2 | hortelanos | — | 2 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 4 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | hortelanos | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-2 | mercaderes | — | 0 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 0 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | mercaderes | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-2 | mesta | — | 1 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 2 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | mesta | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-2 | monjes | — | 1,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 3 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | monjes | — | 1,5 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 3 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-2 | salineros | — | 3 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 6 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-2 | salineros | — | 1 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 2 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| escasez | casa y partida | 1212-2 | arrieros | — | 9,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 19 de 200 turnos |
+| escasez | casa y partida | 1212-2 | canteros | — | 3 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 6 de 200 turnos |
+| escasez | casa y partida | 1212-2 | ferrones | — | 34,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 69 de 200 turnos |
+| escasez | casa y partida | 1212-2 | hortelanos | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| escasez | casa y partida | 1212-2 | mercaderes | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| escasez | casa y partida | 1212-2 | mesta | — | 20,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 41 de 200 turnos |
+| escasez | casa y partida | 1212-2 | monjes | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| escasez | casa y partida | 1212-2 | salineros | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| precios | partida | 1212-2 | — | — | 0 | turnos seguidos de mercado abierto en un extremo | < 10 turnos | 🟢 cumple | ningún precio se quedó más de un turno en un extremo |
+| tierra | partida | 1212-2 | — | — | 61,8 | % de comarcas del mapa jugado que no toca nadie | < 5 % | ⚪ no evaluable | 154 de 249 comarcas sin tocar; hay pasos sin reconstruir, así que es una cota superior |
+| ausencia | casa y partida | 1212-2 | arrieros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 128 · a mano 128 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | arrieros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 359 · a mano 359 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | canteros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 320 · a mano 320 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | canteros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 432 · a mano 432 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | ferrones | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques -51 · a mano -51 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | ferrones | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques -55 · a mano -55 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | hortelanos | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 429 · a mano 429 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | hortelanos | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 725 · a mano 725 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | mercaderes | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 107 · a mano 107 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | mercaderes | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 147 · a mano 147 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | mesta | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 193 · a mano 193 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | mesta | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 332 · a mano 332 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | monjes | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 252 · a mano 252 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | monjes | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 526 · a mano 526 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | salineros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 322 · a mano 322 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-2 | salineros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 429 · a mano 429 · el dominio coincide turno a turno |
+| dominio | partida | 1212-2 | — | — | 54 | turno del primer «Un pequeño dominio» | 60–100 turnos (extremos incluidos) | 🔴 incumple | 5 de 8 casas lo alcanzan; la primera en T54 |
+| obra mayor | partida | 1212-2 | — | — | 70 | turno de la primera obra mayor terminada | 80–130 turnos (extremos incluidos) | 🔴 incumple | 3 de 8 casas lo alcanzan; la primera en T70 |
+| prestigio | casa y partida | 1212-3 | arrieros | — | 74,7 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 292 sobre una mediana exacta de 391 |
+| prestigio | casa y partida | 1212-3 | canteros | — | 95,7 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🟢 cumple | prestigio 374 sobre una mediana exacta de 391 |
+| prestigio | casa y partida | 1212-3 | ferrones | — | 38,6 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 151 sobre una mediana exacta de 391 |
+| prestigio | casa y partida | 1212-3 | hortelanos | — | 188,0 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 735 sobre una mediana exacta de 391 |
+| prestigio | casa y partida | 1212-3 | mercaderes | — | 39,6 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 155 sobre una mediana exacta de 391 |
+| prestigio | casa y partida | 1212-3 | mesta | — | 104,3 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🟢 cumple | prestigio 408 sobre una mediana exacta de 391 |
+| prestigio | casa y partida | 1212-3 | monjes | — | 198,0 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 774 sobre una mediana exacta de 391 |
+| prestigio | casa y partida | 1212-3 | salineros | — | 144,5 | % de la mediana | 80–120 % de la mediana (extremos incluidos) | 🔴 incumple | prestigio 565 sobre una mediana exacta de 391 |
+| actividad | casa y partida | 1212-3 | arrieros | — | 1 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 2 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | arrieros | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-3 | canteros | — | 1 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 2 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | canteros | — | 1 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 2 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-3 | ferrones | — | 4,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 9 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | ferrones | — | 1 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 2 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-3 | hortelanos | — | 2 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 4 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | hortelanos | — | 2 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 4 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-3 | mercaderes | — | 0 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 0 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | mercaderes | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-3 | mesta | — | 5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 10 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | mesta | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-3 | monjes | — | 3 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 6 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | monjes | — | 1 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 2 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| actividad | casa y partida | 1212-3 | salineros | — | 2,5 | % de turnos sin proponer órdenes | < 10 % | 🟢 cumple | 5 de 200 turnos en que entró el robot |
+| decisiones útiles | casa y partida | 1212-3 | salineros | — | 0 | % de turnos sin decisión útil | < 10 % | 🟢 cumple | 0 de 200 turnos sin ninguna orden que trabajara ni plan en marcha |
+| escasez | casa y partida | 1212-3 | arrieros | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| escasez | casa y partida | 1212-3 | canteros | — | 1,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 3 de 200 turnos |
+| escasez | casa y partida | 1212-3 | ferrones | — | 3,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 7 de 200 turnos |
+| escasez | casa y partida | 1212-3 | hortelanos | — | 0 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 0 de 200 turnos |
+| escasez | casa y partida | 1212-3 | mercaderes | — | 4 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 8 de 200 turnos |
+| escasez | casa y partida | 1212-3 | mesta | — | 9 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 18 de 200 turnos |
+| escasez | casa y partida | 1212-3 | monjes | — | 1 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🔴 incumple | 2 de 200 turnos |
+| escasez | casa y partida | 1212-3 | salineros | — | 2,5 | % de turnos con escasez | 2–15 % (extremos incluidos) | 🟢 cumple | 5 de 200 turnos |
+| precios | partida | 1212-3 | — | — | 3 | turnos seguidos de mercado abierto en un extremo | < 10 turnos | 🟢 cumple | local-tierra-de-valladolid, sal: 3 turnos en el techo; la plaza cerrada rompe la racha |
+| tierra | partida | 1212-3 | — | — | 47,4 | % de comarcas del mapa jugado que no toca nadie | < 5 % | ⚪ no evaluable | 118 de 249 comarcas sin tocar; hay pasos sin reconstruir, así que es una cota superior |
+| ausencia | casa y partida | 1212-3 | arrieros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 146 · a mano 146 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | arrieros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 203 · a mano 203 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | canteros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 316 · a mano 316 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | canteros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 384 · a mano 384 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | ferrones | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 36 · a mano 36 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | ferrones | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 15 · a mano 15 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | hortelanos | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 296 · a mano 296 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | hortelanos | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 695 · a mano 695 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | mercaderes | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 80 · a mano 80 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | mercaderes | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 121 · a mano 121 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | mesta | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 192 · a mano 192 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | mesta | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 361 · a mano 361 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | monjes | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 449 · a mano 449 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | monjes | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 661 · a mano 661 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | salineros | T100 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 330 · a mano 330 · el dominio coincide turno a turno |
+| ausencia | casa y partida | 1212-3 | salineros | T200 | 0 | % de diferencia de prestigio con el mismo plan | < 5 % | 🟢 cumple | por bloques 293 · a mano 293 · el dominio coincide turno a turno |
+| dominio | partida | 1212-3 | — | — | 43 | turno del primer «Un pequeño dominio» | 60–100 turnos (extremos incluidos) | 🔴 incumple | 4 de 8 casas lo alcanzan; la primera en T43 |
+| obra mayor | partida | 1212-3 | — | — | 98 | turno de la primera obra mayor terminada | 80–130 turnos (extremos incluidos) | 🟢 cumple | 2 de 8 casas lo alcanzan; la primera en T98 |
+| ganadores | campaña | 1212 | — | — | 0 | repeticiones ganadas por la misma casa | ninguna casa gana las 3 | 🟢 cumple | ganan hortelanos, hortelanos, monjes |
+
+## Salud del juego (diagnóstico antiguo)
+
+Las cinco alertas de T-046 §4.5. Son más flojas que los criterios de T-047 y **no sirven para cerrar el equilibrio**: se conservan porque señalan de un vistazo dónde mirar.
+
+- 🔴 **EN ROJO** · Casas fuera de la horquilla 80 %–120 % de la mediana de prestigio
+  - Arrieros: 66,3 %
+  - Ferrones: 10,5 %
+  - Hortelanos: 218,0 %
+  - Mercaderes: 42,9 %
+  - Mesta: 124,9 %
+  - Monjes: 175,6 %
+- 🟢 bien · Más de un 10 % de turnos sin proponer órdenes
+- 🔴 **EN ROJO** · Partidas con escasez crónica (más del 20 % de los turnos)
+  - Ferrones (semilla 1212): 34,5 % de los turnos
+  - Ferrones (semilla 1212-2): 34,5 % de los turnos
+  - Mesta (semilla 1212-2): 20,5 % de los turnos
+- 🟢 bien · Precios pegados al suelo o al techo más de 20 turnos
+- 🔴 **EN ROJO** · Comarcas que no toca nadie en ninguna partida (tierra muerta)
+  - 184 de 403 comarcas
+  - región 01-iberico-alto-duero: 3
+  - región 02-meseta-norte: 7
+  - región 03-cantabrico: 17
+  - región 04-galicia-minho: 27
+  - región 05-central-extremadura: 24
+  - región 06-meseta-sur: 8
+  - región 07-ebro-pirineo: 28
+  - región 08-levante: 15
+  - región 09-andalucia: 47
+  - región 10-portugal-sur: 8
+
+## Clasificación final
+
+Media de las partidas. La escasez, sobre los turnos jugados; los turnos sin órdenes, sobre los turnos en que el robot entró.
+
+| Casa | Prestigio | % mediana | Puesto | Primicias | Población | Comarcas | Maravedís | Escasez | Sin órdenes |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Hortelanos | 874 | 218,0 % | 1 | 3 | 702 | 8 | 956 | 0,0 % | 2,0 % |
+| Monjes | 704 | 175,6 % | 2 | 1 | 1020 | 12 | 870 | 2,0 % | 2,0 % |
+| Mesta | 501 | 124,9 % | 4 | 1 | 170 | 3 | 8428 | 12,5 % | 3,5 % |
+| Salineros | 411 | 102,5 % | 4 | 0 | 661 | 9 | 3931 | 3,5 % | 3,0 % |
+| Canteros | 390 | 97,3 % | 5 | 0 | 136 | 2 | 500 | 2,5 % | 2,0 % |
+| Arrieros | 266 | 66,3 % | 6 | 1 | 76 | 1 | 142 | 3,0 % | 1,5 % |
+| Mercaderes | 172 | 42,9 % | 6 | 0 | 97 | 1 | 99 | 3,5 % | 0,0 % |
+| Ferrones | 42 | 10,5 % | 8 | 0 | 28 | 1 | 132 | 24,0 % | 4,0 % |
+
+## Capítulos de prestigio
+
+| Casa | Población | Territorio | Obras | Caminos | Comercio | Exploración | Ganadería | Industria | Hitos |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Arrieros | 15 | 8 | 40 | 0 | 0 | 141 | 0 | 0 | 88 |
+| Canteros | 27 | 16 | 120 | 0 | 0 | 131 | 0 | 0 | 102 |
+| Ferrones | 5 | 8 | 0 | 0 | 0 | 53 | 0 | 8 | 15 |
+| Hortelanos | 140 | 64 | 200 | 0 | 0 | 205 | 0 | 0 | 265 |
+| Mercaderes | 19 | 11 | 0 | 0 | 0 | 117 | 0 | 0 | 32 |
+| Mesta | 34 | 27 | 40 | 0 | 0 | 40 | 277 | 0 | 142 |
+| Monjes | 204 | 93 | 80 | 0 | 0 | 163 | 0 | 0 | 168 |
+| Salineros | 132 | 75 | 0 | 0 | 0 | 147 | 0 | 0 | 92 |
+
+## La vía de cada casa
+
+Partida a partida: cada robot tiene que hacer lo que distingue a su casa. Cuando no lo hace, el motivo que dio el robot (mapa, reglas, recursos o plan) dice por qué.
+
+| Casa | Semilla | Su vía | ¿La juega? | Por qué no |
+| --- | --- | --- | --- | --- |
+| Arrieros | 1212 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | no sabe precios recientes de dos plazas a su alcance (mapa, 192 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 59 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 30 turnos) |
+| Canteros | 1212 | termina obras mayores | sí |  |
+| Ferrones | 1212 | saca hierro en sus ferrerías y lo vende o lo pone en aperos | **no** | hay escasez: el motor no empieza obras ni expediciones nuevas hasta que haya pan (recursos, 69 turnos); no tiene con qué levantar un edificio esencial de su vía (recursos, 12 turnos); aún no tiene mercado en la capital donde vender lo que sobra (plan, 4 turnos) |
+| Hortelanos | 1212 | vive del pan de sus huertas y vende el que sobra | sí |  |
+| Mercaderes | 1212 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | sí |  |
+| Mesta | 1212 | lleva el ganado de un pasto al otro, esquila y vende la lana | sí |  |
+| Monjes | 1212 | funda pueblas | sí |  |
+| Salineros | 1212 | saca sal o salazón y la vende | sí |  |
+| Arrieros | 1212-2 | lleva mercancía por los caminos y la vende fuera de su tierra | sí |  |
+| Canteros | 1212-2 | termina obras mayores | sí |  |
+| Ferrones | 1212-2 | saca hierro en sus ferrerías y lo vende o lo pone en aperos | **no** | hay escasez: el motor no empieza obras ni expediciones nuevas hasta que haya pan (recursos, 69 turnos); no tiene con qué levantar un edificio esencial de su vía (recursos, 12 turnos); aún no tiene mercado en la capital donde vender lo que sobra (plan, 4 turnos) |
+| Hortelanos | 1212-2 | vive del pan de sus huertas y vende el que sobra | sí |  |
+| Mercaderes | 1212-2 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 136 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 56 turnos); hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento (reglas, 47 turnos) |
+| Mesta | 1212-2 | lleva el ganado de un pasto al otro, esquila y vende la lana | sí |  |
+| Monjes | 1212-2 | funda pueblas | sí |  |
+| Salineros | 1212-2 | saca sal o salazón y la vende | sí |  |
+| Arrieros | 1212-3 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 111 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 67 turnos); hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento (reglas, 39 turnos) |
+| Canteros | 1212-3 | termina obras mayores | sí |  |
+| Ferrones | 1212-3 | saca hierro en sus ferrerías y lo vende o lo pone en aperos | sí |  |
+| Hortelanos | 1212-3 | vive del pan de sus huertas y vende el que sobra | sí |  |
+| Mercaderes | 1212-3 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 123 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 48 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 37 turnos) |
+| Mesta | 1212-3 | lleva el ganado de un pasto al otro, esquila y vende la lana | sí |  |
+| Monjes | 1212-3 | funda pueblas | sí |  |
+| Salineros | 1212-3 | saca sal o salazón y la vende | sí |  |
+
+Medias de las partidas:
+
+| Casa | Lana esquilada | Trashumancias | Ingresos de feria | Pan producido | Madera producido | Piedra producido | Sal producido | Hierro producido | Obras | Obras mayores | Aperos | Jornadas | Comerciado | Vendido fuera | En ruta | Negocios | Con ganancia | Pueblas | Incorporadas |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Arrieros | 0 | 0 | 0 | 4847 | 775 | 0 | 0 | 0 | 12 | 0 | 0 | 438 | 1875 | 26 | 49 | 7 | 7 | 0 | 1 |
+| Canteros | 0 | 0 | 0 | 5458 | 65 | 546 | 0 | 0 | 5 | 1 | 0 | 144 | 1321 | 0 | 0 | 0 | 0 | 0 | 1 |
+| Ferrones | 0 | 0 | 0 | 1236 | 433 | 0 | 0 | 163 | 5 | 0 | 1 | 55 | 560 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Hortelanos | 0 | 0 | 0 | 27116 | 951 | 0 | 0 | 0 | 35 | 2 | 0 | 203 | 1904 | 0 | 0 | 0 | 0 | 0 | 7 |
+| Mercaderes | 0 | 0 | 0 | 4276 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 162 | 1123 | 9 | 33 | 2 | 2 | 0 | 0 |
+| Mesta | 330 | 11 | 0 | 4121 | 1258 | 0 | 0 | 0 | 13 | 0 | 0 | 50 | 1635 | 0 | 0 | 0 | 0 | 0 | 4 |
+| Monjes | 0 | 0 | 0 | 29092 | 3532 | 0 | 0 | 0 | 53 | 1 | 0 | 199 | 1753 | 0 | 0 | 0 | 0 | 6 | 5 |
+| Salineros | 0 | 0 | 0 | 18916 | 0 | 0 | 2073 | 0 | 31 | 0 | 0 | 159 | 1903 | 0 | 0 | 0 | 0 | 0 | 10 |
+
+## Jugar sin estar: el mismo plan, dicho antes
+
+La medida que cuenta (ficha T-051 §4.1.1): el plan que deja quien entra cada seis turnos —colas, órdenes fechadas, rutas y mayordomo— jugado también a mano, día a día. Las mismas decisiones y la misma información; solo cambia cuándo se dicen las órdenes.
+
+| Semilla | Turno | Casa | Plan por bloques | El mismo plan a mano | Diferencia | Dominio |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| 1212 | T100 | arrieros | 107 | 107 | 0,0 % | igual turno a turno |
+| 1212 | T100 | canteros | 316 | 316 | 0,0 % | igual turno a turno |
+| 1212 | T100 | ferrones | -51 | -51 | 0,0 % | igual turno a turno |
+| 1212 | T100 | hortelanos | 383 | 383 | 0,0 % | igual turno a turno |
+| 1212 | T100 | mercaderes | 61 | 61 | 0,0 % | igual turno a turno |
+| 1212 | T100 | mesta | 167 | 167 | 0,0 % | igual turno a turno |
+| 1212 | T100 | monjes | 307 | 307 | 0,0 % | igual turno a turno |
+| 1212 | T100 | salineros | 257 | 257 | 0,0 % | igual turno a turno |
+| 1212 | T200 | arrieros | 122 | 122 | 0,0 % | igual turno a turno |
+| 1212 | T200 | canteros | 375 | 375 | 0,0 % | igual turno a turno |
+| 1212 | T200 | ferrones | -55 | -55 | 0,0 % | igual turno a turno |
+| 1212 | T200 | hortelanos | 898 | 898 | 0,0 % | igual turno a turno |
+| 1212 | T200 | mercaderes | 155 | 155 | 0,0 % | igual turno a turno |
+| 1212 | T200 | mesta | 334 | 334 | 0,0 % | igual turno a turno |
+| 1212 | T200 | monjes | 640 | 640 | 0,0 % | igual turno a turno |
+| 1212 | T200 | salineros | 194 | 194 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | arrieros | 128 | 128 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | canteros | 320 | 320 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | ferrones | -51 | -51 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | hortelanos | 429 | 429 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | mercaderes | 107 | 107 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | mesta | 193 | 193 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | monjes | 252 | 252 | 0,0 % | igual turno a turno |
+| 1212-2 | T100 | salineros | 322 | 322 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | arrieros | 359 | 359 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | canteros | 432 | 432 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | ferrones | -55 | -55 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | hortelanos | 725 | 725 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | mercaderes | 147 | 147 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | mesta | 332 | 332 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | monjes | 526 | 526 | 0,0 % | igual turno a turno |
+| 1212-2 | T200 | salineros | 429 | 429 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | arrieros | 146 | 146 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | canteros | 316 | 316 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | ferrones | 36 | 36 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | hortelanos | 296 | 296 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | mercaderes | 80 | 80 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | mesta | 192 | 192 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | monjes | 449 | 449 | 0,0 % | igual turno a turno |
+| 1212-3 | T100 | salineros | 330 | 330 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | arrieros | 203 | 203 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | canteros | 384 | 384 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | ferrones | 15 | 15 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | hortelanos | 695 | 695 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | mercaderes | 121 | 121 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | mesta | 361 | 361 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | monjes | 661 | 661 | 0,0 % | igual turno a turno |
+| 1212-3 | T200 | salineros | 293 | 293 | 0,0 % | igual turno a turno |
+
+## Sensibilidad a la frecuencia (diagnóstico)
+
+Aquí se comparan **dos planes distintos**: un robot que decide cada turno y otro que decide cada seis. No mide el motor, sino lo que se gana mirando el tablero más veces; la última columna dice qué decide el diligente entre bloques.
+
+| Casa | Entrando cada turno | Entrando cada seis | Diferencia | Lo que decide entre bloques |
+| --- | ---: | ---: | ---: | ---: |
+| Arrieros | 266 | 228 | 14,3 % | mercado 999, carga 958, ruta 205 |
+| Canteros | 390 | 397 | 1,8 % | mercado 814, carga 574, ruta 88 |
+| Ferrones | 42 | -32 | 176,2 % | mercado 618, carga 502, ruta 30 |
+| Hortelanos | 874 | 773 | 11,6 % | mercado 1136, carga 647, ruta 164 |
+| Mercaderes | 172 | 141 | 18,0 % | carga 823, mercado 727, ruta 77 |
+| Mesta | 501 | 342 | 31,7 % | mercado 1541, carga 493, ruta 226 |
+| Monjes | 704 | 609 | 13,5 % | mercado 1164, carga 654, ruta 178 |
+| Salineros | 411 | 305 | 25,8 % | mercado 1411, carga 587, regalo 112 |
+
+## Ritmo: hitos y primera obra mayor
+
+Turno exacto de cada uno, por partida y casa. «no» es «no lo alcanzó», nunca un cero.
+
+| Semilla | Casa | Pequeño dominio | Primera obra mayor | Maestro de obra | Hitos |
+| --- | --- | --- | --- | --- | ---: |
+| 1212 | Arrieros | **no** | T179 | T179 | 3 |
+| 1212 | Canteros | **no** | T110 | T110 | 4 |
+| 1212 | Ferrones | **no** | **no** | **no** | 1 |
+| 1212 | Hortelanos | T56 | T105 | T105 | 6 |
+| 1212 | Mercaderes | **no** | **no** | **no** | 3 |
+| 1212 | Mesta | T191 | T188 | T188 | 6 |
+| 1212 | Monjes | T54 | T142 | T142 | 5 |
+| 1212 | Salineros | T91 | **no** | **no** | 4 |
+| 1212-2 | Arrieros | T115 | **no** | **no** | 4 |
+| 1212-2 | Canteros | **no** | T70 | T70 | 4 |
+| 1212-2 | Ferrones | **no** | **no** | **no** | 1 |
+| 1212-2 | Hortelanos | T61 | T117 | T117 | 5 |
+| 1212-2 | Mercaderes | **no** | **no** | **no** | 2 |
+| 1212-2 | Mesta | T89 | **no** | **no** | 4 |
+| 1212-2 | Monjes | T54 | T137 | T137 | 5 |
+| 1212-2 | Salineros | T65 | **no** | **no** | 4 |
+| 1212-3 | Arrieros | **no** | **no** | **no** | 2 |
+| 1212-3 | Canteros | **no** | T106 | T106 | 4 |
+| 1212-3 | Ferrones | **no** | **no** | **no** | 2 |
+| 1212-3 | Hortelanos | T67 | T98 | T98 | 5 |
+| 1212-3 | Mercaderes | **no** | **no** | **no** | 2 |
+| 1212-3 | Mesta | T79 | **no** | **no** | 5 |
+| 1212-3 | Monjes | T43 | **no** | **no** | 4 |
+| 1212-3 | Salineros | T65 | **no** | **no** | 4 |
+
+## Arbitraje con traza
+
+Solo cuenta la mercancía comprada en una plaza y vendida en otra, seguida carga a carga. Lo que se vende sin haberlo comprado se publica aparte: es producción propia o carga de casa.
+
+| Semilla | Casa | Negocios | Cargas | Margen | Margen neto | Reventas en la misma plaza | Cargas vendidas sin compra | Cargas descargadas |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1212 | Arrieros | 0 | 0 | 0 | 0 | 0 | 1040 | 1199 |
+| 1212 | Canteros | 0 | 0 | 0 | 0 | 0 | 136 | 1251 |
+| 1212 | Ferrones | 0 | 0 | 0 | 0 | 0 | 0 | 374 |
+| 1212 | Hortelanos | 0 | 0 | 0 | 0 | 65 | 576 | 949 |
+| 1212 | Mercaderes | 6 | 41 | 402 | 222 | 0 | 0 | 823 |
+| 1212 | Mesta | 0 | 0 | 0 | 0 | 0 | 930 | 644 |
+| 1212 | Monjes | 0 | 0 | 0 | 0 | 88 | 475 | 799 |
+| 1212 | Salineros | 0 | 0 | 0 | 0 | 39 | 669 | 1110 |
+| 1212-2 | Arrieros | 20 | 101 | 1391 | 905 | 0 | 430 | 1065 |
+| 1212-2 | Canteros | 0 | 0 | 0 | 0 | 0 | 106 | 1088 |
+| 1212-2 | Ferrones | 0 | 0 | 0 | 0 | 0 | 0 | 376 |
+| 1212-2 | Hortelanos | 0 | 0 | 0 | 0 | 39 | 666 | 987 |
+| 1212-2 | Mercaderes | 0 | 0 | 0 | 0 | 0 | 0 | 1182 |
+| 1212-2 | Mesta | 0 | 0 | 0 | 0 | 0 | 763 | 960 |
+| 1212-2 | Monjes | 0 | 0 | 0 | 0 | 86 | 574 | 738 |
+| 1212-2 | Salineros | 0 | 0 | 0 | 0 | 73 | 854 | 809 |
+| 1212-3 | Arrieros | 0 | 0 | 0 | 0 | 0 | 394 | 1271 |
+| 1212-3 | Canteros | 0 | 0 | 0 | 0 | 0 | 134 | 1233 |
+| 1212-3 | Ferrones | 0 | 0 | 0 | 0 | 46 | 52 | 601 |
+| 1212-3 | Hortelanos | 0 | 0 | 0 | 0 | 11 | 811 | 1021 |
+| 1212-3 | Mercaderes | 0 | 0 | 0 | 0 | 0 | 0 | 1265 |
+| 1212-3 | Mesta | 0 | 0 | 0 | 0 | 0 | 1011 | 592 |
+| 1212-3 | Monjes | 0 | 0 | 0 | 0 | 101 | 550 | 663 |
+| 1212-3 | Salineros | 0 | 0 | 0 | 0 | 67 | 620 | 966 |
+
+## Órdenes
+
+Lo que propone cada robot y lo que pasa con ello. Proponer cero órdenes es un dato de actividad, no una prueba de que no hubiera nada útil que hacer.
+
+| Casa | Propuestas | De alta | Terminadas | Canceladas | En espera o en cola |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Arrieros | 942 | 960 | 955 | 0 | 162 |
+| Canteros | 635 | 653 | 652 | 0 | 80 |
+| Ferrones | 491 | 506 | 506 | 0 | 32 |
+| Hortelanos | 923 | 941 | 933 | 3 | 196 |
+| Mercaderes | 695 | 713 | 710 | 0 | 71 |
+| Mesta | 980 | 997 | 993 | 3 | 54 |
+| Monjes | 923 | 941 | 937 | 2 | 192 |
+| Salineros | 995 | 1013 | 996 | 7 | 146 |
+
+Por qué se cancelan las órdenes:
+
+- regalo: comarca-con-duenyo: 40
+- incorporar: comarca-con-duenyo: 4
+- construir: comarca-ajena: 3
+
+## Evolución del prestigio
+
+| Casa | T20 | T40 | T60 | T80 | T100 | T120 | T140 | T160 | T180 | T200 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Arrieros | 100 | 126 | 147 | 161 | 174 | 219 | 237 | 211 | 269 | 266 |
+| Canteros | 66 | 82 | 98 | 184 | 192 | 315 | 328 | 336 | 361 | 390 |
+| Ferrones | 26 | 9 | 2 | -2 | 3 | 18 | 26 | 31 | 36 | 42 |
+| Hortelanos | 130 | 192 | 281 | 333 | 442 | 606 | 641 | 669 | 746 | 874 |
+| Mercaderes | 53 | 62 | 78 | 102 | 113 | 126 | 134 | 142 | 152 | 172 |
+| Mesta | 34 | 55 | 137 | 173 | 268 | 280 | 332 | 384 | 428 | 501 |
+| Monjes | 77 | 126 | 281 | 343 | 376 | 445 | 555 | 640 | 666 | 704 |
+| Salineros | 88 | 115 | 160 | 245 | 301 | 346 | 375 | 424 | 381 | 411 |
+
+## Huellas
+
+La huella del último turno de cada partida: otra ejecución con la misma semilla tiene que dar la misma.
+
+- semilla `1212`: `b6f930c53d181833da72970d8a434d2859dd4c77c473a6cb668d09d90e545e01`
+- semilla `1212-2`: `a1b9d3bfb8528420988520850c3ca5df52ed73e880d20d78f424c168c660c1e8`
+- semilla `1212-3`: `b4f7800cf30eb1988e35073ccbe07efc1d2e22c7d2a3870886eba7071d06831e`

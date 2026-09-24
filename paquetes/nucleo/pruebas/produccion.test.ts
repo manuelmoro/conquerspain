@@ -63,11 +63,11 @@ describe('cadena de produccion', () => {
       24,
     ],
     [
-      'labor 5 en invierno (150 % × 60 %)',
+      'labor 5 en invierno (150 % × 50 %)',
       comarca({ potenciales: labor(5) }),
       'invierno',
       'granja',
-      9,
+      7,
     ],
     ['primavera (80 %)', comarca(), 'primavera', 'granja', 8],
     ['aperos 3 (+30 %)', comarca({ aperos: 3 }), 'otonyo', 'granja', 13],

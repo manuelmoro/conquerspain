@@ -1128,3 +1128,33 @@ rebaños, la ganadería era tres cuartas partes del prestigio de la Mesta).
 205, Mesta 124, canteros 117, salineros 79, arrieros 60, mercaderes 41, ferrones 34. Antes de T-057:
 hortelanos 300, monjes 296, canteros 135, salineros 110, arrieros 93, mercaderes 58, ferrones 46,
 Mesta 21. **Lo siguiente, por tamaño:** ferrones y mercaderes, los dos por debajo del 50 %.
+
+## 24-09-2026 · Los ferrones, y un invierno que aprieta
+
+**Los ferrones (34 % de la mediana), diagnosticados antes de tocar nada.** Dos retratos distintos:
+
+- Donde producen (1492, Molina): 483 de hierro que **no se pierden, se los comen los aperos** (4
+  niveles × 1 por turno). Su vía se juega en 7 de 9 partidas; su prestigio es bajo porque su forma de
+  ganar —vender aperos a los demás— llega con **T-103**, y T-047 §5.2 dice que no se anticipan
+  ingresos inexistentes.
+- Donde se hunden (Bilbao, labor 1): 76 vecinos que caen a 10, dos lonjas paradas sin sal y un
+  colchón que no deja comprar pan. Una trampa de pobreza desde el arranque.
+
+**Dos arreglos del robot medidos y descartados** (cifras idénticas, revertidos): que el tratante
+solo guarde para la feria si hay feriante (`E-feriante`) y que compre sal para las lonjas que tiene
+aunque no estén en su plan (`E-salLonjas`). Ninguno era el cuello de botella.
+
+**La escasez, mirada por dentro.** De las 41 filas que incumplen, **36 son por falta de hambre**:
+seis turnos de despensa absorben el invierno al 60 %, y los hortelanos no pasan un turno de hambre
+en nueve partidas. El criterio y la primera lectura cualitativa piden lo mismo: que el año apriete.
+
+| `factorPanMil.invierno` | Filas (1492 / 1085 / 1212) | Total | Escasez: cumple / poca / mucha |
+|---:|---|---:|---|
+| 600 (`T-058`) | 113 / 116 / 116 | 345 | 31 / 36 / 5 |
+| **500** (`E-invierno500`) | **118 / 116 / 119** | **353** | **35 / 27 / 10** |
+| 450 (`E-invierno450`) | 117 / 114 / 121 | 352 | 36 / 27 / 9 |
+
+**Adoptado 500**: el mejor recuento y ninguna semilla por debajo de `T-058`. Las nuevas filas de
+«mucha» escasez son moderadas (15–23 %: arrieros, mercaderes y salineros de 1085); las extremas
+(salineros al 39 %, ferrones de Bilbao al 34,5 %) ya estaban. Con esto **T-056 y T-057 se cierran**:
+353 frente a los 348 de antes del comercio.

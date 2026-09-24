@@ -68,8 +68,8 @@ mapa completo; ESTADO.md es la aguja.
 | [T-053](T-053-plazas-donde-comerciar.md) | Plazas donde comerciar: densidad y cómo se abre una | en curso | T-049, T-052 |
 | [T-054](T-054-el-precio-y-la-distancia.md) | El precio y la distancia a donde se produce | **hecha** | T-052 |
 | [T-055](T-055-la-venta-da-de-comer.md) | La venta da de comer a las recuas | **hecha** | T-053, T-054, T-056, T-057 |
-| [T-056](T-056-el-negocio-en-limpio.md) | El negocio se cuenta con el precio que se espera | en curso | T-055 (su mecánica), T-057 |
-| [T-057](T-057-la-distancia-paga-el-camino.md) | La distancia paga el camino | en curso | T-054 |
+| [T-056](T-056-el-negocio-en-limpio.md) | El negocio se cuenta con el precio que se espera | **hecha** | T-055 (su mecánica), T-057 |
+| [T-057](T-057-la-distancia-paga-el-camino.md) | La distancia paga el camino | **hecha** | T-054 |
 | [T-058](T-058-la-mesta-conoce-sus-canyadas.md) | La Mesta conoce sus cañadas | **hecha** | T-049 |
 
 > **19-09-2026 · revisión del plan solicitada por el usuario.** Antes de seguir construyendo,

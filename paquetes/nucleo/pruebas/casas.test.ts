@@ -606,7 +606,7 @@ describe('los hortelanos', () => {
         (s) => s.tipo === 'produccion.explotacion' && s.comarca === 'prueba-llano',
       )?.datos['estacionMil'];
     };
-    expect(factor(false)).toBe(600);
+    expect(factor(false)).toBe(500);
     expect(factor(true)).toBeUndefined();
   });
 

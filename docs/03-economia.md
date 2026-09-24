@@ -159,9 +159,12 @@ rendimiento = base_por_nivel × nivel
 
 | Estación | Primavera | Verano | Otoño | Invierno |
 |---|---|---|---|---|
-| Pan | 80 % | 160 % | 100 % | 60 % |
+| Pan | 80 % | 160 % | 100 % | 50 % |
 
-La media anual es 100 %, pero el año tiene forma: el verano llena el granero y el invierno lo vacía.
+La media anual queda en un 97,5 %, y el año tiene forma: el verano llena el granero y el invierno lo
+vacía. El invierno estuvo al 60 % (media del 100 %), pero seis turnos de despensa lo absorbían todo y
+la mitad de las casas no pasaba un turno de hambre en doscientos; al 50 %, el año aprieta sin ahogar
+(T-047).
 La huerta y la lonja de pescado no sufren estación: son el seguro de los meses malos.
 
 **Mano de obra.** Cada nivel de explotación necesita 8 vecinos trabajándolo. Si la comarca no tiene
