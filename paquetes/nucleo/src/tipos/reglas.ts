@@ -555,6 +555,12 @@ export interface DatosMercado {
   readonly abundanciaMil: readonly number[];
   /** Que potencial abarata cada recurso. Sin entrada, el recurso vale igual en todas partes. */
   readonly potencialDeRecurso: Readonly<Partial<Record<Recurso, Potencial>>>;
+  /**
+   * Jornadas que hay que andar para que la abundancia baje un escalon (ficha T-054): la sal era
+   * cara tierra adentro **porque habia que llevarla hasta alli**. Una salina de nivel 5 hace que
+   * una comarca a esa distancia cotice como nivel 4, al doble como nivel 3, y asi hasta apagarse.
+   */
+  readonly jornadasPorEscalonDeAbundancia: number;
 }
 
 export interface DatosInfluencia {

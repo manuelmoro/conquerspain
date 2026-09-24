@@ -4,7 +4,7 @@
 // El precio de una plaza se mueve por el desequilibrio entre lo que se quiere comprar y lo que se
 // quiere vender, vuelve poco a poco al precio base y nunca se sale de la horquilla que la protege.
 import { ErrorDeMotor } from '../errores.ts';
-import type { ComarcaMundo, VolumenFeria } from '../tipos/mundo.ts';
+import type { ComarcaMundo, NivelPotencial, Potencial, VolumenFeria } from '../tipos/mundo.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import type { DatosMercado, DatosRecurso } from '../tipos/reglas.ts';
 import { MIL, limitar, multiplicarFactores, porcentaje } from '../utiles/enteros.ts';
@@ -22,11 +22,16 @@ export function precioBaseLocalMil(
   comarca: ComarcaMundo | undefined,
   recurso: Recurso,
   tabla: DatosMercado,
+  /**
+   * El nivel que **alcanza** la comarca contando lo que hay cerca (ficha T-054). Sin el, se usa el
+   * potencial de la propia comarca: es lo que vale para una plaza suelta o una cuenta de tanteo.
+   */
+  nivelAlcanzado?: NivelPotencial,
 ): number {
   const potencial = tabla.potencialDeRecurso[recurso];
   // Los maravedis, y cualquier recurso sin potencial, valen lo mismo en todas partes.
   if (potencial === undefined || comarca === undefined) return precioBaseMil;
-  const nivel = comarca.potenciales[potencial];
+  const nivel = nivelAlcanzado ?? comarca.potenciales[potencial];
   const factor = tabla.abundanciaMil[nivel];
   if (factor === undefined) {
     throw new ErrorDeMotor(
@@ -36,6 +41,31 @@ export function precioBaseLocalMil(
     );
   }
   return Math.max(1, porcentaje(precioBaseMil, factor));
+}
+
+/**
+ * El nivel de un potencial que **alcanza** una comarca (ficha T-054): el mejor que hay en el mapa,
+ * descontando un escalon por cada `jornadasPorEscalonDeAbundancia` que haya que andar hasta el.
+ *
+ * Es lo que hace que dos comarcas vecinas sin sal no coticen igual: manda cual de las dos esta mas
+ * cerca de la salina. Las jornadas llegan medidas en verano y sin mejoras, como las de la
+ * administracion, para que el precio base no oscile con la estacion ni con un puente nuevo.
+ */
+export function nivelAlcanzadoMil(
+  potencial: Potencial,
+  jornadasMil: ReadonlyMap<string, number>,
+  comarcas: Readonly<Record<string, ComarcaMundo>>,
+  tabla: DatosMercado,
+): NivelPotencial {
+  const escalonMil = tabla.jornadasPorEscalonDeAbundancia * MIL;
+  let mejor = 0;
+  for (const [id, lejosMil] of jornadasMil) {
+    const fuente = comarcas[id]?.potenciales[potencial] ?? 0;
+    if (fuente <= mejor) continue;
+    const alcanzado = fuente - Math.floor(lejosMil / escalonMil);
+    if (alcanzado > mejor) mejor = alcanzado;
+  }
+  return Math.max(0, Math.min(5, mejor)) as NivelPotencial;
 }
 
 /** Cargas por recurso y turno que absorbe una plaza: la base por el multiplicador de su volumen. */

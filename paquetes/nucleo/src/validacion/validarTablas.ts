@@ -358,6 +358,7 @@ const validarMercado: Validador<DatosMercado> = objeto<DatosMercado>({
   // Una entrada por nivel de potencial, de 0 a 5: si falta una, un precio se queda sin base.
   abundanciaMil: lista(milesimas(100, 5000), { minimo: 6, maximo: 6 }),
   potencialDeRecurso: registro(unoDe(POTENCIALES), unoDe(RECURSOS)),
+  jornadasPorEscalonDeAbundancia: entero({ minimo: 1, maximo: 100 }),
 });
 
 const validarInfluencia: Validador<DatosInfluencia> = objeto<DatosInfluencia>({

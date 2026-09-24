@@ -14,9 +14,10 @@ import {
   maximoComprable,
 } from '../src/reglas/mercado.ts';
 import { limitesDeMenores } from '../src/reglas/mercaderesMenores.ts';
-import { limitesDePrecio } from '../src/reglas/precios.ts';
+import { limitesDePrecio, nivelAlcanzadoMil } from '../src/reglas/precios.ts';
+import { jornadasAdministrativasMil, jornadasDesde } from '../src/reglas/administracion.ts';
 import type { EstadoComarca, EstadoPartida, Recua } from '../src/tipos/estado.ts';
-import type { IdComarca, IdFeria, IdJugador, IdMercado, IdRecua } from '../src/tipos/ids.ts';
+import type { IdFeria, IdJugador, IdMercado, IdRecua } from '../src/tipos/ids.ts';
 import { idDeMercadoDeFeria, idDeMercadoLocal } from '../src/tipos/ids.ts';
 import type { Mundo, VolumenFeria } from '../src/tipos/mundo.ts';
 import type { Orden } from '../src/tipos/ordenes.ts';
@@ -490,11 +491,16 @@ function suceso(
  * catalogo por el factor de abundancia del potencial que lo produce.
  */
 function baseEn(comarca: string, recurso: Recurso): number {
-  const base = DATOS_DE_RECURSOS[recurso].precioBaseMil;
-  const potencial = MERCADO.potencialDeRecurso[recurso];
+  const base = reglas.recursos[recurso].precioBaseMil;
+  const potencial = reglas.mercado.potencialDeRecurso[recurso];
   if (potencial === undefined) return base;
-  const nivel = mundo.comarcas[comarca as IdComarca]?.potenciales[potencial] ?? 0;
-  return Math.max(1, Math.floor((base * (MERCADO.abundanciaMil[nivel] ?? 1000)) / 1000));
+  // La regla de T-054, escrita otra vez a mano: el mejor potencial del mapa menos un escalon por
+  // cada tres jornadas de verano que haya que andar hasta el.
+  const jornadas = jornadasDesde(comarca, mundo, (camino) =>
+    jornadasAdministrativasMil(camino, reglas, {}),
+  );
+  const nivel = nivelAlcanzadoMil(potencial, jornadas, mundo.comarcas, reglas.mercado);
+  return Math.max(1, Math.floor((base * (reglas.mercado.abundanciaMil[nivel] ?? 1000)) / 1000));
 }
 
 describe('las plazas', () => {
@@ -542,7 +548,7 @@ describe('las plazas', () => {
     // Vuelve un 10 % de la distancia a **su** base: la lana mira al pasto, y prueba-vega es
     // pasto 2, el nivel corriente, asi que su base es el del catalogo (T-052).
     const baseDeLaVega = baseEn('prueba-vega', 'lana');
-    expect(baseDeLaVega).toBe(50000);
+    expect(baseDeLaVega).toBe(45000);
     expect(mercadoDe(cerrada.estado, FERIA).preciosMil.lana).toBe(
       42500 + Math.floor((baseDeLaVega - 42500) / 10),
     );
@@ -594,9 +600,10 @@ describe('las paradas de una ruta', () => {
 
   it('la recua que llega a una parada vende en la feria, cobra y paga la comision del 1 %', () => {
     const { estado, sucesos } = ventaEnLaFeria(mundoConFeria());
-    // Demanda 320 y oferta 350: precio 49010. 30 cargas son 1470 mrs, con 14 de comision.
+    // Demanda 320 y oferta 350: el precio cae un 2 % sobre el base de prueba-vega, que con el
+    // pasto que alcanza es 45000 (T-054). 30 cargas son 1323 mrs, con 13 de comision.
     expect(de(estado, 'recua-1')).toMatchObject({ enParada: 0 });
-    expect(de(estado, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 1456 });
+    expect(de(estado, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 1310 });
     const tratos = suceso(sucesos, 'mercado.trato');
     expect(tratos).toHaveLength(1);
     expect(tratos[0]).toMatchObject({
@@ -608,9 +615,9 @@ describe('las paradas de una ruta', () => {
         recurso: 'lana',
         operacion: 'vender',
         cantidad: 30,
-        precioMil: 49010,
-        importe: 1470,
-        comision: 14,
+        precioMil: 44109,
+        importe: 1323,
+        comision: 13,
         conJugadores: 0,
         conMenores: 30,
         via: 'parada',
@@ -619,9 +626,9 @@ describe('las paradas de una ruta', () => {
     // La comision sale como un cambio de la carga, con su motivo.
     const comision = suceso(sucesos, 'recua.carga', { motivo: 'comision' });
     expect(comision).toHaveLength(1);
-    expect(comision[0]?.datos).toMatchObject({ delta: -14, total: 1456 });
+    expect(comision[0]?.datos).toMatchObject({ delta: -13, total: 1310 });
     expect(mercadoDe(estado, FERIA)).toMatchObject({
-      preciosMil: { lana: 49010 },
+      preciosMil: { lana: 44109 },
       ultimoVolumen: { lana: 30 },
     });
   });
@@ -641,16 +648,16 @@ describe('las paradas de una ruta', () => {
       parada('prueba-llano', { vender: { lana: { cantidad: 30, precioMinimoMil: 30000 } } }),
     ]);
     const { estado: despues, sucesos } = turno(estado, [ruta]);
-    // Plaza pequenya: demanda 40 y oferta 70, precio 43200 mas la regresion (43880).
-    // 30 cargas son 1316 mrs y el 2 % de comision son 26.
+    // Plaza pequenya: demanda 40 y oferta 70, sobre el base de prueba-llano, que con el pasto
+    // que alcanza es 40000 (T-054). 30 cargas son 1053 mrs y el 2 % de comision son 21.
     expect(suceso(sucesos, 'mercado.trato')[0]?.datos).toMatchObject({
       mercado: LOCAL,
       cantidad: 30,
-      precioMil: 43880,
-      importe: 1316,
-      comision: 26,
+      precioMil: 35104,
+      importe: 1053,
+      comision: 21,
     });
-    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 1316 - 26 });
+    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 1053 - 21 });
   });
 
   it('comprar paga el importe al alza y la comision, y mete la mercancia en la recua', () => {
@@ -661,15 +668,15 @@ describe('las paradas de una ruta', () => {
       parada('prueba-vega', { comprar: { lana: { cantidad: 8, precioMaximoMil: 90000 } } }),
     ]);
     const { estado: despues, sucesos } = turno(estado, [ruta], reglas, mundoConFeria());
-    // Demanda 8 + 320 y oferta 320: 50270. 8 cargas: 403 mrs (al alza) y 4 de comision del 1 %.
+    // Demanda 8 + 320 y oferta 320: 45243. 8 cargas: 362 mrs (al alza) y 3 de comision del 1 %.
     const trato = suceso(sucesos, 'mercado.trato')[0]?.datos;
     expect(trato).toMatchObject({
       operacion: 'comprar',
-      precioMil: 50270,
-      importe: 403,
-      comision: 4,
+      precioMil: 45243,
+      importe: 362,
+      comision: 3,
     });
-    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 8, maravedis: 1000 - 403 - 4 });
+    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 8, maravedis: 1000 - 362 - 3 });
   });
 
   it('una parada donde no hay plaza abierta no comercia y el turno lo dice', () => {
@@ -722,11 +729,12 @@ describe('las ordenes de mercado', () => {
     const estado = escenarioLocal({ lana: 20 });
     const orden = ordenDeMercado(estado.turno, 'recua-1', LOCAL, 'lana', 'vender', 20, 30000);
     const { estado: despues, sucesos } = turno(estado, [orden]);
-    // Cae a 45500 con la propia venta; 20 cargas son 910 mrs y 18 de comision.
-    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 892 });
+    // Cae con la propia venta sobre el base de prueba-llano (40000): 20 cargas son 728 mrs y el
+    // 2 % de comision son 14.
+    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 714 });
     expect(suceso(sucesos, 'mercado.trato')[0]?.datos).toMatchObject({
       via: 'orden',
-      comision: 18,
+      comision: 14,
     });
     // La orden se ha cumplido entera y sale del estado.
     expect(despues.ordenes).toHaveLength(0);
@@ -931,8 +939,8 @@ describe('jugadores que comercian entre si', () => {
     // Demanda y oferta empatan (30 y 30 mas 290 de menores a cada lado): el precio no se mueve
     // de su base, que es el del catalogo porque prueba-vega es pasto 2 (T-052).
     expect(mercadoDe(despues, FERIA).preciosMil.lana).toBe(baseEn('prueba-vega', 'lana'));
-    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 1500 - 15 });
-    expect(de(despues, 'recua-2').carga).toMatchObject({ lana: 30, maravedis: 3000 - 1500 - 15 });
+    expect(de(despues, 'recua-1').carga).toMatchObject({ lana: 0, maravedis: 1350 - 13 });
+    expect(de(despues, 'recua-2').carga).toMatchObject({ lana: 30, maravedis: 3000 - 1350 - 13 });
     for (const t of suceso(sucesos, 'mercado.trato')) {
       expect(t.datos).toMatchObject({ conJugadores: 30, conMenores: 0 });
     }
@@ -996,27 +1004,27 @@ describe('una venta masiva de lana en una feria', () => {
     // Turno 1: 300 cargas contra un cupo de 320 hunden el precio hasta 43250, y se venden todas.
     // El base de prueba-vega es el del catalogo, porque es pasto 2 (T-052).
     const baseDeLaVega = baseEn('prueba-vega', 'lana');
-    expect(precios[0]).toBe(43250);
+    expect(precios[0]).toBe(38925);
     expect(de(estado, 'recua-1').carga.lana).toBe(0);
     // Turno 2: los menores solo compran (el precio esta bajo el 90 % del base) y lo suben hasta
     // donde deja el recorte del 15 % por turno: 43250 mas 6487.
-    expect(precios[1]).toBe(49737);
+    expect(precios[1]).toBe(44763);
     // Y vuelve al base sin pasarse.
-    expect(precios.slice(2).every((p) => p >= 49737 && p <= baseDeLaVega)).toBe(true);
-    expect(precios.at(-1)).toBeGreaterThan(49900);
+    expect(precios.slice(2).every((p) => p >= 44763 && p <= baseDeLaVega)).toBe(true);
+    expect(precios.at(-1)).toBeGreaterThan(44900);
   });
 
   it('sin menores nadie compra la lana, el precio cae un 13,5 % y tarda en volver', () => {
     const { precios } = ventaMasiva(SIN_MENORES);
-    expect(precios[0]).toBe(43250);
+    expect(precios[0]).toBe(38925);
     // Sin colchon, la recuperacion es la regresion sola: un 10 % de la distancia cada turno.
-    expect(precios[1]).toBe(43925);
+    expect(precios[1]).toBe(39532);
     for (let i = 1; i < precios.length; i += 1) {
       expect(precios[i]).toBeGreaterThan(precios[i - 1] ?? 0);
     }
     // Diez turnos despues solo ha recuperado dos tercios de lo perdido.
-    expect(precios[10]).toBeLessThan(48000);
-    expect(precios[10]).toBeGreaterThan(47000);
+    expect(precios[10]).toBeLessThan(43200);
+    expect(precios[10]).toBeGreaterThan(42300);
   });
 });
 
@@ -1104,10 +1112,10 @@ describe('cambios del mercado', () => {
       () => {
         aplicar(ctx, { tipo: 'mercado-precio', mercado: FERIA, recurso, precioMil, volumen });
       };
-    // El suelo y el techo se miden sobre el base de **esta** plaza (T-052); la lana de
-    // prueba-vega tiene el del catalogo, porque es pasto 2.
-    expect(precio('lana', 19999)).toThrow(/entre 20000 y 125000/);
-    expect(precio('lana', 125001)).toThrow(/entre 20000 y 125000/);
+    // El suelo y el techo se miden sobre el base de **esta** plaza (T-052 y T-054): la lana de
+    // prueba-vega alcanza pasto 3, asi que su base es 45000.
+    expect(precio('lana', 17999)).toThrow(/entre 18000 y 112500/);
+    expect(precio('lana', 112501)).toThrow(/entre 18000 y 112500/);
     expect(precio('maravedis', 1000)).toThrow();
     expect(precio('lana', 50000, -1)).toThrow();
     expect(precio('lana', 42500, 7)).not.toThrow();

@@ -422,8 +422,22 @@ y la lana, que se dan en casi todas partes, apenas se mueven. Medido en una part
 la diferencia entre la plaza más barata y la más cara pasó de **0,6 puntos a 40,4 en la sal** y de
 0,4 a 40,3 en el hierro.
 
-El factor se toma del potencial **del mundo**, no del agotamiento de la comarca: el precio base no
-oscila turno a turno con la explotación, igual que la administración se mide siempre en verano.
+**Y no basta con lo que tiene la comarca: cuenta lo que alcanza.** La sal era cara tierra adentro
+*porque había que llevarla hasta allí*. El nivel que manda en el precio es el mejor del mapa
+descontando un escalón por cada **tres jornadas** que haya que andar hasta él:
+
+```
+nivel que alcanza = máx sobre las comarcas c de:  potencial(c) − ⌊jornadas hasta c / 3⌋
+```
+
+Así una salina de nivel 5 hace que una comarca a tres jornadas cotice como nivel 4, a seis como
+nivel 3, y así hasta apagarse. **Dos comarcas vecinas sin sal ya no cotizan igual**: manda cuál de
+las dos está más cerca de la salina. Medido en una partida de 200 turnos, la sal pasa de valer el
+120 % en veintiuna de veintitrés plazas —un muro plano— a escalonarse en 70, 80, 90, 100 y 120.
+
+El factor se toma del potencial **del mundo**, no del agotamiento de la comarca, y las jornadas se
+miden en verano y sin mejoras, igual que la administración: el precio base no oscila turno a turno
+con la explotación, la estación ni un puente nuevo.
 Sobre este base se montan después los acontecimientos (una carestía de sal sube el base **de esa
 región**), el suelo y el techo, y los límites de los mercaderes menores.
 

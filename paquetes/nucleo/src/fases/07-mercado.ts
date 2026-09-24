@@ -6,6 +6,7 @@
 // recursos en el orden de `RECURSOS`, asi que el resultado no depende del orden de llegada.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
+import { alcanceDe } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { factorDeAcontecimientos, precioBaseEfectivo } from '../reglas/acontecimientos.ts';
@@ -92,13 +93,16 @@ function abrirMercado(ctx: Contexto, plaza: Plaza): void {
       comarca: plaza.comarca,
       tipo: plaza.tipo,
       volumen: plaza.volumen,
-      // Una plaza nueva nace en el precio base **de su comarca**, no en el del catalogo.
+      // Una plaza nueva nace en el precio base **de su comarca**, no en el del catalogo, y
+      // contando lo que alcanza (T-054): si naciera con otro, regresaria hacia el suyo el primer
+      // turno y el precio de estreno seria mentira.
       preciosMil: recursosSegun((r) =>
         precioBaseLocalMil(
           ctx.reglas.recursos[r].precioBaseMil,
           ctx.mundo.comarcas[plaza.comarca],
           r,
           ctx.reglas.mercado,
+          alcanceDe(ctx, plaza.comarca, r),
         ),
       ),
       ultimoVolumen: recursosSegun(() => 0),
@@ -252,8 +256,8 @@ function comisionMilDe(ctx: Contexto, jugador: IdJugador, plaza: Plaza): number 
 /**
  * Lo que el catalogo dice de un recurso en una plaza concreta. Dos capas, en este orden:
  *
- * 1. La **abundancia** de la comarca (ficha T-052): la sal es barata donde hay salinas y cara
- *    donde no las hay. Es fija, la da el mundo y no cambia en toda la partida.
+ * 1. La **abundancia** que alcanza la comarca (fichas T-052 y T-054): la sal es barata donde hay
+ *    salinas y va encareciendose segun se aleja uno de ellas. La da el mapa y no cambia.
  * 2. Los **acontecimientos** de la region: una carestia de sal sube ese base unos turnos.
  *
  * De aqui cuelgan, sin tocarlas, el suelo y el techo, los limites de los mercaderes menores y el
@@ -267,6 +271,7 @@ function recursoEnLaPlaza(ctx: Contexto, comarca: IdComarca, recurso: Recurso): 
     ctx.mundo.comarcas[comarca],
     recurso,
     ctx.reglas.mercado,
+    alcanceDe(ctx, comarca, recurso),
   );
   return {
     ...datos,

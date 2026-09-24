@@ -5,8 +5,6 @@ import { describe, expect, it } from 'vitest';
 import { aplicar } from '../src/cambios.ts';
 import { crearContexto } from '../src/contexto.ts';
 import { ACONTECIMIENTOS } from '../src/datos/acontecimientos.ts';
-import { MERCADO } from '../src/datos/mercado.ts';
-import { DATOS_DE_RECURSOS } from '../src/datos/recursos.ts';
 import { faseAcontecimientos } from '../src/fases/10-acontecimientos.ts';
 import {
   acontecimientosActivos,
@@ -16,6 +14,8 @@ import {
   precioBaseEfectivo,
   ultimoTurnoDe,
 } from '../src/reglas/acontecimientos.ts';
+import { jornadasAdministrativasMil, jornadasDesde } from '../src/reglas/administracion.ts';
+import { nivelAlcanzadoMil } from '../src/reglas/precios.ts';
 import { estadoEstacionalDe } from '../src/reglas/calendario.ts';
 import {
   calendarioDeAcontecimientos,
@@ -24,7 +24,7 @@ import {
 import { claveDeTramo, costeDeTramoMil } from '../src/reglas/ruta.ts';
 import type { Suceso } from '../src/tipos/cronica.ts';
 import type { Acontecimiento, EstadoPartida } from '../src/tipos/estado.ts';
-import type { IdAcontecimiento, IdComarca, IdFeria, IdMercado } from '../src/tipos/ids.ts';
+import type { IdAcontecimiento, IdFeria, IdMercado } from '../src/tipos/ids.ts';
 import { idDeMercadoDeFeria } from '../src/tipos/ids.ts';
 import type { ComarcaMundo, Mundo } from '../src/tipos/mundo.ts';
 import type { Recurso } from '../src/tipos/recursos.ts';
@@ -633,11 +633,16 @@ describe('obras', () => {
  * porque la carestia se monta **encima** del base local, no encima del catalogo.
  */
 function baseEn(comarca: string, recurso: Recurso): number {
-  const base = DATOS_DE_RECURSOS[recurso].precioBaseMil;
-  const potencial = MERCADO.potencialDeRecurso[recurso];
+  const base = reglas.recursos[recurso].precioBaseMil;
+  const potencial = reglas.mercado.potencialDeRecurso[recurso];
   if (potencial === undefined) return base;
-  const nivel = mundo.comarcas[comarca as IdComarca]?.potenciales[potencial] ?? 0;
-  return Math.max(1, Math.floor((base * (MERCADO.abundanciaMil[nivel] ?? 1000)) / 1000));
+  // La regla de T-054, escrita otra vez a mano: el mejor potencial del mapa menos un escalon por
+  // cada tres jornadas de verano que haya que andar hasta el.
+  const jornadas = jornadasDesde(comarca, mundo, (camino) =>
+    jornadasAdministrativasMil(camino, reglas, {}),
+  );
+  const nivel = nivelAlcanzadoMil(potencial, jornadas, mundo.comarcas, reglas.mercado);
+  return Math.max(1, Math.floor((base * (reglas.mercado.abundanciaMil[nivel] ?? 1000)) / 1000));
 }
 
 describe('mercado', () => {
@@ -929,13 +934,13 @@ describe('validación y cambios', () => {
         ultimoVolumen: recursos(),
       },
     });
-    // El techo es el 250 % del base local con la carestia encima. Prueba-llano no tiene sal, asi
-    // que su base es el del catalogo por 1,2 (T-052): 16800 x 1,5 x 2,5 = 63000. Sin la carestia
-    // seria 42000, y sin la abundancia de T-052, 35000.
+    // El techo es el 250 % del base local con la carestia encima. Prueba-llano no tiene sal, pero
+    // **alcanza** la de la costa a dos jornadas (T-054), asi que su base es 12600 y el techo
+    // 12600 x 1,5 x 2,5 = 47250. Sin la carestia seria 31500, y con el base del catalogo, 35000.
     const techo = Math.floor(
       (Math.floor((baseEn('prueba-llano', 'sal') * 1500) / 1000) * 2500) / 1000,
     );
-    expect(techo).toBe(63000);
+    expect(techo).toBe(47250);
     expect(() => {
       aplicar(ctx, {
         tipo: 'mercado-precio',

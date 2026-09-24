@@ -29,6 +29,8 @@ export const MERCADO: DatosMercado = {
   // Un puerto de mar come pescado, pero su pan sigue mirando a la labor: Bilbao importaba grano
   // y lo pagaba caro, y esa es justo la decision que se quiere. Los maravedis son la moneda y no
   // estan aqui: valen lo mismo en todas partes.
+  // Tres jornadas por escalon: el hierro de Vizcaya llega barato a sus vecinas y caro a Castilla.
+  jornadasPorEscalonDeAbundancia: 3,
   potencialDeRecurso: {
     pan: 'labor',
     madera: 'monte',

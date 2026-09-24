@@ -808,3 +808,51 @@ porque tienen comarcas propias vecinas que aportan influencia. Lo que falla es e
 - Subir solo la incorporación no sirve: los monjes crecen por puebla.
 - Una casa sola no pasa de unos 45 de influencia en una comarca ajena. Es un dato a tener presente
   para cualquier umbral que se toque: presencia, puebla, incorporación o regalo.
+
+## 24-09-2026 · T-054: el precio mira la distancia a donde se produce
+
+**Encargo:** la primera de las dos decisiones que quedaban pendientes del usuario, tomada al volver
+a invocar la skill sin responderlas. **Resultado:** hecha, y el gradiente aparece.
+
+### La regla
+
+El nivel que manda en el precio ya no es el potencial de la propia comarca, sino el mejor del mapa
+descontando **un escalón por cada tres jornadas** que haya que andar hasta él:
+
+```
+nivel que alcanza = máx sobre las comarcas c de:  potencial(c) − ⌊jornadas hasta c / 3⌋
+```
+
+Las jornadas se miden en verano y sin mejoras, igual que la administración, para que el precio base
+no oscile con la estación ni con un puente nuevo. Solo las **plazas** necesitan precio —diez o
+veinte por partida—, así que se mide desde cada una y no desde las doscientas comarcas del mapa,
+con una memoria por turno en el `Contexto` que es solo velocidad.
+
+### El gradiente, medido
+
+Al turno 100 de una partida de 200:
+
+| Recurso | Antes | Ahora |
+|---|---|---|
+| sal | 120 % en **21 de 23** plazas: un muro plano | **70, 80, 90, 100 y 120 %** |
+| hierro | 120 % en 22 de 23 | 80, 100, 110 y 120 % |
+| pan | 52,4 puntos de dispersión | 26,5, y mucho más repartida |
+
+| Campaña | Base `T-047-marcador` | Con la distancia |
+|---|---:|---:|
+| 1492 | 116 | 116 |
+| 1085 | 112 | **118** |
+| 1212 | 113 | 112 |
+
+Lo que más se mueve es el **prestigio**, que es el criterio que mide si todas las casas compiten: de
+4 a 7 filas dentro de la horquilla en `1492`, con los mercaderes al 87 % de la mediana (antes 63 %),
+los arrieros al 102 % (antes 90 %) y los ferrones al 64 % (antes 45 %).
+
+### Lo que sigue sin cumplirse
+
+`negociosRentables` sigue en 0, **y ya no es por el precio**. Lo que queda está medido en
+[T-053 §8](T-053-plazas-donde-comerciar.md): la bolsa de comercio del robot son **dos maravedís**
+—la casa tiene unos 62 y el arbitraje guarda 60 de colchón— y las plazas que alcanza siguen siendo
+pocas y cercanas entre sí, así que el escalón que *ve* es pequeño aunque el del mapa sea grande.
+
+Las huellas de reproducción **no cambian**: esas partidas no abren plaza.
