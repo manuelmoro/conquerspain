@@ -1049,3 +1049,29 @@ casi todas partes y es la columna de la escasez. Lo natural es un recargo **por 
 (`recargoPorJornadaMil` como tabla por recurso, el pan más bajo), que se explica en una frase —«el
 pan se hace en todas partes y no compensa acarrearlo lejos»— y se mide con las tres campañas.
 Después, lo que quede (la otra mitad en 1085) con su propio diagnóstico.
+
+## 24-09-2026 · Recargo por recurso: el pan más barato de camino no recupera el recuento
+
+**Cambio de estructura (adoptado, neutro).** `recargoPorJornadaMil` pasa de un número a una tabla por
+recurso (`Partial<Record<Recurso, number>>`), y `factorAlcanzadoMil` recibe el recurso en vez del
+potencial; devuelve `undefined` para un recurso sin potencial y falla en castellano si a un recurso
+con potencial le falta su recargo. Con los seis a 200 el resultado es **idéntico** a T-057 (341;
+las huellas de reproducción no se mueven). Tests nuevos en `precios-locales.test.ts`.
+
+**Ensayos descartados** (tres campañas, base `T-057`: 120 / 110 / 111 = 341):
+
+| Ensayo | Pan | 1492 | 1085 | 1212 | Total |
+|---|---|---|---|---|---|
+| `E-pan100` | 100 | 118 | 110 | 111 | **339** |
+| `E-pan50` | 50 | 118 | 111 | 111 | **340** |
+
+Hipótesis: con el pan más barato de acarrear, 1085 se acerca a los 114 de `E-panT054`. Refutada: el
+recargo del pan **no** reproduce lo que daba la regla de T-054, y en 1492 pierde dos filas. La
+diferencia de T-054 no venía de «el pan cuesta poco de acarrear», sino de que **una comarca de labor
+5 dejaba el pan al 70 % en toda su zona** (escalones de tres jornadas), sin recargo alguno.
+Los valores vuelven a 200 en todos los recursos.
+
+**Lo siguiente:** el pan no necesita un recargo distinto, necesita **una fuente que abarate una
+zona**, y eso es otra forma de regla (el escalón de T-054 solo para el pan). Antes de tocar lógica,
+medir qué filas de 1085 recupera exactamente `E-panT054` y si son las mismas que pierden los
+monjes.
