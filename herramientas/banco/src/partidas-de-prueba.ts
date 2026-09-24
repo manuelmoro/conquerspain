@@ -106,7 +106,6 @@ export interface Extras {
   readonly preciosPegados?: readonly PrecioPegado[];
   readonly tocadas?: readonly string[];
   readonly mapa?: readonly string[];
-  readonly visitasCompletas?: boolean;
 }
 
 function hitosDe(jugada: Jugada): Record<Hito, number | null> {
@@ -152,7 +151,6 @@ export function partida(jugadas: readonly Jugada[], extra: Extras = {}): Metrica
     preciosPegados: extra.preciosPegados ?? [],
     comarcasTocadas: extra.tocadas ?? mapa,
     comarcasDelMapa: mapa,
-    visitasCompletas: extra.visitasCompletas ?? true,
     huellaFinal: 'huella',
   };
 }

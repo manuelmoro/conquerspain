@@ -184,6 +184,7 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
 
   // ——— Rebanyos ———
   'rebanyo.forma': suceso('Se forma {rebanyo}, de {cabezas} cabezas.'),
+  'rebanyo.entra': null,
   'rebanyo.llega': suceso('{rebanyo} llega a {comarca}.'),
   'rebanyo.detenido': {
     segun: 'motivo',

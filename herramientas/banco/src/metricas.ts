@@ -37,13 +37,13 @@ import type {
 import { LibroDeNegocios, tratoDeSuceso } from './negocios.ts';
 import type { Motivo } from './robots/motivos.ts';
 import type { TrazaDeNegocios } from './negocios.ts';
-import { pasoDelTurno } from './visitas.ts';
+import { SUCESOS_DE_ENTRADA, pasoDelTurno } from './visitas.ts';
 
 /**
  * Version de las metricas: sube cuando cambia lo que significa una cifra. Va en el manifiesto, para
  * que nadie compare dos informes que no miden lo mismo (ficha T-048 §4.1).
  */
-export const VERSION_METRICAS = 4;
+export const VERSION_METRICAS = 5;
 
 /** Lo que decidio un robot en un turno, para medir si sirvio de algo (ficha T-050 §4.1.6). */
 export interface DecisionDeRobot {
@@ -163,8 +163,6 @@ export interface MetricasDePartida {
   readonly comarcasTocadas: readonly string[];
   /** Las comarcas del mapa que se jugo de verdad: el criterio de tierra se mide sobre ellas. */
   readonly comarcasDelMapa: readonly string[];
-  /** False si el paso de alguna unidad no se pudo reconstruir: las visitas son una cota inferior. */
-  readonly visitasCompletas: boolean;
   /** Huella del ultimo turno: si dos ejecuciones la dan distinta, no son la misma partida. */
   readonly huellaFinal: string;
 }
@@ -254,7 +252,6 @@ export class Registro {
   private readonly esperas = new Map<string, Map<string, number>>();
   private readonly libro: LibroDeNegocios;
   private anterior: EstadoPartida | null = null;
-  private visitasCompletas = true;
 
   constructor(
     private readonly reglas: TablasDeReglas,
@@ -497,11 +494,9 @@ export class Registro {
       }
     }
     const entradas = sucesos
-      .filter((s) => s.tipo === 'recua.entra' && s.comarca !== null)
+      .filter((s) => SUCESOS_DE_ENTRADA.includes(s.tipo) && s.comarca !== null)
       .map((s) => s.comarca as IdComarca);
-    const paso = pasoDelTurno(this.anterior, estado, entradas, this.mundo.vecinos);
-    for (const comarca of paso.comarcas) this.tocadas.add(comarca);
-    if (!paso.completo) this.visitasCompletas = false;
+    for (const comarca of pasoDelTurno(estado, entradas)) this.tocadas.add(comarca);
   }
 
   cerrar(estado: EstadoPartida, semilla: string, turnos: number): MetricasDePartida {
@@ -525,7 +520,6 @@ export class Registro {
       ),
       comarcasTocadas: [...this.tocadas].sort(comparar),
       comarcasDelMapa: Object.keys(this.mundo.comarcas).sort(comparar),
-      visitasCompletas: this.visitasCompletas,
       huellaFinal: estado.huellaTurnoAnterior ?? '',
     };
   }

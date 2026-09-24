@@ -341,6 +341,22 @@ describe('el movimiento', () => {
     expect(sinCanyada).toBe(4);
   });
 
+  it('dice por dónde pasa: un rebaño.entra por comarca, en orden, hasta donde llega', () => {
+    let estado = partida(12, rebano('rebanyo-1', SIERRA));
+    let ordenes: Orden[] = [rutaDeRebano(estado.turno, 'rebanyo-1', RIO)];
+    const pisadas: string[] = [];
+    for (let i = 0; i < 6; i += 1) {
+      const resultado = turno(estado, ordenes, reglas, mundoDeRebanos({ canyada: false }));
+      estado = resultado.estado;
+      ordenes = [];
+      pisadas.push(...suceso(resultado.sucesos, 'rebanyo.entra').map((s) => s.comarca ?? ''));
+      if (suceso(resultado.sucesos, 'rebanyo.llega').length > 0) break;
+    }
+    expect(pisadas.length).toBeGreaterThan(1);
+    expect(pisadas.at(-1)).toBe(RIO);
+    expect(new Set(pisadas).size).toBe(pisadas.length);
+  });
+
   it('un rebaño en camino por una cañada pasta; por un camino corriente, no', () => {
     const pasto = (mundoDeLaPrueba: Mundo) => {
       const estado = partida(12, rebano('rebanyo-1', SIERRA));

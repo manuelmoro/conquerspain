@@ -1190,3 +1190,13 @@ mercado de su capital** (Llanos de Albacete), por el tratante. El tratante solo 
 la feria si `feriaAlAlcance` encuentra una, y esa función solo mira ferias en comarcas **ya
 exploradas**; la Mesta no conoce ninguna y su exploradora no está formada. Con 45 maravedís la saca,
 una sola feria al año pasaría de los 500 de volumen propio y contaría como destacada.
+
+## 24-09-2026 · La tierra se mide de verdad (métricas 5)
+
+El criterio `tierra` era «no evaluable»: el paso de los rebaños se adivinaba de lo que se les
+consumía de la ruta, y la cifra era una cota superior. Con la trashumancia larga de T-058 pesaba
+más. Ahora el motor emite `rebanyo.entra` por comarca, como `recua.entra`, y el banco cuenta exacto
+(`visitas.ts` queda en unas líneas; fuera la reconstrucción y `visitasCompletas`). Base nueva
+`T-047-metricas5`: el mismo recuento, **353**, y la tierra ya firme: **entre el 38 % y el 62 % del
+mapa jugado sin tocar** en 200 turnos, frente a un objetivo de menos del 5 %. Es de lo que más lejos
+queda de cumplir.

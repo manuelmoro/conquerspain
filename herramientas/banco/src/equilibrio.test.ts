@@ -285,17 +285,11 @@ describe('lo que no se puede esconder', () => {
     expect(estadoDe(evaluarEquilibrio(resultado(dos)), 'ganadores')).toBe('no evaluable');
   });
 
-  it('con visitas sin reconstruir, un mapa mal usado no se declara incumplido', () => {
+  it('un mapa mal usado incumple y uno usado entero cumple: la cuenta de visitas es exacta', () => {
     const mapa = ['a', 'b', 'c', 'd'];
-    const incompleta = unaPartida(MEDIANA_100, {
-      mapa,
-      tocadas: ['a'],
-      visitasCompletas: false,
-    });
-    expect(estadoDe(evaluarEquilibrio(incompleta), 'tierra')).toBe('no evaluable');
-    const completa = unaPartida(MEDIANA_100, { mapa, tocadas: ['a'], visitasCompletas: true });
-    expect(estadoDe(evaluarEquilibrio(completa), 'tierra')).toBe('incumple');
-    const entera = unaPartida(MEDIANA_100, { mapa, tocadas: mapa, visitasCompletas: false });
+    const mal = unaPartida(MEDIANA_100, { mapa, tocadas: ['a'] });
+    expect(estadoDe(evaluarEquilibrio(mal), 'tierra')).toBe('incumple');
+    const entera = unaPartida(MEDIANA_100, { mapa, tocadas: mapa });
     expect(estadoDe(evaluarEquilibrio(entera), 'tierra')).toBe('cumple');
   });
 

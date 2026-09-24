@@ -28,4 +28,4 @@ export {
 export type { Manifiesto, Procedencia } from './procedencia.ts';
 export { ESTRATEGIAS, robotDe } from './robots/index.ts';
 export type { Robot } from './robots/index.ts';
-export { pasoDelTurno, prefijoConsumido } from './visitas.ts';
+export { SUCESOS_DE_ENTRADA, pasoDelTurno } from './visitas.ts';

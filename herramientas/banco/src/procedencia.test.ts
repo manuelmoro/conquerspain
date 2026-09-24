@@ -53,10 +53,12 @@ describe('el manifiesto', () => {
     expect(textoDeManifiesto(manifiestoDe())).toBe(textoDeManifiesto(manifiestoDe()));
   });
 
-  it('guarda la huella final y la integridad de las visitas de cada partida', () => {
+  it('guarda la huella final y el mapa jugado de cada partida', () => {
     const m = manifiestoDe();
     expect(m.partidas).toHaveLength(2);
-    expect(m.partidas[0]).toMatchObject({ semilla: '1492', cadencia: 1, visitasCompletas: true });
+    expect(m.partidas[0]).toMatchObject({ semilla: '1492', cadencia: 1 });
+    expect(m.partidas[0]?.huellaFinal).toBeTruthy();
+    expect(m.partidas[0]?.comarcas).toBeGreaterThan(0);
   });
 });
 

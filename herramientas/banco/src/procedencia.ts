@@ -30,7 +30,6 @@ export interface PartidaDelManifiesto {
   /** Comarcas del mapa que se jugo de verdad: desde T-049 cada partida lleva su recorte. */
   readonly comarcas: number;
   readonly huellaFinal: string;
-  readonly visitasCompletas: boolean;
 }
 
 export interface Manifiesto {
@@ -72,7 +71,6 @@ export function componerManifiesto(
     cadencia: p.cadencia,
     comarcas: p.comarcasDelMapa.length,
     huellaFinal: p.huellaFinal,
-    visitasCompletas: p.visitasCompletas,
   }));
   return {
     versiones: {

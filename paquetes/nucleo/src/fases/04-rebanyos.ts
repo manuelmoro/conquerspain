@@ -208,6 +208,19 @@ function moverRebanyo(ctx: Contexto, id: string): void {
     );
     return;
   }
+  // Uno por comarca en la que entra, como las recuas: es lo que dice por donde paso el ganado.
+  for (const comarca of avance.entradas) {
+    registrarSuceso(
+      ctx.sucesos,
+      ctx.fase,
+      'rebanyo.entra',
+      { rebanyo: rebanyo.id },
+      {
+        ...donde2,
+        comarca,
+      },
+    );
+  }
   const ultima = avance.entradas.at(-1);
   if (ultima !== undefined && avance.ruta.length === 0) {
     registrarSuceso(

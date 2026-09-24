@@ -121,6 +121,8 @@ manifiesto no dependa del ejecutor.
 - Las visitas incluyen las comarcas de paso (sucesos `recua.entra` y consumo de ruta de los
   rebaños), y la partida dice si alguna no se pudo reconstruir; si no se pudo, un mapa mal usado
   se declara **no evaluable** en vez de incumplido, porque la cifra es una cota superior.
+  *Nota del 24-09-2026 (T-047):* los rebaños tienen ya su propio suceso, `rebanyo.entra`, y la
+  cuenta es exacta; desaparecen la reconstrucción y la cota superior (métricas 5).
 - El arbitraje exige traza: compra, venta posterior en otra plaza, cantidades, importes, comisiones
   y bastimento atribuido. Lo que se vende sin haberlo comprado se publica aparte.
 - «No propuso órdenes» (medible) y «no hubo decisión útil» (no evaluable hasta T-050) son dos

@@ -239,20 +239,15 @@ function deTierra(partida: MetricasDePartida): Evaluacion {
   const total = partida.comarcasDelMapa.length;
   const sinUsar = partida.comarcasDelMapa.filter((id) => !tocadas.has(id)).length;
   const porcentaje = total === 0 ? null : (100 * sinUsar) / total;
-  const veredicto = menorQue(porcentaje, OBJETIVOS.tierraPct);
-  // Si faltan pasos por reconstruir, el porcentaje es una cota superior: solo un «cumple» es firme.
-  const estado = partida.visitasCompletas || veredicto === 'cumple' ? veredicto : 'no evaluable';
   return fila(partida.semilla, {
     criterio: 'tierra',
     ambito: 'partida',
     unidad: '% de comarcas del mapa jugado que no toca nadie',
     objetivo: `< ${String(OBJETIVOS.tierraPct)} %`,
     observado: porcentaje,
-    estado,
+    estado: menorQue(porcentaje, OBJETIVOS.tierraPct),
     precondicion: 'T-049: el mapa jugado tiene que ser el recorte de la partida',
-    detalle: `${String(sinUsar)} de ${String(total)} comarcas sin tocar${
-      partida.visitasCompletas ? '' : '; hay pasos sin reconstruir, así que es una cota superior'
-    }`,
+    detalle: `${String(sinUsar)} de ${String(total)} comarcas sin tocar`,
   });
 }
 

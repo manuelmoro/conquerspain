@@ -9,7 +9,6 @@ import { RECURSOS, explicar, limitesDePrecio, validarMundo } from '@conquer/nucl
 import type {
   EstadoMercado,
   EstadoPartida,
-  IdComarca,
   IdJugador,
   Mundo,
   Recursos,
@@ -19,14 +18,9 @@ import type {
 import { estadoMini, mundoMini, tablasMini } from '../../../paquetes/nucleo/pruebas/mundo-mini.ts';
 import { Registro } from './metricas.ts';
 import { LibroDeNegocios, tratoDeSuceso } from './negocios.ts';
-import { pasoDelTurno, prefijoConsumido } from './visitas.ts';
+import { SUCESOS_DE_ENTRADA, pasoDelTurno } from './visitas.ts';
 
 const REGLAS = tablasMini();
-
-/** Identificadores de comarca de mentira, para las pruebas de rutas. */
-function ruta(...ids: readonly string[]): IdComarca[] {
-  return ids as unknown as IdComarca[];
-}
 
 function recursos(cantidades: Partial<Recursos> = {}): Recursos {
   const base = { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 };
@@ -68,99 +62,29 @@ function trato(
 // ——— Visitas ——————————————————————————————————————————————————————————————
 
 describe('las comarcas que se pisan de paso', () => {
-  it('el trozo de ruta consumido son las comarcas por las que pasó', () => {
-    expect(prefijoConsumido(ruta('a', 'b', 'c'), ruta('c'))).toEqual(['a', 'b']);
-    expect(prefijoConsumido(ruta('a', 'b', 'c'), ruta('a', 'b', 'c'))).toEqual([]);
-    expect(prefijoConsumido(ruta('a', 'b'), ruta('z'))).toBeNull();
-    expect(prefijoConsumido(ruta('a'), ruta('a', 'b'))).toBeNull();
-  });
-
-  it('un rebaño que cruza tres comarcas en un turno las pisa todas, no solo la última', () => {
+  it('cuentan las entradas de recuas y rebaños y la posición de cada unidad', () => {
     const inicial = estadoMini();
-    const antes: EstadoPartida = {
+    const ahora: EstadoPartida = {
       ...inicial,
       rebanyos: {
         'rebanyo-1': {
           id: 'rebanyo-1' as never,
           jugador: 'casa-uno' as IdJugador,
           nombre: 'Rebaño',
-          situacion: { donde: 'comarca', comarca: 'prueba-llano' as never },
-          ruta: ['prueba-vega', 'prueba-rio', 'prueba-monte'] as never,
+          situacion: { donde: 'comarca', comarca: 'prueba-monte' as never },
+          ruta: [],
           cabezas: 100,
           pastoDelAnyoMil: 0,
           turnosSinPasto: 0,
         },
       },
     };
-    const rebanyo = antes.rebanyos['rebanyo-1'];
-    if (rebanyo === undefined) throw new Error('falta el rebaño');
-    const ahora: EstadoPartida = {
-      ...antes,
-      rebanyos: {
-        'rebanyo-1': {
-          ...rebanyo,
-          situacion: { donde: 'comarca', comarca: 'prueba-monte' as never },
-          ruta: [],
-        },
-      },
-    };
-    const paso = pasoDelTurno(antes, ahora, []);
-    expect([...paso.comarcas].sort()).toEqual(['prueba-monte', 'prueba-rio', 'prueba-vega']);
-    expect(paso.completo).toBe(true);
+    const pisadas = pasoDelTurno(ahora, ['prueba-vega', 'prueba-rio'] as never);
+    expect([...pisadas].sort()).toEqual(['prueba-monte', 'prueba-rio', 'prueba-vega']);
   });
 
-  it('con una ruta nueva en el turno, si acaba en una vecina se sabe por dónde pasó', () => {
-    const inicial = estadoMini();
-    const rebanyo = {
-      id: 'rebanyo-1' as never,
-      jugador: 'casa-uno' as IdJugador,
-      nombre: 'Rebaño',
-      situacion: { donde: 'comarca' as const, comarca: 'prueba-llano' as never },
-      ruta: ['prueba-vega'] as never,
-      cabezas: 100,
-      pastoDelAnyoMil: 0,
-      turnosSinPasto: 0,
-    };
-    const antes: EstadoPartida = { ...inicial, rebanyos: { 'rebanyo-1': rebanyo } };
-    const ahora: EstadoPartida = {
-      ...inicial,
-      rebanyos: {
-        'rebanyo-1': {
-          ...rebanyo,
-          situacion: { donde: 'comarca', comarca: 'prueba-monte' as never },
-          ruta: ['prueba-sierra'] as never,
-        },
-      },
-    };
-    const paso = pasoDelTurno(antes, ahora, [], mundoMini().vecinos);
-    expect(paso.completo).toBe(true);
-    expect([...paso.comarcas].sort()).toEqual(['prueba-llano', 'prueba-monte']);
-  });
-
-  it('si con la ruta nueva acaba más lejos que una vecina, se dice que faltan pasos', () => {
-    const inicial = estadoMini();
-    const rebanyo = {
-      id: 'rebanyo-1' as never,
-      jugador: 'casa-uno' as IdJugador,
-      nombre: 'Rebaño',
-      situacion: { donde: 'comarca' as const, comarca: 'prueba-llano' as never },
-      ruta: ['prueba-vega'] as never,
-      cabezas: 100,
-      pastoDelAnyoMil: 0,
-      turnosSinPasto: 0,
-    };
-    const antes: EstadoPartida = { ...inicial, rebanyos: { 'rebanyo-1': rebanyo } };
-    const ahora: EstadoPartida = {
-      ...inicial,
-      rebanyos: {
-        'rebanyo-1': {
-          ...rebanyo,
-          situacion: { donde: 'comarca', comarca: 'prueba-sierra' as never },
-          ruta: ['prueba-mina'] as never,
-        },
-      },
-    };
-    expect(pasoDelTurno(antes, ahora, [], mundoMini().vecinos).completo).toBe(false);
+  it('los dos sucesos de entrada son los de recuas y rebaños', () => {
+    expect(SUCESOS_DE_ENTRADA).toEqual(['recua.entra', 'rebanyo.entra']);
   });
 
   it('la recua cuenta sus entradas por los sucesos, y llegan al registro', () => {
@@ -183,7 +107,6 @@ describe('las comarcas que se pisan de paso', () => {
     );
     const partida = registro.cerrar(estado, 'prueba', 1);
     expect(partida.comarcasTocadas).toContain('prueba-monte');
-    expect(partida.visitasCompletas).toBe(true);
     expect(partida.comarcasDelMapa).toEqual(Object.keys(mundoMini().comarcas).sort());
   });
 });
