@@ -1025,3 +1025,27 @@ negocio—. La adoptada: la bolsa viaja cargada y solo vuelve a casa si hay esca
 
 **Aparte:** el capítulo de comercio del prestigio sigue a 0 en todas las casas, porque solo cuenta
 **ferias destacadas**, no negocios. Es el criterio 3 de T-053.
+
+## 24-09-2026 · T-047 se reanuda: de dónde salen las 7 filas que costó T-057
+
+Base `T-057-*` (120 / 110 / 111, total 341; antes de T-057, 348). La pérdida está en el prestigio
+(7 horquillas más fuera), la ausencia de los salineros (+3), `ganadores` y `obra mayor` en 1085. La
+escasez mejora (−4 filas en incumplimiento).
+
+**Ensayo descartado: `techoDeLejaniaMil` 2000 → 1500** (`E-techo1500`). Hipótesis: lo que cuesta
+filas es lo caro que se pone lo lejano, no el comercio. Resultado: 118 / 111 / 112, **341 igual**, y
+el comercio cae a menos de la mitad (127 negocios y +2720, frente a 181 y +7209). Refutada.
+
+**Lo que dicen los cuatro ensayos juntos.** Recargo 150, 200 y 250 y techo 1500 se quedan todos en
+337–341: la pérdida no depende de las cifras, sino de **la forma de la regla**.
+
+**Diagnóstico (provisional, revertido): el pan.** Con los escalones de T-054, una comarca de labor 5
+a menos de tres jornadas dejaba el pan al 70 % en toda su zona; con T-057 cada plaza paga el camino
+desde ella. Aplicando T-057 a todo **salvo al pan** (`E-panT054`, solo 1085): **114** filas, frente
+a 110 con T-057 y 118 antes. **El pan explica la mitad** de lo perdido en esa campaña.
+
+**Siguiente paso:** decidir cómo viaja el pan. No es un recurso como la sal: es perecedero, se da en
+casi todas partes y es la columna de la escasez. Lo natural es un recargo **por recurso**
+(`recargoPorJornadaMil` como tabla por recurso, el pan más bajo), que se explica en una frase —«el
+pan se hace en todas partes y no compensa acarrearlo lejos»— y se mide con las tres campañas.
+Después, lo que quede (la otra mitad en 1085) con su propio diagnóstico.
