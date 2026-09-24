@@ -952,3 +952,37 @@ robot un negocio, y eso es lógica del banco. Sale a [T-056](T-056-el-negocio-en
 **Decisión:** adoptada la venta con `ventaCobraMil: 1000` (cambia porte por dinero, sin pan que
 salga de la nada). No se prueban tarifas intermedias: la cota ya demuestra que la tarifa no es el
 cuello de botella.
+
+## 24-09-2026 · T-056: el robot cuenta bien, y aun así no hay negocio
+
+**Cambio adoptado** (robots 6): el arbitraje cuenta la ganancia con lo que la plaza cobraría y
+pagaría de verdad por su orden —`casarPlaza` con la línea del robot sola y el precio sabido como
+equilibrio—, no comprando al límite de la puja (+20 %) y vendiendo al de la rebaja (−10 %). Se
+adopta aunque no mueva el recuento: contar con el peor precio posible era un 30 % de lastre
+indefendible, y queda una prueba (`arbitraje.test.ts`) que lo impide.
+
+**Resultado:** 116 / 118 / 114, **las mismas cifras** que `T-055b` en las tres campañas.
+
+**Por qué, con la traza de la rutina** (semilla 1492, turnos 80 a 140):
+
+1. La bolsa del mercader y del arriero en los turnos en que deciden es de **1 a 9 maravedís**: viven
+   en el colchón de 60 y no compran ni una carga.
+2. Ni con 150 maravedís hay un viaje con ganancia: el mejor pierde 18. La sal de Bureba a
+   Odra-Pisuerga, con su 28 %, pierde 53: nueve cargas ganan 25 en bruto y el viaje come 43 de pan
+   del almacén y 40 en las ventas.
+
+**La aritmética de las tablas:**
+
+| Por carga y jornada | Maravedís |
+|---|---:|
+| Lo que gana la sal (un escalón del 10 % cada 3 jornadas sobre 14) | 0,47 |
+| Lo que gana el hierro (sobre 24) | 0,80 |
+| Lo que come la recua (2 panes a ~2,4, entre 8 cargas útiles) | 0,60 |
+| … contando la vuelta en vacío | 1,20 |
+
+Llevar sal o hierro **pierde dinero por construcción**, antes de comisiones y deslizamiento.
+
+**Ensayo descartado:** `jornadasPorEscalonDeAbundancia` 3 → 1 (`E-escalon1-1492`). Cero negocios,
+115 filas, escasez 10 (antes 9): con más margen, sigue sin haber bolsa. **Dos muros a la vez**, el
+margen y el dinero; arreglar uno solo no enseña nada, y arreglar los dos es decidir cuánto debe
+valer el comercio en el juego. **Decisión pendiente del usuario.**

@@ -297,6 +297,7 @@ describe('las ferias se esperan, no se adivinan', () => {
       comarca: t.capital,
       tipo: 'feria',
       turnos: [10, 11],
+      volumen: 'grande',
     };
     expect(t.turnosHastaQueAbraEn(feria, 10)).toBe(0);
     expect(t.turnosHastaQueAbraEn(feria, 11)).toBe(0);

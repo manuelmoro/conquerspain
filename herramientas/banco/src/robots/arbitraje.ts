@@ -2,12 +2,13 @@
 // arrieros. Solo usa los precios que el jugador sabe, con su fecha; si no sabe ninguno que merezca
 // la pena, va a enterarse a la plaza conocida mas cercana.
 //
-// Un negocio se cuenta en limpio (ficha T-050 §4.1.5): se puja por encima del precio sabido y se
-// acepta vender por debajo, se pagan las comisiones de la casa en las dos plazas y el pan y la sal
-// que se come la recua por el camino, al precio base, o lo que cobran las ventas donde come (T-055).
-// Si con eso no queda ganancia, no se sale.
-import { comparar, multiplicarFactores } from '@conquer/nucleo';
-import type { IdMercado, Recua, Recurso } from '@conquer/nucleo';
+// Un negocio se cuenta en limpio (fichas T-050 §4.1.5 y T-056): lo que la plaza cobraria y pagaria
+// de verdad por esa orden, con lo que la mueve la propia orden, las comisiones de la casa en las dos
+// plazas y el pan y la sal que se come la recua por el camino, al precio base, o lo que cobran las
+// ventas donde come (T-055). Si con eso no queda ganancia, no se sale. La orden, en cambio, sale con
+// limites holgados, para que no se caiga en cuanto la plaza se mueva un poco.
+import { casarPlaza, comparar, multiplicarFactores, topeDeVolumen } from '@conquer/nucleo';
+import type { IdMercado, OperacionDeMercado, Recua, Recurso } from '@conquer/nucleo';
 
 import type { Decision, Rutina } from './impulsos.ts';
 import { COMERCIABLES, volverACasa } from './impulsos.ts';
@@ -68,10 +69,48 @@ function costeDeCompra(cantidad: number, precioMil: number, comision: number): n
   return importe + multiplicarFactores(importe, [comision]);
 }
 
-/** Lo que se cobra vendiendo `cantidad` a `precioMil`, descontada la comision. */
-function ingresoDeVenta(cantidad: number, precioMil: number, comision: number): number {
-  const importe = multiplicarFactores(cantidad, [precioMil]);
-  return importe - multiplicarFactores(importe, [comision]);
+/** Lo que casaria la orden en la plaza: cargas, importe sin comision y comision. */
+export interface Esperado {
+  readonly casada: number;
+  readonly importe: number;
+  readonly comision: number;
+}
+
+/**
+ * Lo que haria el motor con esta orden sola en la plaza (T-056 §4.1): el precio se mueve con ella
+ * antes de casar, y eso es lo que se paga. El base que supone es el precio sabido, porque el de
+ * verdad depende de lo que alcanza la plaza en todo el mapa, y eso la niebla no lo deja saber.
+ */
+export function esperadoEn(
+  t: Tablero,
+  plaza: PlazaConocida,
+  recurso: Recurso,
+  operacion: OperacionDeMercado,
+  cantidad: number,
+  limiteMil: number,
+  fondos: number,
+): Esperado {
+  const precioMil = precioSabido(t, plaza.id, recurso);
+  if (precioMil === null || cantidad <= 0) return { casada: 0, importe: 0, comision: 0 };
+  const resultado = casarPlaza({
+    precioMil,
+    recurso: { ...t.reglas.recursos[recurso], precioBaseMil: precioMil },
+    tope: topeDeVolumen(plaza.volumen, t.reglas.mercado),
+    lineas: [
+      {
+        clave: 'robot',
+        jugador: t.yo.id,
+        operacion,
+        cantidad,
+        limiteMil,
+        fondos,
+        comisionMil: comisionMil(t, plaza),
+      },
+    ],
+    tabla: t.reglas.mercado,
+    desempate: () => 0,
+  });
+  return resultado.lineas[0] ?? { casada: 0, importe: 0, comision: 0 };
 }
 
 /**
@@ -132,20 +171,35 @@ function negocioDe(
   if (pa === null || pb === null || pa <= 0) return null;
   const precioMaximoMil = multiplicarFactores(pa, [PUJA_MIL]);
   const precioMinimoMil = multiplicarFactores(pb, [REBAJA_MIL]);
-  const [ca, cb] = [comisionMil(t, compra), comisionMil(t, venta)];
+  const ca = comisionMil(t, compra);
   // Lo que se lleva para comer en las ventas no se gasta en mercancia.
   const paraComprar = bolsa - provision.maravedis;
   let cantidad = Math.min(hueco, Math.floor((Math.max(0, paraComprar) * 1000) / precioMaximoMil));
   while (cantidad > 0 && costeDeCompra(cantidad, precioMaximoMil, ca) > paraComprar) cantidad -= 1;
   if (cantidad <= 0) return null;
-  const pagado = costeDeCompra(cantidad, precioMaximoMil, ca);
+  const comprado = esperadoEn(
+    t,
+    compra,
+    recurso,
+    'comprar',
+    cantidad,
+    precioMaximoMil,
+    paraComprar,
+  );
+  if (comprado.casada <= 0) return null;
+  const vendido = esperadoEn(t, venta, recurso, 'vender', comprado.casada, precioMinimoMil, 0);
   const ganancia =
-    ingresoDeVenta(cantidad, precioMinimoMil, cb) - pagado - valorDelBastimento(t, provision);
+    vendido.importe -
+    vendido.comision -
+    (comprado.importe + comprado.comision) -
+    valorDelBastimento(t, provision);
+  // La bolsa es la del peor caso: la compra al limite, para que no se caiga por falta de fondos.
+  const pagado = costeDeCompra(comprado.casada, precioMaximoMil, ca);
   return {
     compra,
     venta,
     recurso,
-    cantidad,
+    cantidad: comprado.casada,
     precioMaximoMil,
     precioMinimoMil,
     bolsa: pagado,

@@ -45,6 +45,7 @@ import type {
   Ruta,
   TablasDeReglas,
   TipoEdificio,
+  VolumenFeria,
   VistaComarca,
   VistaJugador,
 } from '@conquer/nucleo';
@@ -56,6 +57,8 @@ export interface PlazaConocida {
   readonly tipo: 'local' | 'feria';
   /** Turnos del anyo en que abre; vacio si es local (abre siempre). */
   readonly turnos: readonly number[];
+  /** Lo que mueve: el de la feria en el atlas; una plaza local es pequenya, como en el motor. */
+  readonly volumen: VolumenFeria;
 }
 
 const VIVAS: readonly Orden['estado'][] = [
@@ -462,12 +465,19 @@ export class Tablero {
           comarca: id,
           tipo: 'feria',
           turnos: feria.turnos,
+          volumen: feria.volumen,
         });
       }
       const edificios = this.edificiosSabidos(id);
       // El mercado del pueblo y la venta del camino abren plaza igual (T-053).
       if ((edificios['mercado'] ?? 0) > 0 || (edificios['venta'] ?? 0) > 0) {
-        plazas.push({ id: idDeMercadoLocal(id), comarca: id, tipo: 'local', turnos: [] });
+        plazas.push({
+          id: idDeMercadoLocal(id),
+          comarca: id,
+          tipo: 'local',
+          turnos: [],
+          volumen: 'pequenya',
+        });
       }
     }
     return plazas.sort((a, b) => comparar(a.id, b.id));

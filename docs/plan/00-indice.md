@@ -68,7 +68,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-053](T-053-plazas-donde-comerciar.md) | Plazas donde comerciar: densidad y cómo se abre una | en curso | T-049, T-052 |
 | [T-054](T-054-el-precio-y-la-distancia.md) | El precio y la distancia a donde se produce | **hecha** | T-052 |
 | [T-055](T-055-la-venta-da-de-comer.md) | La venta da de comer a las recuas | en curso | T-053, T-054, T-056 |
-| [T-056](T-056-el-negocio-en-limpio.md) | El negocio se cuenta con el precio que se espera | pendiente | T-055 (su mecánica) |
+| [T-056](T-056-el-negocio-en-limpio.md) | El negocio se cuenta con el precio que se espera | en curso | T-055 (su mecánica) |
 
 > **19-09-2026 · revisión del plan solicitada por el usuario.** Antes de seguir construyendo,
 > corregir el diagnóstico del equilibrio: **T-048 → T-049 → T-050 → T-051 → T-047 → T-060**.
