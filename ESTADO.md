@@ -3,17 +3,21 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 24 de septiembre de 2026 (T-054 hecha; T-053 en curso; T-047 en espera)
+**Última actualización:** 24 de septiembre de 2026 (T-055 en curso; T-054 hecha; T-047 en espera)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
 
 ## Tarea en curso
 
+**[T-055 · La venta da de comer a las recuas](docs/plan/T-055-la-venta-da-de-comer.md)** — **en
+curso**. Es la salida al último muro del comercio, y la tiene escrita el propio diseño desde T-035:
+«recuas propias y ajenas reponen». El diagnóstico está cerrado con números en su §1 y los cuatro
+caminos descartados, en su §6.
+
 **[T-053 · Plazas donde comerciar](docs/plan/T-053-plazas-donde-comerciar.md)** — **en curso**, con
-una pieza hecha y verificada (la venta abre plaza y se levanta en tierra de nadie) y el eslabón que
-falta ya localizado con un volcado. El detalle, en
-**[T-053 §8 · Dónde va](docs/plan/T-053-plazas-donde-comerciar.md)**.
+la venta ya hecha (abre plaza, se levanta en tierra de nadie y tiene ventero). Su criterio de
+negocios pasa por T-055.
 
 **[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — abierta y **en espera de
 T-053**. Es una tarea iterativa por naturaleza (ajustar, medir, repetir). De ella han salido dos
@@ -52,7 +56,7 @@ porte, dinero o plazas que se den.
 > propia: está escrito en [T-053 §8](docs/plan/T-053-plazas-donde-comerciar.md) y en la
 > [bitácora](docs/plan/bitacora-equilibrio.md), con los cinco ensayos descartados y su medida.
 
-La base contra la que comparar ahora es `herramientas/banco/informes/T-054-*`
+La base contra la que comparar ahora es `herramientas/banco/informes/T-055-*`
 (robots **4**, métricas 4, tres semillas: 1492, 1085 y 1212; 116, 118 y 112 filas cumplen); `npm run banco -- ... --evaluar`
 termina con código 2 mientras quede un criterio sin cerrar.
 
@@ -185,6 +189,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Fecha | Qué pasó |
 |---|---|
 | 23-09-2026 | **T-052 abierta desde dentro de T-047**: la geografía de precios no es una cifra. Al turno 100, entre las diez plazas de una partida, la dispersión de precios es de **0,0 puntos en la lana, 0,4 en el hierro y 0,6 en la sal**: lo que distingue una comarca de otra cuesta lo mismo en todas partes, y la comisión sola es un 2 % por lado. Se ensayaron y descartaron las dos palancas de datos que quedaban (liquidez de los menores a 300, que además **quita el comprador** y hunde el prestigio a 0 de 24 filas; y margen al 2 %, que no mueve la dispersión). La razón se lee en el código: el precio de una plaza solo cambia si alguien compra o vende allí, y la sal, el hierro y la lana no se comercian en ninguna parte, así que se quedan clavados en su único `precioBaseMil` global. **Ninguna cifra puede abaratar la sal de Añana frente a la de Sevilla.** Ficha [T-052](docs/plan/T-052-geografia-de-precios.md) escrita y detallada: precio base por comarca derivado de sus potenciales, con su tabla de abundancia, los cuatro sitios que hoy usan el número global y criterios de aceptación con cifras. T-047 se reanuda después |
+| 24-09-2026 | **La aritmética del comercio, hasta el fondo.** Con libertad para hacer lo mejor para el juego, fui a que el comercio exista. **Adoptado**: el arbitraje ordenaba las parejas de plazas con los precios acolchados (puja 20 %, rebaja 10 %), así que necesitaba una diferencia bruta **del 33 %** antes de mirar siquiera; con la sal de 9800 a 12600 entre dos plazas suyas no veía **ni una pareja en toda la partida**. Ahora ordena por lo que sabe y el acolchado se queda en los límites de la orden, que deben ser holgados o la compra se cae por precio. De 0 parejas a **106**, sin mover el recuento. **La causa última, con el volcado delante**: 106 parejas, 200 maravedís de bolsa y **`hueco = 0`** — no falta ocasión, ni dinero, ni plazas, ni precio, **falta sitio en la recua**: doce cargas de pan para un porte de diez. Cuatro caminos medidos y descartados, uno de ellos con **el primer negocio rentable de toda la investigación** (margen +51) a costa de hundir la escasez. La salida la tiene escrita el diseño desde T-035: la venta da de comer a las recuas. Ficha [T-055](docs/plan/T-055-la-venta-da-de-comer.md). 1021 tests en verde |
 | 24-09-2026 | **T-054 hecha: el precio mira la distancia a donde se produce.** La sal era cara tierra adentro *porque había que llevarla hasta allí*, y hasta ahora el precio solo miraba el potencial de la propia comarca: una comarca sin sal pegada a una salina cotizaba igual que otra a trescientos kilómetros. Ahora el nivel que manda es el mejor del mapa descontando **un escalón por cada tres jornadas**. El gradiente aparece: la sal pasa de valer el 120 % en **21 de 23 plazas** —un muro plano— a escalonarse en 70, 80, 90, 100 y 120; el hierro, en 80, 100, 110 y 120. Solo las plazas necesitan precio (diez o veinte por partida), así que se mide desde cada una con las jornadas de verano de la administración y una memoria por turno. Campañas: 116 / **118** / 112 frente a 116 / 112 / 113, y el **prestigio sube de 4 a 7 filas** con los mercaderes al 87 % de la mediana (antes 63 %) y los arrieros al 102 %. `negociosRentables` sigue en 0, pero ya no por el precio: la bolsa del robot son dos maravedís. 1021 tests en verde |
 | 24-09-2026 | **El ritmo del primer dominio choca con la vía de los monjes.** Cuatro ensayos, ninguno adoptado. El primer «pequeño dominio» lo marcan los monjes **fundando pueblas**, y el umbral de la puebla (40 de influencia) está calibrado **justo en el techo de lo que una casa sola alcanza**: a 50 el monje de Évora ya no funda ni una en 96 turnos, porque mantener presencia cuesta pan y la influencia se desgasta sin ella. En campaña, en cambio, con el umbral a 70 siguen fundando siete pueblas. El mejor ensayo (puebla 70, incorporar 90) da **122 / 114 / 114** con `dominio` y `ganadores` cumpliendo, pero solo rompe el escenario en solitario de `vias.test.ts`, que es una garantía de T-050: **decisión para el usuario**, sin tocar por cuenta propia. Subir solo la incorporación es net peor (117/111/111) y rompe `ganadores`. Aprendido de paso: la influencia está topada en 100 y una casa sola no pasa de unos 45 en comarca ajena. Ninguna tabla cambia; 1021 tests en verde |
 | 24-09-2026 | **T-047: el marcador deja de pagar solo por ocupar tierra.** Con una comarca a 20 y una feria a 30, ocupar tierra pesaba cuatro veces más que cualquier oficio y el marcador se reducía a quien producía más pan. Ahora una comarca vale **8** (+4 con fuero), explorar **8**, un año trashumante **30**, una feria destacada **60** y los aperos **25**: lo que distingue a una casa vale lo que cuesta lograrlo. **Primera ganancia de equilibrio de T-047**, confirmada en las tres campañas: 114→116, 109→112 y 109→113 filas cumplen, con la horquilla más estrecha (monjes de 457 % a 327 % de la mediana, hortelanos de 385 % a 280 %, mercaderes de 63 % a 80 %) y sin romper nada: obras mayores 3 de 3, actividad 22 de 24 y `ganadores` cumple. Antes se ensayó y **descartó** frenar al líder por la administración —tres dosis—: cualquier subida mata las obras mayores, porque se pagan de lo mismo y no hay dinero para las dos cosas. Escenarios de `prestigio.test.ts` recalculados a mano y huellas regeneradas. 1021 tests en verde |

@@ -26,7 +26,9 @@ const GANANCIA_MINIMA = 8;
 const PRECIO_CADUCA_EN = 24;
 /**
  * Los precios se mueven de un turno a otro y con la propia compra: se puja hasta un 20 % por encima
- * del precio sabido y se acepta vender hasta un 10 % por debajo (en milesimas).
+ * del precio sabido y se acepta vender hasta un 10 % por debajo (en milesimas). Son los **limites
+ * de la orden**, y conviene que sean holgados: con menos, la compra se cae por precio en cuanto la
+ * plaza se mueve un poco (medido, rompe la prueba de via del arriero).
  */
 const PUJA_MIL = 1200;
 const REBAJA_MIL = 900;
@@ -170,17 +172,19 @@ function conLaCarga(
   return null;
 }
 
-/** Diferencia bruta de precio mas alta entre dos plazas: para mirar primero las prometedoras. */
+/**
+ * Diferencia bruta de precio mas alta entre dos plazas, **con los precios que se saben**: es para
+ * ordenar las parejas y quedarse con las prometedoras. Lo que decide si hay negocio es la ganancia
+ * neta de `negocioDe`, que si cuenta la puja, la rebaja, las comisiones y el bastimento. Mirar aqui
+ * los precios acolchados hacia que una ocasion del 28 % ni se considerara.
+ */
 function diferencia(t: Tablero, compra: PlazaConocida, venta: PlazaConocida): number {
   let mejor = Number.NEGATIVE_INFINITY;
   for (const recurso of COMERCIABLES) {
     const pa = precioSabido(t, compra.id, recurso);
     const pb = precioSabido(t, venta.id, recurso);
     if (pa === null || pb === null || pa <= 0) continue;
-    mejor = Math.max(
-      mejor,
-      multiplicarFactores(pb, [REBAJA_MIL]) - multiplicarFactores(pa, [PUJA_MIL]),
-    );
+    mejor = Math.max(mejor, pb - pa);
   }
   return mejor;
 }

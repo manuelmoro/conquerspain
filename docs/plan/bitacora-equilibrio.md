@@ -856,3 +856,61 @@ los arrieros al 102 % (antes 90 %) y los ferrones al 64 % (antes 45 %).
 pocas y cercanas entre sí, así que el escalón que *ve* es pequeño aunque el del mapa sea grande.
 
 Las huellas de reproducción **no cambian**: esas partidas no abren plaza.
+
+## 24-09-2026 · La aritmética del comercio, hasta el fondo
+
+**Encargo:** «haz lo que creas más adecuado para el juego, aunque sea más complejo». Elegí que el
+comercio exista de verdad, que es lo que llevaban cuatro iteraciones señalando las mediciones.
+**Resultado:** una corrección adoptada, cuatro caminos medidos y descartados, y la causa última
+localizada con números. Ninguna tabla cambia.
+
+### Lo adoptado: el arbitraje veía cero parejas por un filtro absurdo
+
+El robot ordenaba las parejas de plazas con los precios **acolchados** —puja un 20 % por encima del
+precio sabido y rebaja un 10 % por debajo—, de modo que necesitaba una diferencia bruta **del 33 %**
+antes de considerar siquiera una pareja. Con la sal a 9800 en una plaza suya y a 12600 en otra (un
+28 %), no veía **ni una en toda la partida**.
+
+Ahora ordena por la diferencia que sabe y el acolchado se queda donde corresponde: en los **límites
+de la orden**, que tienen que ser holgados o la compra se cae por precio en cuanto la plaza se mueve
+(medido: con un 5 % se rompe la prueba de vía del arriero). De 0 parejas a **106**, y el recuento sin
+moverse: 116 / 118 / 112, igual que la base.
+
+### La causa última, con el volcado delante
+
+Con el precio ya con geografía (T-054), las plazas del camino (T-053), la bolsa resuelta y el filtro
+corregido:
+
+```
+T160 parejas=106 bolsa=200 porte=10
+  pallars-jussa->segria       margen=5000 hueco=0 bast=41
+  pallars-jussa->bajo-aragon  margen=5000 VIAJE=no-cabe
+```
+
+**106 parejas, doscientos maravedís y `hueco = 0`.** No falta ocasión, ni dinero, ni plazas, ni
+precio: **falta sitio en la recua**. Con dos panes por jornada y porte 10, una ida y vuelta de tres
+jornadas pide 12 cargas de pan de un porte de 10. Es aritmética, no equilibrio.
+
+### Los cuatro caminos medidos
+
+| Camino | Resultado | Decisión |
+|---|---|---|
+| `portePorAcemila` 1 → 2 | Cero negocios, y la **escasez cae de 11 a 4 filas**: las recuas acarrean pan a casa | Descartado |
+| Porte 2 + bastimento 1 + escalón de abundancia 2 | **El primer negocio rentable de toda la investigación**: 2 negocios, 12 cargas arbitradas, margen neto **+51**. Pero la escasez se hunde a 3 y el recuento cae a 109 | Descartado, con pena |
+| Escalón 2 + abundancia más ancha, sin tocar las recuas | 118 / 114 / 114 —el mejor recuento visto— pero **cero negocios** y el prestigio peor (12 filas frente a 14) | Descartado: es lateral |
+| Fondo de comercio para mercaderes y arrieros | Funciona: el mercader pasa de 95 a **343 maravedís** en vez de quedarse clavado 200 turnos. Pero el recuento cae a 338: **ahorrar para un comercio que aún no existe es peor que construir** | Descartado **por ahora**; vuelve cuando el comercio funcione |
+
+### La salida que propongo, y ya está en el diseño
+
+Agrandar las recuas o abaratar el bastimento arreglan el comercio y **rompen la escasez**, porque
+una recua con hueco acaba acarreando pan a casa. La salida que no tiene ese efecto la tiene escrito
+el propio diseño desde T-035 y nunca se implementó: [docs/03 §3.3](../03-economia.md) dice de la
+venta que **«recuas propias y ajenas reponen»**.
+
+Una venta cada pocas jornadas convierte un viaje largo en varios tramos cortos: la recua no tiene
+que cargar la comida de todo el camino, solo la del tramo. No toca el porte ni el bastimento, así
+que la escasez no se entera; y convierte la venta —la plaza del camino que T-053 acaba de traer— en
+la pieza que hace posible una ruta de comercio. Es lo que era una venta.
+
+Queda en [T-055](T-055-la-venta-da-de-comer.md), con el diseño por detallar y los cuatro caminos de
+arriba anotados para que nadie los repita.
