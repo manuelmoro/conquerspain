@@ -175,3 +175,20 @@ No repetir ninguno de estos sin una razón nueva:
 | Falta porte | `portePorAcemila` 1 → 2, con y sin ventas | **Cero negocios** en los dos casos |
 | Falta dinero | `COLCHON_DE_MARAVEDIS` 60 → 20 | **Cero negocios** (la casa tiene ~65 maravedís: la bolsa de comercio era de 5) |
 | Faltan ferias | Medición del catálogo | 9 comarcas con feria de 403, abiertas 1–2 turnos al año |
+
+## 9. Dónde va (24-09-2026, al cerrar T-055, T-056 y T-057)
+
+La cadena que salió de aquí está hecha: la venta da de comer (T-055), el robot cuenta la ganancia
+con el precio esperado y guarda un fondo de comercio (T-056) y la distancia paga el camino (T-057).
+Estado de los criterios con la base `T-047-metricas5` (robots 8):
+
+| # | Criterio | Estado |
+|---|---|---|
+| 1 | Una plaza cada 20 comarcas, y ninguna capital a más de tres jornadas de una plaza ajena | **La mitad.** Densidad cumplida: 14 a 23 plazas abiertas al final (una cada 9 a 18 comarcas). La distancia no: la capital peor situada queda a **13–15 jornadas** de la plaza ajena más cercana, porque las ventas nuevas las plantan las casas que comercian, cerca de su tierra |
+| 2 | Negocios con traza y margen neto positivo en las tres campañas | **Cumple** desde T-057: 181 negocios, +7209 |
+| 3 | El capítulo de comercio del prestigio deja de ser cero | **No cumple.** Solo cuenta ferias destacadas, y la Mesta, que es quien tiene volumen (sus 434 sacas de lana), lo vende todo en casa: no conoce ninguna feria (bitácora del 24-09) |
+| 4 | Precios: ninguna racha pegada a un extremo de 10 turnos | **Cumple** en 9 de 9 |
+| 5 | `verificar` | **Cumple** |
+
+**Falta**, en dos frentes que son de los robots, no del motor: que las ferias sean alcanzables para
+quien tiene mercancía (la Mesta, los ferrones con su hierro) y que haya plaza cerca de cada capital.
