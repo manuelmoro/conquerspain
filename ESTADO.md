@@ -3,25 +3,24 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 24 de septiembre de 2026 (T-055 hecha; T-047 se reanuda; T-056 y T-057 esperan al recuento)
+**Última actualización:** 24 de septiembre de 2026 (T-058 hecha; T-047 en curso; T-056 y T-057 esperan al recuento)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
 
 ## Tarea en curso
 
-**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — **se reanuda**. El comercio
-ya existe (181 negocios con ganancia en nueve partidas, donde antes no había ninguno), pero el
-precio nuevo lo ha pagado con **7 filas de recuento** (348 → 341). Recuperarlas es lo primero, y con
-eso se cierran T-056 y T-057. Ver **[Dónde va T-047](#dónde-va-t-047)** más abajo.
+**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — en curso, iterando. Hoy
+el recuento es **345** (113 / 116 / 116) y el marcador está mucho más sano que hace un día: la Mesta
+juega su vía en 8 de 9 partidas (T-058) y hortelanos y monjes han bajado de ~300 % a ~205 % de la
+mediana. Ver **[Dónde va T-047](#dónde-va-t-047)** más abajo.
 
-Abiertas y a la espera de ese recuento, con todo lo demás cumplido:
+Abiertas a la espera del recuento, con todo lo demás cumplido:
 
-- **[T-057 · La distancia paga el camino](docs/plan/T-057-la-distancia-paga-el-camino.md)**: el
-  precio sube un 20 % del corriente por jornada desde la fuente más barata, hasta el doble. Cumple
-  sus criterios 1, 2 y 4; el 3 (recuento) no. Ver su §7.
-- **[T-056 · El negocio se cuenta con el precio que se espera](docs/plan/T-056-el-negocio-en-limpio.md)**:
-  el robot cuenta la ganancia con el precio esperado y guarda un fondo de comercio. Mismo estado.
+- **[T-057 · La distancia paga el camino](docs/plan/T-057-la-distancia-paga-el-camino.md)** y
+  **[T-056 · El negocio se cuenta con el precio que se espera](docs/plan/T-056-el-negocio-en-limpio.md)**:
+  su criterio 3 pide no bajar de 348, la base de antes del comercio, y hoy son 345. Esa base tenía
+  la vía de la Mesta rota; se cierran cuando T-047 pase de 348.
 - **[T-053 · Plazas donde comerciar](docs/plan/T-053-plazas-donde-comerciar.md)**: le falta el
   capítulo de comercio del prestigio, que solo cuenta **ferias destacadas** y sigue a 0.
 
@@ -33,38 +32,14 @@ Abiertas y a la espera de ese recuento, con todo lo demás cumplido:
 
 ## Siguiente tarea
 
-La que está en curso: **T-047**, empezando por recuperar el recuento que costó T-057.
+La que está en curso: **T-047**. Lo más descolgado del marcador, por tamaño: **ferrones (34 %)** y
+**mercaderes (41 %)**; después arrieros (60 %) y salineros (79 %), y por arriba hortelanos y monjes
+(~205 %). Cada uno con su diagnóstico antes de tocar una cifra, como se hizo con la Mesta.
 
-Orden: **T-047 (recuento; con él se cierran T-056 y T-057) → T-053 (ferias destacadas) → T-047 (lo
-demás: monjes, ritmo) → T-060**.
+Orden: **T-047 (con él se cierran T-056 y T-057) → T-053 (ferias destacadas) → T-060**.
 
-**Lo que se ha perdido, exactamente** (base `T-056-*` → `T-057-*`): en 1085, `ganadores` (los monjes
-ganan las tres), `obra mayor` (1 de 8 casas), prestigio de arrieros y salineros, escasez de los
-mercaderes en 1085-3 y la ausencia de los salineros en 1085-3; en 1212, la ausencia de los salineros
-y tres horquillas de prestigio en 1212-2. La causa medida: lejos de la fuente la sal y el hierro
-valen el doble, y el pan un 12 % más.
-
-**Segunda iteración hecha** (24-09-2026): recargo por recurso (tabla, todos a 200: neutro) y el pan
-a 100 y a 50 medidos en las tres campañas: 339 y 340 filas, frente a 341. **Descartado**: el pan no
-se recupera con un recargo menor; la diferencia de T-054 era el escalón que dejaba el pan al 70 % en
-toda la zona de una comarca de labor 5. Lo siguiente es medir qué filas de 1085 recupera exactamente
-`E-panT054` y decidir si el pan merece su propia forma de regla.
-
-**Tercera iteración hecha** (24-09-2026): corrige la segunda. Lo que recupera la regla de T-054 en
-1085 es ruido (ninguna fila de prestigio): el pan no pide regla propia. El fondo de comercio,
-descartado (`BOLSA_MAXIMA` 0 da lo mismo). La pérdida real es de prestigio y tiene un patrón: los
-**arrieros caen** (368→207 en 1212-2 con la misma tierra) y monjes, salineros y canteros suben.
-**Lo siguiente:** desglosar por capítulos el prestigio de los arrieros, T-056 contra T-057.
-
-**Primera iteración hecha** (24-09-2026, en la [bitácora](docs/plan/bitacora-equilibrio.md)): el
-techo de la lejanía a 150 % no recupera nada (341) y hunde el comercio; descartado. Recargos de 150
-a 250 y ese techo se quedan todos en 337–341, así que la pérdida es de la forma de la regla. El
-diagnóstico apunta al **pan**: si el pan sigue la regla de T-054, 1085 sube de 110 a 114. **Lo
-siguiente:** un recargo por jornada **por recurso**, con el pan más bajo, medido con las tres
-campañas; después, lo que quede.
-
-La base contra la que comparar ahora es `herramientas/banco/informes/T-057-*` (robots **8**,
-métricas 4, tres semillas; 120, 110 y 111 filas cumplen); `npm run banco -- ... --evaluar` termina
+La base contra la que comparar ahora es `herramientas/banco/informes/T-058-*` (robots **8**,
+métricas 4, tres semillas; 113, 116 y 116 filas cumplen); `npm run banco -- ... --evaluar` termina
 con código 2 mientras quede un criterio sin cerrar.
 
 ### Cuándo probará el usuario
@@ -205,6 +180,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | 24-09-2026 | **T-047 se reanuda: de dónde salen las 7 filas.** Ensayo `techoDeLejaniaMil` 2000 → 1500 descartado: el recuento se queda en 341 y el comercio cae a menos de la mitad. Con los cuatro ensayos (recargo 150, 200 y 250, techo 1500) todos en 337–341, la pérdida es de la forma de la regla y no de sus cifras. Diagnóstico provisional y revertido: si el pan sigue la regla de T-054, 1085 pasa de 110 a 114, así que **el pan explica la mitad**. Lo siguiente: un recargo por jornada por recurso, con el pan más bajo. Ninguna tabla cambia |
 | 24-09-2026 | **T-047: recargo por recurso, resultado nulo.** `recargoPorJornadaMil` es ya una tabla por recurso (todos a 200: mismas cifras y huellas que T-057). Pan a 100 → 339 filas, pan a 50 → 340, base 341: el pan no recupera nada con un recargo menor; lo que daba T-054 era el escalón que lo dejaba al 70 % en toda una zona. Ensayos descartados y valores revertidos. 1041 tests en verde |
 | 24-09-2026 | **T-047: el recargo por recurso no recupera nada (pan 100 y 50: 339 y 340), y el pan no era la causa. T-058 abierta y en curso: la Mesta conoce sus cañadas.** La casa más descolgada (21 % de la mediana) no trashumaba porque no conocía ningún invernadero y no podía formar la recua que lo buscara; su rebaño se moría de 573 cabezas a 13. Nuevo permiso `conoceLasCanyadas`: al fundar, la Mesta conoce la cañada real más cercana, entera, y el camino hasta ella (desde Cameros, la Galiana hasta el Valle de Alcudia). Lo sabido al empezar no puntúa: `conocidasAlEmpezar` en el registro, descontado del capítulo de exploración y del primer horizonte. Arreglo del arnés de equivalencia: una orden sin cola ni fecha reserva al darse. Recuento **348** (desde 341); la Mesta trashuma en 1212 (246 y 169 % de la mediana). Falta el paso por cañada. 1050 tests en verde |
+| 24-09-2026 | **T-058 hecha: la Mesta conoce sus cañadas, y trashuma.** Con su cañada conocida el muro era el paso del ganado: `pasoCanyadaMil` 1000 → **2500** (2000 no basta para Cameros; tres quincenas hasta Alcudia, como en la historia), y su vía pasa a jugarse en 8 de 9 partidas. El exceso que vino después era del marcador: el año trashumante valía 30 por rebaño, con cinco rebaños; `porAnyoTrashumante` 30 → **10**. Recuento **345** (desde 341), la Mesta del 21 % al 124 % de la mediana, hortelanos y monjes de ~300 % a ~205 %. Pruebas de rebaños y de prestigio recalculadas a mano. 1050 tests en verde |
 | 23-09-2026 | **T-053 en curso**: la venta, plaza del camino. Primero, una medición que descarta el camino barato: el catálogo tiene **9 comarcas con feria de 403** y cada feria abre **uno o dos turnos al año**, así que las ferias son el acontecimiento anual y no el mercado de cada quincena. La decisión de diseño: **la venta abre plaza y es el único edificio que se levanta en tierra de nadie** (comarca explorada y sin dueño), sin dar los maravedís ni la lealtad del mercado —el mercado es el pueblo, la venta es el camino—, y lo que se levanta allí no pasa a ser tuyo. Los robots las plantan donde la mercancía cotiza distinto que en casa: las plazas de una partida suben de 10 a 13. Cuatro sospechas más, descartadas **con su medida**: un mercado en cada comarca propia, revertido (el mercader tiene una sola comarca), el porte al doble, el colchón de maravedís a 20 (la casa tiene 65: la bolsa de comercio eran cinco) y más ferias. Queda **un solo eslabón, localizado con un volcado**: un jugador no se entera de lo que él mismo ha construido fuera de su dominio, porque el conocimiento de una comarca ajena es una foto que solo se refresca donde tiene recua. 1016 tests en verde |
 | 23-09-2026 | **T-052 hecha**: la geografía, en el precio. El precio base de cada recurso pasa a ser el de **su comarca**: el del catálogo por la abundancia del potencial que lo produce (la sal mira a las salinas, el hierro a las venas, la lana al pasto, el pan a la labor), anclado en el nivel corriente para que la escasez encarezca poco y la abundancia abarate mucho. La dispersión entre las diez plazas de una partida sube de **0,6 a 40,4 puntos en la sal**, de 0,4 a 40,3 en el hierro y de 0,0 a 30,0 en la lana. Compone con los acontecimientos, el suelo y el techo y los límites de los menores sin tocarlos, y es función pura del catálogo: las huellas de reproducción no cambian. De paso destapa tres defectos de los robots que con un precio único no se veían (límites medidos contra el catálogo, la capital repetida en la ruta cuando se vende en casa, y el bastimento valorado fuera de su plaza) y una prueba de vía que ponía una carestía de sal justo en la comarca con salinas. **Y el hallazgo grande**: aun con precios y con el porte al doble no hay **ni un negocio**, porque hay **diez plazas para 208 comarcas**; de ahí sale T-053. Robots 4. 1016 tests en verde |
 | 23-09-2026 | **T-047 en curso**: el marcador solo paga por crecer. Diagnóstico medido sobre las nueve partidas de T-051: cuatro de los nueve capítulos del prestigio —comercio, ganadería, industria y caminos— dan **cero a todas las casas**, así que el prestigio es casi exactamente el pan producido (monjes 417 %, hortelanos 379 %, ferrones 14 % de la mediana). Una capa más abajo, el comercio **no existe**: `negociosRentables`, `ventasFuera` e `ingresosDeFeria` valen 0 en las nueve, porque el precio base es un número global y los mercaderes menores cubren el cupo entero de la plaza por los dos lados. Cinco ensayos aislados: bastimento a la mitad, colchón del arranque, sal de la lonja y `compraElPan` del ferrón, **descartados con su medida**; adoptado que **la casa del hierro empiece donde hay hierro y monte** (antes bastaba con que lo tuviera una vecina, y en cuatro de cada cinco semillas arrancaba con `hierro: 0`; el segundo defecto, ferrería sin carbonera posible, lo cazó `solvencia.test.ts`). Ferrones de 5–14 % a 28–53 %. El recuento global no se mueve porque los monjes se lo comen: es lo siguiente. 1010 tests en verde |

@@ -28,7 +28,10 @@ export const PRESTIGIO: DatosPrestigio = {
   porPrimicia: 50,
   // Abrir camino es de las pocas cosas que hacen todas las casas, tambien las que no crecen.
   porComarcaExplorada: 8,
-  porAnyoTrashumante: 30,
+  // Cuenta cada rebanyo, y una Mesta que trashuma lleva hasta cinco: a 30, en cuanto su via
+  // funciono (T-058) paso del 300 % de la mediana con la ganaderia como tres cuartas partes de su
+  // prestigio. A 10 queda entre el 103 % y el 165 % (T-047).
+  porAnyoTrashumante: 10,
   // Un rebanyo quieto en la sierra se queda en torno a 580 milesimas; el ciclo completo pasa de 750.
   calidadDeAnyoTrashumanteMil: 750,
   porAperosAltos: 25,

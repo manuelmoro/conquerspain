@@ -1,0 +1,91 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 4,
+    "robots": 8,
+    "reglas": 1
+  },
+  "revision": "e018560be2e83bf93a8c749551dcb2a78384dc24",
+  "etiqueta": "E-pasoCanyada3-1085",
+  "cambios": "ganaderia.pasoCanyadaMil=3000 (ensayo T-047)",
+  "campanya": {
+    "semilla": "1085",
+    "semillas": [
+      "1085",
+      "1085-2",
+      "1085-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "81bb1adc79d0b783ffa2f4ef0e8b415d7991cbdc952fa4969654bd0379c03e5b"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1085",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "1e887bfd8120d92566d32be5b3d604be43d806814f8d8fea2a6e06f2715e511a",
+      "visitasCompletas": false
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 1,
+      "comarcas": 249,
+      "huellaFinal": "c7e9044d9045607819f9afc73563b5db1ca62451a79ca7dcfde44db139499769",
+      "visitasCompletas": false
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "50b38858ec3cad896b69475584c3f8170c3610d16fcfb6b056db489114b3aa1f",
+      "visitasCompletas": true
+    },
+    {
+      "semilla": "1085",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "b123a35fda30ba6e0d0ebf74e5b1335d92f3f9fa119f22ceb8fbc2b01d8ea657",
+      "visitasCompletas": false
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 6,
+      "comarcas": 249,
+      "huellaFinal": "af5cc12d3c266f9ca153d3e1717909599138f01404904cd52bfed511326d6e1a",
+      "visitasCompletas": false
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "99657d70dc1e60c4706a67ccbc86ac0043110cc423735d76eff57a52cd3d20e5",
+      "visitasCompletas": true
+    }
+  ]
+}

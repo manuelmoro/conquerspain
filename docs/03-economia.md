@@ -321,8 +321,11 @@ Un **rebaño** es una unidad móvil como la recua, pero de ganado:
 - Además produce 2 pan por turno por cada mil cabezas (queso y corderos) y **estiércol**: cada
   invierno que pasta en una comarca propia suma turnos de abono; si llegan a 10 el esquileo sube un
   nivel de estiércol (hasta 3) y cada nivel da +5 % al pan de la labor; sin invernada, baja uno.
-- Anda **2 jornadas por turno**, una más por cañada. En camino pasta entero si va por una **cañada**
-  (también si el turno acaba en una comarca del camino) y nada si va por otro camino.
+- Anda **2 jornadas por turno** por un camino corriente y **4½ por una cañada real**, cuyos tramos
+  además cuentan la mitad: las merinas bajaban de Soria a Extremadura en dos o tres quincenas, y
+  de Cameros al Valle de Alcudia son tres turnos (T-047, medido con T-058). En camino pasta entero
+  si va por una **cañada** (también si el turno acaba en una comarca del camino) y nada si va por
+  otro camino.
 - Su ruta **no es circular**: la subida y la bajada son dos órdenes al año.
 - **Tierra ajena.** Un rebaño entra por cualquier camino en comarcas propias o neutrales; en la de
   otro jugador, solo por una cañada real y solo si su casa tiene **paso franco** (la Mesta). Hasta

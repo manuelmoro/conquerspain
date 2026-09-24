@@ -1,6 +1,6 @@
 # T-058 · La Mesta conoce sus cañadas
 
-**Fase:** 2 · Motor · **Depende de:** T-049 · **Estado:** en curso
+**Fase:** 2 · Motor · **Depende de:** T-049 · **Estado:** hecha (24-09-2026)
 
 ## 1. Contexto
 
@@ -123,4 +123,29 @@ dice «los pastos conocidos quedan tan lejos que el ganado pasaría el año en e
 Alcudia está a unos 7 turnos por trayecto con `pasoCanyadaMil: 1000`, y el robot no acepta más de
 12 al año. Las merinas bajaban de Soria a Extremadura en dos o tres quincenas.
 
-**Falta:** el ensayo del paso por cañada (una cifra de T-047) y volver a medir.
+### El paso por cañada y el peso del año trashumante (dos cifras de T-047)
+
+Con la cañada conocida, el muro que quedaba era el paso del ganado. Medido, una cifra cada vez:
+
+| `pasoCanyadaMil` | Recuento | Vía de la Mesta | Prestigio de la Mesta |
+|---:|---:|---|---|
+| 1000 (antes) | 348 | 2 de 9 | 15–31 %, salvo 1212 |
+| 2000 | 348 | 2 de 9 | igual: Cameros sigue a más de 12 turnos de camino al año |
+| **2500** | 342 | **8 de 9** | 209–334 % |
+| 3000 | 343 | 8 de 9 | 169–337 % |
+
+Adoptado **2500**, el valor más bajo con el que trashuma la Mesta de Cameros: corrige algo
+indefendible, porque es el ejemplo del lema de la casa, y deja el viaje de Cameros a Alcudia en unas
+tres quincenas, como en la historia. Su exceso venía del marcador: el año trashumante valía 30 **por
+rebaño**, y la Mesta lleva hasta cinco, así que la ganadería era tres cuartas partes de su
+prestigio. `prestigio.porAnyoTrashumante` 30 → **10** (el valor de antes del 24-09): recuento **345**
+y la Mesta entre el 103 % y el 165 %.
+
+**Cerrada el 24-09-2026** (`T-058-*`, robots 8):
+
+| # | Criterio | Estado |
+|---|---|---|
+| 1 | La regla, probada caso a caso | **Cumple**: ocho pruebas en `canyadas.test.ts` |
+| 2 | La Mesta trashuma en las tres campañas | **Cumple**: su vía se juega en 8 de 9 partidas |
+| 3 | Su prestigio sube del 21 % y el recuento no empeora frente a 341 | **Cumple**: mediana del 124 %; recuento 113 / 116 / 116 = 345 |
+| 4 | `verificar` | **Cumple** |

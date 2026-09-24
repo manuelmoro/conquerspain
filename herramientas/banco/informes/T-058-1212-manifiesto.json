@@ -5,7 +5,7 @@
     "robots": 8,
     "reglas": 1
   },
-  "revision": "eac4eed3b6f66017154696dc4a0ace493ac1108f",
+  "revision": "e018560be2e83bf93a8c749551dcb2a78384dc24",
   "etiqueta": "T-058-1212",
   "cambios": "",
   "campanya": {
@@ -39,7 +39,7 @@
     "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
   },
   "reglas": {
-    "huella": "d3725715337051157239484cfff1ae7509bc535a18c6d68b6c09179254906061"
+    "huella": "38c9028824eafba7d2caf7efab61ff58ce95e6b5717c874403b3ae479b064d10"
   },
   "objetivos": {
     "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
@@ -49,43 +49,43 @@
       "semilla": "1212",
       "cadencia": 1,
       "comarcas": 249,
-      "huellaFinal": "03b1c476e4225c67a461a41281b09d2948410d09d85e513f7835898374871ab3",
-      "visitasCompletas": true
+      "huellaFinal": "a54dc4cf0292f79605b32c3c7fb06a6f670575dce5dc0d2cbc12f0e5031f35aa",
+      "visitasCompletas": false
     },
     {
       "semilla": "1212-2",
       "cadencia": 1,
       "comarcas": 249,
-      "huellaFinal": "5ee4865d6543376cceab2891a616ab6a2eb49e82df22c317c9faf55d576c343f",
-      "visitasCompletas": true
+      "huellaFinal": "37901bc77198d7287a68f9539fb560114090ba69fc35e9261d985dc640a09d4f",
+      "visitasCompletas": false
     },
     {
       "semilla": "1212-3",
       "cadencia": 1,
       "comarcas": 249,
-      "huellaFinal": "53aa2ecb6247a77cc8a5c2fadebd7cda942548bff1e7fd909250f28d16a8b2b7",
+      "huellaFinal": "998a2a89a288c1499455390ef93689061cf4c757e017d7fa8ffe2a090ed7d17a",
       "visitasCompletas": false
     },
     {
       "semilla": "1212",
       "cadencia": 6,
       "comarcas": 249,
-      "huellaFinal": "acfb9e3276fa473edc2b9cbc8c609670b343b08fb59445f6b4a91cfa1beb83be",
-      "visitasCompletas": true
+      "huellaFinal": "89e96b4b33151a9a4f6a75a63f1555b6c52dcf37ac4d2c796f1bc037d169ec83",
+      "visitasCompletas": false
     },
     {
       "semilla": "1212-2",
       "cadencia": 6,
       "comarcas": 249,
-      "huellaFinal": "fb5d4b83276de79e3eb2f3781e3409db0359e30bcd59a7e3853f53394e0d74ad",
+      "huellaFinal": "faceeb4c3a7fbdf626874f90c5e6823ab711c7056238bed16f36d458ad760e60",
       "visitasCompletas": true
     },
     {
       "semilla": "1212-3",
       "cadencia": 6,
       "comarcas": 249,
-      "huellaFinal": "c49178a8bd69eef9e779cd1f3f52ebffd89db69a9001e215503d7ad1c04227b6",
-      "visitasCompletas": true
+      "huellaFinal": "4d374455f5e8016e3a6b82690a0dabe03993f71b4b3951738d5e807d3dcceeee",
+      "visitasCompletas": false
     }
   ]
 }

@@ -5,9 +5,12 @@ export const GANADERIA: DatosGanaderia = {
   cabezasPorRebanyo: 1000,
   costeFormarRebanyo: { pan: 0, madera: 0, piedra: 0, maravedis: 60, sal: 0, hierro: 0, lana: 0 },
   vecinosPorRebanyo: 2,
-  // El ganado va despacio: dos jornadas por turno, y una mas si va por una canyada.
+  // El ganado va despacio fuera de cañada: dos jornadas por turno. Por la cañada real anda
+  // cuatro y media, y sus tramos cuentan la mitad: las merinas bajaban de Soria a Extremadura en
+  // dos o tres quincenas (T-047, medido con T-058). Con una jornada de mas, como antes, la Mesta de
+  // Cameros tardaba siete turnos en llegar al Valle de Alcudia y no trashumaba nunca.
   pasoBaseMil: 2000,
-  pasoCanyadaMil: 1000,
+  pasoCanyadaMil: 2500,
   pastoMinimo: 2,
   cabezasPorPuntoDePasto: 1000,
   sacasPorRebanyo: 12,

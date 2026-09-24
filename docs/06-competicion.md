@@ -84,7 +84,7 @@ no lo que acumulas en el almacén.
 | Hito logrado | lo que diga el hito (10 a 50) |
 | Hito alcanzado el primero de la partida | 50 más |
 | Comarca explorada | 8 |
-| Rebaño que completa un año trashumante (esquila con calidad del año ≥ 75 %) | 30 |
+| Rebaño que completa un año trashumante (esquila con calidad del año ≥ 75 %) | 10 |
 | Aperos de nivel 3 o más instalados | 25 por comarca |
 
 Penalizaciones: −20 por comarca perdida por deslealtad; −1 por turno con escasez. El prestigio puede
@@ -97,6 +97,11 @@ llegaban a cuatro veces la mediana y los ferrones y la Mesta no pasaban del 20 %
 distingue a una casa vale lo que cuesta lograrlo**: un año trashumante entero, una feria destacada o
 una comarca con aperos de sobra no pueden valer menos que ocupar una comarca más. Explorar sube de 3
 a 8 porque es de las pocas cosas que hacen todas las casas, también las que no crecen.
+
+El año trashumante se subió entonces a 30 sin haber visto nunca a la Mesta trashumar. Cuando su vía
+funcionó (T-058), el 30 resultó excesivo: cuenta **cada rebaño**, una Mesta que trashuma lleva
+hasta cinco, y pasó del 300 % de la mediana con la ganadería como tres cuartas partes de su
+prestigio. A **10** queda entre el 103 % y el 165 %.
 
 ### 6.3.1 Cómo se lleva la cuenta (T-043)
 

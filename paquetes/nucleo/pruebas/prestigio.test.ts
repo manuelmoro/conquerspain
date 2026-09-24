@@ -114,7 +114,7 @@ describe('el prestigio por capítulos', () => {
     expect(p.total).toBe(72);
   });
 
-  it('escenario 2, un dominio hecho: 931', () => {
+  it('escenario 2, un dominio hecho: 891', () => {
     let estado = conComarca(escenario(), 'prueba-llano', { poblacion: 150, fuero: 'fuero' });
     estado = conComarca(estado, 'prueba-vega', { duenyo: UNO, poblacion: 60, aperos: 3 });
     estado = conComarca(estado, 'prueba-costa', { duenyo: UNO, poblacion: 23, aperos: 2 });
@@ -140,12 +140,12 @@ describe('el prestigio por capítulos', () => {
       caminos: 30, // dos tramos de calzada a 15
       comercio: 60, // una feria destacada
       exploracion: 56,
-      ganaderia: 60, // dos anyos trashumantes a 30
+      ganaderia: 20, // dos anyos trashumantes a 10
       industria: 25, // solo la vega llega a aperos 3
       hitos: 100, // villa 20 + dominio 30 + primicia 50
     });
     expect(p.penalizaciones).toBe(24); // 20 por la comarca perdida y 4 turnos de escasez
-    expect(p.total).toBe(931);
+    expect(p.total).toBe(891);
   });
 
   it('escenario 3, una casa en apuros: el prestigio puede ser negativo', () => {

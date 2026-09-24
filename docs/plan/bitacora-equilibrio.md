@@ -1094,3 +1094,37 @@ ahorrada frena a los arrieros. Resultado: 111 filas, **igual que la base**, arri
 
 **Siguiente:** el prestigio de los arrieros por capítulos, T-056 contra T-057, para ver qué capítulo
 pierden (los informes solo guardan el total).
+
+## 24-09-2026 · El pan no era, y la Mesta sí (T-058)
+
+**Ensayos descartados: recargo por jornada por recurso, con el pan más bajo.** Pan a 100: 339; pan a
+50: 340 (base `T-057`, 341). El diagnóstico anterior (`E-panT054`, 114 en 1085) fue una sola
+campaña, y todas las variantes dan en esa semilla entre 109 y 112: era ruido. El código del recargo
+por recurso se revirtió, porque con todos los valores iguales era complejidad sin motivo.
+
+**El problema más grande del marcador, visto por capítulos.** Hortelanos y monjes (~780 de
+prestigio) viven de población, territorio e hitos; los capítulos de oficio (ganadería, industria,
+comercio, caminos) están casi a cero en todas las casas. La más descolgada, la Mesta (21 %), no
+trashumaba: no conocía ningún invernadero y no podía formar la recua que lo buscara. **Eso no es una
+cifra, es una regla**: sale T-058, la Mesta conoce su cañada desde el principio.
+
+**Lo que midió T-058, con sus dos cifras de T-047:**
+
+| Cambio | Recuento | Vía de la Mesta | Mesta (% mediana) |
+|---|---:|---|---|
+| Base `T-057` | 341 | 0 de 9 | 15–57 |
+| Conoce su cañada (con el prestigio regalado todavía) | 349 | 2 de 9 | 61–273 |
+| … sin el prestigio regalado | 348 | 2 de 9 | 15–31, 169–246 en 1212 |
+| + `pasoCanyadaMil` 1000 → 2000 | 348 | 2 de 9 | igual |
+| + `pasoCanyadaMil` → **2500** | 342 | **8 de 9** | 209–334 |
+| + `pasoCanyadaMil` → 3000 | 343 | 8 de 9 | 169–337 |
+| **2500 + `porAnyoTrashumante` 30 → 10** | **345** | **8 de 9** | **103–165** |
+
+Adoptados: la regla de T-058, `pasoCanyadaMil: 2500` (el más bajo con el que trashuma Cameros; tres
+quincenas hasta Alcudia, como en la historia) y `porAnyoTrashumante: 10` (a 30 por rebaño, con cinco
+rebaños, la ganadería era tres cuartas partes del prestigio de la Mesta).
+
+**El marcador después** (mediana de % sobre la mediana, nueve partidas): hortelanos 202, monjes
+205, Mesta 124, canteros 117, salineros 79, arrieros 60, mercaderes 41, ferrones 34. Antes de T-057:
+hortelanos 300, monjes 296, canteros 135, salineros 110, arrieros 93, mercaderes 58, ferrones 46,
+Mesta 21. **Lo siguiente, por tamaño:** ferrones y mercaderes, los dos por debajo del 50 %.

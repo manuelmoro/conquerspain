@@ -311,37 +311,34 @@ describe('el reparto de pasto', () => {
 // ——— Movimiento ————————————————————————————————————————————————————————————
 
 describe('el movimiento', () => {
-  it('anda dos jornadas por turno, una mas por cañada y una menos con barro', () => {
+  it('anda dos jornadas por turno, cuatro y media por cañada y una menos con barro', () => {
     expect(pasoDeRebanyo(false, false, reglas)).toBe(2000);
-    expect(pasoDeRebanyo(true, false, reglas)).toBe(3000);
-    expect(pasoDeRebanyo(true, true, reglas)).toBe(2000);
+    expect(pasoDeRebanyo(true, false, reglas)).toBe(4500);
+    expect(pasoDeRebanyo(true, true, reglas)).toBe(3500);
     expect(pasoDeRebanyo(false, true, reglas)).toBe(1000);
   });
 
-  function turnosHastaLlegar(mundoDeLaPrueba: Mundo): { turnos: number; enCamino: boolean } {
+  function turnosHastaLlegar(mundoDeLaPrueba: Mundo): number {
     let estado = partida(12, rebano('rebanyo-1', SIERRA));
     let turnos = 0;
-    let enCamino = false;
     let ordenes: Orden[] = [rutaDeRebano(estado.turno, 'rebanyo-1', RIO)];
     while (turnos < 10) {
       const resultado = turno(estado, ordenes, reglas, mundoDeLaPrueba);
       estado = resultado.estado;
       ordenes = [];
       turnos += 1;
-      const r = estado.rebanyos['rebanyo-1'];
-      if (r?.situacion.donde === 'camino') enCamino = true;
       if (suceso(resultado.sucesos, 'rebanyo.llega').length > 0) break;
     }
-    return { turnos, enCamino };
+    return turnos;
   }
 
   it('por la cañada llega antes que por un camino corriente', () => {
     const conCanyada = turnosHastaLlegar(mundoDeRebanos());
     const sinCanyada = turnosHastaLlegar(mundoDeRebanos({ canyada: false }));
-    // Seis jornadas y pico en verano (2,7 + 1,8 + 1,8): a tres por turno, tres turnos; a dos, cuatro.
-    expect(conCanyada.turnos).toBe(3);
-    expect(sinCanyada.turnos).toBe(4);
-    expect(conCanyada.enCamino).toBe(true);
+    // Seis jornadas y pico en verano (2,7 + 1,8 + 1,8): a cuatro y media por turno, dos turnos; a
+    // dos, cuatro.
+    expect(conCanyada).toBe(2);
+    expect(sinCanyada).toBe(4);
   });
 
   it('un rebaño en camino por una cañada pasta; por un camino corriente, no', () => {
