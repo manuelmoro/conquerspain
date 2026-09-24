@@ -895,6 +895,7 @@ export function plantarVentasDeFeria(d: Decision): void {
   // La ultima posada de la ruta que ya esta en pie: de ahi se cuentan las cuatro jornadas.
   let posada: IdComarca = t.capital;
   for (const comarca of ruta.comarcas) {
+    if (comarca === feria.comarca) break;
     if (t.esPropia(comarca) || t.hayVentaEn(comarca)) posada = comarca;
   }
   const desdeLaPosada = t.jornadasDesde(posada);

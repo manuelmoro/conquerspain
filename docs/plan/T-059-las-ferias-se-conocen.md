@@ -243,3 +243,31 @@ deja de ser 0»):** **a medias**: lo primero se cumple; lo segundo no. T-059 sig
 **La Mesta sigue sin llegar** (`no-cabe` 237 de 332 miradas con bolsa 0): sus maravedís no pasan del
 colchón y no lleva bolsa, y con bolsa aún no cabe (83 veces). Es un caso de la vía de la Mesta
 (rebaños y obras se comen sus maravedís), no del camino.
+
+### 9.2 Lo que queda para el capítulo de comercio (25-09-2026)
+
+Medido con `plantarVentasDeFeria` corregida (la propia comarca de la feria contaba como posada y la
+rutina creía la feria cerca) y con el colchón de la bolsa de feria de 60 a 10: **sin ningún cambio**
+(117 filas, salineros 73 de ingresos de feria, Mesta 0). Descartados con su medida:
+
+- **El dinero de la bolsa no ata a la Mesta**: bajar el colchón no mueve nada.
+- **Las ventas del camino no ata**: en el camino de la Mesta ya hay una a 3 jornadas de la feria
+  (Montes de Oca, hacia Alfoz de Burgos).
+
+Lo que sí queda a la vista:
+
+1. **La lana de la Mesta se malvende en casa** (320 vendidos, 0 en feria): `vender` en casa se
+   salta lo que va a feria solo si la feria «está al alcance» (`feriaAlAlcance`), y el viaje de
+   9–11 turnos (42–56 panes de 10 cargas) no cabe, así que se vende todo en la plaza de casa antes
+   de que `feriar` lo pueda llevar. El nudo es circular: no llega porque no cabe, y no guarda
+   porque no llega.
+2. **Los salineros llevan una sola vez en 200 turnos**: son la casa atrapada de 1492 (95 % de los
+   turnos sin proponer órdenes: `esencial-sin-recursos` y `sin-mercado-propio` en 199). Es un
+   problema de su arranque, no de la feria.
+3. **El umbral de 500 maravedís** de una feria destacada equivale a una recua entera de lana; una de
+   sal vende unas decenas. Solo la Mesta puede llegar, y la Mesta no llega.
+
+**Decisión para el usuario** (no se cambia a escondidas ninguna cifra de T-047 §5): o se rebaja el
+umbral de la feria destacada a lo que vende un feriante corriente (tabla de prestigio, un solo valor),
+o se resuelve primero la viabilidad de la Mesta como feriante (que guarde su lana para la feria
+aunque hoy no le quepa el viaje, y que el viaje se dé en tramos con las ventas del camino).

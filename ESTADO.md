@@ -44,8 +44,11 @@ la feria (robots 11). **Los salineros venden en feria en las tres campañas** (p
 **352**, la tierra igual. **Base nueva: `E-feria3-*`.** Sigue sin haber ferias destacadas (comercio del
 prestigio a 0) y la Mesta no llega (sus maravedís no pasan del colchón). Antes, el 24-09: la
 expedición vive de la tierra (T-059 §8): la tierra sin tocar baja 6–11 puntos en las nueve partidas.
-**Lo siguiente:** ver qué le falta a un cargamento de sal para pasar de 500 maravedís de volumen en una
-feria, y la Mesta.
+**Lo siguiente, medido el 25-09 ([T-059 §9.2](docs/plan/T-059-las-ferias-se-conocen.md)):** ni el
+dinero de la bolsa ni las ventas del camino atan a la Mesta; su lana se malvende en casa porque su feria
+«no está al alcance» y no está al alcance porque el viaje no cabe. Los salineros son la casa atrapada de
+1492. **Decisión pendiente del usuario:** rebajar el umbral de la feria destacada (500 maravedís, una
+recua entera de lana) o resolver primero la Mesta como feriante.
 
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 
