@@ -1,0 +1,85 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 5,
+    "robots": 8,
+    "reglas": 1
+  },
+  "revision": "eedfa2c0a8bb62e7fad5019272f67a36a4264fe9",
+  "etiqueta": "E-feriasOidas-1492",
+  "cambios": "PROVISIONAL: ferias conocidas de oidas",
+  "campanya": {
+    "semilla": "1492",
+    "semillas": [
+      "1492",
+      "1492-2",
+      "1492-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "fea056aae1d16f6f1465a0628f25e179c432f8e84c7d4cf2ea9f43116ddcf113"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1492",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "267b96e2cef5e1bb0e9001bebce6beda429f449a49cd050e179b0ffaa504b873"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "7e5454f9e66f83c29be68b2fea6969a2412597c82dabd0e420c27728fcfe1479"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "3d472baa471c30ba484d03104596af58aa5e60f4d3807b5ca09dfe35f8fe1985"
+    },
+    {
+      "semilla": "1492",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "6385566d7a7771b703a4e8c5e0e103ff0fb0cc56074bf636520f8c0428663b66"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "ec519b17f6a2e9e0957cf4254d2cf528b139d2a973e4e1a1723c54607f230cb1"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "330a602ed349c05e9097cf8799c2f9e7cb2da47581834a8e7935a5d8dfad7e07"
+    }
+  ]
+}

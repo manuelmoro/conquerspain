@@ -2,8 +2,10 @@
 //
 // El robot recibe el mundo entero porque es el atlas que tiene cualquier cliente, pero solo puede
 // mirarlo a traves de este tablero, que lo filtra por lo que el jugador conoce: de una comarca oida
-// sabe el nombre; de una explorada o propia, su geografia; de una desconocida, nada. Asi un robot no
-// puede hacer trampas aunque quiera (lo vigila `robots.test.ts` con vistas manipuladas).
+// sabe el nombre, donde esta en el mapa y, si tiene feria, su feria, porque el atlas y el calendario
+// de ferias son publicos (T-059); de una explorada o propia, ademas, su geografia; de una
+// desconocida, nada. Asi un robot no puede hacer trampas aunque quiera (lo vigila `robots.test.ts`
+// con vistas manipuladas).
 import {
   calendarioDe,
   capacidadDe,
@@ -31,6 +33,7 @@ import type {
   ComarcaMundo,
   EstadoComarca,
   EstadoJugador,
+  Feria,
   IdComarca,
   IdMercado,
   Modificadores,
@@ -443,6 +446,16 @@ export class Tablero {
       : (this.explorada(id)?.datos?.edificios ?? {});
   }
 
+  /** Las ferias de una comarca conocida, aunque sea de oidas: el calendario es publico (T-059). */
+  feriasDe(id: IdComarca): readonly Feria[] {
+    return this.nivel(id) === 'desconocida' ? [] : (this.mundo.comarcas[id]?.ferias ?? []);
+  }
+
+  /** Donde esta en el mapa una comarca conocida, aunque sea de oidas: el atlas es publico. */
+  centroDe(id: IdComarca): readonly [number, number] | null {
+    return this.nivel(id) === 'desconocida' ? null : (this.mundo.comarcas[id]?.centro ?? null);
+  }
+
   /** Hay una venta en la comarca, por lo que sabe el jugador: alli come su recua (T-055). */
   hayVentaEn(id: IdComarca): boolean {
     return (this.edificiosSabidos(id)['venta'] ?? 0) > 0;
@@ -458,8 +471,7 @@ export class Tablero {
   plazasConocidas(): PlazaConocida[] {
     const plazas: PlazaConocida[] = [];
     for (const id of this.conocidas()) {
-      const geografia = this.geografia(id);
-      for (const feria of geografia?.ferias ?? []) {
+      for (const feria of this.feriasDe(id)) {
         plazas.push({
           id: idDeMercadoDeFeria(feria.id),
           comarca: id,

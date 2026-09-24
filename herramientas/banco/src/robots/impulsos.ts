@@ -604,9 +604,34 @@ function idaYVuelta(t: Tablero, destino: IdComarca): Parada[] {
   ];
 }
 
+/** Distancia en el mapa entre dos puntos: basta para ordenar, no para medir jornadas. */
+function lejania(a: readonly [number, number], b: readonly [number, number]): number {
+  return Math.hypot(a[0] - b[0], a[1] - b[1]);
+}
+
+/**
+ * Hacia donde explora una casa con mercancia de feria que no alcanza ninguna: la feria que sabe
+ * (de oidas basta) mas cercana a su capital en el mapa. Null si no busca feria (T-059).
+ */
+function feriaQueBuscar(d: Decision, recua: Recua): readonly [number, number] | null {
+  const { t, perfil } = d;
+  if (perfil.feria.length === 0 || feriaAlAlcance(d, recua, {}) !== null) return null;
+  const capital = t.centroDe(t.capital);
+  if (capital === null) return null;
+  let mejor: { centro: readonly [number, number]; lejos: number } | null = null;
+  for (const plaza of t.plazasConocidas().filter((pl) => pl.tipo === 'feria')) {
+    const centro = t.centroDe(plaza.comarca);
+    if (centro === null) continue;
+    const lejos = lejania(capital, centro);
+    if (mejor === null || lejos < mejor.lejos) mejor = { centro, lejos };
+  }
+  return mejor?.centro ?? null;
+}
+
 /**
  * La comarca oida mas cercana a la que la recua llega **y desde la que vuelve** a lo propio: en
- * casa, con el pan que cabe; fuera, con el que lleva. Una exploradora no sale a malvivir.
+ * casa, con el pan que cabe; fuera, con el que lleva. Una exploradora no sale a malvivir. La de una
+ * casa que busca feria elige, de las que alcanza, la que mas se acerca a ella (T-059).
  */
 function siguienteAExplorar(
   d: Decision,
@@ -618,9 +643,14 @@ function siguienteAExplorar(
   const aqui = Tablero.donde(recua);
   const enCasa = t.esPropia(aqui);
   const distancias = t.jornadasDesde(aqui);
+  const hacia = feriaQueBuscar(d, recua);
+  const acercaA = (id: string): number => {
+    const centro = hacia === null ? null : t.centroDe(id as IdComarca);
+    return hacia === null || centro === null ? 0 : lejania(centro, hacia);
+  };
   const oidas = [...distancias]
     .filter(([id]) => t.nivel(id) === 'oida' && !planeadas.has(id))
-    .sort((a, b) => a[1] - b[1] || comparar(a[0], b[0]))
+    .sort((a, b) => acercaA(a[0]) - acercaA(b[0]) || a[1] - b[1] || comparar(a[0], b[0]))
     .slice(0, OIDAS_QUE_SE_MIRAN);
   let imposible: ViajeImposible = 'sin-ruta';
   for (const [id] of oidas) {

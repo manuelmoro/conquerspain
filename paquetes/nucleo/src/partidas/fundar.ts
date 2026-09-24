@@ -82,12 +82,18 @@ function jugadorInicial(
   almacen: Recursos,
   mundo: Mundo,
 ): EstadoJugador {
-  // Se conoce la capital, y de oidas las comarcas que la rodean.
+  // Se conoce la capital, y de oidas las comarcas que la rodean y las que tienen feria: el
+  // calendario de ferias es publico (T-059).
   const conocimiento: Record<string, Conocimiento> = {
     [capital]: { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },
   };
-  for (const vecina of mundo.vecinos[capital] ?? []) {
-    conocimiento[vecina] = { nivel: 'oida', turnoUltimaNoticia: 1, datos: null };
+  const deOidas = [
+    ...(mundo.vecinos[capital] ?? []),
+    ...idsEnOrden(mundo.comarcas).filter((id) => (mundo.comarcas[id]?.ferias.length ?? 0) > 0),
+  ];
+  for (const id of deOidas) {
+    if (conocimiento[id] !== undefined) continue;
+    conocimiento[id] = { nivel: 'oida', turnoUltimaNoticia: 1, datos: null };
   }
   return {
     id: participante.id,

@@ -1200,3 +1200,22 @@ más. Ahora el motor emite `rebanyo.entra` por comarca, como `recua.entra`, y el
 `T-047-metricas5`: el mismo recuento, **353**, y la tierra ya firme: **entre el 38 % y el 62 % del
 mapa jugado sin tocar** en 200 turnos, frente a un objetivo de menos del 5 %. Es de lo que más lejos
 queda de cumplir.
+
+## 24-09-2026 · Los arrieros por capítulos: la pérdida es de umbral, no de precio
+
+Medias por casa, T-056 → T-057, capítulo a capítulo (`capitulo_*` de los CSV de campaña):
+
+- **1212 arrieros:** 305 → 251. `obras` 80 → 40 (**una obra mayor menos**: vale 40) y `hitos` 52 → 38.
+- **1085 arrieros:** 274 → 249, repartido en exploración (−5), población (−2) y el total; sin obra ni hito.
+- **1492 arrieros:** 234 → 222 (hitos 48 → 38).
+- **Monjes 1212:** 680 → 723 por población (+46), sin relación con el comercio.
+
+Lectura: el prestigio de una casa que no crece por tierra depende de **pocos bultos de 30–40
+puntos** (obra mayor, hito), y una obra terminada o no por un turno de diferencia mueve más que la
+distancia en el precio. La pérdida de T-057 en las horquillas de prestigio es **ruido de umbral en
+una casa de 250–300 puntos**, no un efecto sistemático del precio: en 1085 y 1492 la caída es de
+5–10 % sin ningún bulto perdido. No hay nada que corregir en la regla; se documenta y se sigue.
+
+**Decisión:** el recuento de T-057 se acepta como **nueva base (341)**, por lo ya adoptado el
+mismo día (el comercio era imposible por construcción). No se cierran T-056/T-057 hasta que el
+prestigio cuente comercio (T-053, criterio 3): el orden pasa a **T-053 → T-047 (monjes, ritmo)**.

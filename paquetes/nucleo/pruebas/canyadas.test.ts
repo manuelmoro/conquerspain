@@ -13,7 +13,7 @@ import { prepararPartida } from '../src/partidas/preparar.ts';
 import { hitosNuevos } from '../src/reglas/hitos.ts';
 import { prestigioDe } from '../src/reglas/prestigio.ts';
 import type { EstadoPartida } from '../src/tipos/estado.ts';
-import type { IdComarca, IdJugador, IdPartida } from '../src/tipos/ids.ts';
+import type { IdComarca, IdFeria, IdJugador, IdPartida } from '../src/tipos/ids.ts';
 import type { Camino, Mundo } from '../src/tipos/mundo.ts';
 import type { Casa, TablasDeReglas } from '../src/tipos/reglas.ts';
 import { explicar } from '../src/validacion/validador.ts';
@@ -222,6 +222,35 @@ describe('al fundar la partida', () => {
     expect(hitosNuevos(estado, yo, { mejorEsquileoMil: 0, prestigio: 0 }, reglas)).not.toContain(
       'primer-horizonte',
     );
+  });
+
+  it('todos saben de oídas dónde están las ferias: el calendario es público (T-059)', () => {
+    const base = mundoMini();
+    const sierra = base.comarcas['prueba-mina'];
+    if (sierra === undefined) throw new Error('el mundo mini ha cambiado');
+    const conFeria: Mundo = {
+      ...base,
+      comarcas: {
+        ...base.comarcas,
+        'prueba-mina': {
+          ...sierra,
+          rasgos: [...sierra.rasgos, 'villa-de-feria'],
+          ferias: [
+            {
+              id: 'prueba' as IdFeria,
+              nombre: 'Feria de Prueba',
+              turnos: [10],
+              volumen: 'mediana',
+              recursosDestacados: [],
+            },
+          ],
+        },
+      },
+    };
+    const yo = fundar('canteros', conFeria).jugadores['uno'];
+    if (yo === undefined) throw new Error('falta el jugador');
+    expect(yo.conocimiento['prueba-mina']?.nivel).toBe('oida');
+    expect(yo.conocimiento['prueba-mina']?.datos).toBeNull();
   });
 
   it('una casa sin el permiso solo conoce su capital y, de oídas, sus vecinas', () => {
