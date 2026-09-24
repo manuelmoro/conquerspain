@@ -113,6 +113,8 @@ export interface Permisos {
   readonly cartaPuebla: boolean;
   /** Recibe cada turno los precios de las plazas que visito alguna vez, y rumores de mas. */
   readonly corresponsales: boolean;
+  /** Empieza la partida conociendo la canyada real mas cercana y el camino hasta ella (T-058). */
+  readonly conoceLasCanyadas: boolean;
 }
 
 export interface Prohibiciones {

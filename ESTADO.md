@@ -50,6 +50,12 @@ se recupera con un recargo menor; la diferencia de T-054 era el escalón que dej
 toda la zona de una comarca de labor 5. Lo siguiente es medir qué filas de 1085 recupera exactamente
 `E-panT054` y decidir si el pan merece su propia forma de regla.
 
+**Tercera iteración hecha** (24-09-2026): corrige la segunda. Lo que recupera la regla de T-054 en
+1085 es ruido (ninguna fila de prestigio): el pan no pide regla propia. El fondo de comercio,
+descartado (`BOLSA_MAXIMA` 0 da lo mismo). La pérdida real es de prestigio y tiene un patrón: los
+**arrieros caen** (368→207 en 1212-2 con la misma tierra) y monjes, salineros y canteros suben.
+**Lo siguiente:** desglosar por capítulos el prestigio de los arrieros, T-056 contra T-057.
+
 **Primera iteración hecha** (24-09-2026, en la [bitácora](docs/plan/bitacora-equilibrio.md)): el
 techo de la lejanía a 150 % no recupera nada (341) y hunde el comercio; descartado. Recargos de 150
 a 250 y ese techo se quedan todos en 337–341, así que la pérdida es de la forma de la regla. El

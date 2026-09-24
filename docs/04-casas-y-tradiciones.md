@@ -16,7 +16,10 @@ cambia las reglas, una **herramienta propia**, un **límite real** y una **forma
 > *Concejo de la Mesta, 1273. Ovejas que suben a Urbión en mayo y bajan a Extremadura por San Miguel.*
 
 - **Privilegio — Paso franco:** los rebaños de la Mesta circulan por cañadas reales sin pagar
-  portazgo ni pedir permiso, incluso por territorio ajeno.
+  portazgo ni pedir permiso, incluso por territorio ajeno. Y las cañadas eran suyas: **empieza la
+  partida conociendo la cañada real más cercana a su capital, entera, y el camino hasta ella**
+  (T-058). Desde Cameros, la Galiana hasta el Valle de Alcudia. Lo que tiene que decidir es cuándo
+  bajar el ganado, no descubrir adónde.
 - **Herramienta — Rebaño merino:** rebaños a mitad de precio y +25 % de lana en el esquileo.
 - **Límite — Prohibido roturar:** no puede roturar monte ni pasto (el privilegio va con la
   obligación); su producción de pan propia es siempre escasa y depende del mercado.

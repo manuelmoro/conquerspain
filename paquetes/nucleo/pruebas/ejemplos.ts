@@ -248,6 +248,7 @@ export function tablasDeEjemplo(): Registro {
         acequiaMenor: false,
         cartaPuebla: false,
         corresponsales: false,
+        conoceLasCanyadas: false,
       },
       prohibiciones: {
         roturar: false,

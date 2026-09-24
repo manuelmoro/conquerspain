@@ -18,7 +18,10 @@ import { comparar, idsEnOrden } from '../utiles/orden.ts';
 import type { Resultado } from '../validacion/validador.ts';
 import { invalidos } from '../validacion/validador.ts';
 import { validarEstado } from '../validacion/validarEstado.ts';
+import { permisosDelJugador } from '../reglas/casas/index.ts';
+import { datosConocidosDe } from '../reglas/explorar.ts';
 import { arranqueDe } from './arranque.ts';
+import { comarcasDeSuCanyada } from './canyadas.ts';
 import { indiceDeCaminos, jornadasDesde } from './distancias.ts';
 import type { PartidaPreparada } from './preparar.ts';
 import type { Participante } from './ofertas.ts';
@@ -152,6 +155,11 @@ export function fundarPartida(peticion: PeticionDeFundacion): Resultado<EstadoPa
     );
   }
 
+  for (const id of Object.keys(jugadores).sort(comparar)) {
+    const jugador = jugadores[id];
+    if (jugador !== undefined) jugadores[id] = conSuCanyada(jugador, mundo, comarcas, reglas);
+  }
+
   const estado: EstadoPartida = {
     version: VERSION_REGLAS,
     id: peticion.id,
@@ -173,6 +181,38 @@ export function fundarPartida(peticion: PeticionDeFundacion): Resultado<EstadoPa
     clasificacion: [],
   };
   return validarEstado(estado, mundo);
+}
+
+/**
+ * Quien conoce las canyadas empieza con su canyada y el camino hasta ella exploradas, con la foto
+ * del turno 1, y oye hablar de sus vecinas, igual que si una recua lo hubiera recorrido (T-058).
+ */
+function conSuCanyada(
+  jugador: EstadoJugador,
+  mundo: Mundo,
+  comarcas: Readonly<Record<string, EstadoComarca>>,
+  reglas: TablasDeReglas,
+): EstadoJugador {
+  if (!permisosDelJugador(jugador, reglas).conoceLasCanyadas) return jugador;
+  const conocimiento: Record<string, Conocimiento> = { ...jugador.conocimiento };
+  const exploradas = comarcasDeSuCanyada(mundo, jugador.capital);
+  for (const id of exploradas) {
+    const comarca = comarcas[id];
+    const geografia = mundo.comarcas[id];
+    if (comarca === undefined || geografia === undefined) continue;
+    conocimiento[id] = {
+      nivel: 'explorada',
+      turnoUltimaNoticia: 1,
+      datos: datosConocidosDe(comarca, geografia),
+    };
+  }
+  for (const id of exploradas) {
+    for (const vecina of [...(mundo.vecinos[id] ?? [])].sort(comparar)) {
+      if (conocimiento[vecina] !== undefined) continue;
+      conocimiento[vecina] = { nivel: 'oida', turnoUltimaNoticia: 1, datos: null };
+    }
+  }
+  return { ...jugador, conocimiento };
 }
 
 /** Que una eleccion no valga se dice con su ruta y su motivo, no con una excepcion. */

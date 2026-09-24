@@ -59,6 +59,7 @@ export const SIN_PERMISOS: Permisos = {
   acequiaMenor: false,
   cartaPuebla: false,
   corresponsales: false,
+  conoceLasCanyadas: false,
 };
 
 export const SIN_PROHIBICIONES: Prohibiciones = {
@@ -104,11 +105,12 @@ function casa(datos: {
 export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
   mesta: casa({
     nombre: 'La Mesta',
-    privilegio: 'Paso franco: sus rebaños cruzan por cañada real incluso tierra ajena.',
+    privilegio:
+      'Paso franco: sus rebaños cruzan por cañada real incluso tierra ajena, y conoce su cañada desde el principio.',
     herramienta: 'Rebaño merino: a mitad de precio y con un 25 % más de lana en el esquileo.',
     limite: 'No puede roturar, y su pan propio es un 30 % menor: depende del mercado.',
     modificadores: { produccionMil: { pan: 700 }, costeRebanyoMil: 500, lanaEsquileoMil: 1250 },
-    permisos: { pasoFrancoPorCanyada: true },
+    permisos: { pasoFrancoPorCanyada: true, conoceLasCanyadas: true },
     prohibiciones: { roturar: true },
     origenes: [origen({ potenciales: { pasto: 3 } })],
     // La majada es el corral del ganado, y su pan de 700 milesimas dice que lo suyo es comprarlo.

@@ -1075,3 +1075,22 @@ Los valores vuelven a 200 en todos los recursos.
 zona**, y eso es otra forma de regla (el escalón de T-054 solo para el pan). Antes de tocar lógica,
 medir qué filas de 1085 recupera exactamente `E-panT054` y si son las mismas que pierden los
 monjes.
+
+## 24-09-2026 · Dónde están de verdad las filas que costó T-057
+
+**Lo que recupera `E-panT054` en 1085** (comparando fila a fila con `T-057`): cinco cambios de estado,
+cuatro a mejor y uno a peor, **ninguno de prestigio**: escasez de tres casas, ausencia de los
+salineros y la obra mayor. Es ruido de reparto, no una causa. «El pan explica la mitad» era una
+lectura del total; **queda corregida**: no hay que dar al pan una regla propia.
+
+**Lo que se perdió de T-056 a T-057, fila a fila.** El grueso es prestigio y tiene un patrón:
+**los arrieros caen** (82→65, 80→75 en 1085; 93→66 en 1212-2) y salineros, canteros y monjes suben
+(monjes de 107 a 205 en 1212-2). En 1212-2 los arrieros pasan de 368 a 207 de prestigio con **la
+misma tierra** (1 comarca) y una población parecida; solo se pierde un hito (3 → 2).
+
+**Ensayo descartado: el fondo de comercio** (`BOLSA_MAXIMA` 200 → 0, solo 1212). Hipótesis: la bolsa
+ahorrada frena a los arrieros. Resultado: 111 filas, **igual que la base**, arrieros de 1212-2 en
+65,9 igual que antes. Refutada; la causa está en el precio, no en el robot. Revertido.
+
+**Siguiente:** el prestigio de los arrieros por capítulos, T-056 contra T-057, para ver qué capítulo
+pierden (los informes solo guardan el total).

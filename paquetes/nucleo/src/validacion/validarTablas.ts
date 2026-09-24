@@ -155,6 +155,7 @@ const camposDePermisos: CamposDe<Permisos> = {
   acequiaMenor: booleano(),
   cartaPuebla: booleano(),
   corresponsales: booleano(),
+  conoceLasCanyadas: booleano(),
 };
 const validarPermisos = objeto<Permisos>(camposDePermisos);
 

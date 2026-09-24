@@ -12,9 +12,9 @@ Con qué se sacó este informe. Dos informes con distinta procedencia no se comp
 
 | Dato | Valor |
 | --- | --- |
-| Revisión del código | `bfcf751b6b84f17bb104ff27b853a18f2f561707` |
+| Revisión del código | `e99a7f5+ensayo` |
 | Etiqueta del informe | E-sinfondo-1212 |
-| Cambios experimentales | ninguno |
+| Cambios experimentales | arbitraje.BOLSA_MAXIMA=0 (ensayo T-047) |
 | Versiones | banco 0.1.0 · métricas 4 · robots 8 · reglas 1 |
 | Semillas | 1212, 1212-2, 1212-3 |
 | Campaña | 200 turnos · 3 repetición(es) · cadencias 1 y 6 · escenario normal |
@@ -256,27 +256,27 @@ Partida a partida: cada robot tiene que hacer lo que distingue a su casa. Cuando
 
 | Casa | Semilla | Su vía | ¿La juega? | Por qué no |
 | --- | --- | --- | --- | --- |
-| Arrieros | 1212 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | no sabe precios recientes de dos plazas a su alcance (mapa, 161 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 36 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 31 turnos) |
+| Arrieros | 1212 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | no hay maravedís de sobra para comprar mercancía (recursos, 197 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 31 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 5 turnos) |
 | Canteros | 1212 | termina obras mayores | sí |  |
 | Ferrones | 1212 | saca hierro en sus ferrerías y lo vende o lo pone en aperos | **no** | hay escasez: el motor no empieza obras ni expediciones nuevas hasta que haya pan (recursos, 69 turnos); no tiene con qué levantar un edificio esencial de su vía (recursos, 12 turnos); aún no tiene mercado en la capital donde vender lo que sobra (plan, 4 turnos) |
 | Hortelanos | 1212 | vive del pan de sus huertas y vende el que sobra | sí |  |
-| Mercaderes | 1212 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento (reglas, 80 turnos); con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 69 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 35 turnos) |
+| Mercaderes | 1212 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | no hay maravedís de sobra para comprar mercancía (recursos, 184 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 35 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 27 turnos) |
 | Mesta | 1212 | lleva el ganado de un pasto al otro, esquila y vende la lana | **no** | no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 195 turnos); no conoce ningún invernadero al que pueda llegar el ganado (mapa, 186 turnos); hay escasez: el motor no empieza obras ni expediciones nuevas hasta que haya pan (recursos, 14 turnos) |
 | Monjes | 1212 | funda pueblas | sí |  |
 | Salineros | 1212 | saca sal o salazón y la vende | sí |  |
-| Arrieros | 1212-2 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento (reglas, 71 turnos); con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 63 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 46 turnos) |
+| Arrieros | 1212-2 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | no hay maravedís de sobra para comprar mercancía (recursos, 188 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 21 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 9 turnos) |
 | Canteros | 1212-2 | termina obras mayores | sí |  |
 | Ferrones | 1212-2 | saca hierro en sus ferrerías y lo vende o lo pone en aperos | **no** | hay escasez: el motor no empieza obras ni expediciones nuevas hasta que haya pan (recursos, 69 turnos); no tiene con qué levantar un edificio esencial de su vía (recursos, 12 turnos); aún no tiene mercado en la capital donde vender lo que sobra (plan, 4 turnos) |
 | Hortelanos | 1212-2 | vive del pan de sus huertas y vende el que sobra | sí |  |
-| Mercaderes | 1212-2 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento (reglas, 86 turnos); con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 61 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 37 turnos) |
+| Mercaderes | 1212-2 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | no hay maravedís de sobra para comprar mercancía (recursos, 187 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 19 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 11 turnos) |
 | Mesta | 1212-2 | lleva el ganado de un pasto al otro, esquila y vende la lana | **no** | aún no hay lana esquilada que llevar a la feria (plan, 160 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 159 turnos); no conoce ningún invernadero al que pueda llegar el ganado (mapa, 80 turnos) |
 | Monjes | 1212-2 | funda pueblas | sí |  |
 | Salineros | 1212-2 | saca sal o salazón y la vende | sí |  |
-| Arrieros | 1212-3 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 92 turnos); no hay maravedís de sobra para comprar mercancía (recursos, 48 turnos); hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento (reglas, 36 turnos) |
+| Arrieros | 1212-3 | lleva mercancía por los caminos y la vende fuera de su tierra | **no** | no hay maravedís de sobra para comprar mercancía (recursos, 197 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 25 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 8 turnos) |
 | Canteros | 1212-3 | termina obras mayores | sí |  |
 | Ferrones | 1212-3 | saca hierro en sus ferrerías y lo vende o lo pone en aperos | sí |  |
 | Hortelanos | 1212-3 | vive del pan de sus huertas y vende el que sobra | sí |  |
-| Mercaderes | 1212-3 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | con los precios que sabe, ningún viaje deja ganancia después del bastimento (reglas, 122 turnos); hay diferencia de precio, pero comprar, vender y volver no cabe en el porte con su bastimento (reglas, 37 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 33 turnos) |
+| Mercaderes | 1212-3 | compra en una plaza y vende esa misma mercancía en otra con ganancia neta | **no** | no hay maravedís de sobra para comprar mercancía (recursos, 183 turnos); no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 33 turnos); ninguna comarca oída queda a la distancia que dejan recorrer el porte y el bastimento, ni siquiera malviviendo la vuelta (reglas, 28 turnos) |
 | Mesta | 1212-3 | lleva el ganado de un pasto al otro, esquila y vende la lana | **no** | no tiene la gente, el pan o los maravedís para formar la recua que le falta (recursos, 196 turnos); no conoce ningún invernadero al que pueda llegar el ganado (mapa, 178 turnos); hay escasez: el motor no empieza obras ni expediciones nuevas hasta que haya pan (recursos, 22 turnos) |
 | Monjes | 1212-3 | funda pueblas | sí |  |
 | Salineros | 1212-3 | saca sal o salazón y la vende | sí |  |

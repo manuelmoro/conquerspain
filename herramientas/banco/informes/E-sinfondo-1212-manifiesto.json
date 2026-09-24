@@ -5,9 +5,9 @@
     "robots": 8,
     "reglas": 1
   },
-  "revision": "bfcf751b6b84f17bb104ff27b853a18f2f561707",
+  "revision": "e99a7f5+ensayo",
   "etiqueta": "E-sinfondo-1212",
-  "cambios": "",
+  "cambios": "arbitraje.BOLSA_MAXIMA=0 (ensayo T-047)",
   "campanya": {
     "semilla": "1212",
     "semillas": [
