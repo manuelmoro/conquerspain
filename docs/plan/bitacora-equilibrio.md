@@ -1350,8 +1350,8 @@ montado. Diseño correcto en [T-059 §8](T-059-las-ferias-se-conocen.md). Revert
 
 `OrdenRuta.expedicion` → `Recua.enExpedicion` (se apaga al pisar comarca propia) →
 `bastimentoDeLaRecuaMil`, una cuenta para el motor y para la previsión del robot. Fracción medida
-con 250 y 0 en 1492: la tierra sin tocar baja **34 → 30 puntos de diferencia** entre 250 y 0 solo
-por una décima en la mejor semilla, así que el pan ya no ata y se elige 250. **Las nueve partidas
+con 250 y con 0 en 1492: la tierra sin tocar da 35,6 / 30,3 / 32,7 % con 250 y 35,1 / 30,3 / 30,8 % con 0, así
+que el pan ya no ata y se elige 250. **Las nueve partidas
 mejoran la tierra** (6 a 11 puntos: 44 → 36, 58 → 47, 55 → 45 %), el recuento pasa de 355 a 350 y sigue
 sin haber ventas en feria. Explorar pasa de 2–17 a 9–24 comarcas conocidas por casa a los 200 turnos.
 Los informes `E-vive0` y `E-exploradora500` (montados sin la bandera) se han borrado.
