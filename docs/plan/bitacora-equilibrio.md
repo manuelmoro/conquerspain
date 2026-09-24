@@ -1158,3 +1158,35 @@ en nueve partidas. El criterio y la primera lectura cualitativa piden lo mismo: 
 «mucha» escasez son moderadas (15–23 %: arrieros, mercaderes y salineros de 1085); las extremas
 (salineros al 39 %, ferrones de Bilbao al 34,5 %) ya estaban. Con esto **T-056 y T-057 se cierran**:
 353 frente a los 348 de antes del comercio.
+
+## 24-09-2026 · Por qué no crecen las casas pequeñas (dos ensayos descartados)
+
+Base `E-invierno500` (353). Cinco de las ocho casas acaban la partida con **1 o 2 comarcas**;
+hortelanos y monjes, con 7 a 17. El prestigio sigue a la tierra y a la gente.
+
+**Ensayo descartado: el concejo a 70 y 90** (`E-concejo70-90`, repetido sobre la base de hoy): 353
+igual. El ritmo pasa a cumplir en 8 de 9 partidas, pero la escasez pierde 7 filas. Un empate que no
+justifica romper la garantía en solitario del monje (T-050); la decisión sigue pendiente.
+
+**Lo que no era:** la influencia. A partir del turno 100, arrieros, canteros, ferrones, mercaderes y
+la Mesta tienen **100** (el tope) en tres comarcas neutrales vecinas, frente a los 60 que pide
+incorporar. Lo que les frena es su robot (`puedeCrecer`): solo gana tierra si puede alimentar a la
+gente nueva con el pan que ya le sobra, y no cuenta que la comarca nueva también produce.
+
+**Ensayo descartado: crecer donde la comarca nueva se sostiene sola** (`E-seSostiene`, robots 9):
+mercaderes y arrieros pasan a 3 comarcas, pero el recuento baja a **346**, se pierden 6 filas de
+actividad y 3 de decisiones útiles, y los ferrones caen al 12 %. Los mercaderes con tres comarcas
+siguen al 45 % de la mediana: **la tierra no es lo que les falta**, y crecer sin economía que lo
+sostenga atasca a los robots. Revertido.
+
+**Conclusión provisional:** la parte baja del marcador (ferrones, mercaderes, arrieros) depende de
+lo que T-047 §5.2 manda no anticipar —aperos vendidos, letras, portazgos (T-103)— y del capítulo
+de comercio, que solo cuenta ferias destacadas (T-053). La parte alta (hortelanos y monjes, ~200 %)
+es población, que el marcador paga a 1 por cada 5 vecinos.
+
+**La Mesta no pisa una feria** (por eso el capítulo de comercio sigue a 0 en todas las casas, el
+criterio 3 de T-053). Traza de una partida de 1492: sus 434 sacas de lana se venden **todas en el
+mercado de su capital** (Llanos de Albacete), por el tratante. El tratante solo guarda la lana para
+la feria si `feriaAlAlcance` encuentra una, y esa función solo mira ferias en comarcas **ya
+exploradas**; la Mesta no conoce ninguna y su exploradora no está formada. Con 45 maravedís la saca,
+una sola feria al año pasaría de los 500 de volumen propio y contaría como destacada.
