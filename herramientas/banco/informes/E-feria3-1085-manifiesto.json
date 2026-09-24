@@ -1,0 +1,85 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 5,
+    "robots": 11,
+    "reglas": 1
+  },
+  "revision": "be2dbfd+T-059-9",
+  "etiqueta": "E-feria3-1085",
+  "cambios": "la comarca con feria da de comer + robots 11 (T-059 §9)",
+  "campanya": {
+    "semilla": "1085",
+    "semillas": [
+      "1085",
+      "1085-2",
+      "1085-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "a38ce4c04bba1ea63831be746057d7e4304afbdfa2e788174fa8fa6ed4aa3962"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1085",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "294022a836b6acf24070f5c6966bd1dac3f9ba462fe546cf1a58013274d6e65a"
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 1,
+      "comarcas": 249,
+      "huellaFinal": "d4808567bec068da6c822ffce76c5ba2dde404fb5effeba143f92c28703ee701"
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "5e5fc07dc9107cb5b495670361b862f691f5bd92ac0be581074945b4d0fbdecd"
+    },
+    {
+      "semilla": "1085",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "0be65fc45172032ac5a6f64750a11c96bff41378f8c71123a5ae1f2af2a0133d"
+    },
+    {
+      "semilla": "1085-2",
+      "cadencia": 6,
+      "comarcas": 249,
+      "huellaFinal": "37c3e61da6a7191e45acd18a75f8ad763d60a0c66d699b5f01a0d2cbd3b7e683"
+    },
+    {
+      "semilla": "1085-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "15a0b978964c21d9ff8f0c14e6a244252354f3768e1c2d3da6c2c317017a0ed5"
+    }
+  ]
+}

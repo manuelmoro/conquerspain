@@ -2,9 +2,15 @@
 // paga alli su bastimento del turno con maravedis, que no pesan, y deja la carga para la mercancia.
 import { describe, expect, it } from 'vitest';
 
-import { costeEnLaVenta, hayVentaEn, ventaDelTurno } from '../src/reglas/bastimento.ts';
+import {
+  costeEnLaVenta,
+  daDeComerEn,
+  hayVentaEn,
+  ventaDelTurno,
+} from '../src/reglas/bastimento.ts';
+import type { Mundo } from '../src/tipos/mundo.ts';
 import type { EstadoMercado, EstadoPartida, Recua } from '../src/tipos/estado.ts';
-import type { IdComarca } from '../src/tipos/ids.ts';
+import type { IdComarca, IdFeria } from '../src/tipos/ids.ts';
 import { idDeMercadoLocal } from '../src/tipos/ids.ts';
 import type { Recursos } from '../src/tipos/recursos.ts';
 import {
@@ -14,6 +20,7 @@ import {
   conComarca,
   de,
   escenario,
+  mundo,
   recua,
   recursos,
   reglas,
@@ -157,5 +164,45 @@ describe('comer en la venta', () => {
     const recuaDespues = de(despues, 'recua-1');
     expect(recuaDespues.carga.maravedis).toBeLessThan(40);
     expect(recuaDespues.avisadaSinBastimento).toBe(false);
+  });
+});
+
+describe('la comarca con feria da de comer (T-059 §9)', () => {
+  /** El mundo de pruebas con una feria en el rio: alli hay posada y plaza aunque no haya venta. */
+  function conFeriaEnElRio(): Mundo {
+    const rio = mundo.comarcas['prueba-rio'];
+    if (rio === undefined) throw new Error('falta prueba-rio en el mundo de pruebas');
+    const feria = {
+      id: 'rio' as IdFeria,
+      nombre: 'Feria del Rio',
+      turnos: [10],
+      volumen: 'pequenya' as const,
+      recursosDestacados: [],
+    };
+    return { ...mundo, comarcas: { ...mundo.comarcas, 'prueba-rio': { ...rio, ferias: [feria] } } };
+  }
+
+  it('da de comer la que tiene venta o feria, y ninguna otra', () => {
+    const estado = escenario();
+    expect(daDeComerEn(estado, mundo, c('prueba-rio'))).toBe(false);
+    expect(daDeComerEn(estado, conFeriaEnElRio(), c('prueba-rio'))).toBe(true);
+    expect(daDeComerEn(estado, conFeriaEnElRio(), c('prueba-costa'))).toBe(false);
+    expect(daDeComerEn(conVenta(estado, 'prueba-costa'), mundo, c('prueba-costa'))).toBe(true);
+  });
+
+  it('la recua que pisa la feria paga alli su bastimento con maravedis y guarda el pan', () => {
+    const carga = { pan: 6, maravedis: 40 };
+    const sinFeria = turno(escenario({ recuas: [haciaLaCosta(carga)] })).estado;
+    expect(de(sinFeria, 'recua-1').carga.pan).toBe(0);
+
+    const conFeria = turno(
+      escenario({ recuas: [haciaLaCosta(carga)] }),
+      [],
+      reglas,
+      conFeriaEnElRio(),
+    ).estado;
+    // Sin plaza abierta todavia cobra al precio base de la comarca: paga en maravedis, no en pan.
+    expect(de(conFeria, 'recua-1').carga.pan).toBe(6);
+    expect(de(conFeria, 'recua-1').carga.maravedis).toBeLessThan(40);
   });
 });

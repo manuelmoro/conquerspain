@@ -25,7 +25,7 @@ import {
   bastimentoDe,
   bastimentoDeLaRecuaMil,
   costeEnLaVenta,
-  hayVentaEn,
+  daDeComerEn,
   ventaDelTurno,
 } from '../reglas/bastimento.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
@@ -457,7 +457,7 @@ function moverRecua(ctx: Contexto, id: string): void {
   const venta =
     casa === null
       ? ventaDelTurno(
-          (comarca) => hayVentaEn(ctx.estado, comarca),
+          (comarca) => daDeComerEn(ctx.estado, ctx.mundo, comarca),
           recua.situacion.donde === 'comarca' ? recua.situacion.comarca : null,
           previsto.entradas,
         )

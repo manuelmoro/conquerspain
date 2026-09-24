@@ -1355,3 +1355,15 @@ que el pan ya no ata y se elige 250. **Las nueve partidas
 mejoran la tierra** (6 a 11 puntos: 44 → 36, 58 → 47, 55 → 45 %), el recuento pasa de 355 a 350 y sigue
 sin haber ventas en feria. Explorar pasa de 2–17 a 9–24 comarcas conocidas por casa a los 200 turnos.
 Los informes `E-vive0` y `E-exploradora500` (montados sin la bandera) se han borrado.
+
+## 25-09-2026 · Las ferias dan de comer, y por fin se vende en una feria (T-059 §9)
+
+El viaje de feria no cabía en el porte (32–84 panes para 10 cargas) y la venta del camino no era la
+salida: la Mesta ya tenía la feria a ≤ 4 jornadas de su última comarca propia. Lo que faltaba era
+**la vuelta desde la feria**. Regla nueva: la comarca con feria da de comer como una venta
+(`daDeComerEn`). Con ella, `feriar` con bolsa y `plantarVentasDeFeria`: 350 → **352** filas y **los
+salineros venden en feria en las tres campañas** (ingresos 73, 40 y 40), donde antes no había ni una
+venta. Sin ferias destacadas aún (comercio del prestigio a 0) y la Mesta, con sus maravedís bajo el
+colchón, sin llegar. Robots 11. Un error mío de método, anotado para no repetirlo: revertir una
+instrumentación con `git checkout` borró la implementación sin commitear y `E-feria2` midió el
+código base; los informes se rehicieron (regla: copia del fichero antes de instrumentar).

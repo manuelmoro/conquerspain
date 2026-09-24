@@ -250,6 +250,13 @@ maravedís bastantes, come de su carga como siempre. Así un viaje largo deja de
 su comida y queda sitio para la mercancía, sin que el pan salga de la nada: la venta cambia porte
 por dinero. Lo que cobra el ventero no es de nadie hasta que haya portazgos (T-103).
 
+**La comarca con feria también da de comer** (T-059 §9). Igual que una venta: la recua que empieza el
+turno en una comarca con feria o entra en ella paga allí el bastimento del turno con los maravedís
+que lleva. Es una plaza con posada y ganado en pie, y quien llega a venderle lana a la feria no tiene
+por qué volver con el pan de la vuelta a cuestas. Sin esto, los viajes de feria de 8 a 21 jornadas no
+cabían en el porte de ninguna casa y **nadie vendía en una feria**; con esto, los salineros ya lo hacen
+en las tres campañas.
+
 **Una expedición vive de la tierra** (T-059 §8). La recua que sale a explorar —la orden `ruta` con
 `expedicion`— come una fracción del bastimento (`bastimentoExploradoraMil`, hoy un cuarto) desde que
 sale hasta que vuelve a pisar comarca propia: quien va por tierra desconocida pide posada y come de

@@ -1,6 +1,7 @@
 // Bastimento de las recuas (docs/03-economia.md §3.7.1; fichas T-033 §4.3 y T-055).
 import type { EstadoPartida } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
+import type { Mundo } from '../tipos/mundo.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import type { Estacion, TablasDeReglas } from '../tipos/reglas.ts';
 import type { Milesimas } from '../utiles/enteros.ts';
@@ -48,6 +49,14 @@ export function bastimentoDeLaRecuaMil(
 /** La comarca tiene una venta en pie: alli come cualquier recua que pase, sea de quien sea. */
 export function hayVentaEn(estado: EstadoPartida, comarca: IdComarca): boolean {
   return (estado.comarcas[comarca]?.edificios['venta'] ?? 0) > 0;
+}
+
+/**
+ * Donde da de comer una comarca a quien pasa (ficha T-059 §9): la que tiene una venta en pie y la
+ * que tiene feria, que es una plaza con posada y ganado en pie. Alli come cualquier recua que pase.
+ */
+export function daDeComerEn(estado: EstadoPartida, mundo: Mundo, comarca: IdComarca): boolean {
+  return hayVentaEn(estado, comarca) || (mundo.comarcas[comarca]?.ferias.length ?? 0) > 0;
 }
 
 /**

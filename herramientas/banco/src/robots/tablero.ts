@@ -461,6 +461,11 @@ export class Tablero {
     return (this.edificiosSabidos(id)['venta'] ?? 0) > 0;
   }
 
+  /** Da de comer la comarca: tiene venta o feria, por lo que sabe el jugador (T-059 §9). */
+  daDeComerEn(id: IdComarca): boolean {
+    return this.hayVentaEn(id) || this.feriasDe(id).length > 0;
+  }
+
   /** Los precios a los que cobra el ventero de una comarca: los sabidos de su plaza, o los base. */
   preciosDeLaVenta(id: IdComarca): Recursos {
     const plaza = idDeMercadoLocal(id);

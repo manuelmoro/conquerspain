@@ -854,6 +854,69 @@ export function plantarVentas(d: Decision): void {
   p.construir(mejor.id, 'venta');
 }
 
+/** Lo que mas lleva un feriante en maravedis para comer en las ventas del camino. */
+const BOLSA_DE_FERIA_MAXIMA = 120;
+
+/** La bolsa del viaje de feria: lo que sobra del colchon, con tope, y lo que ya lleva. */
+function bolsaDeFeria(d: Decision, recua: Recua): number {
+  const { t, p } = d;
+  const sobra = t.disponible('maravedis') - p.reservado('maravedis') - COLCHON_DE_MARAVEDIS;
+  return Math.min(Math.max(0, sobra) + recua.carga.maravedis, BOLSA_DE_FERIA_MAXIMA);
+}
+
+/** Jornadas entre posadas en el camino de la feria: lo que aguanta una recua con su pan. */
+const JORNADAS_ENTRE_POSADAS = 4;
+/** Ventas que una casa levanta hacia su feria, como mucho. */
+const VENTAS_DE_FERIA_MAXIMAS = 4;
+
+/**
+ * Las ventas del camino de la lana (T-059 §9): quien vive de feriar levanta, en comarcas de nadie
+ * ya exploradas de la ruta a su feria, una posada cada `JORNADAS_ENTRE_POSADAS` desde la ultima.
+ * Es de quien pase (T-055); el coste es de quien madruga. Una a la vez. No se mira si alcanza hoy:
+ * la obra espera en su cola y el tratante compra los materiales que le falten.
+ */
+export function plantarVentasDeFeria(d: Decision): void {
+  const { t, p, perfil } = d;
+  if (perfil.feria.length === 0) return;
+  const enMarcha = t.ordenes.filter((o) => o.tipo === 'construir' && o.edificio === 'venta').length;
+  const mias = t.propias.filter((c) => (c.edificios['venta'] ?? 0) > 0).length;
+  if (enMarcha > 0 || mias >= VENTAS_DE_FERIA_MAXIMAS) return;
+  const propias = t.jornadasDesdeLoPropio();
+  const feria = t
+    .plazasConocidas()
+    .filter((pl) => pl.tipo === 'feria' && propias.has(pl.comarca))
+    .sort(
+      (a, b) =>
+        (propias.get(a.comarca) ?? 0) - (propias.get(b.comarca) ?? 0) || comparar(a.id, b.id),
+    )[0];
+  if (feria === undefined) return;
+  const ruta = t.rutaDeRecua(t.capital, [feria.comarca]);
+  if (ruta === null) return;
+  // La ultima posada de la ruta que ya esta en pie: de ahi se cuentan las cuatro jornadas.
+  let posada: IdComarca = t.capital;
+  for (const comarca of ruta.comarcas) {
+    if (t.esPropia(comarca) || t.hayVentaEn(comarca)) posada = comarca;
+  }
+  const desdeLaPosada = t.jornadasDesde(posada);
+  if ((desdeLaPosada.get(feria.comarca) ?? Number.POSITIVE_INFINITY) <= JORNADAS_ENTRE_POSADAS) {
+    return;
+  }
+  let sitio: IdComarca | null = null;
+  for (const comarca of ruta.comarcas) {
+    const lejos = desdeLaPosada.get(comarca) ?? Number.POSITIVE_INFINITY;
+    if (lejos <= 0 || lejos > JORNADAS_ENTRE_POSADAS || comarca === feria.comarca) continue;
+    const sabido = t.explorada(comarca);
+    if (sabido === null || sabido.datos === null || sabido.datos.duenyo !== null) continue;
+    if ((sabido.datos.edificios['venta'] ?? 0) > 0) continue;
+    sitio = comarca;
+  }
+  if (sitio === null) {
+    d.m.anotar('sin-sitio-para-venta');
+    return;
+  }
+  p.construir(sitio, 'venta');
+}
+
 export function objetivoDeTierra(t: Tablero, perfil: Perfil): IdComarca | null {
   const cerca = new Set<string>(t.propias.flatMap((c) => t.vecinas(c.id)));
   const ferias =
@@ -1166,6 +1229,8 @@ export function feriaAlAlcance(
   d: Decision,
   recua: Recua,
   mercancia: Partial<Recursos>,
+  /** Maravedis de mas que puede llevar para comer en las ventas del camino (T-055). */
+  bolsa = 0,
 ): PlanDeFeria | null {
   const { t } = d;
   const distancias = t.jornadasDesdeLoPropio();
@@ -1186,6 +1251,8 @@ export function feriaAlAlcance(
         { comarca: t.capital, detiene: false },
       ],
       mercancia,
+      0,
+      bolsa,
     );
     if (provision.ok) return { plaza, provision: provision.valor };
   }
@@ -1243,7 +1310,8 @@ const feriar: Rutina = (d, recua) => {
     if (Object.keys(descargar).length > 0) p.carga(recua.id, {}, descargar);
     return;
   }
-  const vacia = feriaAlAlcance(d, recua, {});
+  const bolsa = bolsaDeFeria(d, recua);
+  const vacia = feriaAlAlcance(d, recua, {}, bolsa);
   if (vacia === null) {
     d.m.anotar('sin-feria-al-alcance');
     return;
@@ -1258,7 +1326,7 @@ const feriar: Rutina = (d, recua) => {
     mercancia[recurso] = cantidad;
     hueco -= cantidad;
   }
-  const plan = feriaAlAlcance(d, recua, mercancia);
+  const plan = feriaAlAlcance(d, recua, mercancia, bolsa);
   if (plan === null) {
     d.m.anotar('sin-feria-al-alcance');
     return;
@@ -1274,6 +1342,8 @@ const feriar: Rutina = (d, recua) => {
   const sal = plan.provision.sal - recua.carga.sal;
   if (pan > 0) cargar.pan = pan;
   if (sal > 0) cargar.sal = sal;
+  const maravedis = plan.provision.maravedis - recua.carga.maravedis;
+  if (maravedis > 0) cargar.maravedis = maravedis;
   const vender: Partial<Record<Recurso, { cantidad: number; precioMinimoMil: number }>> = {};
   for (const [recurso, cantidad] of Object.entries(mercancia) as [Recurso, number][]) {
     const falta = cantidad - recua.carga[recurso];
@@ -1283,7 +1353,7 @@ const feriar: Rutina = (d, recua) => {
       precioMinimoMil: Math.floor((t.baseEn(plan.plaza.comarca, recurso) * 6) / 10),
     };
   }
-  p.carga(recua.id, cargar, todoMenos(recua, ['pan', 'sal', ...perfil.feria]));
+  p.carga(recua.id, cargar, todoMenos(recua, ['pan', 'sal', 'maravedis', ...perfil.feria]));
   // La vuelta va dicha: el feriante no espera en la feria a que alguien entre a mandarlo a casa.
   p.ruta(recua.id, [parada(plan.plaza.comarca, { vender }), parada(t.capital)]);
   p.cometido(recua.id, 'tratar');
@@ -1412,6 +1482,7 @@ export function decidirComoSiempre(
   hacerSitio(d);
   edificar(d);
   plantarVentas(d);
+  plantarVentasDeFeria(d);
   crecer(d);
   obraMayor(d);
   formarRecuas(d);

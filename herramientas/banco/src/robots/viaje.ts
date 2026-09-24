@@ -152,7 +152,7 @@ export function preverViaje(
     );
     const empieza = situacion.donde === 'comarca' ? situacion.comarca : null;
     const enCasa = empieza !== null && t.esPropia(empieza);
-    const venta = enCasa ? null : ventaDelTurno((c) => t.hayVentaEn(c), empieza, avance.entradas);
+    const venta = enCasa ? null : ventaDelTurno((c) => t.daDeComerEn(c), empieza, avance.entradas);
     const cuenta =
       venta === null ? null : costeEnLaVenta(come, t.preciosDeLaVenta(venta), t.reglas);
     if (enCasa) {

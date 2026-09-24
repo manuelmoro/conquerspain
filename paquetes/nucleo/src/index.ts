@@ -16,6 +16,7 @@ export {
   bastimentoDe,
   bastimentoDeLaRecuaMil,
   costeEnLaVenta,
+  daDeComerEn,
   hayVentaEn,
   ventaDelTurno,
 } from './reglas/bastimento.ts';

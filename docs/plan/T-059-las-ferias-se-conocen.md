@@ -215,3 +215,31 @@ son justo lo que permitía llegar a Medina. Propuesta, solo del lado del robot, 
 capítulo de comercio del prestigio deja de ser 0. Si con esto no se cumple, el motivo que quede se
 mide antes de tocar nada más (posibles: el porte para la lana misma, o que las ferias abren un solo
 turno al año y la recua llega tarde).
+
+### 9.1 Dónde va (25-09-2026)
+
+**Implementado y verificado** (1056 pruebas): tres piezas.
+
+1. **La comarca con feria da de comer** (motor, `daDeComerEn` en `reglas/bastimento.ts`): lo que
+   faltaba de verdad. Una venta no hacía falta en el camino de la Mesta (la feria está a ≤ 4 jornadas
+   de su última comarca propia); lo que costaba era **la vuelta desde la feria**, que salía de la
+   carga. Pruebas en `venta.test.ts`.
+2. **`feriar` lleva bolsa** de maravedís para comer en las ventas y ferias del camino
+   (`bolsaDeFeria`, robots 11).
+3. **`plantarVentasDeFeria`**: una posada cada cuatro jornadas en la ruta a la feria, encolada sin
+   exigir que alcance hoy (el tratante compra lo que falte). En 1492 no llega a plantar ninguna: la
+   ruta de cada casa ya empieza dentro de cuatro jornadas de lo propio o no tiene ruta explorada.
+   Queda como capacidad y se decide su futuro con la medida (ver abajo).
+
+**Medido, tres campañas** (`E-feria3-*` frente a `E-exp250-*`): filas que cumplen **350 → 352**; los
+**salineros venden en feria en las tres** (ingresos de 73, 40 y 40) por primera vez en toda la
+investigación; la tierra sin tocar igual. **Todavía cero ferias destacadas**: el capítulo de
+comercio del prestigio sigue a 0 (hacen falta 500 maravedís de volumen propio en una feria y un
+año, y un cargamento de sal son unas decenas).
+
+**Criterio 3 de §5 («alguna casa hace ventas en feria en las tres campañas y el capítulo de comercio
+deja de ser 0»):** **a medias**: lo primero se cumple; lo segundo no. T-059 sigue abierta.
+
+**La Mesta sigue sin llegar** (`no-cabe` 237 de 332 miradas con bolsa 0): sus maravedís no pasan del
+colchón y no lleva bolsa, y con bolsa aún no cabe (83 veces). Es un caso de la vía de la Mesta
+(rebaños y obras se comen sus maravedís), no del camino.

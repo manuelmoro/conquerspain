@@ -38,14 +38,14 @@ La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invi
 3. **Tierra** (9 de 9; medida ya exacta: entre el 38 % y el 62 % del mapa sin tocar) y **dominio** (9 de 9, el primer «pequeño
    dominio» en T43–48, antes de la horquilla): el ritmo espera una decisión del usuario (ver abajo).
 
-**Última iteración (24-09-2026): la expedición vive de la tierra** ([T-059 §8](docs/plan/T-059-las-ferias-se-conocen.md)),
-implementada y verificada (1054 pruebas): `OrdenRuta.expedicion`, `Recua.enExpedicion`, fracción
-`bastimentoExploradoraMil: 250`, robots 10. La tierra sin tocar baja en las nueve partidas (44 → 36 %,
-58 → 47 %, 55 → 45 %); el recuento pasa de 355 a **350** y sigue sin haber ventas en feria. **Base
-nueva: `E-exp250-*`.** **Diagnosticado (T-059 §9):** al viaje de feria le pasa lo mismo que a la exploración: 16–42 jornadas
-de ida y vuelta piden 32–84 panes para un porte de 10 (Mesta: `no-cabe` 320 veces de 359; ferrones: la
-feria más cercana con ruta está a 21 jornadas; salineros: ninguna con ruta). **Lo siguiente:** `feriar`
-lleva bolsa para las ventas y los robots plantan ventas en el camino de la feria (solo robots, sin regla nueva).
+**Última iteración (25-09-2026): las ferias dan de comer** ([T-059 §9](docs/plan/T-059-las-ferias-se-conocen.md)).
+La comarca con feria da de comer como una venta; `feriar` lleva bolsa; los robots plantan ventas hacia
+la feria (robots 11). **Los salineros venden en feria en las tres campañas** (primera vez), recuento
+**352**, la tierra igual. **Base nueva: `E-feria3-*`.** Sigue sin haber ferias destacadas (comercio del
+prestigio a 0) y la Mesta no llega (sus maravedís no pasan del colchón). Antes, el 24-09: la
+expedición vive de la tierra (T-059 §8): la tierra sin tocar baja 6–11 puntos en las nueve partidas.
+**Lo siguiente:** ver qué le falta a un cargamento de sal para pasar de 500 maravedís de volumen en una
+feria, y la Mesta.
 
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 

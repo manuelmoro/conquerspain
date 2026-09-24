@@ -1,0 +1,85 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 5,
+    "robots": 11,
+    "reglas": 1
+  },
+  "revision": "be2dbfd+T-059-9",
+  "etiqueta": "E-feria2-1492",
+  "cambios": "robots 11: feriar con bolsa y ventas hacia la feria, sin exigir que alcance hoy (T-059 §9)",
+  "campanya": {
+    "semilla": "1492",
+    "semillas": [
+      "1492",
+      "1492-2",
+      "1492-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "a38ce4c04bba1ea63831be746057d7e4304afbdfa2e788174fa8fa6ed4aa3962"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1492",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "d89646dfb3ebbb7760a0219f49a59d9b83267f29bc0356bc5f066fdc2a9a3c11"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "f4b43a233c3f9f1157acd9e1282b95f7925a2a3cd19c74d1272a53e3f6472820"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "15b9213adfa751df6667e97648d8b4b376dab27716e1747c1fde93eeffc15e62"
+    },
+    {
+      "semilla": "1492",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "a5f1a8b0f72c8fbca35cea9006f237ceefc9799288f58ec6df069856aac49b93"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "918ef550d3973a6c0a173f8b848c62d138bc56b29371a594a9d3f4b2a577122b"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "41731825441cf79e29999221a1e742d93588cf6849125cff9266950bc94e99bc"
+    }
+  ]
+}
