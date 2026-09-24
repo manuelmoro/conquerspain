@@ -183,3 +183,35 @@ pero ninguna casa vende en feria y el recuento queda en 350, no en 355).
 a los 200 turnos) y los motivos que quedan son otros: la Mesta `sin-feria-al-alcance` (83 turnos) y
 `sin-lana-que-vender` (102), los salineros `sin-pan-para-el-viaje` (64), y `esencial-sin-recursos`
 en dos casas pobres. Es el mismo estudio de «qué frena a cada casa», ya sin el freno del pan.
+
+## 9. El camino de la feria (medido el 24-09-2026, con `expedicion` ya en marcha)
+
+Instrumentado `feriaAlAlcance` (1492, 200 turnos), por casa con mercancía de feria:
+
+| Casa | Ferias conocidas | Con ruta conocida | Jornadas a la más cercana | Provisión |
+|---|---|---|---|---|
+| Mesta | 3 | 1 (en 332 de 359 miradas) | 8 (190), 13 (118), 9 (24) | `no-cabe` 320, ok 6, `sin-sal` 6 |
+| Ferrones | 3 | 1 (en 87 de 281) | **21** | `no-cabe` 81, `demasiado-largo` 6 |
+| Salineros | 3 | **0** | — | — |
+
+**El viaje de feria es el mismo problema que era el de exploración:** ida y vuelta de 16 a 42
+jornadas piden de 32 a 84 panes para un porte de 10, así que la mercancía no cabe con su comida. La
+expedición no ayuda (no es un viaje de exploración). Tampoco la venta, todavía: `feriar` no lleva
+bolsa (`provisionPara` sin `bolsaParaVentas`) y **no hay ventas en el camino de ninguna feria**
+(los robots las plantan solo donde el arbitraje ve diferencia de precio, cerca de casa).
+
+**Lo que la historia y el diseño ya dicen** (docs/03 §3.3, T-055): las ventas del camino de la lana
+son justo lo que permitía llegar a Medina. Propuesta, solo del lado del robot, sin regla nueva:
+
+1. **`feriar` lleva bolsa.** Igual que el arbitraje desde T-055, carga maravedís para comer en las
+   ventas del camino y solo el pan que falte donde no las haya (`provisionPara(..., bolsaParaVentas)`).
+2. **Ventas hacia la feria.** `plantarVentas` también planta, para las casas con mercancía de feria,
+   ventas **en la ruta de la feria conocida** a intervalos de unas cuatro jornadas, en comarcas
+   exploradas de nadie (T-053). Cuestan 10 de madera y 10 de piedra cada una: una vez puesta, es de
+   quien pase (T-055), así que el coste es de quien madruga.
+3. Nueva medida en las tres campañas: viajes de feria que salen y ventas hechas en feria.
+
+**Criterio de cierre de T-059 (§5.3):** alguna casa hace ventas en feria en las tres campañas y el
+capítulo de comercio del prestigio deja de ser 0. Si con esto no se cumple, el motivo que quede se
+mide antes de tocar nada más (posibles: el porte para la lana misma, o que las ferias abren un solo
+turno al año y la recua llega tarde).

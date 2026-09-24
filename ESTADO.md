@@ -42,8 +42,10 @@ La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invi
 implementada y verificada (1054 pruebas): `OrdenRuta.expedicion`, `Recua.enExpedicion`, fracción
 `bastimentoExploradoraMil: 250`, robots 10. La tierra sin tocar baja en las nueve partidas (44 → 36 %,
 58 → 47 %, 55 → 45 %); el recuento pasa de 355 a **350** y sigue sin haber ventas en feria. **Base
-nueva: `E-exp250-*`.** **Lo siguiente:** qué frena ahora a cada casa para llegar a una feria
-(Mesta `sin-feria-al-alcance` 83 turnos y `sin-lana-que-vender` 102; salineros `sin-pan-para-el-viaje`).
+nueva: `E-exp250-*`.** **Diagnosticado (T-059 §9):** al viaje de feria le pasa lo mismo que a la exploración: 16–42 jornadas
+de ida y vuelta piden 32–84 panes para un porte de 10 (Mesta: `no-cabe` 320 veces de 359; ferrones: la
+feria más cercana con ruta está a 21 jornadas; salineros: ninguna con ruta). **Lo siguiente:** `feriar`
+lleva bolsa para las ventas y los robots plantan ventas en el camino de la feria (solo robots, sin regla nueva).
 
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 
