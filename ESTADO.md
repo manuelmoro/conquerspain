@@ -37,6 +37,16 @@ La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invi
 
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 
+> **Decisión pendiente del usuario: la puerta de T-047.** T-060 (fase 3) depende de T-047, y T-047
+> pide el prestigio de las ocho casas entre el 80 % y el 120 % de la mediana. Pero su propio §5.2
+> reconoce que las vías de ferrones, canteros, arrieros y mercaderes dependen en parte de privilegios
+> desactivados **hasta T-103** (aperos vendidos, contratos, portazgos, letras), y T-103 va después de
+> T-060. Medido el 24-09: ni la influencia ni la tierra es lo que les falta (bitácora). Tal como está
+> escrito el plan, T-047 no puede cerrarse antes de T-103. Opciones: cerrar una **v1** de T-047 con
+> esos casos documentados como excepción hasta T-103 (lo que ya prevé §5.1 para «un objetivo
+> incompatible con una vía por diseño») y reabrirla después; o adelantar lo imprescindible de T-103.
+> Mientras no se decida, se sigue iterando T-047 en lo que no depende de ello.
+
 La base contra la que comparar ahora es `herramientas/banco/informes/E-invierno500-*` (robots **8**,
 métricas 4, tres semillas; 118, 116 y 119 filas cumplen); `npm run banco -- ... --evaluar` termina
 con código 2 mientras quede un criterio sin cerrar.
