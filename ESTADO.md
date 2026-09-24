@@ -3,25 +3,30 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 24 de septiembre de 2026 (T-055 en curso; T-054 hecha; T-047 en espera)
+**Última actualización:** 24 de septiembre de 2026 (T-055 en espera de T-056, que es la siguiente; T-047 en espera)
 **Fase actual:** Fase 2 · Motor de reglas
 
 ---
 
 ## Tarea en curso
 
+**[T-056 · El negocio se cuenta con el precio que se espera](docs/plan/T-056-el-negocio-en-limpio.md)**
+— **la siguiente que toca**, abierta el 24-09-2026 desde dentro de T-055 por medición. El robot
+calcula la ganancia de un negocio con los límites acolchados de la orden (compra a +20 %, venta a
+−10 %), un colchón del 30 % que se come la mejor diferencia de precio de la partida (un 28 %).
+
 **[T-055 · La venta da de comer a las recuas](docs/plan/T-055-la-venta-da-de-comer.md)** — **en
-curso**. Es la salida al último muro del comercio, y la tiene escrita el propio diseño desde T-035:
-«recuas propias y ajenas reponen». El diagnóstico está cerrado con números en su §1 y los cuatro
-caminos descartados, en su §6.
+curso, en espera de T-056**. La mecánica está hecha y verificada: fuera de casa, la recua que pisa
+una venta come allí y lo paga con los maravedís que lleva. Cumple tres de sus cuatro criterios; el
+que falta (algún negocio rentable) depende de T-056. Ver su §8.
 
 **[T-053 · Plazas donde comerciar](docs/plan/T-053-plazas-donde-comerciar.md)** — **en curso**, con
 la venta ya hecha (abre plaza, se levanta en tierra de nadie y tiene ventero). Su criterio de
-negocios pasa por T-055.
+negocios pasa por T-055 y T-056.
 
-**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — abierta y **en espera de
-T-053**. Es una tarea iterativa por naturaleza (ajustar, medir, repetir). De ella han salido dos
-fichas nuevas, las dos por medición y no por corazonada: T-052 (hecha) y T-053. Ver
+**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — abierta y **en espera**.
+Es una tarea iterativa por naturaleza (ajustar, medir, repetir). De ella han salido cinco fichas,
+todas por medición y no por corazonada: T-052 y T-054 (hechas), T-053, T-055 y T-056. Ver
 **[Dónde va T-047](#dónde-va-t-047)** más abajo.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
@@ -32,33 +37,20 @@ fichas nuevas, las dos por medición y no por corazonada: T-052 (hecha) y T-053.
 
 ## Siguiente tarea
 
-La que hay en curso: **T-053**, que va por su §8. Después se reanuda **T-047**.
+**T-056**, y con ella se vuelve a medir el criterio 2 de T-055 y el de negocios de T-053.
 
-Orden: **T-053 → T-047 (se reanuda) → T-060**.
+Orden: **T-056 → T-055 (cerrar) → T-053 (cerrar) → T-047 (se reanuda) → T-060**.
 
-Eso ya está hecho (24-09-2026): la venta tiene ventero y le dice cada turno lo que allí se paga, y
-el mercader conoce ya **nueve plazas** en vez de dos.
+**Dónde está el comercio hoy** (24-09-2026). Los muros caídos, en orden: el precio sin geografía
+(T-052), las pocas plazas (T-053), el precio sin distancia (T-054), el filtro del arbitraje que
+exigía un 33 % (T-055 §8) y el sitio en la recua (T-055, la venta). El que queda está medido: con
+la venta dando de comer **gratis** —una cota, revertida— siguen saliendo cero negocios, porque el
+robot cuenta la ganancia con el peor precio posible y tiene una bolsa de 47 maravedís. Todo en la
+[bitácora de equilibrio](docs/plan/bitacora-equilibrio.md).
 
-**Y con eso el diagnóstico queda cerrado, pero no como esperaba.** No es la logística ni el dinero:
-cinco ensayos más, todos con cero negocios, incluido uno con una recua generosísima (porte 20, un
-pan por jornada, sal cada doce jornadas, ventas hasta doce jornadas y el colchón del arbitraje en
-10). El volcado del turno 120 lo explica: **la sal cuesta lo mismo en las nueve plazas y el hierro
-también**; solo varía el pan, y la mejor diferencia de la partida son 0,18 maravedís por carga.
-
-La causa es que T-052 hace depender el precio del potencial de **la propia comarca**, y ninguna de
-esas nueve tiene sal ni hierro: **una comarca sin sal pegada a una salina cotiza igual que otra a
-trescientos kilómetros**. Es lo contrario de cómo funcionaba —la sal era cara tierra adentro porque
-había que llevarla hasta allí—, y mientras no haya gradiente no hay comercio posible por mucho
-porte, dinero o plazas que se den.
-
-> **Decisión pendiente del usuario.** Hacer que el precio dependa de la distancia a donde se produce
-> amplía T-052 y toca lógica (hace falta el grafo de caminos). No se ha abierto ficha por cuenta
-> propia: está escrito en [T-053 §8](docs/plan/T-053-plazas-donde-comerciar.md) y en la
-> [bitácora](docs/plan/bitacora-equilibrio.md), con los cinco ensayos descartados y su medida.
-
-La base contra la que comparar ahora es `herramientas/banco/informes/T-055-*`
-(robots **4**, métricas 4, tres semillas: 1492, 1085 y 1212; 116, 118 y 112 filas cumplen); `npm run banco -- ... --evaluar`
-termina con código 2 mientras quede un criterio sin cerrar.
+La base contra la que comparar ahora es `herramientas/banco/informes/T-055b-*`
+(robots **5**, métricas 4, tres semillas: 1492, 1085 y 1212; 116, 118 y 114 filas cumplen);
+`npm run banco -- ... --evaluar` termina con código 2 mientras quede un criterio sin cerrar.
 
 ### Cuándo probará el usuario
 
@@ -95,12 +87,10 @@ descartados; no hace falta repetirlos.
 
 **Lo que falta, en orden.** Ninguno de los tres es un ajuste suelto: son las tres causas medidas.
 
-1. **El comercio: medido hasta el fondo y sacado a dos fichas.**
-   [T-052](docs/plan/T-052-geografia-de-precios.md) ya está **hecha** y ha puesto la geografía en el
-   precio (la dispersión entre plazas sube de 0,6 a 40,4 puntos en la sal). Aun así no aparece ni un
-   negocio, y la causa no es ni el precio ni el porte —los dos ensayados y descartados—, sino que
-   **hay diez plazas para 208 comarcas**. De ahí sale
-   [T-053](docs/plan/T-053-plazas-donde-comerciar.md), que es lo siguiente que toca.
+1. **El comercio: medido hasta el fondo y sacado a cinco fichas.** T-052 (geografía en el precio)
+   y T-054 (la distancia a donde se produce) están **hechas**; T-053 (plazas) y T-055 (la venta da
+   de comer) tienen su mecánica hecha y esperan a que aparezca el primer negocio, que depende de
+   [T-056](docs/plan/T-056-el-negocio-en-limpio.md): lo siguiente que toca.
 2. **Los monjes.** 417–572 % de la mediana y ganan las nueve repeticiones. Su `lealtadMinima: 50`
    está muy por encima de `lealtadDesleal: 20`, así que ninguna penalización territorial les llega:
    ni la deuda de administración, ni la lejanía, ni el abandono. Cualquier valor de
@@ -195,6 +185,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | 24-09-2026 | **T-047: el marcador deja de pagar solo por ocupar tierra.** Con una comarca a 20 y una feria a 30, ocupar tierra pesaba cuatro veces más que cualquier oficio y el marcador se reducía a quien producía más pan. Ahora una comarca vale **8** (+4 con fuero), explorar **8**, un año trashumante **30**, una feria destacada **60** y los aperos **25**: lo que distingue a una casa vale lo que cuesta lograrlo. **Primera ganancia de equilibrio de T-047**, confirmada en las tres campañas: 114→116, 109→112 y 109→113 filas cumplen, con la horquilla más estrecha (monjes de 457 % a 327 % de la mediana, hortelanos de 385 % a 280 %, mercaderes de 63 % a 80 %) y sin romper nada: obras mayores 3 de 3, actividad 22 de 24 y `ganadores` cumple. Antes se ensayó y **descartó** frenar al líder por la administración —tres dosis—: cualquier subida mata las obras mayores, porque se pagan de lo mismo y no hay dinero para las dos cosas. Escenarios de `prestigio.test.ts` recalculados a mano y huellas regeneradas. 1021 tests en verde |
 | 24-09-2026 | **Diagnóstico cerrado: el precio no sabe de distancias.** Cinco ensayos más, cinco ceros: la sal del camino (que cuesta más que el pan que conserva, ocho veces fuera de escala con `panPorSal`), la logística generosa (porte 20, un pan por jornada), las ventas a doce jornadas, y los **dos** colchones de maravedís —el arbitraje tenía el suyo propio, que era el que mandaba—. El volcado del turno 120, ya con nueve plazas conocidas: **la sal cuesta 16800 en las nueve y el hierro 28800 en las nueve**; solo varía el pan, y la mejor diferencia de toda la partida son 0,18 maravedís por carga. La causa: T-052 mira el potencial de **la propia comarca**, así que una comarca sin sal pegada a una salina cotiza igual que otra a trescientos kilómetros. Falta que el precio dependa de la **distancia a donde se produce**, que es por lo que la sal era cara tierra adentro. Amplía T-052 y toca lógica: **decisión pendiente del usuario**, sin ficha abierta por cuenta propia. Ninguna tabla cambia; 1021 tests en verde |
 | 24-09-2026 | **T-053: la venta tiene ventero**. `EstadoComarca.ventaDe` guarda quién levantó la venta mientras la comarca es de nadie —se borra al derribarla y **al incorporar la comarca**, porque quien se queda la tierra se queda la venta—, y la crónica le refresca cada turno el conocimiento de la comarca y los precios de su plaza, igual que a una recua parada allí. Sin eso, una venta no servía para decidir ningún viaje: el robot la plantaba y cien turnos después seguía viendo solo las dos plazas de su capital. Cinco pruebas nuevas en `obras.test.ts` y huellas de reproducción regeneradas (el estado gana un campo). **Lo que enseña la medida**: el motivo dominante del mercader deja de ser «no sé precios» y pasa a ser «hay diferencia de precio, pero comprar, vender y volver **no cabe en el porte**» (74 turnos de 200). El robot ve por fin un negocio de verdad y lo único que lo frena es la logística: dos paredes, las dos tablas de T-047, y doblar el porte no basta por sí solo. 1021 tests en verde |
+| 24-09-2026 | **T-055: la venta da de comer a las recuas.** Fuera de casa, la recua que empieza el turno en una comarca con venta o entra en una come allí el bastimento del turno y lo paga con los maravedís que lleva, a los precios de esa plaza (`movimiento.ventaCobraMil: 1000`); sin maravedís bastantes, come de su carga. Da igual de quién sea la venta. `preverViaje` lo simula igual que el motor y `provisionPara` acepta una bolsa para ventas, que de momento usa el arbitraje (robots 5). Medido en tres campañas: 116 / 118 / **114** filas (base 116 / 118 / 112), la escasez sin moverse, y los viajes que no cabían caben con hueco 6. **Cero negocios**, y la cota lo explica: ni con la venta gratis aparece uno, porque el robot cuenta la ganancia con los límites acolchados de la orden (un 30 % contra una diferencia del 28 %) y tiene 47 maravedís de bolsa. Sale **T-056**; T-055 queda en espera con tres de sus cuatro criterios cumplidos. Diez pruebas nuevas; 1031 tests en verde |
 | 23-09-2026 | **T-053 en curso**: la venta, plaza del camino. Primero, una medición que descarta el camino barato: el catálogo tiene **9 comarcas con feria de 403** y cada feria abre **uno o dos turnos al año**, así que las ferias son el acontecimiento anual y no el mercado de cada quincena. La decisión de diseño: **la venta abre plaza y es el único edificio que se levanta en tierra de nadie** (comarca explorada y sin dueño), sin dar los maravedís ni la lealtad del mercado —el mercado es el pueblo, la venta es el camino—, y lo que se levanta allí no pasa a ser tuyo. Los robots las plantan donde la mercancía cotiza distinto que en casa: las plazas de una partida suben de 10 a 13. Cuatro sospechas más, descartadas **con su medida**: un mercado en cada comarca propia, revertido (el mercader tiene una sola comarca), el porte al doble, el colchón de maravedís a 20 (la casa tiene 65: la bolsa de comercio eran cinco) y más ferias. Queda **un solo eslabón, localizado con un volcado**: un jugador no se entera de lo que él mismo ha construido fuera de su dominio, porque el conocimiento de una comarca ajena es una foto que solo se refresca donde tiene recua. 1016 tests en verde |
 | 23-09-2026 | **T-052 hecha**: la geografía, en el precio. El precio base de cada recurso pasa a ser el de **su comarca**: el del catálogo por la abundancia del potencial que lo produce (la sal mira a las salinas, el hierro a las venas, la lana al pasto, el pan a la labor), anclado en el nivel corriente para que la escasez encarezca poco y la abundancia abarate mucho. La dispersión entre las diez plazas de una partida sube de **0,6 a 40,4 puntos en la sal**, de 0,4 a 40,3 en el hierro y de 0,0 a 30,0 en la lana. Compone con los acontecimientos, el suelo y el techo y los límites de los menores sin tocarlos, y es función pura del catálogo: las huellas de reproducción no cambian. De paso destapa tres defectos de los robots que con un precio único no se veían (límites medidos contra el catálogo, la capital repetida en la ruta cuando se vende en casa, y el bastimento valorado fuera de su plaza) y una prueba de vía que ponía una carestía de sal justo en la comarca con salinas. **Y el hallazgo grande**: aun con precios y con el porte al doble no hay **ni un negocio**, porque hay **diez plazas para 208 comarcas**; de ahí sale T-053. Robots 4. 1016 tests en verde |
 | 23-09-2026 | **T-047 en curso**: el marcador solo paga por crecer. Diagnóstico medido sobre las nueve partidas de T-051: cuatro de los nueve capítulos del prestigio —comercio, ganadería, industria y caminos— dan **cero a todas las casas**, así que el prestigio es casi exactamente el pan producido (monjes 417 %, hortelanos 379 %, ferrones 14 % de la mediana). Una capa más abajo, el comercio **no existe**: `negociosRentables`, `ventasFuera` e `ingresosDeFeria` valen 0 en las nueve, porque el precio base es un número global y los mercaderes menores cubren el cupo entero de la plaza por los dos lados. Cinco ensayos aislados: bastimento a la mitad, colchón del arranque, sal de la lonja y `compraElPan` del ferrón, **descartados con su medida**; adoptado que **la casa del hierro empiece donde hay hierro y monte** (antes bastaba con que lo tuviera una vecina, y en cuatro de cada cinco semillas arrancaba con `hierro: 0`; el segundo defecto, ferrería sin carbonera posible, lo cazó `solvencia.test.ts`). Ferrones de 5–14 % a 28–53 %. El recuento global no se mueve porque los monjes se lo comen: es lo siguiente. 1010 tests en verde |

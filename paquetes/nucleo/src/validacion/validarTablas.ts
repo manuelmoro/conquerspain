@@ -237,6 +237,7 @@ const validarMovimiento: Validador<DatosMovimiento> = objeto<DatosMovimiento>({
   cargaPesadaMil: milesimas(1, 1000),
   bastimentoPorJornada: enteroNoNegativo(20),
   jornadasPorSalEnVerano: entero({ minimo: 1, maximo: 30 }),
+  ventaCobraMil: milesimas(0, 3000),
   acemilasPorRecua: entero({ minimo: 1, maximo: 100 }),
   portePorAcemila: entero({ minimo: 1, maximo: 20 }),
   arrierosPorRecua: enteroNoNegativo(20),

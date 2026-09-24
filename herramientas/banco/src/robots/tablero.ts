@@ -19,6 +19,7 @@ import {
   permisosDelJugador,
   precioBaseLocalMil,
   prohibicionesDelJugador,
+  recursosSegun,
   rutaPorParadas,
   tieneCalzada,
   tramoEntre,
@@ -40,6 +41,7 @@ import type {
   Rebanyo,
   Recua,
   Recurso,
+  Recursos,
   Ruta,
   TablasDeReglas,
   TipoEdificio,
@@ -431,6 +433,24 @@ export class Tablero {
     return this.propias.reduce((total, c) => total + c.produccionUltimoTurno[recurso], 0);
   }
 
+  /** Los edificios de una comarca, tal como los sabe el jugador: los suyos y los de lo explorado. */
+  private edificiosSabidos(id: IdComarca): Readonly<Record<string, number>> {
+    return this.esPropia(id)
+      ? (this.propias.find((c) => c.id === id)?.edificios ?? {})
+      : (this.explorada(id)?.datos?.edificios ?? {});
+  }
+
+  /** Hay una venta en la comarca, por lo que sabe el jugador: alli come su recua (T-055). */
+  hayVentaEn(id: IdComarca): boolean {
+    return (this.edificiosSabidos(id)['venta'] ?? 0) > 0;
+  }
+
+  /** Los precios a los que cobra el ventero de una comarca: los sabidos de su plaza, o los base. */
+  preciosDeLaVenta(id: IdComarca): Recursos {
+    const plaza = idDeMercadoLocal(id);
+    return recursosSegun((r) => this.precioMil(plaza, r));
+  }
+
   /** Las plazas cuyas comarcas conoce el jugador: las ferias de su geografia y los mercados. */
   plazasConocidas(): PlazaConocida[] {
     const plazas: PlazaConocida[] = [];
@@ -444,9 +464,7 @@ export class Tablero {
           turnos: feria.turnos,
         });
       }
-      const edificios = this.esPropia(id)
-        ? (this.propias.find((c) => c.id === id)?.edificios ?? {})
-        : (this.explorada(id)?.datos?.edificios ?? {});
+      const edificios = this.edificiosSabidos(id);
       // El mercado del pueblo y la venta del camino abren plaza igual (T-053).
       if ((edificios['mercado'] ?? 0) > 0 || (edificios['venta'] ?? 0) > 0) {
         plazas.push({ id: idDeMercadoLocal(id), comarca: id, tipo: 'local', turnos: [] });

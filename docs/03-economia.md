@@ -110,7 +110,7 @@ con ella, el comercio.
 | Majada | pasto | 15 madera, 10 mrs | 2 | mantiene 1 rebaño invernando | 3 |
 | Lonja de pescado | pesca | 20 madera, 15 mrs | 2 | +6 pan, +2 sal consumida | 2 |
 | Mercado | — | 15 madera, 15 piedra, 20 mrs | 3 | +8 mrs y mercado local activo | 2 |
-| Venta (posada) | **en tierra de nadie o propia** | 10 madera, 10 piedra | 2 | **abre plaza local**; recuas propias y ajenas reponen; +4 mrs por tránsito | 1 |
+| Venta (posada) | **en tierra de nadie o propia** | 10 madera, 10 piedra | 2 | **abre plaza local**; recuas propias y ajenas comen allí pagando (§3.7.1); +4 mrs por tránsito | 1 |
 | Casas | — | 25 madera, 10 piedra | 2 | +30 de capacidad | 3 |
 | Cerca | — | 20 piedra | 3 | +10 lealtad, protege del bandidaje (fase posterior) | 1 |
 
@@ -236,8 +236,16 @@ cambian cuando se quiera.
 | Coste de formar | 20 mrs, 10 pan, 4 vecinos | Los 4 arrieros salen de la comarca y vuelven al disolverla |
 | Porte | 10 cargas | 10 acémilas de una carga cada una; +10 por cada nivel de carro (requiere camino carretero en toda la ruta). Los maravedís no ocupan porte |
 | Paso | 3 jornadas por turno | −1 con la carga al 80 % del porte, −1 en barro, +1 si el primer tramo del turno tiene calzada; nunca menos de 1 |
-| Bastimento | 2 pan por jornada andada | +1 sal por cada 4 jornadas o fracción en verano (conservas). Del almacén si la recua sale de comarca propia; de su carga si está fuera |
+| Bastimento | 2 pan por jornada andada | +1 sal por cada 4 jornadas o fracción en verano (conservas). Del almacén si la recua sale de comarca propia; en la venta si pisa una y lleva con qué pagar; si no, de su carga |
 | Gente | hasta 20 vecinos | Además de los arrieros. Para repoblar o fundar puebla |
+
+**Se come en la venta** (T-055). La recua que, fuera de casa, empieza el turno en una comarca con
+venta o entra en una, come allí el bastimento de todo el turno: paga el pan y la sal a lo que valen
+en esa plaza (`ventaCobraMil`, hoy el precio entero) con los maravedís que lleva, que no pesan. Da
+igual de quién sea la venta o que esté en tierra de nadie: la venta es de quien pasa. Si no lleva
+maravedís bastantes, come de su carga como siempre. Así un viaje largo deja de llevar encima toda
+su comida y queda sitio para la mercancía, sin que el pan salga de la nada: la venta cambia porte
+por dinero. Lo que cobra el ventero no es de nadie hasta que haya portazgos (T-103).
 
 Sin bastimento, el primer turno la recua se para y la crónica lo avisa. Desde el segundo **malvive**:
 anda al paso mínimo sin pagar y pierde una acémila por turno (una carga menos de porte), hasta

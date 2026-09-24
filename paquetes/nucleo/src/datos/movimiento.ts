@@ -15,6 +15,8 @@ export const MOVIMIENTO: DatosMovimiento = {
   cargaPesadaMil: 800,
   bastimentoPorJornada: 2,
   jornadasPorSalEnVerano: 4,
+  // El ventero cobra el pan y la sal a lo que valen en su plaza (T-055).
+  ventaCobraMil: 1000,
   acemilasPorRecua: 10,
   portePorAcemila: 1,
   arrierosPorRecua: 4,

@@ -914,3 +914,41 @@ la pieza que hace posible una ruta de comercio. Es lo que era una venta.
 
 Queda en [T-055](T-055-la-venta-da-de-comer.md), con el diseño por detallar y los cuatro caminos de
 arriba anotados para que nadie los repita.
+
+## 24-09-2026 · La venta da de comer (T-055), y el muro siguiente
+
+**Hipótesis:** si una recua come en las ventas del camino en vez de cargar su pan, los viajes que
+«no cabían» caben y aparece el comercio. **Cambio:** la regla de [T-055 §4](T-055-la-venta-da-de-comer.md)
+—fuera de casa, la recua que pisa una venta paga allí su bastimento del turno con los maravedís que
+lleva, a los precios de esa plaza— y la previsión de los robots que la cuenta (robots 5). Ninguna
+tabla de equilibrio cambia; entra una nueva, `movimiento.ventaCobraMil: 1000`.
+
+**Resultado:**
+
+| Campaña | Base `T-055` | Con la venta (`T-055b`) | Escasez (filas que cumplen) |
+|---|---:|---:|---|
+| 1492 | 116 | 116 | 9 → 9 |
+| 1085 | 118 | 118 | 11 → 11 |
+| 1212 | 112 | **114** | 8 → 8 |
+
+El sitio deja de ser el muro: en el volcado del turno 160 del mercader, **todas** las parejas que
+daban `no-cabe` caben ahora con hueco 6. La escasez no se entera, que era lo que hundían los caminos
+descartados. Pero **cero negocios**.
+
+**Cota medida y revertida:** `ventaCobraMil: 0`, la venta no cobra. **Cero negocios igualmente**; el
+motivo dominante del mercader pasa a «ningún viaje deja ganancia después del bastimento» (134
+turnos). El volcado:
+
+```
+T160 segria  maravedis 107  bolsa 47
+urgell-i-segarra -> monegros  sal  pa=9800 pb=12600  hueco=8  n=3  bruto=22  bast=8  neto=-10
+```
+
+La mejor diferencia de la partida es un 28 % en la sal, y el robot cuenta la ganancia comprando al
+límite de la orden (+20 %) y vendiendo al suyo (−10 %): un 30 % de colchón que se la come entera.
+Encima la bolsa son 47 maravedís, tres cargas. **No es la venta ni su tarifa**: es cómo valora el
+robot un negocio, y eso es lógica del banco. Sale a [T-056](T-056-el-negocio-en-limpio.md).
+
+**Decisión:** adoptada la venta con `ventaCobraMil: 1000` (cambia porte por dinero, sin pan que
+salga de la nada). No se prueban tarifas intermedias: la cota ya demuestra que la tarifa no es el
+cuello de botella.

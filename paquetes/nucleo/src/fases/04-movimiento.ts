@@ -7,6 +7,7 @@
 import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
+import { alcanceDe } from '../contexto.ts';
 import { ErrorDeMotor } from '../errores.ts';
 import { detenerRuta } from './04-rutas.ts';
 import {
@@ -20,8 +21,9 @@ import {
 } from '../ordenes.ts';
 import { cargarDelAlmacen, descargarEnAlmacen } from '../porteo.ts';
 import type { OrdenDe } from '../ordenes.ts';
-import { bastimentoDe } from '../reglas/bastimento.ts';
+import { bastimentoDe, costeEnLaVenta, hayVentaEn, ventaDelTurno } from '../reglas/bastimento.ts';
 import { permiteIniciar } from '../reglas/escasez.ts';
+import { precioBaseLocalMil } from '../reglas/precios.ts';
 import { esDesleal } from '../reglas/lealtad.ts';
 import { avanzar, pasoDeRecua, pesoDeLaCarga, porteDe } from '../reglas/movimiento.ts';
 import {
@@ -36,11 +38,11 @@ import { registrarSuceso } from '../sucesos.ts';
 import type { Cometido, EstadoJugador, Recua } from '../tipos/estado.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from '../tipos/estado.ts';
 import type { IdComarca, IdRecua } from '../tipos/ids.ts';
-import { nuevoId } from '../tipos/ids.ts';
+import { idDeMercadoLocal, nuevoId } from '../tipos/ids.ts';
 import type { Camino } from '../tipos/mundo.ts';
 import type { Orden, ParadaDeRuta } from '../tipos/ordenes.ts';
 import type { Recurso } from '../tipos/recursos.ts';
-import { RECURSOS } from '../tipos/recursos.ts';
+import { RECURSOS, recursosSegun } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
 import { movimientoDeRebanyos } from './04-rebanyos.ts';
 
@@ -439,14 +441,27 @@ function moverRecua(ctx: Contexto, id: string): void {
     (recua.rutaCircular
       ? (previsto.entradas.find((c) => ctx.estado.comarcas[c]?.duenyo === recua.jugador) ?? null)
       : null);
+  // Fuera de casa, si pisa una venta y lleva con que pagar, come alli y no de la carga (T-055).
+  const venta =
+    casa === null
+      ? ventaDelTurno(
+          (comarca) => hayVentaEn(ctx.estado, comarca),
+          recua.situacion.donde === 'comarca' ? recua.situacion.comarca : null,
+          previsto.entradas,
+        )
+      : null;
+  const cuenta =
+    venta === null ? null : costeEnLaVenta(bastimento, preciosDeLaVenta(ctx, venta), ctx.reglas);
+  const comeEnLaVenta = cuenta !== null && recua.carga.maravedis >= cuenta;
   const puedePagar =
     casa !== null
       ? disponible(jugador, 'pan') >= bastimento.pan && disponible(jugador, 'sal') >= bastimento.sal
-      : recua.carga.pan >= bastimento.pan && recua.carga.sal >= bastimento.sal;
+      : comeEnLaVenta || (recua.carga.pan >= bastimento.pan && recua.carga.sal >= bastimento.sal);
 
   let avance = previsto;
   if (puedePagar) {
-    pagarBastimento(ctx, recua, casa !== null, bastimento.pan, bastimento.sal);
+    if (comeEnLaVenta) pagarLaVenta(ctx, recua, cuenta);
+    else pagarBastimento(ctx, recua, casa !== null, bastimento.pan, bastimento.sal);
     if (casa !== null && recua.rutaCircular) reponerBastimento(ctx, recua, jugador);
     if (hambrienta) aplicar(ctx, { tipo: 'recua-bastimento', recua: idRecua, avisada: false });
   } else if (!hambrienta) {
@@ -494,6 +509,36 @@ function moverRecua(ctx: Contexto, id: string): void {
     enParada: avance.enParada,
   });
   contarAvance(ctx, recua, avance);
+}
+
+/**
+ * Los precios con los que cobra el ventero: los de su plaza. Una venta recien levantada aun no ha
+ * abierto plaza —eso pasa en la fase de mercado—, y hasta entonces cobra al precio base de alli.
+ */
+function preciosDeLaVenta(ctx: Contexto, comarca: IdComarca): Readonly<Record<Recurso, number>> {
+  const plaza = ctx.estado.mercados[idDeMercadoLocal(comarca)];
+  if (plaza !== undefined) return plaza.preciosMil;
+  return recursosSegun((r) =>
+    precioBaseLocalMil(
+      ctx.reglas.recursos[r].precioBaseMil,
+      ctx.mundo.comarcas[comarca],
+      r,
+      ctx.reglas.mercado,
+      alcanceDe(ctx, comarca, r),
+    ),
+  );
+}
+
+/** El ventero no es de nadie hasta que haya portazgos (T-103): lo que cobra sale de la partida. */
+function pagarLaVenta(ctx: Contexto, recua: Recua, cuenta: number): void {
+  if (cuenta <= 0) return;
+  aplicar(ctx, {
+    tipo: 'recua-carga',
+    recua: recua.id,
+    recurso: 'maravedis',
+    delta: -cuenta,
+    motivo: 'bastimento en la venta',
+  });
 }
 
 function pagarBastimento(

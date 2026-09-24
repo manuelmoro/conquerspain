@@ -670,7 +670,11 @@ function expedicionArriesgada(
     const sal = Math.max(recua.carga.sal, ida.valor.sal);
     if (sal - recua.carga.sal + ida.valor.salDeCasa > t.disponible('sal')) continue;
     if (ligera - recua.carga.pan + ida.valor.panDeCasa > t.disponible('pan')) continue;
-    return { id, provision: { pan: ligera, sal, prevision: ida.valor }, arriesgada: true };
+    return {
+      id,
+      provision: { pan: ligera, sal, maravedis: 0, prevision: ida.valor },
+      arriesgada: true,
+    };
   }
   return null;
 }

@@ -375,6 +375,8 @@ export interface DatosMovimiento {
   readonly bastimentoPorJornada: number;
   /** En verano, una carga de sal de conservas por cada tantas jornadas (o fraccion). */
   readonly jornadasPorSalEnVerano: number;
+  /** Lo que cobra el ventero por el bastimento, sobre el precio de su plaza, en milesimas (T-055). */
+  readonly ventaCobraMil: number;
   /** Acemilas de una recua recien formada; cada una lleva `portePorAcemila` cargas. */
   readonly acemilasPorRecua: number;
   readonly portePorAcemila: number;

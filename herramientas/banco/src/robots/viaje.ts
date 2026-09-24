@@ -3,14 +3,17 @@
 //
 // Lo unico que el robot no puede saber es lo que no sabe el jugador: unas nieves o una riada que aun
 // no se han anunciado. Todo lo demas —el paso de su casa, la carga pesada, el barro, las calzadas,
-// el verano que pide sal y el primer turno que come del almacen— sale como saldra en el turno.
+// el verano que pide sal, el primer turno que come del almacen y la venta que le da de comer si
+// lleva con que pagarla— sale como saldra en el turno.
 import {
   avanzar,
   bastimentoDe,
   bastimentoDePresencia,
+  costeEnLaVenta,
   pasoDeRebanyo,
   pasoDeRecua,
   pesoDeLaCarga,
+  ventaDelTurno,
 } from '@conquer/nucleo';
 import type { IdComarca, Recua, Recurso, Recursos, SituacionMovil } from '@conquer/nucleo';
 
@@ -50,6 +53,8 @@ export interface Prevision {
   /** El que paga el almacen: los turnos que la recua empieza en una comarca propia. */
   readonly panDeCasa: number;
   readonly salDeCasa: number;
+  /** Lo que se paga en las ventas del camino, a los precios sabidos (T-055). */
+  readonly maravedis: number;
 }
 
 export type Resultado<T> =
@@ -97,12 +102,21 @@ export function preverViaje(
   let sal = 0;
   let panDeCasa = 0;
   let salDeCasa = 0;
+  let maravedis = 0;
   const motor = paradasDelMotor(paradas);
   // Ya esta en la unica parada: no anda nada.
   if (pendiente.length === 0) {
     return {
       ok: true,
-      valor: { llegadas: paradas.map(() => 1), turnos: 1, pan, sal, panDeCasa, salDeCasa },
+      valor: {
+        llegadas: paradas.map(() => 1),
+        turnos: 1,
+        pan,
+        sal,
+        panDeCasa,
+        salDeCasa,
+        maravedis,
+      },
     };
   }
 
@@ -135,10 +149,17 @@ export function preverViaje(
       t.reglas,
       t.casa.bastimentoMil,
     );
-    const enCasa = situacion.donde === 'comarca' && t.esPropia(situacion.comarca);
+    const empieza = situacion.donde === 'comarca' ? situacion.comarca : null;
+    const enCasa = empieza !== null && t.esPropia(empieza);
+    const venta = enCasa ? null : ventaDelTurno((c) => t.hayVentaEn(c), empieza, avance.entradas);
+    const cuenta =
+      venta === null ? null : costeEnLaVenta(come, t.preciosDeLaVenta(venta), t.reglas);
     if (enCasa) {
       panDeCasa += come.pan;
       salDeCasa += come.sal;
+    } else if (cuenta !== null && encima.maravedis >= cuenta) {
+      maravedis += cuenta;
+      encima.maravedis -= cuenta;
     } else {
       pan += come.pan;
       sal += come.sal;
@@ -152,7 +173,7 @@ export function preverViaje(
     if (pendiente.length === 0) {
       return {
         ok: true,
-        valor: { llegadas, turnos: k + 1, pan, sal, panDeCasa, salDeCasa },
+        valor: { llegadas, turnos: k + 1, pan, sal, panDeCasa, salDeCasa, maravedis },
       };
     }
   }
@@ -163,6 +184,8 @@ export function preverViaje(
 export interface Provision {
   readonly pan: number;
   readonly sal: number;
+  /** Maravedis que hay que cargar, ademas de los que ya lleva, para comer en las ventas. */
+  readonly maravedis: number;
   readonly prevision: Prevision;
 }
 
@@ -172,9 +195,18 @@ export function margenDePan(t: Tablero): number {
 }
 
 /**
+ * Los precios de una venta se mueven entre que se sabe y se llega: se lleva un 25 % de mas (en
+ * milesimas). Si la bolsa se queda corta, el motor da de comer de la carga, y ese pan no va.
+ */
+const HOLGURA_DE_VENTAS_MIL = 1250;
+
+/**
  * El pan y la sal que tiene que llevar una recua quieta en casa para hacer este viaje con esta
  * mercancia, contando con lo que ya lleva. La carga pesa y una recua cargada anda menos, asi que
  * se recalcula hasta que la prevision no cambia. Falla si no cabe o si el verano pide sal que no hay.
+ *
+ * Con `bolsaParaVentas`, los maravedis que se pueden llevar de mas, la recua come en las ventas del
+ * camino en vez de cargar su pan (T-055): si lo que cobrarian, con su holgura, cabe en la bolsa.
  */
 export function provisionPara(
   t: Tablero,
@@ -183,11 +215,34 @@ export function provisionPara(
   mercancia: Partial<Recursos> = {},
   /** Turnos que faltan para salir: la compra en casa se hace hoy y la recua sale el que viene. */
   salida = 0,
+  bolsaParaVentas = 0,
+): Resultado<Provision> {
+  if (bolsaParaVentas > 0) {
+    const tanteo = provisionConMaravedis(t, recua, paradas, mercancia, salida, bolsaParaVentas);
+    if (!tanteo.ok) return tanteo;
+    const cobran = tanteo.valor.prevision.maravedis;
+    const lleva = Math.ceil((cobran * HOLGURA_DE_VENTAS_MIL) / 1000);
+    if (cobran > 0 && lleva <= bolsaParaVentas) {
+      return provisionConMaravedis(t, recua, paradas, mercancia, salida, lleva);
+    }
+  }
+  return provisionConMaravedis(t, recua, paradas, mercancia, salida, 0);
+}
+
+/** La provision con estos maravedis de mas en la carga para las ventas del camino. */
+function provisionConMaravedis(
+  t: Tablero,
+  recua: Recua,
+  paradas: readonly Parada[],
+  mercancia: Partial<Recursos>,
+  salida: number,
+  maravedis: number,
 ): Resultado<Provision> {
   const base: Record<Recurso, number> = { ...recua.carga };
   for (const [recurso, cantidad] of Object.entries(mercancia) as [Recurso, number][]) {
     base[recurso] += cantidad;
   }
+  base.maravedis += maravedis;
   let pan = recua.carga.pan;
   let sal = recua.carga.sal;
   let prevision: Prevision | null = null;
@@ -206,7 +261,7 @@ export function provisionPara(
   // Lo que se carga y lo que se come en casa salen del mismo almacen.
   if (sal - recua.carga.sal + prevision.salDeCasa > t.disponible('sal')) return fallo('sin-sal');
   if (pan - recua.carga.pan + prevision.panDeCasa > t.disponible('pan')) return fallo('sin-pan');
-  return { ok: true, valor: { pan, sal, prevision } };
+  return { ok: true, valor: { pan, sal, maravedis, prevision } };
 }
 
 /**

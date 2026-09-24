@@ -1,6 +1,6 @@
 # T-055 · La venta da de comer a las recuas
 
-**Fase:** 2 · Motor · **Depende de:** T-053, T-054 · **Estado:** en curso
+**Fase:** 2 · Motor · **Depende de:** T-053, T-054, T-056 · **Estado:** en curso
 
 ## 1. Contexto
 
@@ -42,17 +42,34 @@ de los robots lo cuente.
 **No entra:** el porte, el bastimento por jornada ni la tabla de abundancia. Están medidos y
 descartados (§6).
 
-## 4. Diseño (a detallar antes de implementar)
+## 4. Diseño (decidido el 24-09-2026)
 
-Lo que hay que decidir, con medición:
+La regla, en una frase para el jugador: **fuera de casa, una recua que pisa una venta come allí y
+lo paga con los maravedís que lleva; si no lleva bastantes, come de su carga.** Escrita en
+[docs/03-economia.md §3.7.1](../03-economia.md).
 
-1. **Qué repone exactamente.** Lo natural: las jornadas que salen de una comarca con venta no se
-   comen el pan de la carga. Alternativa más simple: la recua que **acaba el turno** en una comarca
-   con venta no gasta bastimento ese turno.
-2. **Quién puede usarla.** El diseño dice «propias y ajenas», así que cualquiera. El dueño cobrará
-   el portazgo cuando T-103 lo active; hasta entonces es un bien común que alguien paga.
-3. **Qué ve la previsión.** `preverViaje` (banco) tiene que contar las ventas del camino, o los
-   robots seguirán creyendo que el viaje no cabe.
+1. **Qué repone.** El bastimento **del turno entero** (pan y, en verano, la sal de las conservas)
+   de la recua que empieza el turno en una comarca con venta o entra en alguna durante él. Es la
+   misma granularidad que ya tenía la ruta circular que come del almacén al pasar por comarca
+   propia: la cuenta es por turno, no por jornada. Precedencia: almacén (comarca propia) → venta →
+   carga.
+2. **Quién paga y a cuánto.** La recua, con los maravedís de su carga, a los precios de la plaza de
+   la venta por la tarifa `movimiento.ventaCobraMil` (1000: el precio entero). Una venta recién
+   levantada, sin plaza abierta todavía, cobra al precio base de su comarca. Se descartó que la
+   venta diera de comer gratis: sería pan que sale de la nada, y la cota medida (§8) dice además
+   que no hace falta para el comercio.
+3. **Quién puede usarla.** Cualquiera: propia, ajena o en tierra de nadie. Lo que cobra el ventero
+   sale de la partida hasta que T-103 active el portazgo del dueño.
+4. **Qué ve la previsión.** `preverViaje` (banco) simula lo mismo que el motor con la carga que se
+   le da, maravedís incluidos, y sabe dónde hay venta por lo que sabe el jugador (sus comarcas y
+   las exploradas). `provisionPara` acepta una **bolsa para ventas**: si lo que cobrarían, con un
+   25 % de holgura, cabe en ella, la recua lleva esos maravedís en vez del pan. De momento solo la
+   usa el arbitraje, que la descuenta de lo que puede gastar en mercancía y la cuenta como coste.
+
+Piezas: `hayVentaEn`, `ventaDelTurno` y `costeEnLaVenta` en `paquetes/nucleo/src/reglas/
+bastimento.ts`; la fase en `fases/04-movimiento.ts`; la previsión en `herramientas/banco/src/
+robots/viaje.ts`, lo que sabe el robot en `tablero.ts` y el arbitraje en `arbitraje.ts`. Robots a
+la versión 5.
 
 ## 5. Criterios de aceptación
 
@@ -82,14 +99,32 @@ npm run banco:comparar -- herramientas/banco/informes/T-055-1492.csv herramienta
 
 ## 8. Dónde va (24-09-2026)
 
-**Entregado y verificado**: una corrección del arbitraje que estaba escondida debajo de todo lo
-demás. El robot ordenaba las parejas de plazas con los precios **acolchados** —puja un 20 % y
-rebaja un 10 %—, así que necesitaba una diferencia bruta **del 33 %** antes de mirar siquiera una
-pareja. Con la sal de 9800 a 12600 entre dos plazas suyas (un 28 %), veía **cero parejas en toda la
-partida**. Ahora ordena por la diferencia que sabe y deja el acolchado donde corresponde: en los
-límites de la orden, que tienen que ser holgados o la compra se cae por precio en cuanto la plaza
-se mueve (medido: con un 5 % se rompe la prueba de vía del arriero).
+**Entregado y verificado**, en dos sesiones del mismo día:
 
-Resultado: 106 parejas donde había 0, y el recuento sin moverse (116 / 118 / 112, igual que la base).
+1. Una corrección del arbitraje que estaba escondida debajo de todo lo demás. El robot ordenaba
+   las parejas de plazas con los precios **acolchados** —puja un 20 % y rebaja un 10 %—, así que
+   necesitaba una diferencia bruta **del 33 %** antes de mirar siquiera una pareja. Ahora ordena por
+   la diferencia que sabe: de 0 parejas a 106, y el recuento sin moverse.
+2. **La venta da de comer** (§4), con sus pruebas: `paquetes/nucleo/pruebas/venta.test.ts` (ocho
+   casos, entre ellos el del criterio 1) y dos más en `herramientas/banco/src/robots/viaje.test.ts`.
 
-**Falta** el diseño de §4 y su implementación.
+**Criterios:**
+
+| # | Criterio | Estado |
+|---|---|---|
+| 1 | La misma carga llega más lejos con una venta en el camino | **Cumple.** Seis panes y 40 maravedís, de la vega a la costa: sin venta, el segundo turno se queda con hambre en el camino; con venta en el río, llega con 10 acémilas y 4 panes, y ha pagado 18 maravedís |
+| 2 | `negociosRentables` > 0 | **No cumple.** Pasa a [T-056](T-056-el-negocio-en-limpio.md) |
+| 3 | La escasez no empeora | **Cumple.** 9 / 11 / 8 filas, igual que la base |
+| 4 | `npm run verificar` | **Cumple** |
+
+**Lo medido** (base `T-055-*`, nueva `T-055b-*`, robots 5): el recuento pasa de 116 / 118 / 112 a
+**116 / 118 / 114**. Los viajes que antes «no cabían» caben: en el volcado del turno 160 del
+mercader, todas las parejas que daban `no-cabe` tienen ahora hueco 6 comiendo en las ventas.
+
+**Por qué no hay negocio todavía** (la cota, medida y revertida): con `ventaCobraMil: 0` —comer
+gratis— siguen saliendo **cero negocios**, y el motivo dominante pasa a ser «ningún viaje deja
+ganancia» (134 turnos). El sitio ya no es el muro: el robot cuenta la ganancia con los límites
+acolchados de la orden y tiene 47 maravedís de bolsa. Eso es lógica del robot, fuera del alcance de
+esta ficha, y está en [T-056](T-056-el-negocio-en-limpio.md).
+
+**Falta:** hacer T-056 y volver aquí a comprobar el criterio 2 con la campaña de §7.

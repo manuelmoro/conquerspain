@@ -4,7 +4,8 @@
 //
 // Un negocio se cuenta en limpio (ficha T-050 §4.1.5): se puja por encima del precio sabido y se
 // acepta vender por debajo, se pagan las comisiones de la casa en las dos plazas y el pan y la sal
-// que se come la recua por el camino, al precio base. Si con eso no queda ganancia, no se sale.
+// que se come la recua por el camino, al precio base, o lo que cobran las ventas donde come (T-055).
+// Si con eso no queda ganancia, no se sale.
 import { comparar, multiplicarFactores } from '@conquer/nucleo';
 import type { IdMercado, Recua, Recurso } from '@conquer/nucleo';
 
@@ -75,14 +76,22 @@ function ingresoDeVenta(cantidad: number, precioMil: number, comision: number): 
 
 /**
  * El pan y la sal del viaje, al precio base **de la capital**: sale del almacen de casa, asi que
- * lo que cuesta mover la mercancia es lo que alli valdria (T-052).
+ * lo que cuesta mover la mercancia es lo que alli valdria (T-052). Lo que se come en las ventas se
+ * paga alli, en maravedis.
  */
 function valorDelBastimento(t: Tablero, provision: Provision): number {
   const p = provision.prevision;
   return (
     multiplicarFactores(p.pan + p.panDeCasa, [t.baseEn(t.capital, 'pan')]) +
-    multiplicarFactores(p.sal + p.salDeCasa, [t.baseEn(t.capital, 'sal')])
+    multiplicarFactores(p.sal + p.salDeCasa, [t.baseEn(t.capital, 'sal')]) +
+    p.maravedis
   );
+}
+
+/** Lo que la recua puede llevarse del almacen: sin lo reservado ni el colchon, y con tope. */
+function bolsaLibre(d: Decision): number {
+  const { t, p } = d;
+  return Math.min(t.disponible('maravedis') - p.reservado('maravedis') - COLCHON, BOLSA_MAXIMA);
 }
 
 /** Las plazas conocidas a las que se llega, con precio sabido y reciente. */
@@ -124,8 +133,10 @@ function negocioDe(
   const precioMaximoMil = multiplicarFactores(pa, [PUJA_MIL]);
   const precioMinimoMil = multiplicarFactores(pb, [REBAJA_MIL]);
   const [ca, cb] = [comisionMil(t, compra), comisionMil(t, venta)];
-  let cantidad = Math.min(hueco, Math.floor((bolsa * 1000) / precioMaximoMil));
-  while (cantidad > 0 && costeDeCompra(cantidad, precioMaximoMil, ca) > bolsa) cantidad -= 1;
+  // Lo que se lleva para comer en las ventas no se gasta en mercancia.
+  const paraComprar = bolsa - provision.maravedis;
+  let cantidad = Math.min(hueco, Math.floor((Math.max(0, paraComprar) * 1000) / precioMaximoMil));
+  while (cantidad > 0 && costeDeCompra(cantidad, precioMaximoMil, ca) > paraComprar) cantidad -= 1;
   if (cantidad <= 0) return null;
   const pagado = costeDeCompra(cantidad, precioMaximoMil, ca);
   const ganancia =
@@ -155,7 +166,7 @@ function conLaCarga(
   salida = 0,
 ): Negocio | null {
   for (let cargas = tanteo.cantidad; cargas > 0; cargas -= 1) {
-    const llena = provisionPara(t, recua, paradas, { [tanteo.recurso]: cargas }, salida);
+    const llena = provisionPara(t, recua, paradas, { [tanteo.recurso]: cargas }, salida, bolsa);
     if (!llena.ok) continue;
     const final = negocioDe(
       t,
@@ -212,7 +223,7 @@ function mejorNegocio(d: Decision, recua: Recua, bolsa: number, enCasa: Tanteo):
   let mejor: Negocio | null = null;
   let algunViaje = false;
   for (const [compra, venta] of parejas.slice(0, PAREJAS_QUE_SE_PREVEN)) {
-    const vacia = provisionPara(t, recua, paradasDe(t, compra, venta));
+    const vacia = provisionPara(t, recua, paradasDe(t, compra, venta), {}, 0, bolsa);
     if (!vacia.ok) continue;
     algunViaje = true;
     const hueco = recua.porte - vacia.valor.pan - vacia.valor.sal;
@@ -252,7 +263,7 @@ function negocioEnCasa(d: Decision, recua: Recua, bolsa: number): Tanteo {
       { comarca: t.capital, detiene: false },
     ];
     // Se compra hoy en la plaza y se sale el turno que viene: la prevision empieza entonces.
-    const vacia = provisionPara(t, recua, paradas, {}, 1);
+    const vacia = provisionPara(t, recua, paradas, {}, 1, bolsa);
     if (!vacia.ok) continue;
     algunViaje = true;
     const hueco = recua.porte - vacia.valor.pan - vacia.valor.sal;
@@ -291,15 +302,23 @@ function mercancias(recua: Recua): Recurso[] {
 function venderLoQueLleva(d: Decision, recua: Recua, recurso: Recurso): void {
   const { t, p } = d;
   const cantidad = recua.carga[recurso];
+  const bolsa = Math.max(0, bolsaLibre(d));
   let mejor: { plaza: PlazaConocida; precio: number; provision: Provision } | null = null;
   // En la plaza de casa no: es donde se compro, y alli la vende el tratante si sobra.
   for (const plaza of plazasConPrecio(t).filter((pl) => pl.comarca !== t.capital)) {
     const precio = precioSabido(t, plaza.id, recurso);
     if (precio === null || (mejor !== null && precio <= mejor.precio)) continue;
-    const provision = provisionPara(t, recua, [
-      { comarca: plaza.comarca, detiene: true },
-      { comarca: t.capital, detiene: false },
-    ]);
+    const provision = provisionPara(
+      t,
+      recua,
+      [
+        { comarca: plaza.comarca, detiene: true },
+        { comarca: t.capital, detiene: false },
+      ],
+      {},
+      0,
+      bolsa,
+    );
     if (provision.ok) mejor = { plaza, precio, provision: provision.valor };
   }
   if (mejor === null) {
@@ -320,10 +339,14 @@ function venderLoQueLleva(d: Decision, recua: Recua, recurso: Recurso): void {
   ]);
 }
 
-/** Carga el pan y la sal que le falten a la recua para el viaje previsto. */
-function cargarBastimento(d: Decision, recua: Recua, provision: Provision, maravedis = 0): void {
+/**
+ * Carga el pan y la sal que le falten a la recua para el viaje previsto, los maravedis de las
+ * ventas donde comera y, si va a comprar, su bolsa.
+ */
+function cargarBastimento(d: Decision, recua: Recua, provision: Provision, bolsa = 0): void {
   const pan = provision.pan - recua.carga.pan;
   const sal = provision.sal - recua.carga.sal;
+  const maravedis = provision.maravedis + bolsa;
   const cargar: Partial<Record<Recurso, number>> = {
     ...(pan > 0 ? { pan } : {}),
     ...(sal > 0 ? { sal } : {}),
@@ -336,6 +359,7 @@ function cargarBastimento(d: Decision, recua: Recua, provision: Provision, marav
 function plazaPorConocer(d: Decision, recua: Recua): Provision | null {
   const { t, p } = d;
   const alcance = t.jornadasDesdeLoPropio();
+  const bolsa = Math.max(0, bolsaLibre(d));
   const porConocer = t
     .plazasConocidas()
     .filter((pl) => precioSabido(t, pl.id, 'pan') === null && alcance.has(pl.comarca))
@@ -346,10 +370,17 @@ function plazaPorConocer(d: Decision, recua: Recua): Provision | null {
     );
   for (const plaza of porConocer) {
     // Se va cuando llegaria con la plaza abierta: una feria cerrada no dice sus precios.
-    const provision = provisionPara(t, recua, [
-      { comarca: plaza.comarca, detiene: true },
-      { comarca: t.capital, detiene: false },
-    ]);
+    const provision = provisionPara(
+      t,
+      recua,
+      [
+        { comarca: plaza.comarca, detiene: true },
+        { comarca: t.capital, detiene: false },
+      ],
+      {},
+      0,
+      bolsa,
+    );
     if (!provision.ok) continue;
     const llegada = provision.valor.prevision.llegadas[0] ?? 1;
     if (t.turnosHastaQueAbraEn(plaza, t.turno + llegada - 1) > 0) continue;
@@ -372,10 +403,7 @@ export const arbitraje: Rutina = (d, recua) => {
     venderLoQueLleva(d, recua, lleva);
     return;
   }
-  const bolsa = Math.min(
-    t.disponible('maravedis') - p.reservado('maravedis') - COLCHON,
-    BOLSA_MAXIMA,
-  );
+  const bolsa = bolsaLibre(d);
   if (bolsa <= 0) {
     d.m.anotar('sin-bolsa-para-comprar');
     return;

@@ -1,6 +1,6 @@
 // Regresiones de los defectos de los robots que corrige T-050 (ficha §4.1 y §6.1): la prevision de
 // un viaje con las reglas del nucleo, las recuas que no salen a malvivir y las que se rehacen.
-import { beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { TABLAS_DEL_JUEGO, idDeMercadoLocal, vistaDeJugador } from '@conquer/nucleo';
 import type {
@@ -201,6 +201,39 @@ describe('la prevision de un viaje usa las reglas del nucleo', () => {
     const cargada = { ...recua.carga, pan: provision.valor.pan, sal: provision.valor.sal };
     expect(leLlega(t, recua, idaYVuelta(t, destino), cargada)).toBe(true);
     expect(leLlega(t, recua, idaYVuelta(t, destino), { ...cargada, pan: 0 })).toBe(false);
+  });
+});
+
+describe('la venta del camino da de comer (T-055)', () => {
+  /** El tablero de la partida con una venta sabida en el destino, y el viaje de ida y vuelta. */
+  function conVentaEnElDestino() {
+    const { estado, recua } = preparar(PRIMAVERA);
+    const t = tablero(estado);
+    const destino = destinos(t).find((d) => provisionPara(t, recua, idaYVuelta(t, d)).ok);
+    if (destino === undefined) throw new Error('no hay adonde ir');
+    vi.spyOn(t, 'hayVentaEn').mockImplementation((c) => c === destino);
+    return { t, recua, paradas: idaYVuelta(t, destino) };
+  }
+
+  it('con bolsa para la venta, se carga menos pan y se lleva lo que cobra con holgura', () => {
+    const { t, recua, paradas } = conVentaEnElDestino();
+    const sin = provisionPara(t, recua, paradas);
+    const con = provisionPara(t, recua, paradas, {}, 0, 100);
+    if (!sin.ok || !con.ok) throw new Error('el viaje deberia poder hacerse');
+    expect(sin.valor.maravedis).toBe(0);
+    expect(con.valor.pan).toBeLessThan(sin.valor.pan);
+    expect(con.valor.prevision.maravedis).toBeGreaterThan(0);
+    expect(con.valor.maravedis).toBe(Math.ceil((con.valor.prevision.maravedis * 1250) / 1000));
+    // Con esa carga le llega; sin los maravedis, el pan que se ahorro le falta.
+    const cargada = { ...recua.carga, pan: con.valor.pan, maravedis: con.valor.maravedis };
+    expect(leLlega(t, recua, paradas, cargada)).toBe(true);
+    expect(leLlega(t, recua, paradas, { ...cargada, maravedis: 0 })).toBe(false);
+  });
+
+  it('si la bolsa no llega para la venta, se carga el pan de siempre', () => {
+    const { t, recua, paradas } = conVentaEnElDestino();
+    const sin = provisionPara(t, recua, paradas);
+    expect(provisionPara(t, recua, paradas, {}, 0, 1)).toEqual(sin);
   });
 });
 

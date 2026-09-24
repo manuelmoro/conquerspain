@@ -14,7 +14,7 @@ export type {
   IdRecua,
 } from './ids.ts';
 export { idDeMercadoDeFeria, idDeMercadoLocal } from './ids.ts';
-export { RECURSOS, RECURSOS_PERECEDEROS } from './recursos.ts';
+export { RECURSOS, RECURSOS_PERECEDEROS, recursosSegun } from './recursos.ts';
 export type { Recurso, Recursos } from './recursos.ts';
 export { POTENCIALES, RASGOS, TERRENOS, VOLUMENES_FERIA } from './mundo.ts';
 export type {
