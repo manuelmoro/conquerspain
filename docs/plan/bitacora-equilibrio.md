@@ -765,3 +765,46 @@ regeneraron las huellas de reproducción, que cambian porque el prestigio entra 
 `dominio` y `tierra` siguen incumpliendo 3 de 3, y el prestigio va por 4 filas de 24: la horquilla
 80–120 % pide que **todas** las casas compitan, y cuatro de ellas siguen sin economía mientras el
 comercio no exista. Eso depende de la decisión pendiente sobre los precios y la distancia.
+
+## 24-09-2026 · El ritmo del primer dominio choca con la vía de los monjes
+
+**Encargo:** que el primer «pequeño dominio» de la partida deje de llegar en T43 y caiga entre T60 y
+T100. **Resultado:** no se adopta nada, pero queda medido por qué y con una decisión para el usuario.
+Ninguna tabla cambia.
+
+### Lo que se midió
+
+Cuatro ensayos sobre el grupo de «lo que cuesta ganarse un concejo», con la base `T-047-marcador`
+(116, 112 y 113 filas cumplen):
+
+| Ensayo | Primer dominio | Recuento (1492 / 1085 / 1212) | Decisión |
+|---|---|---|---|
+| `influenciaParaPuebla` 60 y `minimaParaIncorporar` 85 | T54–T56 | 117 / – / – | Se queda corto |
+| **70 y 90** | **T67, cumple 3 de 3** | **122 / 114 / 114** | Mejor de todos, pero rompe la vía del monje en solitario |
+| 70 y 100 | T67, cumple | 121 / 117 / 114 | El mínimo quedaría justo en el tope de la influencia (100), sin margen para la regla de la ventaja |
+| Solo `minimaParaIncorporar` 90 | T43–T48, incumple | 117 / 111 / 111 | **Descartado**: net peor y rompe `ganadores` en dos campañas |
+
+### El choque, y es de diseño
+
+El primer dominio de la partida lo marcan **los monjes, fundando pueblas**, no incorporando. Y el
+umbral de la puebla (40 de influencia) está calibrado **justo en el techo de lo que una casa sola
+alcanza**: subirlo a 50 ya deja al monje de Évora sin fundar ni una en 96 turnos. La razón es que
+mantener presencia cuesta pan, la recua no puede quedarse quieta indefinidamente y la influencia se
+desgasta un punto por turno sin presencia.
+
+**En campaña, en cambio, el umbral alto no les molesta**: con 70 siguen fundando siete pueblas,
+porque tienen comarcas propias vecinas que aportan influencia. Lo que falla es el escenario de
+`vias.test.ts`, que juega la casa **sola en la península entera**.
+
+> **Decisión para el usuario.** El ensayo de 70 y 90 es, con diferencia, el mejor (122 / 114 / 114,
+> con `dominio` y `ganadores` cumpliendo). Adoptarlo exige decidir si el escenario en solitario —una
+> casa sin rivales y sin comarcas propias vecinas— es la vara correcta para calibrar un umbral que
+> en partida real se cumple de sobra. No se ha tocado por cuenta propia: es una garantía de T-050.
+
+### Lo que sí queda aprendido
+
+- La influencia está **topada en 100**, así que un mínimo para incorporar cerca de ese tope deja sin
+  efecto la regla de «sacarle 15 puntos al segundo». 90 es el techo práctico.
+- Subir solo la incorporación no sirve: los monjes crecen por puebla.
+- Una casa sola no pasa de unos 45 de influencia en una comarca ajena. Es un dato a tener presente
+  para cualquier umbral que se toque: presencia, puebla, incorporación o regalo.
