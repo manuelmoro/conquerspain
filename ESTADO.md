@@ -38,11 +38,12 @@ La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invi
 3. **Tierra** (9 de 9; medida ya exacta: entre el 38 % y el 62 % del mapa sin tocar) y **dominio** (9 de 9, el primer «pequeño
    dominio» en T43–48, antes de la horquilla): el ritmo espera una decisión del usuario (ver abajo).
 
-**Última iteración (24-09-2026):** `sin-tierra-que-ganar` es el emisario, no la exploradora. La
-exploración va lenta de verdad: de 208 comarcas una casa conoce entre 2 y 17 tras 200 turnos (una
-cada 12–30 turnos); ferrones y salineros casi no exploran. El pan no es el freno (ensayo nulo).
-**Lo siguiente:** ver turno a turno qué hace la recua exploradora de ferrones y salineros (bitácora
-de equilibrio, última entrada).
+**Última iteración (24-09-2026):** la causa de que casi nadie explore está cerrada: el viaje redondo
+**no cabe en el porte** (`no-cabe`). La oída más cercana está a 10 jornadas para ferrones y Mesta, 6
+para arrieros y 4 para salineros; una recua lleva pan para unas 5. **Decisión pendiente del
+usuario:** cómo explora una casa pequeña (opciones y recomendación en la última entrada de la
+[bitácora de equilibrio](docs/plan/bitacora-equilibrio.md)). Recomendación: las tierras habitadas
+dan de comer a quien paga, como la venta (T-055).
 
 Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
 

@@ -1300,3 +1300,38 @@ exploran: es lo que hay que explicar.
 **Siguiente:** contar, turno a turno, qué hace la recua del papel `explorar` de ferrones y
 salineros (en ruta, parada en casa, mermada, sin formar) para saber si el freno es que **no sale** o
 que **sale poco a poco**. Solo entonces tocar una regla o una cifra.
+
+## 24-09-2026 · Por qué no explora nadie: el viaje de ida y vuelta no cabe en el porte
+
+Motivo real de `sin-oida-al-alcance` (instrumentado en `siguienteAExplorar`, 1492, 200 turnos):
+**`no-cabe`** en todos los casos salvo los de sal y pan. El pan y la sal de un viaje redondo pesan
+más que el porte (10 cargas: unas cinco jornadas de autonomía). Jornadas hasta la **oída más
+cercana** desde la capital, con las veces que se miró:
+
+| Casa | Jornadas a la oída más cercana | Viaje redondo (×2 panes) |
+|---|---|---|
+| ferrones | 10 (65 veces), 5 (12) | 40 panes |
+| Mesta | 10 (103), 5 (18), 8 (8) | 40 panes |
+| arrieros | 6 (78), 9 (14), 3 (6) | 24 panes |
+| salineros | 4 (132), 2 (57) | 16 panes |
+| canteros | 5 (25), 3 (9) | 20 panes |
+| mercaderes | 4 (20), 2 (9), 5 (6) | 16 panes |
+
+Las cajas de jornadas son de la geografía del catálogo, no de un ajuste: un tramo entre comarcas
+vecinas es de 4 a 10 jornadas. **Comer la mitad (ensayo anterior) solo arregla a los salineros y a
+los mercaderes**, y por eso no se movió la cifra global: con diez jornadas por salto ninguna
+autonomía de cinco jornadas explora, y los robots no lo hacen mal. Los salineros, con la recua
+parada en casa y `no-cabe` 132 turnos de 200, tienen las tres recuas quietas en cada instantánea.
+
+**Lo que hay que decidir** (diseño, no cifra): cómo explora una casa pequeña. Opciones:
+
+1. **Las tierras habitadas dan de comer a quien paga** (recomendada). Una comarca con gente, aunque
+   no tenga venta, vende pan al viajero a su precio local (`precioBaseLocalMil`, T-052) más la tarifa
+   de la venta (T-055). Coherente con lo ya hecho (la venta da de comer), se explica en una frase y
+   convierte los maravedís en presupuesto de viaje. Toca el motor (`hayVentaEn` y el precio) y la
+   previsión del robot.
+2. **Avanzada ligera:** la exploradora come una fracción y no lleva mercancía. Ensayada al 50 %:
+   solo arregla a dos casas; haría falta un 25 % y sería arbitrario.
+3. **Acortar los saltos** (jornadas del catálogo): reescribe la geografía por un problema de
+   logística. Descartado de entrada.
+4. **Más porte** (`portePorAcemila`): ya ensayado varias veces sin efecto neto.
