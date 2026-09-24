@@ -1273,3 +1273,30 @@ maravedís, y una sola comarca durante toda la partida.
 
 **Siguiente:** leer `objetivoDeTierra` y medir por qué devuelve `null` con comarcas exploradas
 alrededor (qué filtro las descarta: valor, influencia, distancia, conocimiento), antes de tocar nada.
+
+## 24-09-2026 · `sin-tierra-que-ganar` no es la exploración, y la exploración va a un ritmo de tortuga
+
+**El motivo se lee mal.** `sin-tierra-que-ganar` lo da el **emisario** (ganar tierra por presencia),
+no la exploradora: `objetivoDeTierra` solo mira las vecinas de lo propio que ya están exploradas y
+con `puedeCrecer` (pan de un año o bolsa para alimentar a la gente nueva). Contadores en 100 turnos,
+1492: entre el 40 % y el 70 % de las vecinas siguen **sin explorar** y entre el 40 % y el 55 % **no
+pueden crecer** (prudencia económica a propósito), y casi ninguna llega a válida (mesta 14, arrieros
+78, ferrones/canteros/mercaderes 0). Eso explica la falta de emisarios, no la de comarcas visitadas.
+
+**La exploración, medida en el estado guardado** (1492, 200 turnos, comarcas *exploradas* por casa):
+
+| Turno | arrieros | canteros | ferrones | hortelanos | mercaderes | monjes | salineros |
+|---|---|---|---|---|---|---|---|
+| 30 | 3 | 2 | 2 | 4 | 2 | 3 | 1 |
+| 100 | 9 | 8 | 4 | 4 | 9 | 7 | 2 |
+| 200 | 15 | 14 | 6 | 11 | 17 | 7 | 2 |
+
+**De 208 comarcas, una casa conoce entre 2 y 17 tras 200 turnos**: una comarca cada 12 a 30 turnos,
+con dos a seis recuas formadas. Con un viaje de exploración por comarca y otro de vuelta (cada salida
+explora **una** oída y vuelve a lo propio a descargar) no sale más, y el ensayo del bastimento
+descartado arriba confirma que el pan no es el freno. Los salineros (2) y los ferrones (4–6) casi no
+exploran: es lo que hay que explicar.
+
+**Siguiente:** contar, turno a turno, qué hace la recua del papel `explorar` de ferrones y
+salineros (en ruta, parada en casa, mermada, sin formar) para saber si el freno es que **no sale** o
+que **sale poco a poco**. Solo entonces tocar una regla o una cifra.
