@@ -102,7 +102,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-062](T-062-api.md) | API de partida, órdenes y vista por jugador | **hecha** | T-061 |
 | [T-063](T-063-cuentas.md) | Cuentas, sesiones y seguridad | **hecha** | T-062 |
 | [T-064](T-064-avisos.md) | Avisos de resolución (SSE y correo) | **hecha** | T-062, T-063 |
-| [T-065](T-065-alta-de-partida.md) | Alta de partida: casa, sorteo de orígenes y recorte de mapa | pendiente | T-062, T-049 |
+| [T-065](T-065-alta-de-partida.md) | Alta de partida: casa, sorteo de orígenes y recorte de mapa | **hecha** | T-062, T-049 |
 | [T-066](T-066-transporte-de-correo.md) | Transporte de correo real (SMTP o proveedor) | pendiente | T-064 |
 
 ## Fase 4 · Cliente

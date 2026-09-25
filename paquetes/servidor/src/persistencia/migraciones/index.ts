@@ -2,6 +2,7 @@
 import { MIGRACION_INICIAL } from './0001-inicial.ts';
 import { MIGRACION_DE_CUENTAS } from './0002-cuentas.ts';
 import { MIGRACION_DE_AVISOS } from './0003-avisos.ts';
+import { MIGRACION_DE_CONVOCATORIAS } from './0004-convocatorias.ts';
 import type { Migracion } from './tipos.ts';
 
 export type { Migracion } from './tipos.ts';
@@ -10,6 +11,7 @@ export const MIGRACIONES: readonly Migracion[] = [
   MIGRACION_INICIAL,
   MIGRACION_DE_CUENTAS,
   MIGRACION_DE_AVISOS,
+  MIGRACION_DE_CONVOCATORIAS,
 ];
 
 /** Las versiones son consecutivas desde 1: si no, alguien ha editado la lista a mano. */

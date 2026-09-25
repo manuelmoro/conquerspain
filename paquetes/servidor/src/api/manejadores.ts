@@ -15,6 +15,7 @@ import type { FilaDePartida, Repositorio } from '../persistencia/repositorio.ts'
 import type { CanalDeAvisos } from '../avisos/canal.ts';
 import { modoPorDefecto } from '../avisos/preferencias.ts';
 import { avisosDe } from '../avisos/texto.ts';
+import type { ServicioDeAltas } from '../altas/servicio.ts';
 import type { ServicioDeCuentas } from '../cuentas/servicio.ts';
 import { MODOS_DE_AVISO } from '../persistencia/avisos.ts';
 import type { RepositorioDeAvisos } from '../persistencia/avisos.ts';
@@ -47,6 +48,8 @@ export interface DependenciasDeApi {
   /** Avisos (T-064): el canal en vivo y las preferencias. Sin ellos, no hay esas rutas. */
   readonly canal?: CanalDeAvisos;
   readonly avisos?: RepositorioDeAvisos;
+  /** Alta de partidas (T-065): convocar, unirse, sortear y elegir. */
+  readonly altas?: ServicioDeAltas;
   /** Cada cuanto se manda un latido por el flujo de eventos; por defecto, 25 s. */
   readonly latidoMs?: number;
 }
@@ -497,6 +500,67 @@ export function crearApi(
         ]),
   ];
 
+  const altas = dep.altas;
+  const rutasDeAltas: readonly Ruta<Entrada>[] =
+    altas === undefined
+      ? []
+      : [
+          {
+            metodo: 'POST',
+            patron: '/convocatorias',
+            manejador: privada(async (ctx) => ({
+              estado: 201,
+              datos: await altas.convocar(ctx.cuenta, objetoJson(ctx.peticion.cuerpo)),
+            })),
+          },
+          {
+            metodo: 'GET',
+            patron: '/convocatorias/mias',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: { convocatorias: await altas.mias(ctx.cuenta) },
+            })),
+          },
+          {
+            metodo: 'POST',
+            patron: '/convocatorias/unirse',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: await altas.unirse(ctx.cuenta, objetoJson(ctx.peticion.cuerpo)),
+            })),
+          },
+          {
+            metodo: 'GET',
+            patron: '/convocatorias/:id',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: { convocatoria: await altas.ver(ctx.cuenta, ctx.parametros['id'] ?? '') },
+            })),
+          },
+          {
+            metodo: 'POST',
+            patron: '/convocatorias/:id/sortear',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: { convocatoria: await altas.sortear(ctx.cuenta, ctx.parametros['id'] ?? '') },
+            })),
+          },
+          {
+            metodo: 'POST',
+            patron: '/convocatorias/:id/eleccion',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: {
+                convocatoria: await altas.elegir(
+                  ctx.cuenta,
+                  ctx.parametros['id'] ?? '',
+                  objetoJson(ctx.peticion.cuerpo),
+                ),
+              },
+            })),
+          },
+        ];
+
   const rutas: readonly Ruta<Entrada>[] = [
     { metodo: 'GET', patron: '/partidas/mias', manejador: privada(misPartidas) },
     { metodo: 'GET', patron: '/partidas/:id/estado', manejador: privada(verEstado) },
@@ -507,6 +571,7 @@ export function crearApi(
     { metodo: 'DELETE', patron: '/partidas/:id/ordenes/:orden', manejador: privada(retirarOrden) },
     ...rutasDeCuenta,
     ...rutasDeAvisos,
+    ...rutasDeAltas,
   ];
 
   return async (peticion) => {

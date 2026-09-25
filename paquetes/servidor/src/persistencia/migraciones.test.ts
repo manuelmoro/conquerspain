@@ -55,6 +55,7 @@ describe('las migraciones', () => {
     expect(tablas(ruta)).toEqual([
       'auditoria_resolucion',
       'aviso_correo',
+      'convocatoria',
       'cronica',
       'cuenta',
       'enlace_de_acceso',
@@ -63,6 +64,7 @@ describe('las migraciones', () => {
       'orden',
       'participante',
       'partida',
+      'plaza_convocatoria',
       'preferencia_aviso',
       'sesion',
       'suceso_turno',

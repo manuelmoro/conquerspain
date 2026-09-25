@@ -20,6 +20,15 @@ export const CODIGOS_DE_API = [
   'enlace-invalido',
   'tipo-de-contenido',
   'confirmacion-necesaria',
+  'convocatoria-desconocida',
+  'ya-dentro',
+  'casa-ocupada',
+  'convocatoria-llena',
+  'convocatoria-cerrada',
+  'solo-quien-convoca',
+  'eleccion-invalida',
+  'configuracion-invalida',
+  'sorteo-imposible',
   'error-interno',
 ] as const;
 
@@ -45,6 +54,15 @@ const ESTADO_HTTP: Readonly<Record<CodigoDeApi, number>> = {
   'enlace-invalido': 401,
   'tipo-de-contenido': 415,
   'confirmacion-necesaria': 400,
+  'convocatoria-desconocida': 404,
+  'ya-dentro': 409,
+  'casa-ocupada': 409,
+  'convocatoria-llena': 409,
+  'convocatoria-cerrada': 409,
+  'solo-quien-convoca': 403,
+  'eleccion-invalida': 400,
+  'configuracion-invalida': 400,
+  'sorteo-imposible': 409,
   'error-interno': 500,
 };
 

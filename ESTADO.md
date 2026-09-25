@@ -4,13 +4,14 @@
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
 **Última actualización:** 25 de septiembre de 2026 (T-047 v1 cerrada con excepciones; Fase 2 completa)
-**Fase actual:** Fase 3 · Servidor autoritativo
+**Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
 
 ## Tarea en curso
 
-**Ninguna.** T-064 (avisos) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
+**Ninguna.** T-065 (alta de partida) hecha el 25-09-2026. **La Fase 3 queda completa salvo T-066** (transporte
+de correo real), que espera a decidir el despliegue.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -20,10 +21,10 @@
 
 ## Siguiente tarea
 
-**[T-065 · Alta de partida](docs/plan/T-065-alta-de-partida.md)** (Fase 3). Su ficha está **esbozada**:
-detallarla es la primera mitad. Pone `POST /partidas`, enlaza cuentas con jugadores (`unirCuenta`) y resuelve
-el riesgo anotado en T-061: si hay orígenes fijos, el mundo de la partida no se puede reconstruir sin guardarlos.
-Después, **T-066** (transporte de correo real) cuando se decida el despliegue.
+**[T-080 · Armazón del cliente y sincronización con el servidor](docs/plan/T-080-armazon-cliente.md)** (Fase 4).
+Su ficha está **esbozada**: detallarla es la primera mitad. El servidor ya ofrece todo lo que el cliente necesita:
+cuentas por enlace mágico, convocatorias, vista por jugador, órdenes por intención, crónica y eventos en vivo.
+**T-066** (correo real) queda en espera de la decisión de despliegue; hasta entonces el correo va en memoria.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
@@ -65,7 +66,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061), API (T-062), cuentas (T-063) y avisos (T-064) hechos, sin alta de partida todavía; `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061), API (T-062), cuentas (T-063), avisos (T-064) y alta (T-065) hechos; falta el transporte de correo real (T-066); `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -111,6 +112,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-065 hecha: alta de partida.** Convocatorias por invitación: convocar con tu casa, unirse con el código (una casa por partida), sortear con una semilla privada que se guarda con las ofertas y la huella del mundo en la misma transacción que cierra la lista (recargar no vuelve a sortear), elegir entre tus ofertas y fundar con `fundarPartida` cuando elige el último. Todo sobre el contrato puro de T-049. Probado: reproducible contra una segunda preparación, ocho casas con tres combinaciones de elecciones, cada casa funda con cada una de sus tres ofertas y resuelve dos turnos, la semilla y las ofertas ajenas no salen, y cada regla con su código. El riesgo de T-061 (orígenes fijos) queda cerrado por construcción. **Fase 3 completa salvo T-066.** 14 pruebas nuevas; 1198 en verde |
 | 25-09-2026 | **T-064 hecha: avisos de resolución.** En vivo por SSE (`GET /partidas/:id/eventos`), con un canal que el reloj alimenta solo después de guardar: medido por HTTP real con el reloj real, llega en menos de 3 s. Por correo, una cola en la base que se llena **en la misma transacción** que la resolución (clave por turno y jugador: imposible encolar dos veces) y un despachador que reclama antes de mandar (dos a la vez no duplican), reintenta con espera creciente y da por fallido a los 8 intentos. Preferencias por partida (`cada-turno`, `diario`, `nada`; por defecto según el ritmo) con sus rutas; el correo es la crónica propia en texto plano. Qué merece aviso lo sigue diciendo la sección `avisos` de la crónica. El transporte real queda en **T-066** (nueva). 14 pruebas nuevas; 1184 en verde |
 | 25-09-2026 | **T-063 hecha: cuentas, sesiones y seguridad.** **Solo enlace mágico**, sin contraseñas ni `argon2` (nada que guardar ni filtrar); el correo va tras `EnviadorDeCorreo` (SMTP en T-064). Tokens de 256 bits de los que solo se guarda el **SHA-256** (se recorrió toda la base buscándolos), cookie `HttpOnly; Secure; SameSite=Lax` firmada con HMAC y comparada en tiempo constante, caducidad absoluta de 30 días y revocación. Misma respuesta exista o no el correo, enlace usado/caducado/inexistente indistinguibles y un solo ganador con dos usos a la vez, límites por correo y origen, borrado que anonimiza y deja al jugador vivo. Los tres ataques de la ficha probados, más HTTP real. Toda petición con cuerpo exige `content-type: application/json`. 16 pruebas nuevas; 1170 en verde |
 | 25-09-2026 | **T-062 hecha: la API.** Sin Fastify: `node:http` con un enrutador mínimo y una función pura `PeticionHttp → RespuestaHttp`. **La frontera de confianza vive en el núcleo** (`validarIntencion` estricta + `construirOrden`, que fija autor, turno, estado, cola y el coste con los modificadores de la casa y comprueba propiedad y conocimiento). Siete rutas (mias, estado, órdenes en alta idempotente, listado y retirada, crónica, clasificación); toda respuesta de estado es exactamente `vistaDeJugador`. Detectó y cerró una carrera real (una orden sellada con un turno ya resuelto habría detenido la partida en el reloj). Prueba de fuga sobre tres casas y cinco turnos, cliente manipulado, idempotencia, límites (64 KiB, 200 órdenes, 60/min) y HTTP real. 53 pruebas nuevas; 1154 en verde |

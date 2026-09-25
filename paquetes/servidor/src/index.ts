@@ -14,6 +14,9 @@ export type {
   Repositorio,
   ResolucionDeTurno,
 } from './persistencia/repositorio.ts';
+export { ServicioDeAltas } from './altas/servicio.ts';
+export type { DependenciasDeAltas, VistaDeConvocatoria } from './altas/servicio.ts';
+export type { RepositorioDeConvocatorias } from './persistencia/convocatorias.ts';
 export { CorreoEnMemoria } from './cuentas/correo.ts';
 export type { EnviadorDeCorreo, MensajeDeAviso, MensajeDeEnlace } from './cuentas/correo.ts';
 export { CanalDeAvisos } from './avisos/canal.ts';

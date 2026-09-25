@@ -153,6 +153,10 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
   - `GET /partidas/:id/eventos` (SSE: «turno resuelto»)
 - **Nunca** se envía al cliente información que su jugador no debe ver. El filtrado se hace en el
   servidor, sobre el estado completo, con una función del núcleo (`vistaDeJugador`).
+- Alta (T-065, `paquetes/servidor/src/altas/`): convocatoria por invitación (código de 128 bits), una casa por
+  partida, sorteo con semilla privada guardado en la misma transacción que cierra la lista (recargar no vuelve a
+  sortear), elección entre las propias ofertas y fundación con `fundarPartida` al elegir el último. Todo el
+  recorte, las ofertas y el arranque son los de T-049; aquí solo se guarda y se decide quién puede qué.
 - Avisos (T-064, `paquetes/servidor/src/avisos/`): SSE `GET /partidas/:id/eventos` con un canal en memoria que
   el reloj alimenta **después** de guardar; correo por una cola en la base (`aviso_correo`, clave por turno y
   jugador) que se llena **en la misma transacción** que la resolución y vacía un despachador con reintentos

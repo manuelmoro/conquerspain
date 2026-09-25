@@ -14,6 +14,14 @@ import { validarCronica } from './validarCronica.ts';
 import { MIGRACIONES, comprobarMigraciones } from './migraciones/index.ts';
 import type { Migracion } from './migraciones/index.ts';
 import { MODOS_DE_AVISO } from './avisos.ts';
+import type {
+  Convocatoria,
+  ConvocatoriaNueva,
+  PlazaDeConvocatoria,
+  RechazoDePlaza,
+  RepositorioDeConvocatorias,
+} from './convocatorias.ts';
+import { ESTADOS_DE_CONVOCATORIA } from './convocatorias.ts';
 import type { AvisoPendiente, ClaveDeAviso, ModoDeAviso, RepositorioDeAvisos } from './avisos.ts';
 import type {
   Cuenta,
@@ -96,7 +104,9 @@ function estadoDeOrden(valor: string): EstadoDeOrdenGuardada {
   return encontrado;
 }
 
-export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas, RepositorioDeAvisos {
+export class RepositorioSqlite
+  implements Repositorio, RepositorioDeCuentas, RepositorioDeAvisos, RepositorioDeConvocatorias
+{
   private readonly bd: DatabaseSync;
 
   /** `ruta` es un fichero, o `':memory:'` para las pruebas. */
@@ -894,6 +904,156 @@ export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas, Rep
       partida,
       jugador,
       modo,
+    );
+  }
+
+  // ---------------------------------------------------------------- convocatorias (T-065)
+
+  private filaDeConvocatoria(f: Fila): Convocatoria {
+    const estado = texto(f, 'estado');
+    const conocido = ESTADOS_DE_CONVOCATORIA.find((e) => e === estado);
+    if (conocido === undefined) throw new Error(`Estado de convocatoria desconocido: "${estado}".`);
+    const avisos = textoONulo(f, 'avisos');
+    const lista: unknown = avisos === null ? [] : JSON.parse(avisos);
+    return {
+      id: texto(f, 'id'),
+      nombre: texto(f, 'nombre'),
+      creador: texto(f, 'creador'),
+      codigo: texto(f, 'codigo'),
+      intervaloMinutos: entero(f, 'intervalo_minutos'),
+      plazas: entero(f, 'plazas'),
+      esDePrueba: entero(f, 'de_prueba') === 1,
+      semilla: texto(f, 'semilla'),
+      creadaEn: entero(f, 'creada_en'),
+      estado: conocido,
+      ofertas: textoONulo(f, 'ofertas'),
+      avisos: Array.isArray(lista) ? lista.map(String) : [],
+      huellaMundo: textoONulo(f, 'huella_mundo'),
+      partida: textoONulo(f, 'partida'),
+    };
+  }
+
+  async crearConvocatoria(datos: ConvocatoriaNueva, casa: string, nombre: string): Promise<void> {
+    this.transaccion(() => {
+      this.ejecutar(
+        `INSERT INTO convocatoria (id, nombre, creador, codigo, intervalo_minutos, plazas, de_prueba,
+           semilla, estado, creada_en) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'abierta', ?)`,
+        datos.id,
+        datos.nombre,
+        datos.creador,
+        datos.codigo,
+        datos.intervaloMinutos,
+        datos.plazas,
+        datos.esDePrueba ? 1 : 0,
+        datos.semilla,
+        datos.creadaEn,
+      );
+      this.ejecutar(
+        'INSERT INTO plaza_convocatoria (convocatoria, cuenta, casa, nombre, orden) VALUES (?, ?, ?, ?, 0)',
+        datos.id,
+        datos.creador,
+        casa,
+        nombre,
+      );
+    });
+  }
+
+  async convocatoria(id: string): Promise<Convocatoria | null> {
+    const f = this.uno('SELECT * FROM convocatoria WHERE id = ?', id);
+    return f === null ? null : this.filaDeConvocatoria(f);
+  }
+
+  async convocatoriaPorCodigo(codigo: string): Promise<Convocatoria | null> {
+    const f = this.uno('SELECT * FROM convocatoria WHERE codigo = ?', codigo);
+    return f === null ? null : this.filaDeConvocatoria(f);
+  }
+
+  async convocatoriasDeCuenta(cuenta: string): Promise<readonly Convocatoria[]> {
+    return this.todos(
+      `SELECT c.* FROM convocatoria c JOIN plaza_convocatoria p ON p.convocatoria = c.id
+        WHERE p.cuenta = ? ORDER BY c.creada_en, c.id`,
+      cuenta,
+    ).map((f) => this.filaDeConvocatoria(f));
+  }
+
+  async plazas(id: string): Promise<readonly PlazaDeConvocatoria[]> {
+    return this.todos(
+      'SELECT * FROM plaza_convocatoria WHERE convocatoria = ? ORDER BY orden',
+      id,
+    ).map((f) => ({
+      cuenta: texto(f, 'cuenta'),
+      casa: texto(f, 'casa'),
+      nombre: texto(f, 'nombre'),
+      eleccion: textoONulo(f, 'eleccion'),
+    }));
+  }
+
+  async anyadirPlaza(
+    id: string,
+    cuenta: string,
+    casa: string,
+    nombre: string,
+  ): Promise<RechazoDePlaza | null> {
+    return this.transaccion(() => {
+      const c = this.uno('SELECT estado, plazas FROM convocatoria WHERE id = ?', id);
+      if (c === null || texto(c, 'estado') !== 'abierta') return 'cerrada';
+      const ocupadas = this.todos(
+        'SELECT cuenta, casa FROM plaza_convocatoria WHERE convocatoria = ?',
+        id,
+      );
+      if (ocupadas.some((p) => texto(p, 'cuenta') === cuenta)) return 'ya-dentro';
+      if (ocupadas.some((p) => texto(p, 'casa') === casa)) return 'casa-ocupada';
+      if (ocupadas.length >= entero(c, 'plazas')) return 'llena';
+      this.ejecutar(
+        'INSERT INTO plaza_convocatoria (convocatoria, cuenta, casa, nombre, orden) VALUES (?, ?, ?, ?, ?)',
+        id,
+        cuenta,
+        casa,
+        nombre,
+        ocupadas.length,
+      );
+      return null;
+    });
+  }
+
+  async guardarSorteo(
+    id: string,
+    ofertas: string,
+    avisos: readonly string[],
+    huellaMundo: string,
+  ): Promise<boolean> {
+    return (
+      this.ejecutar(
+        `UPDATE convocatoria SET estado = 'eligiendo', ofertas = ?, avisos = ?, huella_mundo = ?
+          WHERE id = ? AND estado = 'abierta'`,
+        ofertas,
+        JSON.stringify(avisos),
+        huellaMundo,
+        id,
+      ) > 0
+    );
+  }
+
+  async elegir(id: string, cuenta: string, comarca: string): Promise<boolean> {
+    return this.transaccion(() => {
+      const c = this.uno('SELECT estado FROM convocatoria WHERE id = ?', id);
+      if (c === null || texto(c, 'estado') !== 'eligiendo') return false;
+      return (
+        this.ejecutar(
+          'UPDATE plaza_convocatoria SET eleccion = ? WHERE convocatoria = ? AND cuenta = ?',
+          comarca,
+          id,
+          cuenta,
+        ) > 0
+      );
+    });
+  }
+
+  async marcarFundada(id: string, partida: string): Promise<void> {
+    this.ejecutar(
+      "UPDATE convocatoria SET estado = 'fundada', partida = ? WHERE id = ? AND estado != 'fundada'",
+      partida,
+      id,
     );
   }
 
