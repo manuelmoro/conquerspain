@@ -10,15 +10,7 @@
 
 ## Tarea en curso
 
-**[T-062 · API de partida, órdenes y vista por jugador](docs/plan/T-062-api.md)** (Fase 3) — **ficha
-detallada el 25-09-2026**; implementación por empezar. Decisiones tomadas: `node:http` con un
-enrutador mínimo (sin Fastify), el `Autenticador` como interfaz hasta T-063, **intención → orden**
-construida en el núcleo con los costes de la casa, idempotencia por `idCliente`, límites y una prueba
-de fuga sobre el JSON serializado. Detecta una carrera real (una orden sellada con el turno N que llega
-tras resolverse el N tumbaría la partida en el reloj) y fija dos arreglos. **Hechas A (`intencion.ts` en el núcleo, 35 pruebas) y B (los dos arreglos de la carrera).** Faltan (C)
-errores, enrutador, límites y manejadores, y (D) la prueba de fuga, los límites y el HTTP real.
-
-Fase 2 completa: T-047 v1 cerrada con excepciones el 25-09-2026 ([T-047 §9](docs/plan/T-047-equilibrio-v1.md)).
+**Ninguna.** T-062 (API) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -28,8 +20,9 @@ Fase 2 completa: T-047 v1 cerrada con excepciones el 25-09-2026 ([T-047 §9](doc
 
 ## Siguiente tarea
 
-Tras T-062: **[T-063 · Cuentas, sesiones y seguridad](docs/plan/T-063-cuentas.md)** (ficha esbozada). Pondrá
-el autenticador real que T-062 deja como interfaz.
+**[T-063 · Cuentas, sesiones y seguridad](docs/plan/T-063-cuentas.md)** (Fase 3). Su ficha está
+**esbozada**: detallarla es la primera mitad de la tarea. Da el autenticador real que T-062 dejó como
+interfaz (`Autenticador`) y rellena `participante.cuenta`.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
@@ -71,7 +64,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `servidor`: persistencia (T-060) hecha, sin reloj ni API todavía; `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061) y API (T-062) hechos, sin cuentas todavía; `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -117,6 +110,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-062 hecha: la API.** Sin Fastify: `node:http` con un enrutador mínimo y una función pura `PeticionHttp → RespuestaHttp`. **La frontera de confianza vive en el núcleo** (`validarIntencion` estricta + `construirOrden`, que fija autor, turno, estado, cola y el coste con los modificadores de la casa y comprueba propiedad y conocimiento). Siete rutas (mias, estado, órdenes en alta idempotente, listado y retirada, crónica, clasificación); toda respuesta de estado es exactamente `vistaDeJugador`. Detectó y cerró una carrera real (una orden sellada con un turno ya resuelto habría detenido la partida en el reloj). Prueba de fuga sobre tres casas y cinco turnos, cliente manipulado, idempotencia, límites (64 KiB, 200 órdenes, 60/min) y HTTP real. 53 pruebas nuevas; 1154 en verde |
 | 25-09-2026 | **T-061 hecha: el reloj de turnos.** `paquetes/servidor/src/reloj/`: calendario anclado (`ancla + N·intervalo`, sin deriva), resolución de un turno con todas sus salvaguardas, `Reloj` (`pasada`, `iniciar`/`parar`, `avanzarManual` solo en partidas de prueba), recuperación **en cadena** con tope, concurrencia optimista (el conflicto de turno se descarta y se registra), partida detenida con su motivo si el motor falla, mundo reconstruido y comprobado con su huella, y `reproducirTurno` que reproduce cualquier turno pasado contra su auditoría. Probado con un proceso que muere antes de guardar, una carrera provocada entre dos relojes, el reloj real (desviación < 2 s) y 20 turnos con órdenes. Riesgo anotado para T-065: el mundo se reconstruye sin orígenes fijos. 19 pruebas nuevas; 1099 en verde |
 | 25-09-2026 | **T-060 hecha: persistencia y esquema de datos.** `paquetes/servidor/src/persistencia/`: interfaz `Repositorio` asíncrona y `RepositorioSqlite` sobre `node:sqlite` (sin dependencias), estado **completo por turno comprimido** con su huella comprobada al leer, migración inicial reversible, órdenes entrantes que nunca se borran y `guardarResolucion` en **una sola transacción** (`conflicto-de-turno` y `encadenado-roto`). **200 turnos con ocho casas ocupan 5,09 MB**; proyección de 12 jugadores y 240 turnos, ~12 MB. Fallo inyectado, corrupción, idempotencia y «sin SQL fuera de la capa» comprobados. `cuenta` queda a T-063. 24 pruebas nuevas; 1080 en verde |
 | 25-09-2026 | **T-047 v1 cerrada con excepciones; Fase 2 completa** (también T-053 y T-059, v1). Por decisión del usuario, el equilibrio se cierra como v1 con las excepciones documentadas en [T-047 §9](docs/plan/T-047-equilibrio-v1.md) —prestigio, escasez, tierra, dominio y el capítulo de comercio— y se reabre tras T-103; no se movió ningún umbral. Base de referencia `E-feria3-*`: **352 filas cumplen de 471**. Lo último que entró: la **expedición que vive de la tierra** (`Recua.enExpedicion`; la tierra sin tocar baja 6–11 puntos en las nueve partidas), la **comarca con feria que da de comer** (los salineros venden en feria por primera vez), `feriar` con bolsa y ventas hacia la feria (robots 11). Resolver la Mesta como feriante se intentó con siete ensayos y **no se consiguió**: el límite es estructural (tramos de 4–10 jornadas contra un porte de 10), en [T-059 §9.3](docs/plan/T-059-las-ferias-se-conocen.md). 1056 pruebas en verde. Siguiente: T-060 |

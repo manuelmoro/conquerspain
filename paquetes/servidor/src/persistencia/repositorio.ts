@@ -62,6 +62,12 @@ export interface Participante {
   readonly cuenta: string | null;
 }
 
+export interface PartidaDeCuenta {
+  readonly partida: FilaDePartida;
+  readonly jugador: IdJugador;
+  readonly casa: string;
+}
+
 export interface OpcionesDeLectura {
   /** Mundo contra el que se valida el estado leido; sin el, solo se valida su forma. */
   readonly mundo?: Mundo;
@@ -128,6 +134,8 @@ export interface Repositorio {
   partidasPorResolver(hasta: number, limite: number): Promise<readonly FilaDePartida[]>;
   detenerPartida(id: IdPartida, motivo: string): Promise<void>;
   participantes(id: IdPartida): Promise<readonly Participante[]>;
+  /** Las partidas en las que juega una cuenta, con el jugador y la casa que lleva en cada una. */
+  partidasDeCuenta(cuenta: string): Promise<readonly PartidaDeCuenta[]>;
 
   estado(id: IdPartida, turno: number, opciones?: OpcionesDeLectura): Promise<EstadoPartida | null>;
   ultimoEstado(id: IdPartida, opciones?: OpcionesDeLectura): Promise<EstadoPartida | null>;
@@ -139,6 +147,8 @@ export interface Repositorio {
    * que una orden sellada con el turno N no puede colarse despues de resolverse el N.
    */
   guardarOrden(id: IdPartida, orden: Orden, ahora: number, turnoEsperado?: number): Promise<void>;
+  /** Una orden entrante por su identificador, en el estado que tenga. */
+  orden(id: IdPartida, orden: IdOrden): Promise<OrdenGuardada | null>;
   ordenesPendientes(id: IdPartida): Promise<readonly OrdenGuardada[]>;
   /** true si estaba pendiente y ahora esta cancelada; false si ya no se podia. */
   cancelarOrden(id: IdPartida, orden: IdOrden, motivo: string): Promise<boolean>;

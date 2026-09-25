@@ -1,6 +1,6 @@
 # T-062 · API de partida, órdenes y vista por jugador
 
-**Fase:** 3 · Servidor · **Depende de:** T-061 · **Estado:** en curso (ficha **detallada el 25-09-2026**)
+**Fase:** 3 · Servidor · **Depende de:** T-061 · **Estado:** **hecha (25-09-2026)**
 
 ## 1. Contexto
 
@@ -106,7 +106,7 @@ La distinción queda escrita para el banco (T-048).
 
 ### 4.5 Idempotencia
 
-La clave es `idCliente` (1 a 64 caracteres del alfabeto de identificadores), único **por jugador y
+La clave es `idCliente` (1 a 32 caracteres del alfabeto de identificadores), único **por jugador y
 turno**. El identificador interno es `o-<turno>-<idCliente>` (con el jugador implícito en la partida,
 dos jugadores con la misma clave no chocan porque el id lleva además su casa: `o-<turno>-<jugador>-<idCliente>`).
 Mismo `idCliente` con **el mismo contenido** → `200` con la orden ya guardada (un reintento del cliente
@@ -212,21 +212,49 @@ npx vitest run paquetes/servidor paquetes/nucleo/pruebas/intencion.test.ts
 3. `docs/07-arquitectura.md` §7.4: rutas, frontera intención→orden, límites y decisión sobre Fastify.
 4. Commit: `T-062: API de partida, órdenes y vista por jugador`.
 
-## 9. Dónde va (25-09-2026)
+## 9. Cierre (25-09-2026)
 
-**Hechas y verificadas las partes A y B.**
+**Hecha.** `paquetes/nucleo/src/ordenes/intencion.ts` (intenciones, exportada por el núcleo),
+`paquetes/servidor/src/api/` (`errores`, `tipos`, `enrutador`, `limites`, `manejadores`, `http`,
+`prueba-comun`), tres métodos nuevos en el repositorio (`orden`, `partidasDeCuenta`, `guardarOrden`
+con `turnoEsperado`) y el arreglo del reloj. 53 pruebas nuevas (35 de intenciones, 18 de la API);
+1154 en total.
 
-- **A · `paquetes/nucleo/src/ordenes/intencion.ts`** (exportada por el núcleo): `validarIntencion` (estricta:
-  rechaza los diez campos internos, los que fijan las reglas —`acemilas`, `cabezas`— y cualquier campo
-  extra; exige `idCliente`; `turnoProgramado` y `turnos` con su forma; la letra de cambio, desactivada) y
-  `construirOrden` (comprueba propiedad y conocimiento, fija autor, turno, estado, cola y **coste con los
-  modificadores de la casa**). Se reutiliza `validarOrdenEntrante` para la forma de cada tipo: la
-  intención se valida como una orden con marcadores en los campos internos, y esos se sustituyen.
-  35 pruebas: forma, cada campo interno, coste con dos casas, propiedad (comarca, recua, rebaño,
-  conocimiento) y que **el motor acepta** una intención de cada tipo principal.
-- **B · carrera de §4.8:** `Repositorio.guardarOrden(..., turnoEsperado?)` falla con `turno-cerrado` dentro de
-  la misma transacción; `resolverUnTurno` rechaza (con motivo) las pendientes de un turno cerrado y **no
-  detiene la partida**. Dos pruebas nuevas.
+**Criterios:**
 
-**Falta:** (C) `errores`, `tipos`, `enrutador`, `limites`, `ordenes`, `manejadores`; (D) la prueba de fuga
-sobre tres casas, los criterios 7 y 10 (límites y HTTP real) y el adaptador `node:http`.
+1. **Fuga:** sobre una partida real de tres casas y cinco turnos, cada jugador pide todas las rutas
+   (partidas, estado, clasificación, órdenes y las cinco crónicas). En lo serializado no aparece la
+   semilla, ni las claves de las órdenes de los otros, ni sus cuentas, ni sus almacenes exactos; el
+   estado es **exactamente** `vistaDeJugador` (la API no añade nada). Una cuenta que no juega recibe el
+   mismo `404` que una partida que no existe.
+2. **Cliente manipulado:** coste, `jugador`, `turnoAlta`, `estado`, `cola`, `delMayordomo`, `id` y un
+   campo inventado dan `400 orden-invalida` y no guardan nada; una comarca ajena, `no es tuya`; el autor
+   y el turno los pone el servidor.
+3. **Idempotencia:** el reintento da `200` con la misma orden y no duplica; con otro contenido,
+   `409 clave-reutilizada`; dos jugadores con la misma clave no chocan.
+4. **Coste con la casa:** el de `aperos` de los canteros es el de las tablas; los de construir, recua y
+   aperos coinciden con las funciones del núcleo con los modificadores efectivos, con dos casas.
+5. **El motor la acepta:** una intención de cada uno de los once tipos principales entra al motor sin error.
+6. **Carrera:** una orden cuyo turno se resuelve entre la lectura y el guardado recibe `409
+   turno-cerrado` y no guarda nada; una ya guardada la rechaza el reloj y **no detiene la partida**.
+7. **Límites:** 413 con más de 64 KiB, 429 en la orden 201 (sin afectar a otro jugador) y 429 con
+   `retry-after` en la petición 31 seguida, que vuelve a pasar a los dos segundos.
+8. **Retirada:** una pendiente propia se retira; ajena o inexistente, `404`; ya retirada o aplicada, `409`.
+9. **Errores:** todos con código de `CODIGOS_DE_API`, mensaje en español y `version`; `405` con `allow`;
+   un fallo inesperado devuelve `500 error-interno` sin detalle y lo anota.
+10. **HTTP real:** `servirHttp` sirve las rutas en un puerto libre (401 sin cuenta, 200, 201, 413).
+11. `npm run verificar` en verde; el núcleo no importa el servidor.
+
+**Decisiones no escritas antes:**
+
+- La clave del cliente es de **1 a 32** caracteres (no 64): con el turno y el jugador delante, el
+  identificador interno de la orden tiene que caber en los 64 del alfabeto de identificadores.
+- La idempotencia vale **dentro del turno** (el turno va en el identificador): un cliente que reintenta
+  después de cambiar el turno crea otra orden. El cliente debe generar una clave nueva por orden y no
+  reutilizarla entre turnos.
+- Las rutas de una partida devuelven `404` tanto si no existe como si no se juega en ella.
+- Sin `POST /partidas` (T-065) ni `GET /eventos` (T-064). `GET /partidas/mias` ya existe y depende de
+  `participante.cuenta`, que rellenará T-063.
+- El limitador de frecuencia es **en memoria**: con varias instancias haría falta compartirlo.
+- `Pedidos` del banco sigue construyendo sus órdenes por su cuenta: unificarlo con `construirOrden` queda
+  como limpieza (no bloquea nada).

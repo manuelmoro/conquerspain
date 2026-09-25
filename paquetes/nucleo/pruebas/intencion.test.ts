@@ -105,7 +105,7 @@ describe('validarIntencion: la forma', () => {
 
   it('rechaza lo que no es un objeto y las claves malas', () => {
     for (const malo of [null, 3, 'x', [], undefined]) expect(validarIntencion(malo).ok).toBe(false);
-    for (const idCliente of [undefined, '', 'MAYUSCULAS', 'a'.repeat(65), 7, 'con espacio']) {
+    for (const idCliente of [undefined, '', 'MAYUSCULAS', 'a'.repeat(33), 7, 'con espacio']) {
       expect(validarIntencion({ idCliente, tipo: 'roturar', comarca: 'prueba-llano' }).ok).toBe(
         false,
       );

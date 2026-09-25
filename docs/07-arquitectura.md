@@ -139,7 +139,12 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
     número de turno; si el proceso muere a medias, al reiniciar no duplica nada.
   - Con bloqueo por partida, para que dos instancias no resuelvan lo mismo.
   - Registro de auditoría: estado de entrada (huella), órdenes, huella de salida, duración.
-- **API** (REST + SSE para avisos):
+- **API** (T-062, `paquetes/servidor/src/api/`): sin Fastify, sobre `node:http` con un enrutador
+  mínimo; el corazón es una función pura `PeticionHttp → RespuestaHttp` que se prueba sin puerto y un
+  adaptador de veinte líneas. **La frontera de confianza** es `validarIntencion` + `construirOrden` (en el
+  núcleo): el cliente manda intenciones y el servidor fija autor, turno, estado, cola y **coste** con los
+  modificadores de la casa. Límites: 64 KiB por cuerpo, 200 órdenes pendientes por jugador y turno, 60
+  peticiones por minuto (ráfaga de 30) por cuenta. Descripción original de las rutas:
   - `POST /partidas`, `GET /partidas/mias`
   - `GET /partidas/:id/estado` → la vista **de ese jugador**, ya filtrada por su niebla
   - `POST /partidas/:id/ordenes`, `DELETE /partidas/:id/ordenes/:orden`

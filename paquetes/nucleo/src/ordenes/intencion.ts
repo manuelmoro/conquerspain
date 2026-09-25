@@ -50,7 +50,7 @@ const CAMPOS_DERIVADOS: Readonly<Record<string, Readonly<Record<string, number>>
 
 /** Duracion en turnos de plaza abierta de una orden de mercado: lo unico que dura por decision. */
 const TURNOS_DE_MERCADO_MAXIMOS = 24;
-const PATRON_DE_CLAVE = /^[a-z0-9][a-z0-9-]{0,63}$/;
+const PATRON_DE_CLAVE = /^[a-z0-9][a-z0-9-]{0,31}$/;
 const NADA: Recursos = { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 };
 
 /**
@@ -110,7 +110,7 @@ export function validarIntencion(dato: unknown): Resultado<Intencion> {
     errores.push({
       ruta: 'idCliente',
       mensaje:
-        'la clave de la orden es obligatoria: de 1 a 64 caracteres, minusculas, digitos y guiones (sirve para reenviarla sin duplicarla)',
+        'la clave de la orden es obligatoria: de 1 a 32 caracteres, minusculas, digitos y guiones (sirve para reenviarla sin duplicarla)',
     });
   }
   const programado = dato['turnoProgramado'];

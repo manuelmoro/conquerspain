@@ -21,6 +21,7 @@ import type {
   OpcionesDeLectura,
   OrdenGuardada,
   Participante,
+  PartidaDeCuenta,
   Repositorio,
   ResolucionDeTurno,
 } from './repositorio.ts';
@@ -293,6 +294,20 @@ export class RepositorioSqlite implements Repositorio {
     }));
   }
 
+  async partidasDeCuenta(cuenta: string): Promise<readonly PartidaDeCuenta[]> {
+    const filas = this.todos(
+      `SELECT p.*, q.jugador AS jugador_de_la_cuenta, q.casa AS casa_de_la_cuenta
+         FROM participante q JOIN partida p ON p.id = q.partida
+        WHERE q.cuenta = ? ORDER BY p.creada_en, p.id`,
+      cuenta,
+    );
+    return filas.map((f) => ({
+      partida: filaDePartida(f),
+      jugador: texto(f, 'jugador_de_la_cuenta') as IdJugador,
+      casa: texto(f, 'casa_de_la_cuenta'),
+    }));
+  }
+
   private desconocida(id: string): ErrorDePersistencia {
     return new ErrorDePersistencia(
       'partida-desconocida',
@@ -371,6 +386,11 @@ export class RepositorioSqlite implements Repositorio {
         canonico(orden),
       );
     });
+  }
+
+  async orden(id: IdPartida, orden: IdOrden): Promise<OrdenGuardada | null> {
+    const fila = this.uno('SELECT * FROM orden WHERE partida = ? AND id = ?', id, orden);
+    return fila === null ? null : this.ordenGuardada(fila);
   }
 
   async ordenesPendientes(id: IdPartida): Promise<readonly OrdenGuardada[]> {
