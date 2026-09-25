@@ -176,6 +176,14 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
 - Arquitectura: `estado remoto` (lo que manda el servidor) + `órdenes locales pendientes`. La
   previsión de la interfaz («si hago esto, mi balance queda así») se calcula con el **mismo núcleo**
   compilado para el navegador.
+- **Hecho en T-080** (`paquetes/cliente/`): capa de datos sin DOM y probada (`ClienteApi`, `Almacen`,
+  `preverBandeja`, `escucharEventos`, `Guardado`). La previsión es **de costes**, no del turno entero
+  (la vista es la niebla: el turno depende de lo que el jugador no ve); es exacta porque el servidor y
+  el cliente usan la misma `costeDeIntencion` del núcleo. Las intenciones se guardan antes de mandarse
+  y se reenvían con su clave (la idempotencia de T-062 evita duplicados); un turno nuevo solo avisa y el
+  jugador recarga; sin red se enseña la última vista con su hora. Sin framework: 30 KB gzip con el
+  núcleo, medido en `verificar` contra un presupuesto de 150 KB. `npm run dev` arranca servidor y Vite
+  con un proxy (`/api`) para que la cookie sea de la misma origen.
 - Renderizado del mapa por capas, con las capas caras (terreno, niebla) cacheadas y solo repintadas
   cuando cambian.
 - Objetivo de rendimiento: 60 fps al desplazar el mapa en un móvil de gama media, y menos de 1,5 s

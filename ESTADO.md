@@ -10,8 +10,8 @@
 
 ## Tarea en curso
 
-**Ninguna.** T-065 (alta de partida) hecha el 25-09-2026. **La Fase 3 queda completa salvo T-066** (transporte
-de correo real), que espera a decidir el despliegue.
+**Ninguna.** T-080 (armazón del cliente) hecha el 25-09-2026. **Ya se puede arrancar el juego**:
+`npm run dev` levanta servidor y cliente; el enlace para entrar sale en la consola.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -21,10 +21,9 @@ de correo real), que espera a decidir el despliegue.
 
 ## Siguiente tarea
 
-**[T-080 · Armazón del cliente y sincronización con el servidor](docs/plan/T-080-armazon-cliente.md)** (Fase 4).
-Su ficha está **esbozada**: detallarla es la primera mitad. El servidor ya ofrece todo lo que el cliente necesita:
-cuentas por enlace mágico, convocatorias, vista por jugador, órdenes por intención, crónica y eventos en vivo.
-**T-066** (correo real) queda en espera de la decisión de despliegue; hasta entonces el correo va en memoria.
+**[T-081 · Atlas: capas, zoom y modos de lectura](docs/plan/T-081-atlas.md)** (Fase 4). Su ficha está
+**esbozada**: detallarla es la primera mitad. La maqueta (`maqueta/`) es la referencia de dirección de arte.
+T-066 (correo real) sigue esperando al despliegue.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
@@ -66,7 +65,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061), API (T-062), cuentas (T-063), avisos (T-064) y alta (T-065) hechos; falta el transporte de correo real (T-066); `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061), API (T-062), cuentas (T-063), avisos (T-064) y alta (T-065) hechos; falta el transporte de correo real (T-066); `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `cliente`: armazón y capa de datos (T-080) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -112,6 +111,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-080 hecha: el armazón del cliente, y el juego ya arranca.** `npm run dev` levanta el servidor (8471, base `desarrollo.sqlite`, correo a la consola) y Vite con un proxy `/api`. Capa de datos sin DOM y probada: API con tres resultados (bien, error del servidor, sin red), bandeja que se guarda antes de mandarse y se reenvía sin duplicar, aviso de turno nuevo sin cambiar la pantalla, última vista sin conexión y eventos con reconexión creciente. La previsión es **de costes** y exacta por construcción (`costeDeIntencion`, común al servidor y al cliente): prever el turno entero es imposible con la niebla. 30,4 KB gzip con el núcleo (presupuesto 150, en `verificar`). Recorrido completo contra el servidor real: enlace, entrar, convocar, sortear, elegir, ver y dar una orden. 9 pruebas nuevas; 1206 en verde |
 | 25-09-2026 | **T-065 hecha: alta de partida.** Convocatorias por invitación: convocar con tu casa, unirse con el código (una casa por partida), sortear con una semilla privada que se guarda con las ofertas y la huella del mundo en la misma transacción que cierra la lista (recargar no vuelve a sortear), elegir entre tus ofertas y fundar con `fundarPartida` cuando elige el último. Todo sobre el contrato puro de T-049. Probado: reproducible contra una segunda preparación, ocho casas con tres combinaciones de elecciones, cada casa funda con cada una de sus tres ofertas y resuelve dos turnos, la semilla y las ofertas ajenas no salen, y cada regla con su código. El riesgo de T-061 (orígenes fijos) queda cerrado por construcción. **Fase 3 completa salvo T-066.** 14 pruebas nuevas; 1198 en verde |
 | 25-09-2026 | **T-064 hecha: avisos de resolución.** En vivo por SSE (`GET /partidas/:id/eventos`), con un canal que el reloj alimenta solo después de guardar: medido por HTTP real con el reloj real, llega en menos de 3 s. Por correo, una cola en la base que se llena **en la misma transacción** que la resolución (clave por turno y jugador: imposible encolar dos veces) y un despachador que reclama antes de mandar (dos a la vez no duplican), reintenta con espera creciente y da por fallido a los 8 intentos. Preferencias por partida (`cada-turno`, `diario`, `nada`; por defecto según el ritmo) con sus rutas; el correo es la crónica propia en texto plano. Qué merece aviso lo sigue diciendo la sección `avisos` de la crónica. El transporte real queda en **T-066** (nueva). 14 pruebas nuevas; 1184 en verde |
 | 25-09-2026 | **T-063 hecha: cuentas, sesiones y seguridad.** **Solo enlace mágico**, sin contraseñas ni `argon2` (nada que guardar ni filtrar); el correo va tras `EnviadorDeCorreo` (SMTP en T-064). Tokens de 256 bits de los que solo se guarda el **SHA-256** (se recorrió toda la base buscándolos), cookie `HttpOnly; Secure; SameSite=Lax` firmada con HMAC y comparada en tiempo constante, caducidad absoluta de 30 días y revocación. Misma respuesta exista o no el correo, enlace usado/caducado/inexistente indistinguibles y un solo ganador con dos usos a la vez, límites por correo y origen, borrado que anonimiza y deja al jugador vivo. Los tres ataques de la ficha probados, más HTTP real. Toda petición con cuerpo exige `content-type: application/json`. 16 pruebas nuevas; 1170 en verde |

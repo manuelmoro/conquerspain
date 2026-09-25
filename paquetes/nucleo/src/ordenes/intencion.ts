@@ -18,7 +18,7 @@ import { modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { costeDeObraMayor } from '../reglas/obras.ts';
 import { costeDeRoturar } from '../reglas/roturar.ts';
 import { comarcaConocida } from '../reglas/ruta.ts';
-import type { EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
+import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { IdComarca, IdJugador, IdOrden } from '../tipos/ids.ts';
 import type { Orden } from '../tipos/ordenes.ts';
 import type { Mundo } from '../tipos/mundo.ts';
@@ -294,6 +294,40 @@ function comprobarPropiedad(
 }
 
 /**
+ * Lo que reserva una orden al darse de alta (ficha T-080 §4.1): la unica cuenta de coste, la que usan
+ * el servidor al construir la orden y el cliente al prever su bandeja. Solo necesita el jugador y, para
+ * roturar, su propia comarca: lo que la vista de ese jugador ya trae.
+ */
+export function costeDeIntencion(
+  o: Orden,
+  jugador: EstadoJugador,
+  comarca: EstadoComarca | undefined,
+  reglas: TablasDeReglas,
+): Recursos {
+  const casa = modificadoresDelJugador(jugador, reglas);
+  switch (o.tipo) {
+    case 'construir':
+      return costeDeEdificio(o.edificio, casa, reglas);
+    case 'roturar':
+      return comarca === undefined ? NADA : costeDeRoturar(comarca, reglas);
+    case 'obra-mayor':
+      return o.continuar === null ? costeDeObraMayor(o.obra, casa, reglas) : NADA;
+    case 'aperos':
+      return costeDeAperos(reglas);
+    case 'formar-recua':
+      return costeDeRecua(casa, reglas);
+    case 'formar-rebanyo':
+      return costeDeRebanyo(casa, reglas);
+    case 'regalo':
+      return { ...NADA, maravedis: reglas.influencia.costeRegalo };
+    case 'incorporar':
+      return reglas.influencia.costeIncorporar;
+    default:
+      return NADA;
+  }
+}
+
+/**
  * Convierte la intencion en la orden interna: comprueba la propiedad, fija lo que solo fija el
  * servidor y calcula el coste con las reglas y los modificadores efectivos de la casa.
  */
@@ -307,7 +341,12 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
   if (errores.length > 0) return invalidos(errores);
 
   const { estado, reglas } = ctx;
-  const casa = modificadoresDelJugador(yo, reglas);
+  const coste = costeDeIntencion(
+    o,
+    yo,
+    'comarca' in o ? estado.comarcas[o.comarca] : undefined,
+    reglas,
+  );
   const fijos = {
     id: ctx.id,
     jugador: ctx.jugador,
@@ -327,7 +366,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         ...o,
         ...fijos,
         turnosTotales: 1,
-        coste: costeDeEdificio(o.edificio, casa, reglas),
+        coste,
         cola: enComarca(o.comarca),
       });
     case 'derribar':
@@ -341,7 +380,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         ...o,
         ...fijos,
         turnosTotales: 1,
-        coste: costeDeRoturar(comarca, reglas),
+        coste,
         cola: enComarca(o.comarca),
       });
     }
@@ -350,7 +389,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         ...o,
         ...fijos,
         turnosTotales: 1,
-        coste: o.continuar === null ? costeDeObraMayor(o.obra, casa, reglas) : NADA,
+        coste,
         cola: enComarca(o.comarca),
       });
     case 'aperos':
@@ -358,7 +397,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         ...o,
         ...fijos,
         turnosTotales: 1,
-        coste: costeDeAperos(reglas),
+        coste,
         cola: enComarca(o.comarca),
       });
     case 'formar-recua':
@@ -367,7 +406,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         ...fijos,
         ...sinCola,
         acemilas: reglas.movimiento.acemilasPorRecua,
-        coste: costeDeRecua(casa, reglas),
+        coste,
       });
     case 'formar-rebanyo':
       return valido({
@@ -375,7 +414,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         ...fijos,
         ...sinCola,
         cabezas: reglas.ganaderia.cabezasPorRebanyo,
-        coste: costeDeRebanyo(casa, reglas),
+        coste,
       });
     case 'ruta':
       return valido({
@@ -394,14 +433,14 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         ...o,
         ...fijos,
         ...sinCola,
-        coste: { ...NADA, maravedis: reglas.influencia.costeRegalo },
+        coste,
       });
     case 'incorporar':
       return valido({
         ...o,
         ...fijos,
         ...sinCola,
-        coste: reglas.influencia.costeIncorporar,
+        coste,
         turnosTotales: reglas.influencia.turnosIncorporar,
       });
     case 'letra-de-cambio':

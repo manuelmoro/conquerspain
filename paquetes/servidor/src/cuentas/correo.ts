@@ -49,3 +49,21 @@ export class CorreoEnMemoria implements EnviadorDeCorreo {
     return new URL(mensaje.enlace).searchParams.get('token');
   }
 }
+
+/**
+ * En desarrollo, el correo se escribe en la consola: asi se puede entrar sin servidor de correo
+ * (el transporte real es T-066). Nunca en produccion: el enlace da acceso a la cuenta.
+ */
+export class CorreoPorConsola implements EnviadorDeCorreo {
+  constructor(private readonly escribir: (linea: string) => void = console.log) {}
+
+  enviarEnlace(mensaje: MensajeDeEnlace): Promise<void> {
+    this.escribir(`[correo] Enlace para ${mensaje.para}: ${mensaje.enlace}`);
+    return Promise.resolve();
+  }
+
+  enviarAviso(mensaje: MensajeDeAviso): Promise<void> {
+    this.escribir(`[correo] ${mensaje.asunto} → ${mensaje.para}`);
+    return Promise.resolve();
+  }
+}

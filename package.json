@@ -19,12 +19,15 @@
     "formato:escribir": "prettier --write .",
     "test": "vitest run",
     "cobertura": "vitest run --coverage",
-    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test && npm run atlas:comprobar",
+    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test && npm run atlas:comprobar && npm run cliente:tamano",
     "partidas": "tsx herramientas/banco/src/regenerar-partidas.ts",
     "banco": "tsx herramientas/banco/src/ejecutar.ts",
     "banco:comparar": "tsx herramientas/banco/src/comparar.ts",
     "atlas": "tsx herramientas/atlas/src/atlas.ts",
-    "atlas:comprobar": "tsx herramientas/atlas/src/atlas.ts --comprobar"
+    "atlas:comprobar": "tsx herramientas/atlas/src/atlas.ts --comprobar",
+    "servidor": "tsx paquetes/servidor/src/principal.ts",
+    "dev": "tsx paquetes/cliente/herramientas/dev.ts",
+    "cliente:tamano": "tsx paquetes/cliente/herramientas/tamano.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

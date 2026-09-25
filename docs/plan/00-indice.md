@@ -109,7 +109,7 @@ mapa completo; ESTADO.md es la aguja.
 
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
-| [T-080](T-080-armazon-cliente.md) | Armazón del cliente y sincronización con el servidor | pendiente | T-062 |
+| [T-080](T-080-armazon-cliente.md) | Armazón del cliente y sincronización con el servidor | **hecha** | T-062 |
 | [T-081](T-081-atlas.md) | Atlas: capas, zoom y modos de lectura | pendiente | T-080 |
 | [T-082](T-082-ficha-y-ordenes.md) | Ficha de comarca y bandeja de órdenes con previsión | pendiente | T-081 |
 | [T-083](T-083-recuas-en-mapa.md) | Recuas y rebaños: rutas sobre el mapa | pendiente | T-082 |

@@ -11,6 +11,7 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/dist/**',
       '**/dist-pruebas/**',
+      '**/dist-web/**',
       'cobertura/**',
       // La maqueta v0.1 esta congelada como referencia de direccion de arte.
       'maqueta/**',

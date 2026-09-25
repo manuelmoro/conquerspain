@@ -104,9 +104,12 @@ npm run banco          # Banco de pruebas: partidas automaticas con un robot por
 npm run banco:comparar # Compara dos informes del banco (sus .csv)
 npm run atlas          # Genera paquetes/mundo/datos/mundo.v1.json desde el catalogo
 npm run atlas:comprobar # Comprueba que el mundo generado sigue siendo el mismo (va en verificar)
+npm run dev            # Servidor (puerto 8471, base desarrollo.sqlite) y cliente con Vite (5173)
+npm run servidor       # Solo el servidor (PUERTO, BASE_DE_DATOS, CLAVE_DE_COOKIES, URL_PUBLICA)
+npm run cliente:tamano # Construye el cliente y comprueba su peso (<= 150 KB gzip; va en verificar)
 ```
 
-Pendiente de crear en su tarea: `npm run dev` (T-080).
+En desarrollo el correo va a la consola: el enlace para entrar sale en la salida de `npm run dev`.
 
 Notas del montaje:
 

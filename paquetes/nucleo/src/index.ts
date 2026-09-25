@@ -62,7 +62,12 @@ export {
   topeDeVolumen,
 } from './reglas/precios.ts';
 export { FASES, resolverTurno } from './resolver.ts';
-export { CAMPOS_INTERNOS, construirOrden, validarIntencion } from './ordenes/intencion.ts';
+export {
+  CAMPOS_INTERNOS,
+  construirOrden,
+  costeDeIntencion,
+  validarIntencion,
+} from './ordenes/intencion.ts';
 export type { ContextoDeIntencion, Intencion } from './ordenes/intencion.ts';
 export type { Fase, ResultadoTurno } from './resolver.ts';
 export {

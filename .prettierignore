@@ -13,3 +13,4 @@ docs/
 paquetes/mundo/datos/
 # Los informes del banco los escribe el propio banco, byte a byte: no se reformatean.
 herramientas/banco/informes/
+dist-web/
