@@ -10,8 +10,12 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   return nodo;
 }
 
-export function boton(texto: string, alPulsar: () => void): HTMLButtonElement {
-  const b = el('button', { type: 'button' }, texto);
+export function boton(texto: string, alPulsar: () => void, clase = ''): HTMLButtonElement {
+  const b = el(
+    'button',
+    clase === '' ? { type: 'button' } : { type: 'button', class: clase },
+    texto,
+  );
   b.addEventListener('click', alPulsar);
   return b;
 }

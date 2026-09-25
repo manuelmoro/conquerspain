@@ -1,4 +1,5 @@
 // Arranque del cliente (ficha T-080): enlaza la capa de datos con las pantallas y los eventos.
+import './estilo.css';
 import './atlas/atlas.css';
 
 import { TABLAS_DEL_JUEGO } from '@conquer/nucleo';
@@ -54,16 +55,30 @@ function abrir(id: string): void {
   });
 }
 
+/** Lo que tiene desplazamiento propio conserva su posicion entre repintadas (T-088). */
+function desplazamientos(): Map<string, number> {
+  const guardados = new Map<string, number>();
+  for (const n of document.querySelectorAll<HTMLElement>('[data-conservar-scroll]')) {
+    guardados.set(n.dataset['conservarScroll'] ?? '', n.scrollTop);
+  }
+  return guardados;
+}
+
 function pintar(): void {
   if (raiz === null) return;
   const estado = almacen.estado;
+  const antes = desplazamientos();
   const pantalla =
     estado.cuenta === null
-      ? pantallaDeEntrada(almacen)
+      ? pantallaDeEntrada(almacen, estado)
       : estado.partida === null
         ? pantallaDePartidas(api, abrir)
         : pantallaDePartida(almacen, estado);
   raiz.replaceChildren(pantalla);
+  for (const n of document.querySelectorAll<HTMLElement>('[data-conservar-scroll]')) {
+    const top = antes.get(n.dataset['conservarScroll'] ?? '');
+    if (top !== undefined) n.scrollTop = top;
+  }
 }
 
 almacen.suscribir(pintar);

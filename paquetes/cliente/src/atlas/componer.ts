@@ -1,6 +1,8 @@
 // La composicion del atlas (ficha T-081 §4.2 a §4.5): del atlas del jugador y su vista a una lista de
 // figuras por capa. Pura: se prueba sin DOM, y `svg.ts` solo pinta lo que sale de aqui.
 import { POTENCIALES } from '@conquer/nucleo';
+
+import { COLOR_DE_CASA, COLOR_DE_POTENCIAL, COLOR_NEUTRAL, COLOR_PROPIO } from './paleta.ts';
 import type {
   AtlasDeJugador,
   ComarcaEnAtlas,
@@ -31,6 +33,8 @@ export interface Figura {
   readonly forma: 'poligono' | 'linea' | 'circulo' | 'texto';
   readonly puntos: readonly Punto[];
   readonly clase: string;
+  /** Color de relleno, de la paleta (`paleta.ts`). */
+  readonly relleno?: string;
   readonly texto?: string;
   /** Solo los rotulos: mas alto, antes se coloca. */
   readonly prioridad?: number;
@@ -90,20 +94,30 @@ function cajaDe(atlas: AtlasDeJugador): Dibujo['caja'] {
   return { x: x0, y: y0, ancho: x1 - x0, alto: y1 - y0 };
 }
 
-/** La clase de relleno de una comarca segun el modo. */
-function claseDeComarca(c: ComarcaEnAtlas, modo: ModoDeAtlas, vista: VistaJugador): string {
-  const base = `comarca ${c.nivel}`;
-  if (c.nivel === 'oida') return base;
+/** La clase y el color de relleno de una comarca segun el modo. */
+function rellenoDeComarca(
+  c: ComarcaEnAtlas,
+  modo: ModoDeAtlas,
+  vista: VistaJugador,
+): { clase: string; relleno?: string } {
+  const clase = `comarca ${c.nivel}`;
+  if (c.nivel === 'oida') return { clase };
   if (modo === 'economico') {
     const p = potencialPrincipal(c);
-    return p === null ? base : `${base} potencial-${p}`;
+    return p === null
+      ? { clase }
+      : { clase: `${clase} potencial-${p}`, relleno: COLOR_DE_POTENCIAL[p] };
   }
   if (modo === 'politico') {
-    if (c.duenyo === null) return `${base} neutral`;
-    if (c.duenyo === vista.jugador.id) return `${base} de-propio`;
-    return `${base} de-${vista.casas.find((x) => x.id === c.duenyo)?.casa ?? 'otro'}`;
+    if (c.duenyo === null) return { clase: `${clase} neutral`, relleno: COLOR_NEUTRAL };
+    if (c.duenyo === vista.jugador.id)
+      return { clase: `${clase} de-propio`, relleno: COLOR_PROPIO };
+    const casa = vista.casas.find((x) => x.id === c.duenyo)?.casa;
+    return casa === undefined
+      ? { clase: `${clase} de-otro` }
+      : { clase: `${clase} de-${casa}`, relleno: COLOR_DE_CASA[casa] };
   }
-  return `${base} neutra`;
+  return { clase: `${clase} neutra`, relleno: COLOR_NEUTRAL };
 }
 
 /** Posicion de algo que se mueve: en su comarca, o en el tramo segun lo andado. */
@@ -152,7 +166,7 @@ export function componerAtlas(
       capa: 'comarcas',
       forma: 'poligono',
       puntos: c.poligono,
-      clase: claseDeComarca(c, modo, vista),
+      ...rellenoDeComarca(c, modo, vista),
       comarca: c.id,
     });
     if (c.nivel === 'oida')
@@ -241,6 +255,7 @@ export function componerAtlas(
         puntos: [donde],
         clase: `aviso aviso-${a.tipo}`,
         texto: a.tipo,
+        comarca: a.comarca,
       });
     }
   }

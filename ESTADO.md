@@ -3,15 +3,16 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 25 de septiembre de 2026 (T-047 v1 cerrada con excepciones; Fase 2 completa)
+**Última actualización:** 25 de septiembre de 2026 (T-088 a falta de repetir J-01)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
 
 ## Tarea en curso
 
-**Ninguna.** T-082 (ficha de comarca y bandeja) hecha el 25-09-2026. **Toca el checkpoint J-01 antes de T-083**:
-es una sesión humana y no la puede hacer una IA.
+**T-088 · Arreglos de J-01** ([ficha](docs/plan/T-088-arreglos-de-j01.md)). Todo el trabajo está hecho y
+verificado (también en navegador, escritorio y móvil); **solo falta que el usuario repita J-01**, que es su
+criterio 6. Dónde va, en la ficha §4.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -21,7 +22,8 @@ es una sesión humana y no la puede hacer una IA.
 
 ## Siguiente tarea
 
-**Checkpoint J-01 · Entender y ordenar** (usuario, 20–30 minutos), antes de seguir con **T-083**
+**Repetir el checkpoint J-01 · Entender y ordenar** (usuario, 20–30 minutos); si supera, se cierra T-088 y
+sigue **T-083**
 (recuas y rebaños en el mapa). Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
 ```bash
@@ -119,6 +121,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-088 (en curso): arreglos de J-01, a falta de repetir el checkpoint.** El clic en escritorio no abría la ficha por dos causas: la captura del puntero al pulsar y un camino que pasaba por encima de la capital; ahora el toque se separa del arrastre por 4 px y busca la comarca en toda la pila bajo el puntero. Panel lateral en escritorio y hoja inferior en móvil, confirmación dentro de la tarjeta de la acción, entrada con formulario y errores a la vista, nombres en castellano, fichas de recursos, leyenda y explicación de cada modo. **Resumen del turno** al resolver: por recurso tenías / producido / otros / tienes / cambio, vecinos y la crónica por secciones. Probado en Chrome sin cabeza en escritorio y en móvil táctil. 38,5 KB gzip |
 | 25-09-2026 | **T-082 hecha: ficha de comarca y bandeja; el juego ya se puede jugar a mano.** La ficha se compone en el núcleo (`fichaDeComarca`): cada acción con coste (el mismo que cobra el servidor), turnos y efecto previsto, recalculado con la misma función de producción que la fase 2 (`datosDeProduccion`, extraída sin cambiar ninguna huella); cada bloqueo con causa y salida; la incorporación juzgada con lo que el jugador sabe de las otras casas, para no filtrar la niebla. La bandeja separa disponible, reservado y producido, dice cuánto falta para el corte y agrupa por enviar / enviadas (retirables) / en marcha, con colas ↑↓ y plan de seis turnos. Para J-01: `POST /partidas/:id/avanzar` en partidas de prueba y `npm run partida:prueba`. **J-01 pendiente de sesión humana.** 17 pruebas nuevas; 1234 en verde |
 | 25-09-2026 | **T-081 hecha: el atlas.** El cliente recibe solo el **atlas del jugador** (`atlasDeJugador`, desde su vista): de lo desconocido, la silueta sin id ni nombre; de lo oído, el nombre; de lo visto, terreno, potenciales y dueño; tramos con las dos puntas conocidas. Composición pura en capas (terreno, comarcas, niebla, caminos, movimiento, avisos, rótulos) con tres modos —económico por potencial, logístico con jornadas, cañadas y puertos cerrados en invierno, político por dueño e influencia—, rótulos por prioridad sin solaparse, encuadre con zoom alrededor del dedo y pintado SVG que al moverse solo cambia el `viewBox`. Niebla comprobada en las tres casas de una partida real; el mayor dibujo, bajo 2 000 figuras; 33,6 KB gzip. Mirarlo con ojos humanos queda para J-01. 11 pruebas nuevas; 1217 en verde |
 | 25-09-2026 | **T-080 hecha: el armazón del cliente, y el juego ya arranca.** `npm run dev` levanta el servidor (8471, base `desarrollo.sqlite`, correo a la consola) y Vite con un proxy `/api`. Capa de datos sin DOM y probada: API con tres resultados (bien, error del servidor, sin red), bandeja que se guarda antes de mandarse y se reenvía sin duplicar, aviso de turno nuevo sin cambiar la pantalla, última vista sin conexión y eventos con reconexión creciente. La previsión es **de costes** y exacta por construcción (`costeDeIntencion`, común al servidor y al cliente): prever el turno entero es imposible con la niebla. 30,4 KB gzip con el núcleo (presupuesto 150, en `verificar`). Recorrido completo contra el servidor real: enlace, entrar, convocar, sortear, elegir, ver y dar una orden. 9 pruebas nuevas; 1206 en verde |

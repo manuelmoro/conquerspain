@@ -186,6 +186,15 @@ describe('turno nuevo y sin conexion (criterios 3 y 4)', () => {
     await m.almacen.recargar();
     expect(m.almacen.estado.turnoNuevo).toBeNull();
     expect(m.almacen.estado.partida?.recibido.turno).toBe((antes ?? 0) + 1);
+    // Al recargar sale el resumen de lo resuelto, con su cronica (T-088).
+    const resumen = m.almacen.estado.resumen;
+    expect(m.almacen.estado.resumenAbierto).toBe(true);
+    expect(resumen?.desde).toBe(antes);
+    expect(resumen?.hasta).toBe((antes ?? 0) + 1);
+    expect(resumen?.cronicas.map((c) => c.turno)).toEqual([antes]);
+    m.almacen.cerrarResumen();
+    expect(m.almacen.estado.resumenAbierto).toBe(false);
+    expect(m.almacen.estado.resumen).toBe(resumen);
     await m.cerrar();
   }, 120_000);
 
@@ -316,6 +325,9 @@ describe('de punta a punta con el servidor real (criterio 6)', () => {
       const token = correo.ultimoToken('ana@correo.es') ?? '';
       expect(await almacen.entrar(token)).toBe(true);
       expect(tarro.cookie).toMatch(/^sesion=/);
+      // Un enlace ya usado no entra y lo dice: el error queda para la pantalla de entrada (T-088).
+      expect(await almacen.entrar(token)).toBe(false);
+      expect(almacen.estado.errores.at(-1)?.mensaje.length).toBeGreaterThan(10);
 
       const convocada = await cliente.convocar({
         nombre: 'Mi partida',

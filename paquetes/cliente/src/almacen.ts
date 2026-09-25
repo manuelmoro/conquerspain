@@ -5,6 +5,8 @@ import type { AtlasDeJugador, FichaDeComarca, TablasDeReglas } from '@conquer/nu
 import type { ClienteApi, CuentaDelCliente, EstadoRecibido, OrdenEnviada } from './api.ts';
 import type { Guardado } from './guardado.ts';
 import { preverBandeja } from './prevision.ts';
+import { resumirTurno } from './resumen.ts';
+import type { ResumenDeTurno } from './resumen.ts';
 import type { PrevisionDeBandeja } from './prevision.ts';
 
 export interface IntencionLocal {
@@ -35,6 +37,10 @@ export interface EstadoDelCliente {
   readonly enviadas: readonly OrdenEnviada[];
   /** La comarca cuya ficha esta abierta. */
   readonly comarcaAbierta: string | null;
+  /** Lo que ha pasado en el ultimo turno resuelto, hasta que el jugador lo cierra (T-088). */
+  readonly resumen: ResumenDeTurno | null;
+  /** Si el resumen esta a la vista; al cerrarlo se sigue usando en la bandeja. */
+  readonly resumenAbierto: boolean;
   readonly errores: readonly { readonly codigo: string; readonly mensaje: string }[];
 }
 
@@ -55,6 +61,8 @@ const INICIAL: EstadoDelCliente = {
   turnoNuevo: null,
   enviadas: [],
   comarcaAbierta: null,
+  resumen: null,
+  resumenAbierto: false,
   errores: [],
 };
 
@@ -338,8 +346,29 @@ export class Almacen {
   async recargar(): Promise<void> {
     const partida = this.estadoActual.partida;
     if (partida === null) return;
+    const antes = partida.recibido.vista;
     await this.abrirPartida(partida.id);
     await this.sincronizar();
     await this.cargarEnviadas();
+    const ahora = this.estadoActual.partida;
+    if (ahora === null || ahora.desactualizada || ahora.recibido.vista.turno <= antes.turno) return;
+    // Las cronicas de los turnos resueltos entre medias: normalmente uno.
+    const cronicas = [];
+    for (let turno = antes.turno; turno < ahora.recibido.vista.turno; turno += 1) {
+      const r = await this.dep.api.cronica(partida.id, turno);
+      if (r.ok) cronicas.push(r.datos.cronica);
+    }
+    this.cambiar({
+      resumen: resumirTurno(antes, ahora.recibido.vista, cronicas),
+      resumenAbierto: true,
+    });
+  }
+
+  abrirResumen(): void {
+    if (this.estadoActual.resumen !== null) this.cambiar({ resumenAbierto: true });
+  }
+
+  cerrarResumen(): void {
+    this.cambiar({ resumenAbierto: false });
   }
 }

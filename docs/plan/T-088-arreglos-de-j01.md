@@ -11,8 +11,8 @@ entrada calla los errores y todo es poco amigable. Esta tarea arregla eso **ante
 ## 2. Qué se hace
 
 1. **Pinchar el mapa en escritorio y en móvil.** Sin captura del puntero al pulsar: solo se captura cuando el
-   gesto pasa de 4 px (es un arrastre). El toque se detecta en `pointerup` con `elementFromPoint` y
-   `closest('[data-comarca]')`, así sirve también sobre avisos y ferias (que pasan a llevar su comarca).
+   gesto pasa de 4 px (es un arrastre). El toque se detecta en `pointerup` buscando
+   el primer elemento con comarca de **toda la pila** bajo el puntero (`elementsFromPoint`), así sirve también sobre avisos y ferias (que pasan a llevar su comarca).
    Cursor de mano, resalte al pasar y la comarca abierta **seleccionada** en el mapa. La lógica de «es toque o
    arrastre» es pura y se prueba.
 2. **La ficha, a mano.** En escritorio (≥ 900 px), mapa a la izquierda y panel lateral fijo con la ficha o la
@@ -42,3 +42,30 @@ entrada calla los errores y todo es poco amigable. Esta tarea arregla eso **ante
    orden, estado, potencial, terreno y recurso).
 5. `npm run verificar` en verde; el cliente sigue por debajo de su presupuesto.
 6. **J-01 se repite** con el usuario.
+
+## 4. Dónde va (25-09-2026)
+
+**Hecho todo el trabajo; falta solo el criterio 6: que el usuario repita J-01.** Por eso la tarea sigue abierta.
+
+- **Mapa:** gestos reescritos en `atlas/svg.ts` con `atlas/gestos.ts` (umbral de 4 px, puro y probado). La causa
+  de fondo del fallo en escritorio era doble: la captura del puntero al pulsar, y que **un camino pasa por encima
+  de la capital** y tapaba el polígono (el toque solo miraba el elemento de arriba). Ahora se recorre toda la pila
+  bajo el puntero y caminos y rutas no reciben eventos. Mano, resalte al pasar y la comarca abierta seleccionada.
+  Colores por modo desde `atlas/paleta.ts` y leyenda de cada modo (`atlas/leyenda.ts`) con su explicación.
+- **Disposición:** `estilo.css` (fuera del HTML): a partir de 900 px, mapa y panel lateral fijo; en móvil la
+  ficha es una hoja inferior; «✕» arriba a la derecha; la confirmación de una acción, dentro de su tarjeta; el
+  desplazamiento del panel se conserva entre repintadas (`data-conservar-scroll`).
+- **Resumen del turno:** `resumen.ts` (puro) y `pantallas/resumen.ts`: al recargar tras resolver, un diálogo con
+  una tabla por recurso —tenías, producido (lo de tus comarcas), otros (comida, obras, insumos, derribos,
+  comercio), tienes y el cambio en verde o rojo—, los vecinos, y la crónica del turno por secciones con avisos
+  primero, qué hacer y «Ver comarca». Al cerrarlo, la bandeja sigue enseñando el cambio y deja reabrirlo.
+- **Entrar:** formulario de verdad con etiqueta, Enter, botón que se deshabilita y errores a la vista.
+- **Amigable:** `nombres.ts` (tipos de orden, estados, potenciales, terrenos y recursos en castellano, completos
+  por tipo), recursos como fichas, listas como tarjetas; ningún identificador ni «¿?» en pantalla.
+- **Comprobado en navegador** (Chrome sin cabeza, escritorio 1366×800 y Pixel 7 táctil, servidor aparte): entrar,
+  abrir la partida, pinchar la capital, elegir y dar una obra, resolver y ver el resumen.
+- **Pruebas:** `amigable.test.ts` (nombres, resumen, toque/arrastre) y en `cliente.test.ts` el resumen tras
+  recargar y el error de un enlace ya usado. `npm run verificar` en verde; 38,5 KB gzip.
+
+**Siguiente paso:** el usuario repite J-01 (`npm run dev`, su partida de prueba sigue en `desarrollo.sqlite`).
+Si supera, se cierra T-088 y se marca J-01; si no, sus hallazgos se anotan aquí y se arreglan.

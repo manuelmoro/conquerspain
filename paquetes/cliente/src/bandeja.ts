@@ -1,6 +1,6 @@
 // La bandeja (ficha T-082 §4.4): lo reservado, lo disponible y lo producido, bien separados; las
 // colas que se pueden reordenar; y cuanto queda para el corte. Puro, para probarlo sin DOM.
-import { RECURSOS, recursosSegun } from '@conquer/nucleo';
+import { recursosSegun } from '@conquer/nucleo';
 import type { Orden, Recursos, VistaJugador } from '@conquer/nucleo';
 
 export interface ResumenDeRecursos {
@@ -22,11 +22,6 @@ export function resumenDeRecursos(vista: VistaJugador): ResumenDeRecursos {
     reservado,
     producido: recursosSegun((r) => propias.reduce((t, c) => t + c.produccionUltimoTurno[r], 0)),
   };
-}
-
-export function recursosEnTexto(r: Recursos): string {
-  const partes = RECURSOS.filter((x) => r[x] !== 0).map((x) => `${String(r[x])} ${x}`);
-  return partes.length === 0 ? 'nada' : partes.join(' · ');
 }
 
 /** Las colas del jugador con sus ordenes en espera, en su orden (T-045). */

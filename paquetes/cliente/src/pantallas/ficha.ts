@@ -1,44 +1,64 @@
-// La ficha de comarca (ficha T-082): estado, potenciales, edificios, produccion con su desglose y las
-// acciones. Ninguna se confirma sin ver antes coste, duracion y efecto; una bloqueada dice por que y
-// que hacer.
+// La ficha de comarca (T-082, T-088): panel lateral en escritorio y hoja inferior en movil. Cada accion
+// es una tarjeta con su coste y su duracion; al elegirla, la confirmacion se abre ahi mismo con el
+// efecto previsto, o con la causa y la salida si esta bloqueada. Nada se da sin verlo antes.
+import { POTENCIALES } from '@conquer/nucleo';
 import type { AccionDeFicha, FichaDeComarca } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
-import { recursosEnTexto } from '../bandeja.ts';
+import { NOMBRE_DE_POTENCIAL, NOMBRE_DE_TERRENO } from '../nombres.ts';
+import { fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
 
 const TURNOS_DE_PLAN = 6;
+/** La accion abierta y la ultima dada, por comarca: sobreviven a las repintadas. */
+let abierta: string | null = null;
+let dada: string | null = null;
 
-function confirmacion(
-  almacen: Almacen,
-  accion: AccionDeFicha,
-  turno: number,
-  cerrar: () => void,
-): HTMLElement {
+function confirmacion(almacen: Almacen, accion: AccionDeFicha, turno: number): HTMLElement {
+  if (accion.bloqueo !== null) {
+    return el(
+      'div',
+      { class: 'confirmacion' },
+      el('p', {}, el('strong', {}, 'No se puede: '), accion.bloqueo.causa),
+      el('p', {}, el('strong', {}, 'Qué hacer: '), accion.bloqueo.salida),
+    );
+  }
   const cuando = el('select', { 'aria-label': 'Cuándo' });
   cuando.append(el('option', { value: '' }, 'Ahora'));
   for (let t = turno + 1; t <= turno + TURNOS_DE_PLAN; t += 1) {
     cuando.append(el('option', { value: String(t) }, `En el turno ${String(t)}`));
   }
-  const dar = boton('Dar la orden', () => {
-    const programado = cuando.value === '' ? {} : { turnoProgramado: Number(cuando.value) };
-    void almacen.anyadir({ ...accion.intencion, ...programado });
-    cerrar();
-  });
-  if (accion.bloqueo !== null) dar.disabled = true;
   return el(
     'div',
     { class: 'confirmacion' },
-    el('h3', {}, accion.titulo),
-    el('p', {}, `Coste: ${recursosEnTexto(accion.coste)}`),
-    el('p', {}, `Tarda: ${String(accion.turnos)} turno${accion.turnos === 1 ? '' : 's'}`),
-    el('p', {}, `Previsto: ${accion.efecto}`),
-    accion.bloqueo === null
-      ? el('p', {}, 'Cuándo: ', cuando)
-      : el('p', { class: 'error' }, `${accion.bloqueo.causa} ${accion.bloqueo.salida}`),
-    dar,
-    ' ',
-    boton('Cancelar', cerrar),
+    el('p', {}, el('strong', {}, 'Previsto: '), accion.efecto),
+    el('p', { class: 'fila' }, el('strong', {}, 'Coste:'), fichasDeRecursos(accion.coste)),
+    el(
+      'p',
+      {},
+      el('strong', {}, 'Tarda: '),
+      `${String(accion.turnos)} turno${accion.turnos === 1 ? '' : 's'}`,
+    ),
+    el(
+      'p',
+      { class: 'fila' },
+      el('label', { class: 'suave' }, 'Cuándo'),
+      cuando,
+      boton('Dar la orden', () => {
+        const programado = cuando.value === '' ? {} : { turnoProgramado: Number(cuando.value) };
+        dada = accion.clave;
+        abierta = null;
+        void almacen.anyadir({ ...accion.intencion, ...programado });
+      }),
+      boton(
+        'Cancelar',
+        () => {
+          abierta = null;
+          almacen.refrescar();
+        },
+        'secundario',
+      ),
+    ),
   );
 }
 
@@ -47,17 +67,28 @@ export function pantallaDeFicha(
   ficha: FichaDeComarca,
   turno: number,
 ): HTMLElement {
-  const partes: (Node | string)[] = [
+  const cabecera: (Node | string)[] = [
     el('h2', {}, ficha.nombre),
-    boton('Cerrar', () => {
-      almacen.abrirComarca(null);
-    }),
+    boton(
+      '✕',
+      () => {
+        abierta = null;
+        almacen.abrirComarca(null);
+      },
+      'cerrar secundario icono',
+    ),
   ];
+  const partes: (Node | string)[] = [...cabecera];
+  const dueño =
+    ficha.nivel === 'propia' ? 'Tuya' : ficha.duenyo === null ? 'De nadie' : 'De otra casa';
+  const terreno = ficha.terreno === null ? '' : ` · ${NOMBRE_DE_TERRENO[ficha.terreno]}`;
+  partes.push(el('p', { class: 'suave' }, `${dueño}${terreno}`));
   if (ficha.potenciales !== null) {
-    const pot = Object.entries(ficha.potenciales)
-      .filter(([, n]) => n > 0)
-      .map(([p, n]) => `${p} ${String(n)}`);
-    partes.push(el('p', {}, `${ficha.terreno ?? ''} · ${pot.join(' · ')}`));
+    const potenciales = ficha.potenciales;
+    const lista = POTENCIALES.filter((p) => potenciales[p] > 0).map((p) =>
+      el('span', { class: 'chip' }, `${NOMBRE_DE_POTENCIAL[p]} ${String(potenciales[p])}`),
+    );
+    partes.push(el('p', { class: 'recursos' }, ...lista));
   }
   const p = ficha.propia;
   if (p !== null) {
@@ -65,16 +96,43 @@ export function pantallaDeFicha(
       el(
         'p',
         {},
-        `Vecinos ${String(p.poblacion)} de ${String(p.capacidad)} · lealtad ${String(p.lealtad)} · fuero: ${p.fuero} · solares ${String(p.solares.usados)}/${String(p.solares.total)}`,
+        `${String(p.poblacion)} vecinos (caben ${String(p.capacidad)}) · lealtad ${String(p.lealtad)} · ${p.fuero === 'ninguno' ? 'sin fuero' : p.fuero} · solares ${String(p.solares.usados)} de ${String(p.solares.total)}`,
       ),
+    );
+    partes.push(
       el(
         'p',
         {},
-        `Edificios: ${p.edificios.map((e) => `${e.nombre} ${String(e.nivel)}/${String(e.maximo)}`).join(', ') || 'ninguno'}`,
+        el('strong', {}, 'Edificios: '),
+        p.edificios.length === 0
+          ? 'ninguno'
+          : p.edificios.map((e) => `${e.nombre} ${String(e.nivel)}/${String(e.maximo)}`).join(', '),
       ),
-      el('p', {}, `Produjo el último turno: ${recursosEnTexto(p.producido)}`),
     );
-    const desglose = el('details', {}, el('summary', {}, 'Producción prevista este turno'));
+    if (p.obras.length > 0) {
+      partes.push(
+        el(
+          'p',
+          {},
+          el('strong', {}, 'En obras: '),
+          p.obras
+            .map(
+              (o) =>
+                `${o.que} (${String(Math.floor((100 * o.avanceMil) / Math.max(1, o.necesarioMil)))} %)`,
+            )
+            .join(', '),
+        ),
+      );
+    }
+    partes.push(
+      el(
+        'p',
+        { class: 'fila' },
+        el('strong', {}, 'Produjo el último turno:'),
+        fichasDeRecursos(p.producido),
+      ),
+    );
+    const desglose = el('details', {}, el('summary', {}, 'Por qué produce eso'));
     for (const e of p.prevision) {
       const factores = e.factores
         .map((f) => `${f.nombre} ×${(f.mil / 1000).toFixed(2)}`)
@@ -82,34 +140,51 @@ export function pantallaDeFicha(
       desglose.append(
         el(
           'p',
-          {},
-          `${e.recurso} ${String(e.resultado)} = ${String(e.base)} base (${e.edificio} ${String(e.nivel)}) · ${factores}`,
+          { class: 'suave' },
+          `${e.edificio} (nivel ${String(e.nivel)}): ${String(e.base)} de ${e.recurso} × ${factores} = ${String(e.resultado)}`,
         ),
       );
     }
     partes.push(desglose);
   }
   if (ficha.influenciaPropia !== null)
-    partes.push(el('p', {}, `Tu influencia: ${String(ficha.influenciaPropia)}`));
-  const panel = el('div', {});
-  const lista = el('ul', { class: 'acciones' });
+    partes.push(el('p', {}, `Tu influencia aquí: ${String(ficha.influenciaPropia)} de 100`));
+
+  const lista = el('ul', { class: 'lista' });
   for (const accion of ficha.acciones) {
-    const b = boton(accion.titulo, () => {
-      panel.replaceChildren(
-        confirmacion(almacen, accion, turno, () => {
-          panel.replaceChildren();
-        }),
-      );
-    });
-    lista.append(
-      el(
-        'li',
-        { class: accion.bloqueo === null ? '' : 'bloqueada' },
-        b,
-        ` ${recursosEnTexto(accion.coste)} · ${String(accion.turnos)} t`,
+    const clave = `${ficha.id}|${accion.clave}`;
+    const item = el('li', { class: accion.bloqueo === null ? 'accion' : 'accion bloqueada' });
+    const encabezado = el(
+      'div',
+      { class: 'fila' },
+      el('span', { class: 'titulo' }, accion.titulo),
+      accion.bloqueo === null
+        ? fichasDeRecursos(accion.coste)
+        : el('span', { class: 'etiqueta bloqueo' }, 'no se puede'),
+      el('span', { class: 'etiqueta' }, `${String(accion.turnos)} t`),
+      dada === clave ? el('span', { class: 'etiqueta' }, '✓ enviada') : '',
+      boton(
+        abierta === clave ? 'Cerrar' : accion.bloqueo === null ? 'Elegir' : 'Por qué',
+        () => {
+          abierta = abierta === clave ? null : clave;
+          almacen.refrescar();
+        },
+        'secundario icono empuje',
       ),
     );
+    item.append(encabezado);
+    if (abierta === clave) item.append(confirmacion(almacen, accion, turno));
+    lista.append(item);
   }
-  partes.push(el('h3', {}, 'Acciones'), lista, panel);
-  return el('section', { class: 'ficha' }, ...partes);
+  partes.push(
+    el('h3', {}, 'Qué puedes hacer'),
+    ficha.acciones.length === 0
+      ? el('p', { class: 'suave' }, 'De esta comarca solo conoces el nombre.')
+      : lista,
+  );
+  return el(
+    'section',
+    { class: 'ficha tarjeta hoja', 'data-conservar-scroll': 'ficha' },
+    ...partes,
+  );
 }

@@ -43,74 +43,8 @@ svg.atlas {
 .comarca.oida {
   fill: #e6dccb;
 }
-.comarca.neutra,
-.comarca.neutral {
-  fill: #efe6d2;
-  fill-opacity: 0.5;
-}
-.potencial-labor {
-  fill: #e2c46b;
-  fill-opacity: 0.75;
-}
-.potencial-monte {
-  fill: #9fb07a;
-  fill-opacity: 0.75;
-}
-.potencial-pasto {
-  fill: #c5cf8c;
-  fill-opacity: 0.75;
-}
-.potencial-piedra {
-  fill: #c9b9a0;
-  fill-opacity: 0.75;
-}
-.potencial-hierro {
-  fill: #a9a2a8;
-  fill-opacity: 0.75;
-}
-.potencial-sal {
-  fill: #f1ece4;
-  fill-opacity: 0.85;
-}
-.potencial-pesca {
-  fill: #a7c4c8;
-  fill-opacity: 0.75;
-}
-.de-propio {
-  fill: var(--cobalto);
-  fill-opacity: 0.45;
-}
-.de-mesta {
-  fill: #b0763a;
-  fill-opacity: 0.5;
-}
-.de-ferrones {
-  fill: #5a5f66;
-  fill-opacity: 0.5;
-}
-.de-canteros {
-  fill: #9a8f80;
-  fill-opacity: 0.5;
-}
-.de-mercaderes {
-  fill: #8a3a5c;
-  fill-opacity: 0.5;
-}
-.de-monjes {
-  fill: #6b4f2a;
-  fill-opacity: 0.5;
-}
-.de-salineros {
-  fill: #7aa0b8;
-  fill-opacity: 0.5;
-}
-.de-arrieros {
-  fill: #c08a2a;
-  fill-opacity: 0.5;
-}
-.de-hortelanos {
-  fill: #5f8a3a;
-  fill-opacity: 0.5;
+.comarca.con-relleno {
+  fill-opacity: 0.6;
 }
 
 .niebla {
@@ -125,6 +59,7 @@ svg.atlas {
 }
 
 .camino {
+  pointer-events: none;
   stroke: #7a5c3a;
   stroke-linecap: round;
 }
@@ -153,6 +88,7 @@ svg.atlas {
 }
 
 .ruta {
+  pointer-events: none;
   stroke: var(--cobalto);
   stroke-width: 1.4;
   stroke-dasharray: 3 2;
@@ -204,4 +140,49 @@ nav.modos {
 }
 nav.modos button[aria-pressed='true'] {
   outline: 2px solid var(--tinta);
+}
+
+/* Que se note que el mapa se pincha (T-088). */
+[data-comarca] {
+  cursor: pointer;
+}
+.comarca:hover {
+  stroke: var(--tinta);
+  stroke-width: 1.4;
+}
+.comarca.seleccionada {
+  stroke: #c0392b;
+  stroke-width: 2.6;
+}
+.leyenda {
+  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin: 0.25rem 0;
+}
+.leyenda span::before {
+  content: '';
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.3em;
+  vertical-align: -0.1em;
+  border: 1px solid #0003;
+  background: var(--color);
+}
+.leyenda span.trazo::before {
+  height: 0;
+  width: 1.4em;
+  border: none;
+  border-top: 2px solid #7a5c3a;
+}
+.leyenda span.calidad-calzada::before {
+  border-top-width: 4px;
+}
+.leyenda span.canyada::before {
+  border-top: 2px dashed #9c6b2f;
+}
+.leyenda span.puerto-cerrado::before {
+  border-top-color: #b0282b;
 }

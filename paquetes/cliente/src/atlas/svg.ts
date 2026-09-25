@@ -5,6 +5,7 @@ import type { IdComarca } from '@conquer/nucleo';
 import { CAPAS } from './componer.ts';
 import type { Capa, Dibujo, Figura } from './componer.ts';
 import { acercar, desplazar, encuadreInicial, escalaDe } from './encuadre.ts';
+import { esArrastre } from './gestos.ts';
 import type { Encuadre, Limites } from './encuadre.ts';
 import { TAMANYO_DE_ROTULO_PX, colocarRotulos } from './rotulos.ts';
 
@@ -28,7 +29,11 @@ function figuraSvg(f: Figura, escala: number): SVGElement {
   const [x, y] = f.puntos[0] ?? [0, 0];
   switch (f.forma) {
     case 'poligono':
-      return nodo('polygon', { points: puntosEnTexto(f), class: f.clase });
+      return nodo('polygon', {
+        points: puntosEnTexto(f),
+        class: f.relleno === undefined ? f.clase : `${f.clase} con-relleno`,
+        ...(f.relleno === undefined ? {} : { fill: f.relleno }),
+      });
     case 'linea':
       return nodo('polyline', { points: puntosEnTexto(f), class: f.clase, fill: 'none' });
     case 'circulo':
@@ -55,6 +60,8 @@ function figuraSvg(f: Figura, escala: number): SVGElement {
 
 export interface AtlasMontado {
   pintar(dibujo: Dibujo): void;
+  /** Resalta la comarca abierta en la ficha (null: ninguna). */
+  seleccionar(comarca: string | null): void;
   destruir(): void;
 }
 
@@ -102,17 +109,32 @@ export function montarAtlas(
     ];
   };
 
-  // Gestos: arrastrar desplaza, la rueda y el pellizco acercan alrededor del punto.
+  // Gestos (ficha T-088 §2.1): nada se captura al pulsar, para que el toque llegue a la comarca con raton
+  // y con dedo. Si el gesto pasa del umbral es un arrastre (y entonces se captura el puntero); si no, al
+  // soltar es un toque y se abre la comarca que haya debajo, aunque se pinche su feria o un aviso.
   const punteros = new Map<number, { x: number; y: number }>();
+  let inicio: { x: number; y: number } | null = null;
+  let arrastrando = false;
   let distancia = 0;
   const alBajar = (e: PointerEvent): void => {
-    svg.setPointerCapture(e.pointerId);
     punteros.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (punteros.size === 1) {
+      inicio = { x: e.clientX, y: e.clientY };
+      arrastrando = false;
+    } else {
+      arrastrando = true;
+    }
   };
   const alMover = (e: PointerEvent): void => {
     const antes = punteros.get(e.pointerId);
     if (antes === undefined) return;
-    punteros.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const ahora = { x: e.clientX, y: e.clientY };
+    if (!arrastrando && inicio !== null && esArrastre(inicio, ahora)) {
+      arrastrando = true;
+      svg.setPointerCapture(e.pointerId);
+    }
+    punteros.set(e.pointerId, ahora);
+    if (!arrastrando) return;
     const lista = [...punteros.values()];
     const [a, b] = lista;
     if (lista.length === 2 && a !== undefined && b !== undefined) {
@@ -129,8 +151,8 @@ export function montarAtlas(
       const r = svg.getBoundingClientRect();
       encuadre = desplazar(
         encuadre,
-        ((antes.x - e.clientX) / r.width) * encuadre.ancho,
-        ((antes.y - e.clientY) / r.height) * encuadre.alto,
+        ((antes.x - ahora.x) / r.width) * encuadre.ancho,
+        ((antes.y - ahora.y) / r.height) * encuadre.alto,
         limites,
       );
     }
@@ -138,8 +160,20 @@ export function montarAtlas(
     rotulosLuego();
   };
   const alSubir = (e: PointerEvent): void => {
+    const eraToque = !arrastrando && punteros.size === 1;
     punteros.delete(e.pointerId);
     if (punteros.size < 2) distancia = 0;
+    if (punteros.size === 0) inicio = null;
+    if (!eraToque) return;
+    // Toda la pila bajo el puntero, no solo lo de arriba: por encima de la comarca pasan caminos,
+    // rutas y rotulos (en J-01, un camino tapaba la capital y el clic no abria nada).
+    for (const debajo of document.elementsFromPoint(e.clientX, e.clientY)) {
+      const id = debajo instanceof SVGElement ? debajo.dataset['comarca'] : undefined;
+      if (id !== undefined) {
+        alTocar(id as IdComarca);
+        return;
+      }
+    }
   };
   const alRueda = (e: WheelEvent): void => {
     e.preventDefault();
@@ -152,18 +186,22 @@ export function montarAtlas(
     aplicarEncuadre();
     rotulosLuego();
   };
-  const alTocarComarca = (e: MouseEvent): void => {
-    const objetivo = e.target;
-    if (!(objetivo instanceof SVGElement)) return;
-    const id = objetivo.dataset['comarca'];
-    if (id !== undefined) alTocar(id as IdComarca);
-  };
   svg.addEventListener('pointerdown', alBajar);
   svg.addEventListener('pointermove', alMover);
   svg.addEventListener('pointerup', alSubir);
-  svg.addEventListener('pointercancel', alSubir);
+  svg.addEventListener('pointercancel', (e) => {
+    punteros.delete(e.pointerId);
+    arrastrando = punteros.size > 0;
+  });
   svg.addEventListener('wheel', alRueda, { passive: false });
-  svg.addEventListener('click', alTocarComarca);
+
+  let seleccionada: string | null = null;
+  const marcarSeleccion = (): void => {
+    for (const n of capas.get('comarcas')?.querySelectorAll('[data-comarca]') ?? []) {
+      if (n instanceof SVGElement)
+        n.classList.toggle('seleccionada', n.dataset['comarca'] === seleccionada);
+    }
+  };
 
   return {
     pintar: (nuevo) => {
@@ -186,6 +224,11 @@ export function montarAtlas(
         capas.get(capa)?.replaceChildren(...figuras);
       }
       pintarRotulos();
+      marcarSeleccion();
+    },
+    seleccionar: (comarca) => {
+      seleccionada = comarca;
+      marcarSeleccion();
     },
     destruir: () => {
       if (temporizador !== null) clearTimeout(temporizador);

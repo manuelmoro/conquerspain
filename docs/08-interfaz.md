@@ -60,10 +60,18 @@ al alcance del pulgar. Moverse y hacer zoom solo cambian el `viewBox`; los rótu
 (capital, propias, exploradas, oídas) sin solaparse al terminar el gesto. De momento, tintas planas y trazos
 de la maqueta: la ilustración del terreno se afina con la dirección de arte.
 
+**Retocado en T-088 (tras J-01).** Tocar y arrastrar se separan por un umbral de 4 px; el toque abre la
+primera comarca de la pila bajo el puntero (caminos, rutas y rótulos no lo tapan). Cursor de mano, resalte al
+pasar y la comarca abierta marcada. Cada modo lleva una línea que dice qué enseña y su leyenda de colores.
+
 ### 8.2.5 Ficha de comarca
 Estado, potenciales, edificios con su nivel y su límite, población y capacidad, lealtad con su
 tendencia, y las acciones posibles con su coste y su previsión. Cada acción bloqueada dice por qué
 y ofrece el camino para desbloquearla.
+
+**Hecho en T-082 y T-088.** En escritorio la ficha va en un panel lateral fijo junto al mapa; en móvil, como
+hoja inferior. Las acciones son tarjetas con su coste en fichas y sus turnos; al elegir una, la confirmación
+(efecto previsto, coste, turnos y cuándo) se abre dentro de la misma tarjeta.
 
 ### 8.2.6 Recuas y rebaños
 Lista y ficha: dónde están, qué llevan, qué jornadas les quedan, qué comen. Editor de ruta sobre el
@@ -76,6 +84,11 @@ Histórico de precios como gráfico pequeño (el precio de la lana es una histor
 ### 8.2.8 Crónica, hitos y clasificación
 El parte del turno, el archivo de turnos anteriores, los hitos conseguidos y la clasificación
 pública con desglose por capítulos.
+
+**Resumen del turno (T-088).** Al ver un turno nuevo sale un diálogo: por recurso, lo que tenías, lo producido
+por tus comarcas, lo demás (comida, obras, insumos, comercio), lo que tienes y el cambio en verde o rojo; los
+vecinos; y la crónica del turno por secciones, avisos primero, con qué hacer y un botón para ver la comarca.
+La bandeja conserva la fila del cambio y deja reabrir el resumen.
 
 ## 8.3 Reglas de interfaz que no se rompen
 
