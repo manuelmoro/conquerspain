@@ -13,6 +13,8 @@ const TURNOS_DE_PLAN = 6;
 /** La accion abierta y la ultima dada, por comarca: sobreviven a las repintadas. */
 let abierta: string | null = null;
 let dada: string | null = null;
+/** Si el jugador ha desplegado lo que todavia no puede hacer; se recuerda entre repintadas. */
+let verBloqueadas = false;
 
 function confirmacion(almacen: Almacen, accion: AccionDeFicha, turno: number): HTMLElement {
   if (accion.bloqueo !== null) {
@@ -150,17 +152,64 @@ export function pantallaDeFicha(
   if (ficha.influenciaPropia !== null)
     partes.push(el('p', {}, `Tu influencia aquí: ${String(ficha.influenciaPropia)} de 100`));
 
-  const lista = el('ul', { class: 'lista' });
-  for (const accion of ficha.acciones) {
-    const clave = `${ficha.id}|${accion.clave}`;
-    const item = el('li', { class: accion.bloqueo === null ? 'accion' : 'accion bloqueada' });
-    const encabezado = el(
+  // Lo que se puede hacer, arriba (derribar al final); lo bloqueado, debajo y plegado (J-01).
+  const posibles = ficha.acciones
+    .filter((a) => a.bloqueo === null)
+    .sort(
+      (a, b) =>
+        Number(a.intencion['tipo'] === 'derribar') - Number(b.intencion['tipo'] === 'derribar'),
+    );
+  const bloqueadas = ficha.acciones.filter((a) => a.bloqueo !== null);
+  const listaDe = (acciones: readonly AccionDeFicha[]): HTMLElement => {
+    const lista = el('ul', { class: 'lista' });
+    for (const accion of acciones) lista.append(tarjetaDeAccion(almacen, ficha.id, accion, turno));
+    return lista;
+  };
+  partes.push(el('h3', {}, 'Qué puedes hacer'));
+  if (ficha.acciones.length === 0) {
+    partes.push(el('p', { class: 'suave' }, 'De esta comarca solo conoces el nombre.'));
+  } else {
+    partes.push(
+      posibles.length === 0
+        ? el('p', { class: 'suave' }, 'Ahora mismo, nada: mira abajo qué falta.')
+        : listaDe(posibles),
+    );
+  }
+  if (bloqueadas.length > 0) {
+    const plegable = el(
+      'details',
+      { class: 'bloqueadas' },
+      el('summary', {}, `Todavía no puedes (${String(bloqueadas.length)})`),
+      listaDe(bloqueadas),
+    );
+    const abiertaAqui = bloqueadas.some((a) => abierta === `${ficha.id}|${a.clave}`);
+    if (verBloqueadas || abiertaAqui) plegable.setAttribute('open', '');
+    plegable.addEventListener('toggle', () => {
+      verBloqueadas = plegable.hasAttribute('open');
+    });
+    partes.push(plegable);
+  }
+  return el(
+    'section',
+    { class: 'ficha tarjeta hoja', 'data-conservar-scroll': 'ficha' },
+    ...partes,
+  );
+}
+
+function tarjetaDeAccion(
+  almacen: Almacen,
+  comarca: string,
+  accion: AccionDeFicha,
+  turno: number,
+): HTMLElement {
+  const clave = `${comarca}|${accion.clave}`;
+  const item = el('li', { class: accion.bloqueo === null ? 'accion' : 'accion bloqueada' });
+  item.append(
+    el(
       'div',
       { class: 'fila' },
       el('span', { class: 'titulo' }, accion.titulo),
-      accion.bloqueo === null
-        ? fichasDeRecursos(accion.coste)
-        : el('span', { class: 'etiqueta bloqueo' }, 'no se puede'),
+      accion.bloqueo === null ? fichasDeRecursos(accion.coste, { vacio: 'gratis' }) : '',
       el('span', { class: 'etiqueta' }, `${String(accion.turnos)} t`),
       dada === clave ? el('span', { class: 'etiqueta' }, '✓ enviada') : '',
       boton(
@@ -171,20 +220,8 @@ export function pantallaDeFicha(
         },
         'secundario icono empuje',
       ),
-    );
-    item.append(encabezado);
-    if (abierta === clave) item.append(confirmacion(almacen, accion, turno));
-    lista.append(item);
-  }
-  partes.push(
-    el('h3', {}, 'Qué puedes hacer'),
-    ficha.acciones.length === 0
-      ? el('p', { class: 'suave' }, 'De esta comarca solo conoces el nombre.')
-      : lista,
+    ),
   );
-  return el(
-    'section',
-    { class: 'ficha tarjeta hoja', 'data-conservar-scroll': 'ficha' },
-    ...partes,
-  );
+  if (abierta === clave) item.append(confirmacion(almacen, accion, turno));
+  return item;
 }

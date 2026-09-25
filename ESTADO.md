@@ -14,7 +14,8 @@
 verificado (también en navegador, escritorio y móvil). La **segunda sesión de J-01** (25-09-2026) encontró más
 cosas y se han añadido a la ficha (§2, puntos 6 a 9): influencia visible también en las comarcas oídas, la ficha
 que explica cómo se gana una comarca, crónica sin huecos `{comarca}` y acción sugerida legible; lo que necesita
-recuas (presencia, exploración, mover rebaños) va a T-083. **Pendiente de decisión del usuario:** el regalo al
+recuas (presencia, exploración, mover rebaños) va a T-083. Ya hecho de esa sesión: la ficha pone arriba lo que se
+puede hacer y pliega lo bloqueado, y los recursos van en una franja fija arriba. **Pendiente de decisión del usuario:** el regalo al
 concejo en comarcas oídas. Dónde va, en la ficha §4.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de

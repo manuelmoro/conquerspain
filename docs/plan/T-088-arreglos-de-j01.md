@@ -48,6 +48,11 @@ entrada calla los errores y todo es poco amigable. Esta tarea arregla eso **ante
    (tabla completa por tipo, como `nombres.ts`); si la acción aún no tiene pantalla, se dice cuándo llega en vez
    de ofrecer un botón que no lleva a nada.
 
+10. **Hecho (hallazgos 12 y 13).** En la ficha, primero lo que se puede hacer (derribar al final) y debajo, plegado
+    en «Todavía no puedes (n)», lo bloqueado; un coste cero se lee «gratis». Lo que tienes para gastar va en una
+    franja fija arriba, con el turno y el corte (en móvil solo se queda fija la fila de recursos, compacta); el
+    panel ya no lo repite. Comprobado en Chrome sin cabeza en escritorio y en móvil.
+
 **Pendiente de decisión del usuario:** permitir el **regalo al concejo** también en comarcas oídas (el concejo
 existe aunque no se hayan visto sus tierras). Si se acepta, es un cambio de regla: docs/06 §6.2, `validarOrden`,
 la ficha y su prueba. Si no, se queda solo para las exploradas.
@@ -95,6 +100,8 @@ que el usuario termine J-01.** Por eso la tarea sigue abierta.
   abrir la partida, pinchar la capital, elegir y dar una obra, resolver y ver el resumen.
 - **Pruebas:** `amigable.test.ts` (nombres, resumen, toque/arrastre) y en `cliente.test.ts` el resumen tras
   recargar y el error de un enlace ya usado. `npm run verificar` en verde; 38,5 KB gzip.
+
+- **Segunda sesión, punto 10:** hecho (ficha ordenada y recursos arriba); `npm run verificar` en verde, 39,1 KB gzip.
 
 **Siguiente paso:** implementar §2, puntos 6 a 9 (y el regalo en oídas si el usuario lo acepta); después el usuario
 termina J-01 (`npm run dev`, su partida de prueba sigue en `desarrollo.sqlite`).

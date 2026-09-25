@@ -142,12 +142,7 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const resumen = resumenDeRecursos(vista);
   const partes: (Node | string)[] = [
     el('h2', {}, 'Tus recursos'),
-    el(
-      'p',
-      { class: 'fila' },
-      el('strong', {}, 'Para gastar:'),
-      fichasDeRecursos(resumen.disponible),
-    ),
+    el('p', { class: 'suave' }, 'Lo que tienes para gastar está arriba, siempre a la vista.'),
     el(
       'p',
       { class: 'fila' },
@@ -302,7 +297,14 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       ),
     );
   }
-  const partes: (Node | string)[] = [cabecera];
+  // Lo que tienes para gastar, siempre a la vista arriba (J-01: costaba encontrarlo en el panel).
+  const barra = el(
+    'div',
+    { class: 'barra-de-recursos', 'aria-label': 'Lo que tienes para gastar' },
+    el('strong', {}, 'Tienes:'),
+    fichasDeRecursos(resumenDeRecursos(vista).disponible),
+  );
+  const partes: (Node | string)[] = [el('div', { class: 'arriba' }, cabecera, barra)];
   if (partida.desactualizada) {
     const hora = new Date(partida.recibidaEn).toLocaleTimeString('es-ES', {
       hour: '2-digit',

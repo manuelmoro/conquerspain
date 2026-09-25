@@ -5,12 +5,24 @@ import type { Recursos } from '@conquer/nucleo';
 import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO, nombreDeOrden } from '../nombres.ts';
 import { el } from './dom.ts';
 
-/** Una ficha por recurso distinto de cero; con `signo`, verde lo que sube y rojo lo que baja. */
-export function fichasDeRecursos(r: Recursos, opciones: { signo?: boolean } = {}): HTMLElement {
+/**
+ * Una ficha por recurso distinto de cero; con `signo`, verde lo que sube y rojo lo que baja. Si todo es
+ * cero, `vacio` (por defecto «nada»; «gratis» para un coste).
+ */
+export function fichasDeRecursos(
+  r: Recursos,
+  opciones: { signo?: boolean; vacio?: string } = {},
+): HTMLElement {
   const caja = el('span', { class: 'recursos' });
   const hay = RECURSOS.filter((x) => r[x] !== 0);
   if (hay.length === 0)
-    caja.append(el('span', { class: 'suave' }, opciones.signo === true ? 'sin cambios' : 'nada'));
+    caja.append(
+      el(
+        'span',
+        { class: 'suave' },
+        opciones.vacio ?? (opciones.signo === true ? 'sin cambios' : 'nada'),
+      ),
+    );
   for (const x of hay) {
     const valor = r[x];
     const texto = opciones.signo === true && valor > 0 ? `+${String(valor)}` : String(valor);

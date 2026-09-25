@@ -139,6 +139,9 @@ Vite había leído `atlas.css` vacío mientras se reescribía; no es un fallo de
    (el suceso `rebanyo.sin-pasto` no lleva la comarca).
 10. **«Qué hacer: ruta»**: la acción sugerida de la crónica sale con su identificador interno.
 11. **Avisos sin salida**: el rebaño pierde cabezas cada turno sin pasto y el jugador no puede moverlo (T-083).
+12. **En la ficha se mezclan lo que se puede y lo que no**: mejor arriba lo posible y debajo lo bloqueado.
+13. **Costó encontrar los recursos**: estaban dentro del panel, debajo de la ficha.
 
-**Lo que se hace:** 7, 9, 10 y la explicación de 6 entran en T-088 (§2, puntos 6 a 9); 8 y 11 en T-083, que
+**Lo que se hace:** 12 y 13 se arreglan en el acto (T-088 §2, punto 10); 7, 9, 10 y la explicación de 6 entran
+en T-088 (§2, puntos 6 a 9); 8 y 11 en T-083, que
 además pasa a ser la tarea que hace jugable la expansión.
