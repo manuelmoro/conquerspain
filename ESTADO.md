@@ -10,7 +10,13 @@
 
 ## Tarea en curso
 
-**Ninguna.** T-062 (API) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
+**[T-063 · Cuentas, sesiones y seguridad](docs/plan/T-063-cuentas.md)** (Fase 3) — **ficha detallada el
+25-09-2026**; implementación por empezar. Decisiones tomadas: **solo enlace mágico** (sin contraseñas ni
+`argon2`), tokens guardados **solo como hash SHA-256**, cookie firmada con HMAC (`HttpOnly`, `Secure`,
+`SameSite=Lax`, 30 días), respuesta idéntica exista o no el correo, límites por correo y origen, y
+borrado que anonimiza y deja al jugador vivo (`cuenta = NULL`) hasta T-105. El envío real de correo va
+tras una interfaz (T-064). Orden: migración 2 y repositorio de cuentas; tokens y servicio; rutas y
+autenticador; los tres ataques y HTTP real.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -20,9 +26,8 @@
 
 ## Siguiente tarea
 
-**[T-063 · Cuentas, sesiones y seguridad](docs/plan/T-063-cuentas.md)** (Fase 3). Su ficha está
-**esbozada**: detallarla es la primera mitad de la tarea. Da el autenticador real que T-062 dejó como
-interfaz (`Autenticador`) y rellena `participante.cuenta`.
+Tras T-063: **[T-064 · Avisos de resolución (SSE y correo)](docs/plan/T-064-avisos.md)** (ficha esbozada).
+Pondrá el envío real de correo tras `EnviadorDeCorreo`.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
