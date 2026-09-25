@@ -13,6 +13,8 @@ import { ErrorDePersistencia } from './errores.ts';
 import { validarCronica } from './validarCronica.ts';
 import { MIGRACIONES, comprobarMigraciones } from './migraciones/index.ts';
 import type { Migracion } from './migraciones/index.ts';
+import { MODOS_DE_AVISO } from './avisos.ts';
+import type { AvisoPendiente, ClaveDeAviso, ModoDeAviso, RepositorioDeAvisos } from './avisos.ts';
 import type {
   Cuenta,
   EnlaceNuevo,
@@ -94,7 +96,7 @@ function estadoDeOrden(valor: string): EstadoDeOrdenGuardada {
   return encontrado;
 }
 
-export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas {
+export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas, RepositorioDeAvisos {
   private readonly bd: DatabaseSync;
 
   /** `ruta` es un fichero, o `':memory:'` para las pruebas. */
@@ -585,6 +587,17 @@ export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas {
           rechazada.id,
         );
       }
+      // El aviso por correo se encola con la resolucion: si ella queda, el queda (T-064 §4.3).
+      this.ejecutar(
+        `INSERT INTO aviso_correo (partida, turno, jugador, cuenta, estado, creado_en, siguiente_intento)
+         SELECT q.partida, ?, q.jugador, q.cuenta, 'pendiente', ?, ?
+           FROM participante q JOIN cuenta c ON c.id = q.cuenta
+          WHERE q.partida = ? AND c.borrada_en IS NULL`,
+        r.turnoResuelto,
+        ahora,
+        ahora,
+        r.partida,
+      );
       this.ejecutar(
         'UPDATE partida SET turno_actual = ?, proxima_resolucion = ? WHERE id = ?',
         r.estadoNuevo.turno,
@@ -734,6 +747,10 @@ export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas {
         ahora,
         id,
       );
+      this.ejecutar(
+        "UPDATE aviso_correo SET estado = 'descartado' WHERE cuenta = ? AND estado = 'pendiente'",
+        id,
+      );
       this.ejecutar('UPDATE participante SET cuenta = NULL WHERE cuenta = ?', id);
       this.ejecutar(
         'UPDATE cuenta SET correo = ?, nombre = ?, borrada_en = ? WHERE id = ?',
@@ -759,6 +776,125 @@ export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas {
         { partida, jugador },
       );
     }
+  }
+
+  // ---------------------------------------------------------------- avisos (T-064)
+
+  async avisosPendientes(ahora: number): Promise<readonly AvisoPendiente[]> {
+    const filas = this.todos(
+      `SELECT a.partida, a.turno, a.jugador, a.creado_en, a.intentos, c.correo,
+              p.nombre AS nombre_partida, p.intervalo_segundos
+         FROM aviso_correo a
+         JOIN cuenta c ON c.id = a.cuenta
+         JOIN partida p ON p.id = a.partida
+        WHERE a.estado = 'pendiente' AND a.siguiente_intento <= ? AND c.borrada_en IS NULL
+        ORDER BY a.partida, a.jugador, a.turno`,
+      ahora,
+    );
+    return filas.map((f) => ({
+      partida: texto(f, 'partida') as IdPartida,
+      turno: entero(f, 'turno'),
+      jugador: texto(f, 'jugador') as IdJugador,
+      correo: texto(f, 'correo'),
+      nombrePartida: texto(f, 'nombre_partida'),
+      intervaloSegundos: entero(f, 'intervalo_segundos'),
+      creadoEn: entero(f, 'creado_en'),
+      intentos: entero(f, 'intentos'),
+    }));
+  }
+
+  async reclamarAvisos(
+    claves: readonly ClaveDeAviso[],
+    hasta: number,
+    ahora: number,
+  ): Promise<readonly ClaveDeAviso[]> {
+    return this.transaccion(() =>
+      claves.filter(
+        (c) =>
+          this.ejecutar(
+            `UPDATE aviso_correo SET siguiente_intento = ?
+              WHERE partida = ? AND turno = ? AND jugador = ? AND estado = 'pendiente'
+                AND siguiente_intento <= ?`,
+            hasta,
+            c.partida,
+            c.turno,
+            c.jugador,
+            ahora,
+          ) > 0,
+      ),
+    );
+  }
+
+  async marcarAvisos(
+    claves: readonly ClaveDeAviso[],
+    estado: 'enviado' | 'descartado' | 'fallido',
+    ahora: number,
+  ): Promise<void> {
+    this.transaccion(() => {
+      for (const c of claves) {
+        this.ejecutar(
+          `UPDATE aviso_correo SET estado = ?, enviado_en = ?
+            WHERE partida = ? AND turno = ? AND jugador = ? AND estado = 'pendiente'`,
+          estado,
+          estado === 'enviado' ? ahora : null,
+          c.partida,
+          c.turno,
+          c.jugador,
+        );
+      }
+    });
+  }
+
+  async reprogramarAvisos(
+    claves: readonly ClaveDeAviso[],
+    intentos: number,
+    siguiente: number,
+  ): Promise<void> {
+    this.transaccion(() => {
+      for (const c of claves) {
+        this.ejecutar(
+          `UPDATE aviso_correo SET intentos = ?, siguiente_intento = ?
+            WHERE partida = ? AND turno = ? AND jugador = ? AND estado = 'pendiente'`,
+          intentos,
+          siguiente,
+          c.partida,
+          c.turno,
+          c.jugador,
+        );
+      }
+    });
+  }
+
+  async ultimoEnvio(partida: IdPartida, jugador: IdJugador): Promise<number | null> {
+    const fila = this.uno(
+      "SELECT MAX(enviado_en) AS ultimo FROM aviso_correo WHERE partida = ? AND jugador = ? AND estado = 'enviado'",
+      partida,
+      jugador,
+    );
+    return fila === null ? null : enteroONulo(fila, 'ultimo');
+  }
+
+  async preferencia(partida: IdPartida, jugador: IdJugador): Promise<ModoDeAviso | null> {
+    const fila = this.uno(
+      'SELECT modo FROM preferencia_aviso WHERE partida = ? AND jugador = ?',
+      partida,
+      jugador,
+    );
+    if (fila === null) return null;
+    const modo = texto(fila, 'modo');
+    const conocido = MODOS_DE_AVISO.find((m) => m === modo);
+    if (conocido === undefined) throw new Error(`Modo de aviso desconocido en la base: "${modo}".`);
+    return conocido;
+  }
+
+  async fijarPreferencia(partida: IdPartida, jugador: IdJugador, modo: ModoDeAviso): Promise<void> {
+    this.ejecutar(
+      `INSERT INTO preferencia_aviso (partida, jugador, modo) VALUES (?, ?, ?)
+       ON CONFLICT (partida, jugador) DO UPDATE SET modo = excluded.modo`,
+      partida,
+      jugador,
+      modo,
+    );
   }
 
   async cerrar(): Promise<void> {

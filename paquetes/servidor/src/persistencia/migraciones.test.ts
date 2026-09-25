@@ -54,6 +54,7 @@ describe('las migraciones', () => {
     await repo.cerrar();
     expect(tablas(ruta)).toEqual([
       'auditoria_resolucion',
+      'aviso_correo',
       'cronica',
       'cuenta',
       'enlace_de_acceso',
@@ -62,6 +63,7 @@ describe('las migraciones', () => {
       'orden',
       'participante',
       'partida',
+      'preferencia_aviso',
       'sesion',
       'suceso_turno',
     ]);

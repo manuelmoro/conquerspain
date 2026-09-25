@@ -15,7 +15,11 @@ export type {
   ResolucionDeTurno,
 } from './persistencia/repositorio.ts';
 export { CorreoEnMemoria } from './cuentas/correo.ts';
-export type { EnviadorDeCorreo, MensajeDeEnlace } from './cuentas/correo.ts';
+export type { EnviadorDeCorreo, MensajeDeAviso, MensajeDeEnlace } from './cuentas/correo.ts';
+export { CanalDeAvisos } from './avisos/canal.ts';
+export { DespachadorDeCorreos } from './avisos/despachador.ts';
+export { cronicaEnTexto } from './avisos/texto.ts';
+export type { ModoDeAviso, RepositorioDeAvisos } from './persistencia/avisos.ts';
 export { autenticadorDeSesiones } from './cuentas/autenticador.ts';
 export { ServicioDeCuentas } from './cuentas/servicio.ts';
 export type { DependenciasDeCuentas } from './cuentas/servicio.ts';

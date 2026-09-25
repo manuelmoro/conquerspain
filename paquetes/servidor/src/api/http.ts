@@ -53,6 +53,13 @@ export async function servirHttp(
         origen: entrada.socket.remoteAddress ?? 'desconocido',
       });
       salida.writeHead(respuesta.estado, respuesta.cabeceras);
+      if (respuesta.flujo !== undefined) {
+        const parar = respuesta.flujo((texto) => {
+          salida.write(texto);
+        });
+        salida.once('close', parar);
+        return;
+      }
       salida.end(JSON.stringify(respuesta.cuerpo));
     })();
   });
@@ -65,6 +72,8 @@ export async function servirHttp(
     puerto: direccion.port,
     cerrar: () =>
       new Promise<void>((listo, fallo) => {
+        // Los flujos de eventos no acaban solos: se cortan al cerrar.
+        servidor.closeAllConnections();
         servidor.close((error) => {
           if (error === undefined) listo();
           else fallo(error);

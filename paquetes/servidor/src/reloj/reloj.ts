@@ -12,6 +12,8 @@ export interface OpcionesDelReloj {
   readonly partidasPorPasada?: number;
   /** Lo mas que duerme el bucle entre dos pasadas. */
   readonly sondeoMs?: number;
+  /** Lo que se hace tras cada pasada con el mismo bucle: el despachador de correos (T-064). */
+  readonly despachador?: { pasada(): Promise<unknown> };
 }
 
 export interface InformeDePasada {
@@ -28,6 +30,7 @@ export class Reloj {
   private readonly maximo: number;
   private readonly partidasPorPasada: number;
   private readonly sondeoMs: number;
+  private readonly despachador: { pasada(): Promise<unknown> } | null;
   /** Cerrojo por partida dentro del proceso: no se calcula dos veces lo mismo. */
   private readonly enCurso = new Set<string>();
   private parado = true;
@@ -41,6 +44,7 @@ export class Reloj {
     this.maximo = opciones.maximoDeTurnosPorPasada ?? POR_DEFECTO.maximoDeTurnosPorPasada;
     this.partidasPorPasada = opciones.partidasPorPasada ?? POR_DEFECTO.partidasPorPasada;
     this.sondeoMs = opciones.sondeoMs ?? POR_DEFECTO.sondeoMs;
+    this.despachador = opciones.despachador ?? null;
   }
 
   /** Una pasada: resuelve lo que este debido a la hora que da `ahora()`. */
@@ -116,6 +120,7 @@ export class Reloj {
     while (!this.estaParado()) {
       try {
         await this.pasada();
+        await this.despachador?.pasada();
       } catch (error) {
         this.dep.registro.anotar('error', 'pasada-fallida', {
           detalle: error instanceof Error ? error.message : 'error desconocido',

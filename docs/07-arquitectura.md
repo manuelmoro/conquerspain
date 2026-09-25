@@ -153,6 +153,11 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
   - `GET /partidas/:id/eventos` (SSE: «turno resuelto»)
 - **Nunca** se envía al cliente información que su jugador no debe ver. El filtrado se hace en el
   servidor, sobre el estado completo, con una función del núcleo (`vistaDeJugador`).
+- Avisos (T-064, `paquetes/servidor/src/avisos/`): SSE `GET /partidas/:id/eventos` con un canal en memoria que
+  el reloj alimenta **después** de guardar; correo por una cola en la base (`aviso_correo`, clave por turno y
+  jugador) que se llena **en la misma transacción** que la resolución y vacía un despachador con reintentos
+  (2^n min, tope 6 h, 8 intentos) y preferencias por partida (`cada-turno`, `diario`, `nada`; por defecto
+  según el ritmo). El correo es la crónica propia en texto plano. Transporte real en T-066.
 - Cuentas (T-063, `paquetes/servidor/src/cuentas/`): **solo enlace mágico** por correo (sin contraseñas, así que
   nada que guardar ni filtrar, y sin `argon2`, que exige una dependencia nativa). El envío va tras la interfaz
   `EnviadorDeCorreo` (SMTP en T-064). Tokens de 256 bits de los que **solo se guarda el SHA-256**; sesión con

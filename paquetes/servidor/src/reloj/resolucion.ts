@@ -14,6 +14,7 @@ import type {
   Repositorio,
   ResolucionDeTurno,
 } from '../persistencia/repositorio.ts';
+import type { CanalDeAvisos } from '../avisos/canal.ts';
 import type { ProveedorDeMundo } from './mundoDeLaPartida.ts';
 import { proximaResolucion } from './calendario.ts';
 import type { Registro } from './registro.ts';
@@ -26,6 +27,8 @@ export interface DependenciasDeResolucion {
   readonly registro: Registro;
   /** Milisegundos Unix. Es lo unico que sabe la hora. */
   readonly ahora: () => number;
+  /** Donde se avisa en vivo de cada turno guardado (T-064). */
+  readonly canal?: CanalDeAvisos;
 }
 
 export type ResultadoDeUnTurno =
@@ -113,6 +116,8 @@ export async function resolverUnTurno(
       proximaResolucion: proximaResolucion(fila.ancla, fila.intervaloSegundos, estado.turno + 1),
     };
     await repo.guardarResolucion(resolucion, dep.ahora());
+    // Solo se avisa de lo que ha quedado guardado.
+    dep.canal?.publicar({ partida: id, turno: estado.turno });
     registro.anotar('info', 'turno-resuelto', {
       partida: id,
       turno: estado.turno,

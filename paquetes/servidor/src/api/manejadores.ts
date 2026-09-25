@@ -12,7 +12,12 @@ import type { IdJugador, IdOrden, IdPartida, TablasDeReglas } from '@conquer/nuc
 
 import { ErrorDePersistencia } from '../persistencia/repositorio.ts';
 import type { FilaDePartida, Repositorio } from '../persistencia/repositorio.ts';
+import type { CanalDeAvisos } from '../avisos/canal.ts';
+import { modoPorDefecto } from '../avisos/preferencias.ts';
+import { avisosDe } from '../avisos/texto.ts';
 import type { ServicioDeCuentas } from '../cuentas/servicio.ts';
+import { MODOS_DE_AVISO } from '../persistencia/avisos.ts';
+import type { RepositorioDeAvisos } from '../persistencia/avisos.ts';
 import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
 import type { Registro } from '../reloj/registro.ts';
 import { ErrorDeApi } from './errores.ts';
@@ -25,7 +30,7 @@ import {
   PETICIONES_POR_MINUTO,
   RAFAGA_DE_PETICIONES,
 } from './limites.ts';
-import type { Autenticador, PeticionHttp, RespuestaHttp } from './tipos.ts';
+import type { Autenticador, Flujo, PeticionHttp, RespuestaHttp } from './tipos.ts';
 
 export interface DependenciasDeApi {
   readonly repo: Repositorio;
@@ -39,6 +44,11 @@ export interface DependenciasDeApi {
   readonly cubo?: CuboDeFichas;
   /** Cuentas y sesiones (T-063): si falta, no hay rutas de cuenta. */
   readonly cuentas?: ServicioDeCuentas;
+  /** Avisos (T-064): el canal en vivo y las preferencias. Sin ellos, no hay esas rutas. */
+  readonly canal?: CanalDeAvisos;
+  readonly avisos?: RepositorioDeAvisos;
+  /** Cada cuanto se manda un latido por el flujo de eventos; por defecto, 25 s. */
+  readonly latidoMs?: number;
 }
 
 interface Contexto {
@@ -51,6 +61,7 @@ interface Salida {
   readonly estado: number;
   readonly datos: Record<string, unknown>;
   readonly cabeceras?: Readonly<Record<string, string>>;
+  readonly flujo?: Flujo;
 }
 
 type Manejador = (ctx: Contexto) => Promise<Salida>;
@@ -424,6 +435,68 @@ export function crearApi(
           },
         ];
 
+  const canal = dep.canal;
+  const eventos: Manejador = async (ctx) => {
+    const { jugador, id } = await partidaDelJugador(ctx);
+    if (canal === undefined)
+      throw new ErrorDeApi('ruta-desconocida', 'Este servidor no da eventos en vivo.');
+    const flujo: Flujo = (escribir) => {
+      escribir(': conectado\n\n');
+      const baja = canal.suscribir(id, (evento) => {
+        void dep.repo.cronica(id, evento.turno, jugador).then((cronica) => {
+          const datos = { turno: evento.turno, avisos: cronica === null ? 0 : avisosDe(cronica) };
+          escribir(`event: turno-resuelto\ndata: ${JSON.stringify(datos)}\n\n`);
+        });
+      });
+      const latido = setInterval(() => {
+        escribir(': latido\n\n');
+      }, dep.latidoMs ?? 25_000);
+      return () => {
+        clearInterval(latido);
+        baja();
+      };
+    };
+    return { estado: 200, datos: {}, flujo };
+  };
+
+  const repoDeAvisos = dep.avisos;
+  const verAvisos: Manejador = async (ctx) => {
+    const { fila, jugador, id } = await partidaDelJugador(ctx);
+    if (repoDeAvisos === undefined)
+      throw new ErrorDeApi('ruta-desconocida', 'Este servidor no manda avisos.');
+    const porDefecto = modoPorDefecto(fila.intervaloSegundos);
+    const modo = (await repoDeAvisos.preferencia(id, jugador)) ?? porDefecto;
+    return { estado: 200, datos: { modo, porDefecto, modos: MODOS_DE_AVISO } };
+  };
+
+  const fijarAvisos: Manejador = async (ctx) => {
+    const { jugador, id } = await partidaDelJugador(ctx);
+    if (repoDeAvisos === undefined)
+      throw new ErrorDeApi('ruta-desconocida', 'Este servidor no manda avisos.');
+    const pedido = objetoJson(ctx.peticion.cuerpo)['modo'];
+    const modo = MODOS_DE_AVISO.find((m) => m === pedido);
+    if (modo === undefined) {
+      throw new ErrorDeApi(
+        'cuerpo-invalido',
+        `El modo de aviso tiene que ser uno de: ${MODOS_DE_AVISO.join(', ')}.`,
+      );
+    }
+    await repoDeAvisos.fijarPreferencia(id, jugador, modo);
+    return { estado: 200, datos: { modo } };
+  };
+
+  const rutasDeAvisos: readonly Ruta<Entrada>[] = [
+    ...(canal === undefined
+      ? []
+      : [{ metodo: 'GET', patron: '/partidas/:id/eventos', manejador: privada(eventos) }]),
+    ...(repoDeAvisos === undefined
+      ? []
+      : [
+          { metodo: 'GET', patron: '/partidas/:id/avisos', manejador: privada(verAvisos) },
+          { metodo: 'PUT', patron: '/partidas/:id/avisos', manejador: privada(fijarAvisos) },
+        ]),
+  ];
+
   const rutas: readonly Ruta<Entrada>[] = [
     { metodo: 'GET', patron: '/partidas/mias', manejador: privada(misPartidas) },
     { metodo: 'GET', patron: '/partidas/:id/estado', manejador: privada(verEstado) },
@@ -433,6 +506,7 @@ export function crearApi(
     { metodo: 'POST', patron: '/partidas/:id/ordenes', manejador: privada(darOrden) },
     { metodo: 'DELETE', patron: '/partidas/:id/ordenes/:orden', manejador: privada(retirarOrden) },
     ...rutasDeCuenta,
+    ...rutasDeAvisos,
   ];
 
   return async (peticion) => {
@@ -476,6 +550,18 @@ export function crearApi(
         peticion,
         origen: peticion.origen ?? 'desconocido',
       });
+      if (salida.flujo !== undefined) {
+        return {
+          estado: 200,
+          cuerpo: null,
+          cabeceras: {
+            'content-type': 'text/event-stream; charset=utf-8',
+            'cache-control': 'no-cache',
+            connection: 'keep-alive',
+          },
+          flujo: salida.flujo,
+        };
+      }
       return respuesta(salida.estado, salida.datos, salida.cabeceras);
     } catch (error) {
       if (error instanceof ErrorDeApi) return respuestaDeError(error);

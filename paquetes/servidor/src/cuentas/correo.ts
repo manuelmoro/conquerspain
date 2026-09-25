@@ -8,13 +8,34 @@ export interface MensajeDeEnlace {
   readonly caducaEnMinutos: number;
 }
 
+/** Un aviso de resolucion (T-064): texto plano, que se lee sin abrir el juego. */
+export interface MensajeDeAviso {
+  readonly para: string;
+  readonly asunto: string;
+  readonly texto: string;
+}
+
 export interface EnviadorDeCorreo {
   enviarEnlace(mensaje: MensajeDeEnlace): Promise<void>;
+  /** Lanza si no se pudo entregar: el despachador reintenta. */
+  enviarAviso(mensaje: MensajeDeAviso): Promise<void>;
 }
 
 /** Guarda los mensajes en una lista: se leen desde la prueba o desde una consola de desarrollo. */
 export class CorreoEnMemoria implements EnviadorDeCorreo {
   readonly enviados: MensajeDeEnlace[] = [];
+  readonly avisos: MensajeDeAviso[] = [];
+  /** Cuantos avisos seguidos fallaran, para probar los reintentos. */
+  fallosPendientes = 0;
+
+  enviarAviso(mensaje: MensajeDeAviso): Promise<void> {
+    if (this.fallosPendientes > 0) {
+      this.fallosPendientes -= 1;
+      return Promise.reject(new Error('el servidor de correo no responde'));
+    }
+    this.avisos.push(mensaje);
+    return Promise.resolve();
+  }
 
   enviarEnlace(mensaje: MensajeDeEnlace): Promise<void> {
     this.enviados.push(mensaje);

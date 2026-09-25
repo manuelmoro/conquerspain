@@ -12,11 +12,19 @@ export interface PeticionHttp {
   readonly origen?: string;
 }
 
+/**
+ * Un flujo de eventos (SSE, T-064): se arranca con la funcion que escribe y devuelve la que lo para
+ * cuando el cliente se va.
+ */
+export type Flujo = (escribir: (texto: string) => void) => () => void;
+
 export interface RespuestaHttp {
   readonly estado: number;
-  /** Siempre JSON. */
+  /** JSON; null si la respuesta es un flujo. */
   readonly cuerpo: unknown;
   readonly cabeceras: Readonly<Record<string, string>>;
+  /** Si esta, la respuesta no acaba: el adaptador escribe lo que el flujo mande. */
+  readonly flujo?: Flujo;
 }
 
 /** Quien pone al jugador delante de la API. T-063 da el real: cuenta y sesion. */
