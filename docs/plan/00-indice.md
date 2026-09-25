@@ -112,6 +112,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-080](T-080-armazon-cliente.md) | Armazón del cliente y sincronización con el servidor | **hecha** | T-062 |
 | [T-081](T-081-atlas.md) | Atlas: capas, zoom y modos de lectura | **hecha** | T-080 |
 | [T-082](T-082-ficha-y-ordenes.md) | Ficha de comarca y bandeja de órdenes con previsión | **hecha** (J-01 pendiente) | T-081 |
+| [T-088](T-088-arreglos-de-j01.md) | Arreglos de J-01: entrar, pinchar el mapa, ficha a mano y resumen del turno | en curso | T-082 |
 | [T-083](T-083-recuas-en-mapa.md) | Recuas y rebaños: rutas sobre el mapa | pendiente | T-082 |
 | [T-084](T-084-mercado-cliente.md) | Mercado, ferias y precios | pendiente | T-082 |
 | [T-085](T-085-cronica-cliente.md) | Crónica, hitos y clasificación | pendiente | T-082 |

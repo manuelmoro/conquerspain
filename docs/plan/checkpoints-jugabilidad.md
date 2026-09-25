@@ -33,7 +33,7 @@ partida. El turno se resuelve con «Resolver el turno ya» (solo en partidas de 
 
 | Checkpoint | Cuándo | Sesión | Pregunta principal | Estado |
 |---|---|---|---|---|
-| J-01 · Entender y ordenar | Al terminar T-082, antes de continuar con T-083 | Usuario y facilitador, 20–30 minutos con una partida preparada | ¿Entiendo mis recursos y puedo elegir, enviar y cancelar una obra sin editar archivos? | pendiente |
+| J-01 · Entender y ordenar | Al terminar T-082, antes de continuar con T-083 | Usuario y facilitador, 20–30 minutos con una partida preparada | ¿Entiendo mis recursos y puedo elegir, enviar y cancelar una obra sin editar archivos? | **hecha la primera sesión (25-09-2026): no supera**; arreglos en T-088 y se repite |
 | J-02 · El ciclo completo | Tras T-083, T-084 y T-085, antes de cerrar T-087 | Dos sesiones con casas distintas; al menos una comercial o trashumante; preparar seis turnos sin intervenir | ¿La crónica explica consecuencias, las casas cambian mis decisiones y puedo dejar un plan? | pendiente |
 | J-03 · Jugar sin ayuda del autor | Tras T-086, antes de cerrar T-087 | Dos personas ajenas al desarrollo, 20–30 minutos cada una | ¿Pueden empezar, leer, dar órdenes y entender un resultado sin que alguien traduzca los controles? | pendiente |
 | J-04 · Volver a una partida compartida | Tras T-103, antes de cerrar T-106 y empezar T-120 | Piloto con 3–4 personas durante varios días y horario de resolución acordado | ¿El comercio genera decisiones y apetece volver sin vigilar continuamente? | pendiente |
@@ -88,3 +88,32 @@ participantes, dejarlo explícito en ESTADO, sin inventar aprobación ni constru
 T-047 sigue siendo una validación técnica y de equilibrio por banco; su cierre **no certifica
 jugabilidad humana**. Las sesiones posteriores pueden reabrir ajustes con evidencia. El usuario
 acepta esperar al cliente para esa primera prueba.
+
+
+## J-01 · Primera sesión (25-09-2026)
+
+**Quién:** el usuario, con la partida de prueba `p-06e17876b00c` (hortelanos en la Llanada Alavesa), en
+escritorio y en el modo móvil de las herramientas del navegador; y, aparte, otra IA que intentó el
+recorrido en un navegador y revisó el código.
+
+**Resultado: no supera.** Entender los recursos, sí («el punto 1 está claro»). Elegir y enviar una obra,
+con dificultad. Saber qué ha pasado al resolver, no.
+
+**Hallazgos, por gravedad:**
+
+1. **En escritorio, pinchar la capital en el mapa no abre nada**; en el modo móvil sí. Causa comprobada:
+   `setPointerCapture` en cada `pointerdown` hace que, con ratón, el `click` llegue al `<svg>` y no a la comarca.
+   Tampoco hay nada que diga que el mapa se puede pinchar (cursor, resalte, comarca seleccionada).
+2. **Al resolver el turno no se sabe qué ha pasado.** El usuario pide un resumen emergente con lo ocurrido y el
+   aumento o la bajada de cada recurso, para saber si crece. La crónica existe en el servidor y
+   `ClienteApi.cronica` también, pero nadie la llama.
+3. **La ficha aparece abajo del todo**, bajo un mapa de 60vh, y el árbol entero se reconstruye en cada cambio
+   (se pierde el desplazamiento). «Cerrar» está en mal sitio.
+4. **La entrada calla los errores**: un enlace usado o caducado devuelve al formulario sin decir nada (el error se
+   guarda pero esa pantalla no lo pinta). Sin `<form>` (Enter no envía, no hay validación), sin etiqueta, sin foco,
+   el botón no se deshabilita y el campo es tan pequeño que iOS hace zoom.
+5. **Poco amigable en general**: estilos por defecto, recursos como texto plano, tipos y estados de orden con sus
+   identificadores internos (y un «¿?» posible), potenciales sin traducir, colores sin leyenda y el conmutador de
+   modos sin explicar.
+
+**Lo que se hace:** tarea [T-088](T-088-arreglos-de-j01.md) antes de T-083; después se repite J-01.
