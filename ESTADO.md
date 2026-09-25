@@ -3,22 +3,15 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 24 de septiembre de 2026 (T-055 a T-058 hechas; T-047 en curso, recuento 353)
-**Fase actual:** Fase 2 · Motor de reglas
+**Última actualización:** 25 de septiembre de 2026 (T-047 v1 cerrada con excepciones; Fase 2 completa)
+**Fase actual:** Fase 3 · Servidor autoritativo
 
 ---
 
 ## Tarea en curso
 
-**[T-047 · Ajuste de equilibrio v1](docs/plan/T-047-equilibrio-v1.md)** — en curso, iterando.
-Recuento **353** (118 / 116 / 119), el mejor de toda la tarea: el comercio existe (T-055 a T-057),
-la Mesta juega su vía (T-058) y el invierno aprieta. Ver **[Dónde va T-047](#dónde-va-t-047)**.
-
-**[T-053 · Plazas donde comerciar](docs/plan/T-053-plazas-donde-comerciar.md)** y
-**[T-059 · Las ferias se conocen y se buscan](docs/plan/T-059-las-ferias-se-conocen.md)** — abiertas:
-el capítulo de comercio del prestigio (ferias destacadas) sigue a 0. Las ferias ya se saben de oídas
-y los exploradores abren camino hacia ellas, pero ninguno llega: con diez cargas y dos panes por
-jornada una exploradora no pasa del primer anillo. Es el mismo cuello de botella que la `tierra`.
+**Ninguna.** Fase 2 (motor de reglas) completa: **T-047 v1 cerrada el 25-09-2026 con excepciones**, por
+decisión del usuario, junto con T-053 y T-059 (v1). Ver [T-047 §9](docs/plan/T-047-equilibrio-v1.md).
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -28,104 +21,31 @@ jornada una exploradora no pasa del primer anillo. Es el mismo cuello de botella
 
 ## Siguiente tarea
 
-La que está en curso: **T-047**. Lo que incumple hoy, por tamaño (base `E-invierno500`):
+**[T-060 · Persistencia y esquema de datos](docs/plan/T-060-persistencia.md)** (Fase 3). Su ficha está
+**esbozada**: la primera mitad de la tarea es detallarla (ver §2 de la skill de construcción). Lee antes
+[docs/07-arquitectura.md](docs/07-arquitectura.md) §7.4.
 
-1. **Prestigio** fuera de la horquilla: hortelanos y monjes ~200 % de la mediana; ferrones (~35 %),
-   mercaderes (~48 %) y arrieros (~74 %) por debajo. Los de abajo dependen en parte de T-103
-   (aperos vendidos, portazgos, letras), que T-047 §5.2 no deja anticipar.
-2. **Escasez**: 27 filas con poca y 10 con mucha (los ferrones de Bilbao, una trampa de pobreza
-   desde el arranque, y los salineros de 1492).
-3. **Tierra** (9 de 9; medida ya exacta: entre el 38 % y el 62 % del mapa sin tocar) y **dominio** (9 de 9, el primer «pequeño
-   dominio» en T43–48, antes de la horquilla): el ritmo espera una decisión del usuario (ver abajo).
+### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
-**Última iteración (25-09-2026): las ferias dan de comer** ([T-059 §9](docs/plan/T-059-las-ferias-se-conocen.md)).
-La comarca con feria da de comer como una venta; `feriar` lleva bolsa; los robots plantan ventas hacia
-la feria (robots 11). **Los salineros venden en feria en las tres campañas** (primera vez), recuento
-**352**, la tierra igual. **Base nueva: `E-feria3-*`.** Sigue sin haber ferias destacadas (comercio del
-prestigio a 0) y la Mesta no llega (sus maravedís no pasan del colchón). Antes, el 24-09: la
-expedición vive de la tierra (T-059 §8): la tierra sin tocar baja 6–11 puntos en las nueve partidas.
-**Lo siguiente, medido el 25-09 ([T-059 §9.2](docs/plan/T-059-las-ferias-se-conocen.md)):** ni el
-dinero de la bolsa ni las ventas del camino atan a la Mesta; su lana se malvende en casa porque su feria
-«no está al alcance» y no está al alcance porque el viaje no cabe. Los salineros son la casa atrapada de
-1492. **Decisión pendiente del usuario:** rebajar el umbral de la feria destacada (500 maravedís, una
-recua entera de lana) o resolver primero la Mesta como feriante.
+La base de referencia es **`herramientas/banco/informes/E-feria3-*`** (robots 11, métricas 5, tres
+semillas por campaña): **352 filas cumplen y 119 no, ninguna sin evaluar**. Lo que no cumple, por tamaño:
 
-Orden: **T-047 → T-053 (ferias destacadas) → T-060**.
+| Criterio | Cumple / incumple | Por qué queda como excepción |
+|---|---|---|
+| Prestigio (horquilla 80–120 %) | 15 / 57 | Las vías de ferrones, canteros, arrieros y mercaderes dependen en parte de lo desactivado hasta T-103; los monjes y hortelanos siguen ~200 % (falta decidir el privilegio de los monjes) |
+| Escasez (2–15 %) | 33 / 39 | Trampas de pobreza de arranque (ferrones de Bilbao, salineros de 1492) y borde de la horquilla |
+| Tierra (< 5 % sin usar) | 0 / 9 | La expedición ha bajado la tierra sin tocar del 44–64 % al 30–55 %, pero un jugador solo no llega |
+| Dominio (ritmo del primer dominio) | 0 / 9 | Espera decidir la vara (una casa sola frente a una partida entera) |
+| Ganadores / actividad / obra mayor | 1·70·8 cumplen / 2·2·1 no | Ruido de umbral |
+| Capítulo de comercio del prestigio | a 0 | Ninguna casa llega a 500 maravedís de volumen en una feria: la Mesta no llega (T-059 §9.3) |
 
-> **Decisión pendiente del usuario: la puerta de T-047.** T-060 (fase 3) depende de T-047, y T-047
-> pide el prestigio de las ocho casas entre el 80 % y el 120 % de la mediana. Pero su propio §5.2
-> reconoce que las vías de ferrones, canteros, arrieros y mercaderes dependen en parte de privilegios
-> desactivados **hasta T-103** (aperos vendidos, contratos, portazgos, letras), y T-103 va después de
-> T-060. Medido el 24-09: ni la influencia ni la tierra es lo que les falta (bitácora). Tal como está
-> escrito el plan, T-047 no puede cerrarse antes de T-103. Opciones: cerrar una **v1** de T-047 con
-> esos casos documentados como excepción hasta T-103 (lo que ya prevé §5.1 para «un objetivo
-> incompatible con una vía por diseño») y reabrirla después; o adelantar lo imprescindible de T-103.
-> Mientras no se decida, se sigue iterando T-047 en lo que no depende de ello.
-
-La base contra la que comparar ahora es `herramientas/banco/informes/T-059-*` (robots **9**,
-métricas **5**, tres semillas; 120, 117 y 118 filas cumplen); `npm run banco -- ... --evaluar` termina
-con código 2 mientras quede un criterio sin cerrar.
+Se cumplen del todo: `ausencia` (144 / 144), `decisiones útiles` (72 / 72) y `precios` (9 / 9).
 
 ### Cuándo probará el usuario
 
 El usuario prefiere **esperar a la interfaz**, sin priorizar una consola. [Checkpoints de jugabilidad](docs/plan/checkpoints-jugabilidad.md): J-01 tras
 T-082; J-02/J-03 antes de cerrar T-087; J-04 antes de cerrar T-106. Todos están pendientes de
 sesiones humanas reales. Hoy el banco solo ofrece simulaciones automáticas e informes.
-
-### Dónde va T-047
-
-**Hecho y verificado** (23-09-2026). Todo lo de esta sesión está medido y escrito en la
-[bitácora de equilibrio](docs/plan/bitacora-equilibrio.md), incluidos los cuatro ensayos
-descartados; no hace falta repetirlos.
-
-- **El diagnóstico, con cifras.** Cuatro de los nueve capítulos del prestigio —comercio, ganadería,
-  industria y caminos— dan **cero a todas las casas** en las nueve partidas, así que el prestigio es
-  casi exactamente el pan producido. Una capa más abajo: `negociosRentables`, `ventasFuera` e
-  `ingresosDeFeria` valen **0** en las nueve. El precio base de cada recurso es un número global y
-  los mercaderes menores cubren el cupo entero de la plaza por los dos lados, así que **todas las
-  plazas cotizan lo mismo, siempre**: el arbitraje es imposible con cualquier porte.
-- **Descartado como explicación:** administrar territorio no frena a nadie (deuda 0 en las ocho
-  casas al turno 200, con los monjes a 16 comarcas).
-- **Cambio adoptado:** `casas.ferrones.origenes` pasa a una sola tarjeta, `hierro ≥ 1` **y**
-  `monte ≥ 2` en la propia comarca. Antes valía con que una vecina tuviera hierro, y en cuatro de
-  cada cinco semillas la casa del hierro empezaba con `hierro: 0`. El segundo defecto (hierro sin
-  monte, es decir ferrería sin carbonera) lo cazó `solvencia.test.ts`.
-- **Archivos tocados:** `paquetes/nucleo/src/datos/casas.ts`,
-  `paquetes/nucleo/pruebas/origenes.test.ts`, `docs/plan/bitacora-equilibrio.md`,
-  `docs/plan/T-052-geografia-de-precios.md` (nueva), `docs/plan/00-indice.md` y los informes
-  `herramientas/banco/informes/T-047-hierro-*` y `E1-bastimento1-1492`.
-- **Siete ensayos, un solo cambio de valores.** Los siete dejan las tablas exactamente como estaban
-  salvo el origen de los ferrones; los seis descartados están medidos en la bitácora para que nadie
-  los repita.
-- `npm run verificar` pasa: 58 archivos, **1010 pruebas** en verde, y el atlas coincide.
-
-**Lo que falta, en orden.** Ninguno de los tres es un ajuste suelto: son las tres causas medidas.
-
-1. **El comercio: resuelto en seis fichas, con un coste.** T-052, T-054 y T-055 hechas; T-057 pone
-   la distancia en el precio y con ella el comercio existe (181 negocios con ganancia), pero el
-   recuento baja de 348 a 341. **Es lo siguiente**: recuperar esas filas.
-2. **Los monjes.** 417–572 % de la mediana y ganan las nueve repeticiones. Su `lealtadMinima: 50`
-   está muy por encima de `lealtadDesleal: 20`, así que ninguna penalización territorial les llega:
-   ni la deuda de administración, ni la lejanía, ni el abandono. Cualquier valor de
-   `lealtadMinima` por encima de 20 los deja igual de inmunes: decidir el privilegio, no la cifra.
-3. ~~**El marcador.**~~ **Hecho el 24-09-2026**: una comarca vale 8 en vez de 20, explorar 8 en vez
-   de 3, un año trashumante 30 en vez de 10, una feria destacada 60 en vez de 30 y los aperos 25 en
-   vez de 10. Primera ganancia de equilibrio de T-047, confirmada en las tres campañas (114→116,
-   109→112, 109→113) y con la horquilla más estrecha: los monjes bajan de 457 % a 327 % de la
-   mediana y los mercaderes suben de 63 % a 80 %.
-4. **La administración no sirve para frenar al líder.** Tres ensayos descartados: cualquier subida
-   mata las obras mayores, porque se pagan de lo mismo y no hay maravedís para las dos cosas.
-5. **El ritmo (`dominio`) espera una decisión.** Lo marcan los monjes fundando pueblas, y su umbral
-   está justo en el techo de una casa sola. El mejor ajuste (puebla 70, incorporar 90) da 122 / 114
-   / 114 con `dominio` y `ganadores` cumpliendo, pero rompe el escenario en solitario de
-   `vias.test.ts`. Hay que decidir si esa vara —una casa sin rivales ni vecinas propias— es la
-   correcta para calibrar el umbral.
-
-**Cómo se trabaja esta tarea** (lo dice §4 de la ficha, y se ha respetado): un solo grupo de valores
-por ensayo, informe nuevo con su manifiesto, comparación con `npm run banco:comparar`, anotación en
-la bitácora con hipótesis, cambio, resultado y decisión, y revertir el candidato descartado antes
-del siguiente. Los robots quedan fijos en la versión 3 mientras dure el ajuste. Una campaña de tres
-repeticiones tarda unos 80 segundos, así que se puede iterar de verdad.
 
 ## Cómo continuar (resumen)
 
@@ -163,7 +83,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Banco de pruebas | `npm run banco`: partidas automáticas con un robot por casa (estrategias escritas a mano que solo miran la vista de su jugador, con un test que se lo comprueba manipulando mundo y estado), métricas por jugador y turno, e informe en Markdown con su evaluación, procedencia, ritmo, arbitraje trazado, órdenes por motivo y las cinco alertas antiguas como diagnóstico. Escenarios `normal` y `hambre`. `npm run banco:comparar` enseña qué cambia entre dos informes y avisa si no comparten procedencia. Informes de referencia: `2026-09-19-1492.md` (T-046), `T-048-1492.md`, `T-049-1492.md` y **`T-050-1492.md`, la base nueva** |
 | Robots del banco | Previsión exacta de viajes con las funciones del núcleo (`robots/viaje.ts`); recuas que solo salen si pueden volver, se rehacen si se merman y conservan su papel por hueco; expedición arriesgada deliberada; trashumancia planificada con los dos pastos; arbitraje con ganancia neta; tratante que compra por urgencia; `hacerSitio` que derriba lo que no puede trabajar. Cada decisión devuelve también sus **motivos** (catálogo cerrado por categoría: mapa, reglas, recursos, plan). `solvencia.ts` comprueba que el plan de cada casa quepa y tenga insumos en todos los perfiles de origen. La prueba de vía exige la acción distintiva y el informe la enseña partida a partida con su «por qué no» |
 | Equivalencia de ejecución | `escenarios/equivalencia.ts`: guiones que se juegan de dos maneras y `planDeRobot`/`jugarPlanAMano`, que toman el plan de un robot y lo entregan día a día. Compara el **dominio** (todo menos la lista de órdenes, la huella del turno, las colas y lo reservado, que son el espejo de las órdenes en vuelo). El informe trae su tabla y, aparte, el diagnóstico de sensibilidad a la frecuencia |
-| Evaluación del equilibrio | `equilibrio.ts` juzga los nueve criterios de T-047 §5 por partida y casa: cumple, incumple o no evaluable, con observado sin redondear, unidad, ámbito y evidencia; los umbrales viven en `OBJETIVOS` y su huella va en el manifiesto. Un «cumple» que se apoya en una tarea sin terminar no cierra nada. «Decisiones útiles» se mide desde T-050 (turno sin orden que trabaje ni plan en marcha) y la **ausencia desde T-051** sobre el mismo plan, no sobre dos planes distintos. `--evaluar` sale con código 2 mientras quede uno: hoy son 44 filas de 157, ninguna sin evaluar |
+| Evaluación del equilibrio | `equilibrio.ts` juzga los nueve criterios de T-047 §5 por partida y casa: cumple, incumple o no evaluable, con observado sin redondear, unidad, ámbito y evidencia; los umbrales viven en `OBJETIVOS` y su huella va en el manifiesto. Un «cumple» que se apoya en una tarea sin terminar no cierra nada. «Decisiones útiles» se mide desde T-050 (turno sin orden que trabaje ni plan en marcha) y la **ausencia desde T-051** sobre el mismo plan, no sobre dos planes distintos. `--evaluar` sale con código 2 mientras quede uno: hoy son 119 filas de 471 (base `E-feria3`), ninguna sin evaluar |
 | Procedencia de los informes | Manifiesto JSON con revisión, versiones de banco, métricas, robots y reglas, semillas, turnos, cadencias, escenario, huella del mundo, huella de **las tablas completas** y huella de los objetivos, más la huella final y la integridad de visitas de cada partida |
 | Alta de partida | `paquetes/nucleo/src/partidas/`: `prepararPartida` (recorte del mapa a los que juegan, con sal, hierro, pan, feria y pastos dentro, y tres tarjetas de origen por jugador separadas seis jornadas de las de los demás) y `fundarPartida` (estado del turno 1). Puro, sin E/S, y **el banco ya es solo un adaptador**: no hay dos altas. T-065 le pondrá encima la persistencia y la API |
 | Arranque por origen | `arranqueDe(comarca, casa, reglas)`: granjas hasta cubrir el año (95 %, o 70 % en las casas que viven de comprar), lonja donde la tierra no da y el mar sí, la primera pieza del oficio si la comarca la admite, y maravedís por el pan que falte. Cada nivel pasa por `impedimentoDeConstruir`; ningún edificio regalado come lo que el arranque no entrega. La viabilidad se prueba con una muestra fija: un origen por perfil y casa, un año entero **sin dar una sola orden** |
@@ -191,6 +111,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-047 v1 cerrada con excepciones; Fase 2 completa** (también T-053 y T-059, v1). Por decisión del usuario, el equilibrio se cierra como v1 con las excepciones documentadas en [T-047 §9](docs/plan/T-047-equilibrio-v1.md) —prestigio, escasez, tierra, dominio y el capítulo de comercio— y se reabre tras T-103; no se movió ningún umbral. Base de referencia `E-feria3-*`: **352 filas cumplen de 471**. Lo último que entró: la **expedición que vive de la tierra** (`Recua.enExpedicion`; la tierra sin tocar baja 6–11 puntos en las nueve partidas), la **comarca con feria que da de comer** (los salineros venden en feria por primera vez), `feriar` con bolsa y ventas hacia la feria (robots 11). Resolver la Mesta como feriante se intentó con siete ensayos y **no se consiguió**: el límite es estructural (tramos de 4–10 jornadas contra un porte de 10), en [T-059 §9.3](docs/plan/T-059-las-ferias-se-conocen.md). 1056 pruebas en verde. Siguiente: T-060 |
 | 23-09-2026 | **T-052 abierta desde dentro de T-047**: la geografía de precios no es una cifra. Al turno 100, entre las diez plazas de una partida, la dispersión de precios es de **0,0 puntos en la lana, 0,4 en el hierro y 0,6 en la sal**: lo que distingue una comarca de otra cuesta lo mismo en todas partes, y la comisión sola es un 2 % por lado. Se ensayaron y descartaron las dos palancas de datos que quedaban (liquidez de los menores a 300, que además **quita el comprador** y hunde el prestigio a 0 de 24 filas; y margen al 2 %, que no mueve la dispersión). La razón se lee en el código: el precio de una plaza solo cambia si alguien compra o vende allí, y la sal, el hierro y la lana no se comercian en ninguna parte, así que se quedan clavados en su único `precioBaseMil` global. **Ninguna cifra puede abaratar la sal de Añana frente a la de Sevilla.** Ficha [T-052](docs/plan/T-052-geografia-de-precios.md) escrita y detallada: precio base por comarca derivado de sus potenciales, con su tabla de abundancia, los cuatro sitios que hoy usan el número global y criterios de aceptación con cifras. T-047 se reanuda después |
 | 24-09-2026 | **La aritmética del comercio, hasta el fondo.** Con libertad para hacer lo mejor para el juego, fui a que el comercio exista. **Adoptado**: el arbitraje ordenaba las parejas de plazas con los precios acolchados (puja 20 %, rebaja 10 %), así que necesitaba una diferencia bruta **del 33 %** antes de mirar siquiera; con la sal de 9800 a 12600 entre dos plazas suyas no veía **ni una pareja en toda la partida**. Ahora ordena por lo que sabe y el acolchado se queda en los límites de la orden, que deben ser holgados o la compra se cae por precio. De 0 parejas a **106**, sin mover el recuento. **La causa última, con el volcado delante**: 106 parejas, 200 maravedís de bolsa y **`hueco = 0`** — no falta ocasión, ni dinero, ni plazas, ni precio, **falta sitio en la recua**: doce cargas de pan para un porte de diez. Cuatro caminos medidos y descartados, uno de ellos con **el primer negocio rentable de toda la investigación** (margen +51) a costa de hundir la escasez. La salida la tiene escrita el diseño desde T-035: la venta da de comer a las recuas. Ficha [T-055](docs/plan/T-055-la-venta-da-de-comer.md). 1021 tests en verde |
 | 24-09-2026 | **T-054 hecha: el precio mira la distancia a donde se produce.** La sal era cara tierra adentro *porque había que llevarla hasta allí*, y hasta ahora el precio solo miraba el potencial de la propia comarca: una comarca sin sal pegada a una salina cotizaba igual que otra a trescientos kilómetros. Ahora el nivel que manda es el mejor del mapa descontando **un escalón por cada tres jornadas**. El gradiente aparece: la sal pasa de valer el 120 % en **21 de 23 plazas** —un muro plano— a escalonarse en 70, 80, 90, 100 y 120; el hierro, en 80, 100, 110 y 120. Solo las plazas necesitan precio (diez o veinte por partida), así que se mide desde cada una con las jornadas de verano de la administración y una memoria por turno. Campañas: 116 / **118** / 112 frente a 116 / 112 / 113, y el **prestigio sube de 4 a 7 filas** con los mercaderes al 87 % de la mediana (antes 63 %) y los arrieros al 102 %. `negociosRentables` sigue en 0, pero ya no por el precio: la bolsa del robot son dos maravedís. 1021 tests en verde |
@@ -262,7 +183,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Riesgo | Mitigación prevista |
 |---|---|
 | ~~El catálogo geográfico es mucho trabajo manual~~ **resuelto el 18-09-2026**: las diez regiones están escritas y validadas | Lo que queda es afinarlo con el banco de pruebas (T-046) y la pasada de ortografía de los nombres visibles (T-014) |
-| El equilibrio entre ocho casas puede irse de las manos | El banco mide por partida y casa con robots que juegan su vía y planean su bloque: en la base `T-051` solo **3 de las 24 filas de prestigio** entran en la horquilla 80 %–120 % (2 en 1085 y 1212), con monjes y hortelanos arriba y ferrones y Mesta abajo. Es exactamente el trabajo de T-047, con los hallazgos de la bitácora ya medidos |
+| El equilibrio entre ocho casas puede irse de las manos | **v1 cerrada con excepciones (25-09-2026):** de 471 filas evaluadas cumplen 352; el prestigio (15 de 72 en la horquilla), la escasez, la tierra, el dominio y el comercio del prestigio quedan como excepciones en [T-047 §9](docs/plan/T-047-equilibrio-v1.md), a reabrir tras T-103 con la decisión sobre los monjes, el ritmo y la feria destacada |
 | La complejidad puede crecer por encima de lo divertido | Cada mecánica nueva debe justificar qué decisión añade; si no añade decisión, se descarta |
 | Determinismo roto sin darse cuenta | Tests de reproducción con huella de estado desde T-002 |
 | ~~El atlas se planta si el mapa pasa de 380 comarcas~~ **resuelto el 18-09-2026**: la horquilla es 300–430 mientras quede relleno y 320–380 cuando el catálogo esté completo | Si al terminar T-015 el mapa se pasa de 380, se recortan comarcas en las regiones más densas, no se sube el límite |

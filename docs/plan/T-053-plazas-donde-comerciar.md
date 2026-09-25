@@ -1,6 +1,6 @@
 # T-053 · Plazas donde comerciar
 
-**Fase:** 2 · Motor · **Depende de:** T-049, T-052 · **Estado:** en curso
+**Fase:** 2 · Motor · **Depende de:** T-049, T-052 · **Estado:** **hecha (v1; 25-09-2026), con su criterio 3 como excepción de T-047 v1**
 
 ## 1. Contexto
 

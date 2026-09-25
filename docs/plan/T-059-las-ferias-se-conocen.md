@@ -1,6 +1,6 @@
 # T-059 · Las ferias se conocen y se buscan
 
-**Fase:** 2 · Motor y banco · **Depende de:** T-053 · **Estado:** en curso
+**Fase:** 2 · Motor y banco · **Depende de:** T-053 · **Estado:** **hecha (v1; 25-09-2026), con su criterio 3 como excepción de T-047 v1**
 
 ## 1. Contexto
 
@@ -271,3 +271,28 @@ Lo que sí queda a la vista:
 umbral de la feria destacada a lo que vende un feriante corriente (tabla de prestigio, un solo valor),
 o se resuelve primero la viabilidad de la Mesta como feriante (que guarde su lana para la feria
 aunque hoy no le quepa el viaje, y que el viaje se dé en tramos con las ventas del camino).
+
+### 9.3 La Mesta como feriante: lo que se ha medido y por qué queda abierto (25-09-2026)
+
+Por decisión del usuario se intentó resolver la Mesta como feriante antes de cerrar T-047 v1. **No
+se ha conseguido**, y estos son los ensayos, todos con las tres semillas de 1492 y **descartados**
+(y revertidos):
+
+| Ensayo | Resultado |
+|---|---|
+| `feriar` con bolsa de maravedís, colchón 60 → 10 | Igual: la bolsa no ata |
+| Ventas hacia la feria (`plantarVentasDeFeria`), corregida (la feria no cuenta como posada) | Igual: en el camino ya hay una posada a 3 jornadas |
+| El planificador cuenta lo cobrado en la feria para pagar la vuelta (`Parada.cobra`) | Igual |
+| Guardar la lana en casa si hay feria con ruta conocida | **Peor**: la Mesta esquila 78 en vez de 363 y los salineros pierden su venta en feria (la lana se guarda para un viaje que no ocurre) |
+| La posada da de comer hasta el pueblo siguiente (`ultimaComarcaPisada`) | Sin efecto para la Mesta y **los salineros pierden su venta en feria** |
+| El tratante compra los materiales de las obras en espera por falta de recursos | Igual |
+| Porte extra de la Mesta, +10 (dato) | Su prestigio sube 451 → 686 y se sale de la horquilla; **tampoco llega** |
+
+**El límite es estructural.** Los tramos del catálogo miden de 4 a 10 jornadas y el bastimento se
+cobra por turno: en cada turno que cae a mitad de tramo sale de la carga (6 panes). El viaje redondo
+de la Mesta (cameros → Demanda → Montes de Oca → Alfoz de Burgos y vuelta) pide **13 a 28 panes**
+aun con las posadas y la bolsa, para un porte de 10 que además ha de llevar lana. Una feria destacada
+son 500 maravedís de volumen propio, y la lana vale 50 la carga: **el umbral es una recua entera de
+lana**, que no cabe en la misma recua que su pan. Resolverlo pide una mecánica nueva (por ejemplo,
+que una posada venda pan para el camino y se cargue allí, o caravanas de dos recuas que sumen volumen)
+y es material de T-047 v2.

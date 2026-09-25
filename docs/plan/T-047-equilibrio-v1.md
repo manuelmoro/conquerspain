@@ -1,6 +1,6 @@
 # T-047 · Ajuste de equilibrio v1
 
-**Fase:** 2 · Motor · **Depende de:** T-048, T-049, T-050, T-051 · **Estado:** en curso
+**Fase:** 2 · Motor · **Depende de:** T-048, T-049, T-050, T-051 · **Estado:** **hecha (v1, con excepciones; 25-09-2026)**
 
 ## 1. Contexto
 
@@ -178,3 +178,40 @@ ha cambiado algo más que el grupo de valores ensayado.
 
 > Esta tarea se **reabre** cada vez que se añada contenido nuevo (casas, obras, recursos). El
 > procedimiento y los criterios se quedan; se repite el ciclo.
+
+## 9. Cierre de la v1 (25-09-2026)
+
+**Decisión del usuario, el 25-09-2026:** cerrar T-047 como **v1 con excepciones documentadas** y
+reabrirla tras T-103, en vez de dejarla abierta hasta cumplir los nueve criterios. Motivo: lo que
+queda depende de decisiones de diseño y de privilegios desactivados hasta T-103 (aperos vendidos,
+contratos, portazgos, letras), y cada iteración medía ya solo ruido de una a tres filas. Es lo que
+prevé §5.1 para «un objetivo incompatible con una vía por diseño»: **no se ha movido ningún umbral
+de `OBJETIVOS`**; los criterios incumplidos quedan como excepciones a resolver en la v2.
+
+**Base de referencia** (`E-feria3-*`, robots 11, métricas 5, tres campañas de tres semillas):
+**352 filas cumplen, 119 no, ninguna sin evaluar.**
+
+| Criterio | Cumple / incumple | Estado |
+|---|---|---|
+| Ausencia (T-051) | 144 / 0 | **Cumplido** |
+| Decisiones útiles | 72 / 0 | **Cumplido** |
+| Precios | 9 / 0 | **Cumplido** |
+| Actividad | 70 / 2 | Cumple salvo dos filas |
+| Obra mayor (T80–T130) | 8 / 1 | Cumple salvo una |
+| Ganadores | 1 / 2 | Ruido: la casa de arriba cambia de semilla a semilla |
+| Escasez (2–15 %) | 33 / 39 | **Excepción:** trampas de pobreza de arranque y borde de la horquilla |
+| Prestigio (80–120 %) | 15 / 57 | **Excepción:** depende de T-103 y del privilegio de los monjes |
+| Tierra (< 5 % sin usar) | 0 / 9 | **Excepción:** baja del 38–64 % al 30–55 % con la expedición, sin llegar |
+| Dominio (T60–T100) | 0 / 9 | **Excepción:** decidir la vara del ritmo (una casa sola frente a una partida entera) |
+| Capítulo de comercio del prestigio | 0 | **Excepción:** ninguna casa llega a 500 maravedís en una feria (T-059 §9.3) |
+
+**Lo que dejó esta v1 en el motor y el banco** (todo medido en la
+[bitácora](bitacora-equilibrio.md)): la geografía de precios por comarca y su distancia a la fuente
+(T-052, T-054, T-057), la venta que da de comer y la feria que da de comer (T-055, T-059), la
+expedición que vive de la tierra (T-059 §8), el marcador rebajado a lo que cuesta ganarlo, el origen
+de los ferrones con hierro y monte propios, la Mesta que conoce su cañada (T-058), el mundo que se
+recorta a los que juegan (T-049), y un banco que evalúa los nueve criterios por partida y casa.
+
+**Para reabrirla (T-047 v2):** decidir el privilegio de los monjes, la vara del ritmo y el umbral de
+la feria destacada; desactivado T-103 en marcha, repetir las tres campañas con `--evaluar`; y
+resolver la Mesta como feriante (T-059 §9.3).
