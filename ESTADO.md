@@ -10,8 +10,14 @@
 
 ## Tarea en curso
 
-**Ninguna.** Fase 2 (motor de reglas) completa: **T-047 v1 cerrada el 25-09-2026 con excepciones**, por
-decisión del usuario, junto con T-053 y T-059 (v1). Ver [T-047 §9](docs/plan/T-047-equilibrio-v1.md).
+**[T-060 · Persistencia y esquema de datos](docs/plan/T-060-persistencia.md)** (Fase 3) — **ficha
+detallada el 25-09-2026**; implementación por empezar. Decisiones ya tomadas y medidas: SQLite con
+`node:sqlite` (sin dependencias), **estado completo por turno comprimido** (18 KB por turno con ocho
+casas; ~7 MB una partida de 12 jugadores y 240 turnos), huella comprobada al leer, órdenes entrantes
+que nunca se borran y `cuenta` dejada a T-063. Siguiente paso: `codec.ts` y la migración 1 con sus
+pruebas, después el repositorio y la transacción de resolución.
+
+Fase 2 completa: T-047 v1 cerrada con excepciones el 25-09-2026 ([T-047 §9](docs/plan/T-047-equilibrio-v1.md)).
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -21,9 +27,8 @@ decisión del usuario, junto con T-053 y T-059 (v1). Ver [T-047 §9](docs/plan/T
 
 ## Siguiente tarea
 
-**[T-060 · Persistencia y esquema de datos](docs/plan/T-060-persistencia.md)** (Fase 3). Su ficha está
-**esbozada**: la primera mitad de la tarea es detallarla (ver §2 de la skill de construcción). Lee antes
-[docs/07-arquitectura.md](docs/07-arquitectura.md) §7.4.
+Tras T-060: **[T-061 · Reloj de turnos idempotente con auditoría](docs/plan/T-061-reloj-de-turnos.md)**
+(ficha esbozada: detallarla es su primera mitad).
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
