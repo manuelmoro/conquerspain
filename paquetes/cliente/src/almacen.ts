@@ -1,6 +1,6 @@
 // El estado del cliente y sus acciones (ficha T-080 §4.2 a §4.5). Las pantallas solo leen y llaman
 // acciones; nada de aqui toca el DOM.
-import type { TablasDeReglas } from '@conquer/nucleo';
+import type { AtlasDeJugador, TablasDeReglas } from '@conquer/nucleo';
 
 import type { ClienteApi, CuentaDelCliente, EstadoRecibido } from './api.ts';
 import type { Guardado } from './guardado.ts';
@@ -18,6 +18,8 @@ export interface IntencionLocal {
 export interface PartidaAbierta {
   readonly id: string;
   readonly recibido: EstadoRecibido;
+  /** El atlas del jugador (T-081), o null si aun no ha llegado. */
+  readonly atlas: AtlasDeJugador | null;
   /** Milisegundos Unix en que el servidor la dio. */
   readonly recibidaEn: number;
   readonly desactualizada: boolean;
@@ -122,6 +124,11 @@ export class Almacen {
     this.cambiar({ errores: [...this.estadoActual.errores, { codigo, mensaje }].slice(-5) });
   }
 
+  /** Vuelve a avisar a quien escucha con el mismo estado: lo usa la interfaz al cambiar algo suyo. */
+  refrescar(): void {
+    this.cambiar({});
+  }
+
   limpiarErrores(): void {
     this.cambiar({ errores: [] });
   }
@@ -172,15 +179,17 @@ export class Almacen {
     const pendientes = leerPendientes(guardadas);
     const r = await this.dep.api.estado(id);
     if (r.ok) {
+      const atlas = await this.dep.api.atlas(id);
       const partida: PartidaAbierta = {
         id,
         recibido: r.datos,
+        atlas: atlas.ok ? atlas.datos.atlas : null,
         recibidaEn: this.dep.ahora(),
         desactualizada: false,
       };
       this.dep.guardado.escribir(
         claveDeVista(id),
-        JSON.stringify({ recibido: r.datos, recibidaEn: partida.recibidaEn }),
+        JSON.stringify({ recibido: r.datos, atlas: partida.atlas, recibidaEn: partida.recibidaEn }),
       );
       this.cambiar({ partida, pendientes, conexion: 'conectado', turnoNuevo: null });
       return;
@@ -193,12 +202,13 @@ export class Almacen {
     const vieja = this.dep.guardado.leer(claveDeVista(id));
     if (vieja !== null) {
       // La copia la escribio este mismo cliente con lo que dio el servidor (ver `api.ts`).
-      const { recibido, recibidaEn } = JSON.parse(vieja) as {
+      const { recibido, atlas, recibidaEn } = JSON.parse(vieja) as {
         recibido: EstadoRecibido;
+        atlas: AtlasDeJugador | null;
         recibidaEn: number;
       };
       this.cambiar({
-        partida: { id, recibido, recibidaEn, desactualizada: true },
+        partida: { id, recibido, atlas, recibidaEn, desactualizada: true },
         pendientes,
         conexion: 'sin-conexion',
       });

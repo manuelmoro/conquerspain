@@ -2,6 +2,7 @@
 // ruta devuelve el estado completo ni los sucesos crudos.
 import {
   VERSION_REGLAS,
+  atlasDeJugador,
   canonico,
   construirOrden,
   explicar,
@@ -208,6 +209,11 @@ export function crearApi(
         vista,
       },
     };
+  };
+
+  const verAtlas: Manejador = async (ctx) => {
+    const { estado, mundo, vista } = await estadoYVista(ctx);
+    return { estado: 200, datos: { turno: estado.turno, atlas: atlasDeJugador(vista, mundo) } };
   };
 
   const clasificacion: Manejador = async (ctx) => {
@@ -565,6 +571,7 @@ export function crearApi(
     { metodo: 'GET', patron: '/partidas/mias', manejador: privada(misPartidas) },
     { metodo: 'GET', patron: '/partidas/:id/estado', manejador: privada(verEstado) },
     { metodo: 'GET', patron: '/partidas/:id/clasificacion', manejador: privada(clasificacion) },
+    { metodo: 'GET', patron: '/partidas/:id/atlas', manejador: privada(verAtlas) },
     { metodo: 'GET', patron: '/partidas/:id/cronica/:turno', manejador: privada(verCronica) },
     { metodo: 'GET', patron: '/partidas/:id/ordenes', manejador: privada(listarOrdenes) },
     { metodo: 'POST', patron: '/partidas/:id/ordenes', manejador: privada(darOrden) },

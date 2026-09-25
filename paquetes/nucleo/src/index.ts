@@ -82,6 +82,8 @@ export type { CapituloDePrestigio, Prestigio } from './reglas/prestigio.ts';
 export { clasificacion } from './reglas/clasificacion.ts';
 export type { LineaDeClasificacion } from './reglas/clasificacion.ts';
 export { RUMBOS, rumboEntre, vistaDeJugador } from './reglas/vista.ts';
+export { atlasDeJugador } from './reglas/atlas.ts';
+export type { AtlasDeJugador, ComarcaEnAtlas, TramoEnAtlas } from './reglas/atlas.ts';
 export type {
   CasaPublica,
   Rumbo,

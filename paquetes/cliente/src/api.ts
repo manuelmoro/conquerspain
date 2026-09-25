@@ -2,7 +2,7 @@
 // error del servidor (con su codigo y su mensaje en espanyol) y **ninguna respuesta** (red caida),
 // que es la que decide si una orden se queda en la bandeja para reintentarla.
 import { VERSION_REGLAS } from '@conquer/nucleo';
-import type { Cronica, VistaJugador } from '@conquer/nucleo';
+import type { AtlasDeJugador, Cronica, VistaJugador } from '@conquer/nucleo';
 
 export type RespuestaDeApi<T> =
   | { readonly ok: true; readonly estado: number; readonly datos: T }
@@ -166,6 +166,13 @@ export class ClienteApi {
 
   estado(partida: string) {
     return this.pedir<EstadoRecibido>('GET', `/partidas/${encodeURIComponent(partida)}/estado`);
+  }
+
+  atlas(partida: string) {
+    return this.pedir<{ turno: number; atlas: AtlasDeJugador }>(
+      'GET',
+      `/partidas/${encodeURIComponent(partida)}/atlas`,
+    );
   }
 
   cronica(partida: string, turno: number) {

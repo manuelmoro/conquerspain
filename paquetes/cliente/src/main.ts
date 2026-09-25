@@ -1,4 +1,6 @@
 // Arranque del cliente (ficha T-080): enlaza la capa de datos con las pantallas y los eventos.
+import './atlas/atlas.css';
+
 import { TABLAS_DEL_JUEGO } from '@conquer/nucleo';
 
 import { Almacen } from './almacen.ts';

@@ -52,6 +52,14 @@ El mapa es la pantalla principal. Capas:
 Un conmutador permite ver el mapa en **modo económico** (qué produce cada comarca), **modo
 logístico** (jornadas y estado de caminos) y **modo político** (dueños e influencias conocidas).
 
+**Hecho en T-081.** El cliente solo recibe el **atlas del jugador** (`atlasDeJugador`, construido desde su
+vista): de lo desconocido, la silueta sin nombre ni id; de lo oído, el nombre; de lo visto, terreno,
+potenciales y dueño conocido; y los tramos cuyas dos puntas conoce. En los tres modos hay niebla, recuas
+propias con su ruta y las **jornadas** que les quedan, ferias y acontecimientos; el conmutador va abajo,
+al alcance del pulgar. Moverse y hacer zoom solo cambian el `viewBox`; los rótulos se colocan por prioridad
+(capital, propias, exploradas, oídas) sin solaparse al terminar el gesto. De momento, tintas planas y trazos
+de la maqueta: la ilustración del terreno se afina con la dirección de arte.
+
 ### 8.2.5 Ficha de comarca
 Estado, potenciales, edificios con su nivel y su límite, población y capacidad, lealtad con su
 tendencia, y las acciones posibles con su coste y su previsión. Cada acción bloqueada dice por qué
