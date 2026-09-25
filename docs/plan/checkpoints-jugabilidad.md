@@ -117,3 +117,28 @@ con dificultad. Saber qué ha pasado al resolver, no.
    modos sin explicar.
 
 **Lo que se hace:** tarea [T-088](T-088-arreglos-de-j01.md) antes de T-083; después se repite J-01.
+
+## J-01 · Segunda sesión (25-09-2026, en curso)
+
+**Quién:** el usuario, con la misma partida, en escritorio, tras los arreglos de T-088.
+
+Pinchar el mapa, la ficha en el panel lateral y el resumen del turno ya funcionan. (El mapa se vio negro una vez:
+Vite había leído `atlas.css` vacío mientras se reescribía; no es un fallo del juego y se arregla recargando.)
+
+**Hallazgos nuevos:**
+
+6. **No se sabe cómo ganar una comarca vecina.** El usuario pregunta si tiene que «evolucionar la capital
+   primero». La regla es la influencia (docs/06 §6.2), pero nada en la interfaz lo explica.
+7. **La influencia no se ve.** Solo se enseña en las comarcas **exploradas**; al empezar, todas las vecinas se
+   conocen **de oídas**, así que no sale en ningún sitio, aunque la regla dice que se acumula también en las
+   oídas. La ficha de una comarca oída dice solo «de esta comarca solo conoces el nombre».
+8. **Hoy no hay forma práctica de expandirse.** Ser vecina (+1) y no tener presencia (−1) se anulan; solo quedan
+   los regalos (+5 cada 4 turnos), que son unos 48 turnos hasta 60. Presencia y exploración necesitan recuas, y
+   moverlas no tiene interfaz hasta T-083.
+9. **La crónica deja un hueco sin rellenar**: «El rebaño de Llanada Alavesa no encuentra pasto en {comarca}»
+   (el suceso `rebanyo.sin-pasto` no lleva la comarca).
+10. **«Qué hacer: ruta»**: la acción sugerida de la crónica sale con su identificador interno.
+11. **Avisos sin salida**: el rebaño pierde cabezas cada turno sin pasto y el jugador no puede moverlo (T-083).
+
+**Lo que se hace:** 7, 9, 10 y la explicación de 6 entran en T-088 (§2, puntos 6 a 9); 8 y 11 en T-083, que
+además pasa a ser la tarea que hace jugable la expansión.

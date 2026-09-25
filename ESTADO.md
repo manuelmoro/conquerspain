@@ -11,8 +11,11 @@
 ## Tarea en curso
 
 **T-088 · Arreglos de J-01** ([ficha](docs/plan/T-088-arreglos-de-j01.md)). Todo el trabajo está hecho y
-verificado (también en navegador, escritorio y móvil); **solo falta que el usuario repita J-01**, que es su
-criterio 6. Dónde va, en la ficha §4.
+verificado (también en navegador, escritorio y móvil). La **segunda sesión de J-01** (25-09-2026) encontró más
+cosas y se han añadido a la ficha (§2, puntos 6 a 9): influencia visible también en las comarcas oídas, la ficha
+que explica cómo se gana una comarca, crónica sin huecos `{comarca}` y acción sugerida legible; lo que necesita
+recuas (presencia, exploración, mover rebaños) va a T-083. **Pendiente de decisión del usuario:** el regalo al
+concejo en comarcas oídas. Dónde va, en la ficha §4.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -22,8 +25,8 @@ criterio 6. Dónde va, en la ficha §4.
 
 ## Siguiente tarea
 
-**Repetir el checkpoint J-01 · Entender y ordenar** (usuario, 20–30 minutos); si supera, se cierra T-088 y
-sigue **T-083**
+Terminar **T-088** (§2, puntos 6 a 9) y que el usuario cierre el checkpoint **J-01 · Entender y ordenar**; si
+supera, sigue **T-083**, que ahora también hace jugable la expansión
 (recuas y rebaños en el mapa). Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
 ```bash
@@ -121,6 +124,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **J-01, segunda sesión: el mapa, la ficha y el resumen ya funcionan; salen seis hallazgos nuevos**, anotados en el checkpoint y repartidos en el plan: a T-088, la influencia visible en las comarcas oídas, la ficha que explica cómo ganar una comarca, la crónica sin huecos (`{comarca}` en el rebaño sin pasto) y la acción sugerida legible; a T-083, la expansión jugable (recuas presentes y exploradoras desde la ficha) y mover los rebaños desde sus avisos |
 | 25-09-2026 | **T-088 (en curso): arreglos de J-01, a falta de repetir el checkpoint.** El clic en escritorio no abría la ficha por dos causas: la captura del puntero al pulsar y un camino que pasaba por encima de la capital; ahora el toque se separa del arrastre por 4 px y busca la comarca en toda la pila bajo el puntero. Panel lateral en escritorio y hoja inferior en móvil, confirmación dentro de la tarjeta de la acción, entrada con formulario y errores a la vista, nombres en castellano, fichas de recursos, leyenda y explicación de cada modo. **Resumen del turno** al resolver: por recurso tenías / producido / otros / tienes / cambio, vecinos y la crónica por secciones. Probado en Chrome sin cabeza en escritorio y en móvil táctil. 38,5 KB gzip |
 | 25-09-2026 | **T-082 hecha: ficha de comarca y bandeja; el juego ya se puede jugar a mano.** La ficha se compone en el núcleo (`fichaDeComarca`): cada acción con coste (el mismo que cobra el servidor), turnos y efecto previsto, recalculado con la misma función de producción que la fase 2 (`datosDeProduccion`, extraída sin cambiar ninguna huella); cada bloqueo con causa y salida; la incorporación juzgada con lo que el jugador sabe de las otras casas, para no filtrar la niebla. La bandeja separa disponible, reservado y producido, dice cuánto falta para el corte y agrupa por enviar / enviadas (retirables) / en marcha, con colas ↑↓ y plan de seis turnos. Para J-01: `POST /partidas/:id/avanzar` en partidas de prueba y `npm run partida:prueba`. **J-01 pendiente de sesión humana.** 17 pruebas nuevas; 1234 en verde |
 | 25-09-2026 | **T-081 hecha: el atlas.** El cliente recibe solo el **atlas del jugador** (`atlasDeJugador`, desde su vista): de lo desconocido, la silueta sin id ni nombre; de lo oído, el nombre; de lo visto, terreno, potenciales y dueño; tramos con las dos puntas conocidas. Composición pura en capas (terreno, comarcas, niebla, caminos, movimiento, avisos, rótulos) con tres modos —económico por potencial, logístico con jornadas, cañadas y puertos cerrados en invierno, político por dueño e influencia—, rótulos por prioridad sin solaparse, encuadre con zoom alrededor del dedo y pintado SVG que al moverse solo cambia el `viewBox`. Niebla comprobada en las tres casas de una partida real; el mayor dibujo, bajo 2 000 figuras; 33,6 KB gzip. Mirarlo con ojos humanos queda para J-01. 11 pruebas nuevas; 1217 en verde |
