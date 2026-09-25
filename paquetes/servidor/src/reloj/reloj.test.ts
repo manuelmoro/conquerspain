@@ -340,6 +340,29 @@ describe('las ordenes al entrar', () => {
   }, 60_000);
 });
 
+describe('una orden que llega sellada con un turno cerrado', () => {
+  it('el reloj la rechaza con su motivo y no detiene la partida (T-062 §4.8)', async () => {
+    const e = entorno();
+    const estado = await crearPartida(e.repo, 'p1');
+    const comarca = Object.keys(estado.comarcas)[0] ?? '';
+    e.reloj_a(proximaResolucion(ANCLA, HORA, 1));
+    await e.reloj.pasada();
+    // Se cuela sin comprobar el turno (como una carrera): lleva el 1 y la partida esta en el 2.
+    await e.repo.guardarOrden(
+      estado.id,
+      ordenDeEjemplo('vieja', 'mesta' as IdJugador, comarca as never, 1),
+      ANCLA,
+    );
+    e.reloj_a(proximaResolucion(ANCLA, HORA, 2));
+    const informe = await e.reloj.pasada();
+    expect(informe).toMatchObject({ resueltos: 1, detenidas: [] });
+    expect((await e.repo.partida(estado.id))?.estado).toBe('activa');
+    expect(await e.repo.ordenesPendientes(estado.id)).toHaveLength(0);
+    expect(await e.repo.ordenesDelTurno(estado.id, 2)).toHaveLength(0);
+    await e.repo.cerrar();
+  }, 60_000);
+});
+
 describe('el avance manual', () => {
   it('solo en partidas de prueba, y sin mover el calendario', async () => {
     const e = entorno();

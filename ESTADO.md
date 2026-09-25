@@ -15,9 +15,8 @@ detallada el 25-09-2026**; implementación por empezar. Decisiones tomadas: `nod
 enrutador mínimo (sin Fastify), el `Autenticador` como interfaz hasta T-063, **intención → orden**
 construida en el núcleo con los costes de la casa, idempotencia por `idCliente`, límites y una prueba
 de fuga sobre el JSON serializado. Detecta una carrera real (una orden sellada con el turno N que llega
-tras resolverse el N tumbaría la partida en el reloj) y fija dos arreglos. Orden de trabajo: (A)
-`intencion.ts` en el núcleo; (B) los dos arreglos; (C) errores, enrutador, límites y manejadores;
-(D) fuga y HTTP real.
+tras resolverse el N tumbaría la partida en el reloj) y fija dos arreglos. **Hechas A (`intencion.ts` en el núcleo, 35 pruebas) y B (los dos arreglos de la carrera).** Faltan (C)
+errores, enrutador, límites y manejadores, y (D) la prueba de fuga, los límites y el HTTP real.
 
 Fase 2 completa: T-047 v1 cerrada con excepciones el 25-09-2026 ([T-047 §9](docs/plan/T-047-equilibrio-v1.md)).
 

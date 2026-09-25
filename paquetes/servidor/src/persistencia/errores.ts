@@ -4,6 +4,7 @@ export const CODIGOS_DE_PERSISTENCIA = [
   'huella-no-coincide',
   'estado-invalido',
   'conflicto-de-turno',
+  'turno-cerrado',
   'encadenado-roto',
   'partida-desconocida',
   'partida-duplicada',

@@ -133,7 +133,12 @@ export interface Repositorio {
   ultimoEstado(id: IdPartida, opciones?: OpcionesDeLectura): Promise<EstadoPartida | null>;
 
   /** Las ordenes entrantes solo se anyaden y cambian de estado: nunca se borran. */
-  guardarOrden(id: IdPartida, orden: Orden, ahora: number): Promise<void>;
+  /**
+   * Guarda una orden entrante pendiente. Con `turnoEsperado`, falla con `turno-cerrado` (sin guardar)
+   * si la partida ya no esta en ese turno: la comprobacion va **dentro** de la misma transaccion, asi
+   * que una orden sellada con el turno N no puede colarse despues de resolverse el N.
+   */
+  guardarOrden(id: IdPartida, orden: Orden, ahora: number, turnoEsperado?: number): Promise<void>;
   ordenesPendientes(id: IdPartida): Promise<readonly OrdenGuardada[]>;
   /** true si estaba pendiente y ahora esta cancelada; false si ya no se podia. */
   cancelarOrden(id: IdPartida, orden: IdOrden, motivo: string): Promise<boolean>;

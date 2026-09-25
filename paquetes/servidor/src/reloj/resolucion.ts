@@ -77,6 +77,14 @@ export async function resolverUnTurno(
     const entran: Orden[] = [];
     const rechazadas: OrdenRechazada[] = [];
     for (const guardada of pendientes) {
+      if (guardada.orden.turnoAlta !== estado.turno) {
+        // Llego sellada con un turno que ya se cerro: el motor la rechazaria y tumbaria la partida.
+        rechazadas.push({
+          id: guardada.id,
+          motivo: `turno-cerrado: era del turno ${String(guardada.orden.turnoAlta)} y se resuelve el ${String(estado.turno)}`,
+        });
+        continue;
+      }
       const valida = validarOrdenEnMundo(guardada.orden, mundo);
       if (valida.ok) entran.push(guardada.orden);
       else rechazadas.push({ id: guardada.id, motivo: explicar(valida.errores) });

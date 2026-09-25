@@ -334,29 +334,43 @@ export class RepositorioSqlite implements Repositorio {
 
   // ---------------------------------------------------------------- ordenes
 
-  async guardarOrden(id: IdPartida, orden: Orden, ahora: number): Promise<void> {
-    const partida = this.uno('SELECT turno_actual FROM partida WHERE id = ?', id);
-    if (partida === null) throw this.desconocida(id);
-    if (
-      this.uno('SELECT 1 AS hay FROM orden WHERE partida = ? AND id = ?', id, orden.id) !== null
-    ) {
-      throw new ErrorDePersistencia(
-        'orden-duplicada',
-        `La orden "${orden.id}" ya esta guardada en la partida "${id}": cada orden tiene su identificador.`,
-        { partida: id, orden: orden.id },
+  async guardarOrden(
+    id: IdPartida,
+    orden: Orden,
+    ahora: number,
+    turnoEsperado?: number,
+  ): Promise<void> {
+    this.transaccion(() => {
+      const partida = this.uno('SELECT turno_actual FROM partida WHERE id = ?', id);
+      if (partida === null) throw this.desconocida(id);
+      const actual = entero(partida, 'turno_actual');
+      if (turnoEsperado !== undefined && turnoEsperado !== actual) {
+        throw new ErrorDePersistencia(
+          'turno-cerrado',
+          `La orden es del turno ${String(turnoEsperado)} y la partida "${id}" ya esta en el ${String(actual)}: ese turno se ha cerrado. Vuelve a leer el estado y da la orden de nuevo.`,
+          { partida: id, esperado: turnoEsperado, actual },
+        );
+      }
+      if (
+        this.uno('SELECT 1 AS hay FROM orden WHERE partida = ? AND id = ?', id, orden.id) !== null
+      ) {
+        throw new ErrorDePersistencia(
+          'orden-duplicada',
+          `La orden "${orden.id}" ya esta guardada en la partida "${id}": cada orden tiene su identificador.`,
+          { partida: id, orden: orden.id },
+        );
+      }
+      this.ejecutar(
+        `INSERT INTO orden (partida, id, jugador, turno_recibida, recibida_en, estado, contenido)
+         VALUES (?, ?, ?, ?, ?, 'pendiente', ?)`,
+        id,
+        orden.id,
+        orden.jugador,
+        actual,
+        ahora,
+        canonico(orden),
       );
-    }
-    this.ejecutar(
-      `INSERT INTO orden (partida, id, jugador, turno_recibida, recibida_en, estado, contenido)
-       VALUES (?, ?, ?, ?, ?, 'pendiente', ?)`,
-      id,
-      orden.id,
-      orden.jugador,
-      entero(partida, 'turno_actual'),
-      ahora,
-      canonico(orden),
-    );
-    return;
+    });
   }
 
   async ordenesPendientes(id: IdPartida): Promise<readonly OrdenGuardada[]> {

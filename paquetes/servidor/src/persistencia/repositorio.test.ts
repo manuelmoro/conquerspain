@@ -275,6 +275,19 @@ describe('las ordenes entrantes', () => {
     await repo.cerrar();
   });
 
+  it('con turno esperado, una orden de un turno ya cerrado no se guarda: turno-cerrado (T-062 §4.8)', async () => {
+    const { repo, estado, mundo, comarca } = await conPartida();
+    const orden = ordenDeEjemplo('tarde', 'mesta' as IdJugador, comarca as never, 1);
+    await repo.guardarOrden(estado.id, orden, AHORA, 1);
+    await repo.guardarResolucion(resolverParaGuardar(estado, mundo), AHORA);
+    const otra = ordenDeEjemplo('otra', 'mesta' as IdJugador, comarca as never, 1);
+    expect(await codigoDelError(() => repo.guardarOrden(estado.id, otra, AHORA, 1))).toBe(
+      'turno-cerrado',
+    );
+    expect((await repo.ordenesPendientes(estado.id)).map((o) => o.id)).toEqual(['tarde']);
+    await repo.cerrar();
+  });
+
   it('al resolver, las aplicadas y las rechazadas dejan de estar pendientes y no se cancelan', async () => {
     const { repo, estado, mundo, comarca } = await conPartida();
     for (const id of ['a', 'b', 'c']) {

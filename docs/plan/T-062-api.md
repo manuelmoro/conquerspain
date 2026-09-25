@@ -212,8 +212,21 @@ npx vitest run paquetes/servidor paquetes/nucleo/pruebas/intencion.test.ts
 3. `docs/07-arquitectura.md` §7.4: rutas, frontera intención→orden, límites y decisión sobre Fastify.
 4. Commit: `T-062: API de partida, órdenes y vista por jugador`.
 
-## 9. Dónde va
+## 9. Dónde va (25-09-2026)
 
-Ficha detallada el 25-09-2026. **Nada implementado todavía.** Orden de trabajo: (A) `intencion.ts` en el
-núcleo con sus pruebas; (B) los dos arreglos de §4.8; (C) errores, enrutador, límites y manejadores;
-(D) la prueba de fuga y el adaptador HTTP.
+**Hechas y verificadas las partes A y B.**
+
+- **A · `paquetes/nucleo/src/ordenes/intencion.ts`** (exportada por el núcleo): `validarIntencion` (estricta:
+  rechaza los diez campos internos, los que fijan las reglas —`acemilas`, `cabezas`— y cualquier campo
+  extra; exige `idCliente`; `turnoProgramado` y `turnos` con su forma; la letra de cambio, desactivada) y
+  `construirOrden` (comprueba propiedad y conocimiento, fija autor, turno, estado, cola y **coste con los
+  modificadores de la casa**). Se reutiliza `validarOrdenEntrante` para la forma de cada tipo: la
+  intención se valida como una orden con marcadores en los campos internos, y esos se sustituyen.
+  35 pruebas: forma, cada campo interno, coste con dos casas, propiedad (comarca, recua, rebaño,
+  conocimiento) y que **el motor acepta** una intención de cada tipo principal.
+- **B · carrera de §4.8:** `Repositorio.guardarOrden(..., turnoEsperado?)` falla con `turno-cerrado` dentro de
+  la misma transacción; `resolverUnTurno` rechaza (con motivo) las pendientes de un turno cerrado y **no
+  detiene la partida**. Dos pruebas nuevas.
+
+**Falta:** (C) `errores`, `tipos`, `enrutador`, `limites`, `ordenes`, `manejadores`; (D) la prueba de fuga
+sobre tres casas, los criterios 7 y 10 (límites y HTTP real) y el adaptador `node:http`.
