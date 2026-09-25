@@ -16,6 +16,10 @@ export const CODIGOS_DE_API = [
   'cronica-no-disponible',
   'demasiadas-ordenes',
   'demasiadas-peticiones',
+  'correo-invalido',
+  'enlace-invalido',
+  'tipo-de-contenido',
+  'confirmacion-necesaria',
   'error-interno',
 ] as const;
 
@@ -37,6 +41,10 @@ const ESTADO_HTTP: Readonly<Record<CodigoDeApi, number>> = {
   'cronica-no-disponible': 404,
   'demasiadas-ordenes': 429,
   'demasiadas-peticiones': 429,
+  'correo-invalido': 400,
+  'enlace-invalido': 401,
+  'tipo-de-contenido': 415,
+  'confirmacion-necesaria': 400,
   'error-interno': 500,
 };
 

@@ -14,6 +14,13 @@ import { validarCronica } from './validarCronica.ts';
 import { MIGRACIONES, comprobarMigraciones } from './migraciones/index.ts';
 import type { Migracion } from './migraciones/index.ts';
 import type {
+  Cuenta,
+  EnlaceNuevo,
+  RepositorioDeCuentas,
+  SesionGuardada,
+  SesionNueva,
+} from './cuentas.ts';
+import type {
   AuditoriaDeResolucion,
   EstadoDeOrdenGuardada,
   FilaDePartida,
@@ -87,7 +94,7 @@ function estadoDeOrden(valor: string): EstadoDeOrdenGuardada {
   return encontrado;
 }
 
-export class RepositorioSqlite implements Repositorio {
+export class RepositorioSqlite implements Repositorio, RepositorioDeCuentas {
   private readonly bd: DatabaseSync;
 
   /** `ruta` es un fichero, o `':memory:'` para las pruebas. */
@@ -599,6 +606,157 @@ export class RepositorioSqlite implements Repositorio {
         'encadenado-roto',
         `El estado nuevo del turno ${String(r.estadoNuevo.turno)} de la partida "${r.partida}" no encadena con el guardado del turno ${String(r.turnoResuelto)}: su firma no es la que sale de resolver ese estado. No se ha escrito nada.`,
         { partida: r.partida, turno: r.estadoNuevo.turno },
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------- cuentas y sesiones (T-063)
+
+  private filaDeCuenta(fila: Fila): Cuenta {
+    return {
+      id: texto(fila, 'id'),
+      correo: texto(fila, 'correo'),
+      nombre: texto(fila, 'nombre'),
+      creadaEn: entero(fila, 'creada_en'),
+      borradaEn: enteroONulo(fila, 'borrada_en'),
+    };
+  }
+
+  async crearEnlace(enlace: EnlaceNuevo): Promise<void> {
+    this.ejecutar(
+      'INSERT INTO enlace_de_acceso (hash, correo, nombre, creado_en, expira_en) VALUES (?, ?, ?, ?, ?)',
+      enlace.hash,
+      enlace.correo,
+      enlace.nombre,
+      enlace.creadoEn,
+      enlace.expiraEn,
+    );
+  }
+
+  async consumirEnlace(
+    hash: string,
+    ahora: number,
+  ): Promise<{ readonly correo: string; readonly nombre: string | null } | null> {
+    return this.transaccion(() => {
+      const cambios = this.ejecutar(
+        'UPDATE enlace_de_acceso SET usado_en = ? WHERE hash = ? AND usado_en IS NULL AND expira_en > ?',
+        ahora,
+        hash,
+        ahora,
+      );
+      if (cambios === 0) return null;
+      const fila = this.uno('SELECT correo, nombre FROM enlace_de_acceso WHERE hash = ?', hash);
+      return fila === null
+        ? null
+        : { correo: texto(fila, 'correo'), nombre: textoONulo(fila, 'nombre') };
+    });
+  }
+
+  async enlacesPedidos(correo: string, desde: number): Promise<number> {
+    const fila = this.uno(
+      'SELECT COUNT(*) AS n FROM enlace_de_acceso WHERE correo = ? AND creado_en >= ?',
+      correo,
+      desde,
+    );
+    return fila === null ? 0 : entero(fila, 'n');
+  }
+
+  async cuentaDeCorreo(correo: string, id: string, nombre: string, ahora: number): Promise<Cuenta> {
+    return this.transaccion(() => {
+      const existente = this.uno('SELECT * FROM cuenta WHERE correo = ?', correo);
+      if (existente !== null) return this.filaDeCuenta(existente);
+      this.ejecutar(
+        'INSERT INTO cuenta (id, correo, nombre, creada_en) VALUES (?, ?, ?, ?)',
+        id,
+        correo,
+        nombre,
+        ahora,
+      );
+      return { id, correo, nombre, creadaEn: ahora, borradaEn: null };
+    });
+  }
+
+  async cuenta(id: string): Promise<Cuenta | null> {
+    const fila = this.uno('SELECT * FROM cuenta WHERE id = ?', id);
+    return fila === null ? null : this.filaDeCuenta(fila);
+  }
+
+  async crearSesion(sesion: SesionNueva): Promise<void> {
+    this.ejecutar(
+      'INSERT INTO sesion (hash, cuenta, creada_en, expira_en) VALUES (?, ?, ?, ?)',
+      sesion.hash,
+      sesion.cuenta,
+      sesion.creadaEn,
+      sesion.expiraEn,
+    );
+  }
+
+  async sesion(hash: string): Promise<SesionGuardada | null> {
+    const fila = this.uno('SELECT * FROM sesion WHERE hash = ?', hash);
+    return fila === null
+      ? null
+      : {
+          cuenta: texto(fila, 'cuenta'),
+          expiraEn: entero(fila, 'expira_en'),
+          revocadaEn: enteroONulo(fila, 'revocada_en'),
+        };
+  }
+
+  async revocarSesion(hash: string, ahora: number): Promise<boolean> {
+    return (
+      this.ejecutar(
+        'UPDATE sesion SET revocada_en = ? WHERE hash = ? AND revocada_en IS NULL',
+        ahora,
+        hash,
+      ) > 0
+    );
+  }
+
+  async revocarSesionesDe(cuenta: string, ahora: number): Promise<number> {
+    return this.ejecutar(
+      'UPDATE sesion SET revocada_en = ? WHERE cuenta = ? AND revocada_en IS NULL',
+      ahora,
+      cuenta,
+    );
+  }
+
+  async borrarCuenta(id: string, ahora: number): Promise<void> {
+    this.transaccion(() => {
+      const fila = this.uno('SELECT correo FROM cuenta WHERE id = ?', id);
+      if (fila === null) return;
+      this.ejecutar(
+        'UPDATE enlace_de_acceso SET usado_en = ? WHERE correo = ? AND usado_en IS NULL',
+        ahora,
+        texto(fila, 'correo'),
+      );
+      this.ejecutar(
+        'UPDATE sesion SET revocada_en = ? WHERE cuenta = ? AND revocada_en IS NULL',
+        ahora,
+        id,
+      );
+      this.ejecutar('UPDATE participante SET cuenta = NULL WHERE cuenta = ?', id);
+      this.ejecutar(
+        'UPDATE cuenta SET correo = ?, nombre = ?, borrada_en = ? WHERE id = ?',
+        `borrada-${id}`,
+        'Cuenta borrada',
+        ahora,
+        id,
+      );
+    });
+  }
+
+  async unirCuenta(partida: IdPartida, jugador: IdJugador, cuenta: string): Promise<void> {
+    const cambios = this.ejecutar(
+      'UPDATE participante SET cuenta = ? WHERE partida = ? AND jugador = ?',
+      cuenta,
+      partida,
+      jugador,
+    );
+    if (cambios === 0) {
+      throw new ErrorDePersistencia(
+        'partida-desconocida',
+        `La partida "${partida}" no tiene ningun jugador "${jugador}".`,
+        { partida, jugador },
       );
     }
   }

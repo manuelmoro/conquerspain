@@ -153,7 +153,11 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
   - `GET /partidas/:id/eventos` (SSE: «turno resuelto»)
 - **Nunca** se envía al cliente información que su jugador no debe ver. El filtrado se hace en el
   servidor, sobre el estado completo, con una función del núcleo (`vistaDeJugador`).
-- Cuentas: correo + enlace mágico o contraseña con `argon2`. Sesiones con cookie firmada.
+- Cuentas (T-063, `paquetes/servidor/src/cuentas/`): **solo enlace mágico** por correo (sin contraseñas, así que
+  nada que guardar ni filtrar, y sin `argon2`, que exige una dependencia nativa). El envío va tras la interfaz
+  `EnviadorDeCorreo` (SMTP en T-064). Tokens de 256 bits de los que **solo se guarda el SHA-256**; sesión con
+  cookie `HttpOnly; Secure; SameSite=Lax` firmada con HMAC y caducidad absoluta de 30 días; misma respuesta
+  exista o no el correo; límites por correo y origen; borrado que anonimiza y deja al jugador vivo hasta T-105.
 
 ## 7.5 Cliente
 

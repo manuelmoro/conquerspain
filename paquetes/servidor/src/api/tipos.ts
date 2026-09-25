@@ -8,6 +8,8 @@ export interface PeticionHttp {
   readonly cabeceras: Readonly<Record<string, string>>;
   /** El cuerpo tal como llego, o null si no habia. */
   readonly cuerpo: string | null;
+  /** La direccion del cliente, para limitar lo que llega sin sesion. La rellena el adaptador. */
+  readonly origen?: string;
 }
 
 export interface RespuestaHttp {

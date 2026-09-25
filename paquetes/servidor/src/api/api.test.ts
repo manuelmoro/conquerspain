@@ -240,7 +240,7 @@ describe('el cliente manipulado (criterio 2)', () => {
     const r = await api({
       metodo: 'POST',
       ruta: '/partidas/p1/ordenes',
-      cabeceras: { 'x-cuenta': MESTA },
+      cabeceras: { 'x-cuenta': MESTA, 'content-type': 'application/json' },
       cuerpo: JSON.stringify({ idCliente: 'k1', tipo: 'roturar', comarca: capital }),
     });
     expect(r.estado).toBe(409);

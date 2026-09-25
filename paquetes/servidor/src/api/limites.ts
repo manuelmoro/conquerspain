@@ -29,3 +29,29 @@ export class CuboDeFichas {
     return Math.ceil((1 - fichas) / this.porSegundo);
   }
 }
+
+/**
+ * Limite por ventana deslizante: como mucho `maximo` usos de una clave en `ventanaMs`. Sirve para lo
+ * que se limita por origen (entradas y enlaces). En memoria, como el cubo de fichas.
+ */
+export class LimitePorVentana {
+  private readonly usos = new Map<string, number[]>();
+
+  constructor(
+    private readonly maximo: number,
+    private readonly ventanaMs: number,
+  ) {}
+
+  /** Registra un uso; devuelve 0 si cabia o los segundos que faltan para que vuelva a caber. */
+  usar(clave: string, ahora: number): number {
+    const recientes = (this.usos.get(clave) ?? []).filter((t) => t > ahora - this.ventanaMs);
+    if (recientes.length >= this.maximo) {
+      this.usos.set(clave, recientes);
+      const primero = recientes[0] ?? ahora;
+      return Math.max(1, Math.ceil((primero + this.ventanaMs - ahora) / 1000));
+    }
+    recientes.push(ahora);
+    this.usos.set(clave, recientes);
+    return 0;
+  }
+}

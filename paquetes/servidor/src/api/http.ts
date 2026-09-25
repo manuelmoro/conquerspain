@@ -50,6 +50,7 @@ export async function servirHttp(
         ruta,
         cabeceras,
         cuerpo: await leerCuerpo(entrada),
+        origen: entrada.socket.remoteAddress ?? 'desconocido',
       });
       salida.writeHead(respuesta.estado, respuesta.cabeceras);
       salida.end(JSON.stringify(respuesta.cuerpo));

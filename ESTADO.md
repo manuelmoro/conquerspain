@@ -10,13 +10,7 @@
 
 ## Tarea en curso
 
-**[T-063 · Cuentas, sesiones y seguridad](docs/plan/T-063-cuentas.md)** (Fase 3) — **ficha detallada el
-25-09-2026**; implementación por empezar. Decisiones tomadas: **solo enlace mágico** (sin contraseñas ni
-`argon2`), tokens guardados **solo como hash SHA-256**, cookie firmada con HMAC (`HttpOnly`, `Secure`,
-`SameSite=Lax`, 30 días), respuesta idéntica exista o no el correo, límites por correo y origen, y
-borrado que anonimiza y deja al jugador vivo (`cuenta = NULL`) hasta T-105. El envío real de correo va
-tras una interfaz (T-064). Orden: migración 2 y repositorio de cuentas; tokens y servicio; rutas y
-autenticador; los tres ataques y HTTP real.
+**Ninguna.** T-063 (cuentas y sesiones) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -26,8 +20,10 @@ autenticador; los tres ataques y HTTP real.
 
 ## Siguiente tarea
 
-Tras T-063: **[T-064 · Avisos de resolución (SSE y correo)](docs/plan/T-064-avisos.md)** (ficha esbozada).
-Pondrá el envío real de correo tras `EnviadorDeCorreo`.
+**[T-064 · Avisos de resolución (SSE y correo)](docs/plan/T-064-avisos.md)** (Fase 3). Su ficha está
+**esbozada**: detallarla es la primera mitad de la tarea. Pone el SMTP real tras `EnviadorDeCorreo` y el
+`GET /partidas/:id/eventos` que T-062 dejó fuera. Recordar: `POST /partidas` (T-065) enlazará cuentas con
+jugadores con `unirCuenta`.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
@@ -69,7 +65,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061) y API (T-062) hechos, sin cuentas todavía; `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061), API (T-062) y cuentas (T-063) hechos, sin avisos todavía; `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -115,6 +111,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-063 hecha: cuentas, sesiones y seguridad.** **Solo enlace mágico**, sin contraseñas ni `argon2` (nada que guardar ni filtrar); el correo va tras `EnviadorDeCorreo` (SMTP en T-064). Tokens de 256 bits de los que solo se guarda el **SHA-256** (se recorrió toda la base buscándolos), cookie `HttpOnly; Secure; SameSite=Lax` firmada con HMAC y comparada en tiempo constante, caducidad absoluta de 30 días y revocación. Misma respuesta exista o no el correo, enlace usado/caducado/inexistente indistinguibles y un solo ganador con dos usos a la vez, límites por correo y origen, borrado que anonimiza y deja al jugador vivo. Los tres ataques de la ficha probados, más HTTP real. Toda petición con cuerpo exige `content-type: application/json`. 16 pruebas nuevas; 1170 en verde |
 | 25-09-2026 | **T-062 hecha: la API.** Sin Fastify: `node:http` con un enrutador mínimo y una función pura `PeticionHttp → RespuestaHttp`. **La frontera de confianza vive en el núcleo** (`validarIntencion` estricta + `construirOrden`, que fija autor, turno, estado, cola y el coste con los modificadores de la casa y comprueba propiedad y conocimiento). Siete rutas (mias, estado, órdenes en alta idempotente, listado y retirada, crónica, clasificación); toda respuesta de estado es exactamente `vistaDeJugador`. Detectó y cerró una carrera real (una orden sellada con un turno ya resuelto habría detenido la partida en el reloj). Prueba de fuga sobre tres casas y cinco turnos, cliente manipulado, idempotencia, límites (64 KiB, 200 órdenes, 60/min) y HTTP real. 53 pruebas nuevas; 1154 en verde |
 | 25-09-2026 | **T-061 hecha: el reloj de turnos.** `paquetes/servidor/src/reloj/`: calendario anclado (`ancla + N·intervalo`, sin deriva), resolución de un turno con todas sus salvaguardas, `Reloj` (`pasada`, `iniciar`/`parar`, `avanzarManual` solo en partidas de prueba), recuperación **en cadena** con tope, concurrencia optimista (el conflicto de turno se descarta y se registra), partida detenida con su motivo si el motor falla, mundo reconstruido y comprobado con su huella, y `reproducirTurno` que reproduce cualquier turno pasado contra su auditoría. Probado con un proceso que muere antes de guardar, una carrera provocada entre dos relojes, el reloj real (desviación < 2 s) y 20 turnos con órdenes. Riesgo anotado para T-065: el mundo se reconstruye sin orígenes fijos. 19 pruebas nuevas; 1099 en verde |
 | 25-09-2026 | **T-060 hecha: persistencia y esquema de datos.** `paquetes/servidor/src/persistencia/`: interfaz `Repositorio` asíncrona y `RepositorioSqlite` sobre `node:sqlite` (sin dependencias), estado **completo por turno comprimido** con su huella comprobada al leer, migración inicial reversible, órdenes entrantes que nunca se borran y `guardarResolucion` en **una sola transacción** (`conflicto-de-turno` y `encadenado-roto`). **200 turnos con ocho casas ocupan 5,09 MB**; proyección de 12 jugadores y 240 turnos, ~12 MB. Fallo inyectado, corrupción, idempotencia y «sin SQL fuera de la capa» comprobados. `cuenta` queda a T-063. 24 pruebas nuevas; 1080 en verde |

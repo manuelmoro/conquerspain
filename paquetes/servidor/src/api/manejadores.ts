@@ -12,6 +12,7 @@ import type { IdJugador, IdOrden, IdPartida, TablasDeReglas } from '@conquer/nuc
 
 import { ErrorDePersistencia } from '../persistencia/repositorio.ts';
 import type { FilaDePartida, Repositorio } from '../persistencia/repositorio.ts';
+import type { ServicioDeCuentas } from '../cuentas/servicio.ts';
 import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
 import type { Registro } from '../reloj/registro.ts';
 import { ErrorDeApi } from './errores.ts';
@@ -36,6 +37,8 @@ export interface DependenciasDeApi {
   readonly ahora: () => number;
   /** El limitador de frecuencia; por defecto, el de la ficha. */
   readonly cubo?: CuboDeFichas;
+  /** Cuentas y sesiones (T-063): si falta, no hay rutas de cuenta. */
+  readonly cuentas?: ServicioDeCuentas;
 }
 
 interface Contexto {
@@ -47,13 +50,75 @@ interface Contexto {
 interface Salida {
   readonly estado: number;
   readonly datos: Record<string, unknown>;
+  readonly cabeceras?: Readonly<Record<string, string>>;
 }
 
 type Manejador = (ctx: Contexto) => Promise<Salida>;
 
+/** Lo que sabe una ruta antes de saber quien pregunta. */
+interface Base {
+  readonly cuenta: string | null;
+  readonly parametros: Readonly<Record<string, string>>;
+  readonly peticion: PeticionHttp;
+  readonly origen: string;
+}
+
+/** Una ruta: publica (no pide sesion) o privada (la pide y recibe la cuenta). */
+interface Entrada {
+  readonly publica: boolean;
+  readonly ejecutar: (base: Base) => Promise<Salida>;
+}
+
+function publica(ejecutar: (base: Base) => Promise<Salida>): Entrada {
+  return { publica: true, ejecutar };
+}
+
+function privada(manejador: Manejador): Entrada {
+  return {
+    publica: false,
+    ejecutar: (base) => {
+      if (base.cuenta === null) {
+        throw new ErrorDeApi('no-autenticado', 'Hace falta iniciar sesion para usar la API.');
+      }
+      return manejador({
+        cuenta: base.cuenta,
+        parametros: base.parametros,
+        peticion: base.peticion,
+      });
+    },
+  };
+}
+
+/** El cuerpo como JSON: o un error claro. */
+function leerJson(cuerpo: string | null): unknown {
+  if (cuerpo === null || cuerpo.trim() === '') {
+    throw new ErrorDeApi('cuerpo-invalido', 'Falta el cuerpo: manda un objeto JSON.');
+  }
+  try {
+    return JSON.parse(cuerpo);
+  } catch {
+    throw new ErrorDeApi(
+      'cuerpo-invalido',
+      'El cuerpo no es JSON valido: revisa las comillas y las comas.',
+    );
+  }
+}
+
+function objetoJson(cuerpo: string | null): Record<string, unknown> {
+  const dato = leerJson(cuerpo);
+  if (typeof dato !== 'object' || dato === null || Array.isArray(dato)) {
+    throw new ErrorDeApi('cuerpo-invalido', 'El cuerpo tiene que ser un objeto JSON.');
+  }
+  return Object.fromEntries(Object.entries(dato));
+}
+
 const CABECERAS_JSON = { 'content-type': 'application/json; charset=utf-8' };
 
-function respuesta(estado: number, cuerpo: Record<string, unknown>, cabeceras = {}): RespuestaHttp {
+function respuesta(
+  estado: number,
+  cuerpo: Record<string, unknown>,
+  cabeceras: Readonly<Record<string, string>> = {},
+): RespuestaHttp {
   return {
     estado,
     cuerpo: { ...cuerpo, version: VERSION_REGLAS },
@@ -169,21 +234,7 @@ export function crearApi(
   };
 
   const darOrden: Manejador = async (ctx) => {
-    if (ctx.peticion.cuerpo === null || ctx.peticion.cuerpo.trim() === '') {
-      throw new ErrorDeApi(
-        'cuerpo-invalido',
-        'Falta el cuerpo: manda la orden como un objeto JSON.',
-      );
-    }
-    let dato: unknown;
-    try {
-      dato = JSON.parse(ctx.peticion.cuerpo);
-    } catch {
-      throw new ErrorDeApi(
-        'cuerpo-invalido',
-        'El cuerpo no es JSON valido: revisa las comillas y las comas.',
-      );
-    }
+    const dato = leerJson(ctx.peticion.cuerpo);
     const { fila, jugador, id, estado, mundo } = await estadoYVista(ctx);
     if (fila.estado !== 'activa') {
       throw new ErrorDeApi(
@@ -284,14 +335,104 @@ export function crearApi(
     return { estado: 200, datos: { retirada: ordenId } };
   };
 
-  const rutas: readonly Ruta<Manejador>[] = [
-    { metodo: 'GET', patron: '/partidas/mias', manejador: misPartidas },
-    { metodo: 'GET', patron: '/partidas/:id/estado', manejador: verEstado },
-    { metodo: 'GET', patron: '/partidas/:id/clasificacion', manejador: clasificacion },
-    { metodo: 'GET', patron: '/partidas/:id/cronica/:turno', manejador: verCronica },
-    { metodo: 'GET', patron: '/partidas/:id/ordenes', manejador: listarOrdenes },
-    { metodo: 'POST', patron: '/partidas/:id/ordenes', manejador: darOrden },
-    { metodo: 'DELETE', patron: '/partidas/:id/ordenes/:orden', manejador: retirarOrden },
+  const cuentas = dep.cuentas;
+  const rutasDeCuenta: readonly Ruta<Entrada>[] =
+    cuentas === undefined
+      ? []
+      : [
+          {
+            metodo: 'POST',
+            patron: '/cuentas/enlace',
+            manejador: publica(async (base) => {
+              const cuerpo = objetoJson(base.peticion.cuerpo);
+              await cuentas.pedirEnlace(cuerpo['correo'], cuerpo['nombre'], base.origen);
+              // Siempre la misma respuesta, exista o no la cuenta (T-063 §4.5).
+              return {
+                estado: 202,
+                datos: {
+                  mensaje:
+                    'Si el correo es valido, te hemos enviado un enlace para entrar. Dura 15 minutos.',
+                },
+              };
+            }),
+          },
+          {
+            metodo: 'POST',
+            patron: '/sesion',
+            manejador: publica(async (base) => {
+              const cuerpo = objetoJson(base.peticion.cuerpo);
+              const abierta = await cuentas.entrar(cuerpo['token'], base.origen);
+              return {
+                estado: 200,
+                datos: { cuenta: { id: abierta.cuenta.id, nombre: abierta.cuenta.nombre } },
+                cabeceras: { 'set-cookie': abierta.setCookie },
+              };
+            }),
+          },
+          {
+            metodo: 'GET',
+            patron: '/cuenta',
+            manejador: privada(async (ctx) => {
+              const cuenta = await cuentas.cuenta(ctx.cuenta);
+              if (cuenta === null) {
+                throw new ErrorDeApi(
+                  'no-autenticado',
+                  'La cuenta ya no existe: inicia sesion de nuevo.',
+                );
+              }
+              return {
+                estado: 200,
+                datos: { cuenta: { id: cuenta.id, nombre: cuenta.nombre, correo: cuenta.correo } },
+              };
+            }),
+          },
+          {
+            metodo: 'DELETE',
+            patron: '/sesion',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: { cerrada: true },
+              cabeceras: {
+                'set-cookie': await cuentas.cerrarSesion(ctx.peticion.cabeceras['cookie']),
+              },
+            })),
+          },
+          {
+            metodo: 'POST',
+            patron: '/sesion/cerrar-todas',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: { cerradas: await cuentas.cerrarTodas(ctx.cuenta) },
+            })),
+          },
+          {
+            metodo: 'DELETE',
+            patron: '/cuenta',
+            manejador: privada(async (ctx) => {
+              if (objetoJson(ctx.peticion.cuerpo)['confirmo'] !== true) {
+                throw new ErrorDeApi(
+                  'confirmacion-necesaria',
+                  'Borrar la cuenta no se puede deshacer: manda { "confirmo": true } para confirmarlo.',
+                );
+              }
+              return {
+                estado: 200,
+                datos: { borrada: true },
+                cabeceras: { 'set-cookie': await cuentas.borrar(ctx.cuenta) },
+              };
+            }),
+          },
+        ];
+
+  const rutas: readonly Ruta<Entrada>[] = [
+    { metodo: 'GET', patron: '/partidas/mias', manejador: privada(misPartidas) },
+    { metodo: 'GET', patron: '/partidas/:id/estado', manejador: privada(verEstado) },
+    { metodo: 'GET', patron: '/partidas/:id/clasificacion', manejador: privada(clasificacion) },
+    { metodo: 'GET', patron: '/partidas/:id/cronica/:turno', manejador: privada(verCronica) },
+    { metodo: 'GET', patron: '/partidas/:id/ordenes', manejador: privada(listarOrdenes) },
+    { metodo: 'POST', patron: '/partidas/:id/ordenes', manejador: privada(darOrden) },
+    { metodo: 'DELETE', patron: '/partidas/:id/ordenes/:orden', manejador: privada(retirarOrden) },
+    ...rutasDeCuenta,
   ];
 
   return async (peticion) => {
@@ -302,25 +443,40 @@ export function crearApi(
           `El cuerpo pasa de ${String(CUERPO_MAXIMO_BYTES / 1024)} KiB: manda menos cosas en cada orden.`,
         );
       }
-      const encontrada = encontrar(rutas, peticion.metodo, peticion.ruta);
-      const cuenta = await dep.autenticador.identificar(peticion);
-      if (cuenta === null) {
-        throw new ErrorDeApi('no-autenticado', 'Hace falta iniciar sesion para usar la API.');
-      }
-      const espera = cubo.gastar(cuenta, dep.ahora());
-      if (espera > 0) {
+      const cuerpo = peticion.cuerpo;
+      if (
+        cuerpo !== null &&
+        cuerpo !== '' &&
+        !(peticion.cabeceras['content-type'] ?? '').toLowerCase().startsWith('application/json')
+      ) {
         throw new ErrorDeApi(
-          'demasiadas-peticiones',
-          `Vas demasiado deprisa: espera ${String(espera)} s antes de volver a pedir.`,
-          { 'retry-after': String(espera) },
+          'tipo-de-contenido',
+          'El cuerpo tiene que ir como JSON: manda la cabecera "content-type: application/json".',
         );
       }
-      const salida = await encontrada.manejador({
+      const encontrada = encontrar(rutas, peticion.metodo, peticion.ruta);
+      let cuenta: string | null = null;
+      if (!encontrada.manejador.publica) {
+        cuenta = await dep.autenticador.identificar(peticion);
+        if (cuenta === null) {
+          throw new ErrorDeApi('no-autenticado', 'Hace falta iniciar sesion para usar la API.');
+        }
+        const espera = cubo.gastar(cuenta, dep.ahora());
+        if (espera > 0) {
+          throw new ErrorDeApi(
+            'demasiadas-peticiones',
+            `Vas demasiado deprisa: espera ${String(espera)} s antes de volver a pedir.`,
+            { 'retry-after': String(espera) },
+          );
+        }
+      }
+      const salida = await encontrada.manejador.ejecutar({
         cuenta,
         parametros: encontrada.parametros,
         peticion,
+        origen: peticion.origen ?? 'desconocido',
       });
-      return respuesta(salida.estado, salida.datos);
+      return respuesta(salida.estado, salida.datos, salida.cabeceras);
     } catch (error) {
       if (error instanceof ErrorDeApi) return respuestaDeError(error);
       dep.registro.anotar('error', 'error-interno', {

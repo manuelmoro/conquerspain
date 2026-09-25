@@ -1,6 +1,6 @@
 # T-063 · Cuentas, sesiones y seguridad
 
-**Fase:** 3 · Servidor · **Depende de:** T-062 · **Estado:** en curso (ficha **detallada el 25-09-2026**)
+**Fase:** 3 · Servidor · **Depende de:** T-062 · **Estado:** **hecha (25-09-2026)**
 
 ## 1. Contexto
 
@@ -193,7 +193,48 @@ npx vitest run paquetes/servidor
 3. `docs/07-arquitectura.md` §7.4: cuentas, sesiones y decisiones (enlace mágico, sin argon2).
 4. Commit: `T-063: cuentas, sesiones y seguridad`.
 
-## 9. Dónde va
+## 9. Cierre (25-09-2026)
 
-Ficha detallada el 25-09-2026. **Nada implementado todavía.** Orden: migración 2 y repositorio de cuentas;
-tokens y servicio; rutas y autenticador; pruebas de los ataques y HTTP real.
+**Hecha.** `paquetes/servidor/src/cuentas/` (`tokens`, `correo`, `servicio`, `autenticador`), la migración
+`0002-cuentas`, `persistencia/cuentas.ts` (interfaz que implementa `RepositorioSqlite`), seis rutas nuevas en
+la API (`POST /cuentas/enlace`, `POST /sesion`, `GET /cuenta`, `DELETE /sesion`, `POST /sesion/cerrar-todas`,
+`DELETE /cuenta`), `origen` en `PeticionHttp` y `LimitePorVentana`. 16 pruebas nuevas de cuentas; 1170 en total.
+
+**Criterios:**
+
+1. **Sin acceso a lo ajeno:** una tercera cuenta que no juega recibe `404` en todas las rutas de la partida
+   aunque conozca su id, y `partidas/mias` vacío; el jugador sale de la cuenta, no del cuerpo ni de las cabeceras.
+2. **Nada en claro:** se recorren **todas las tablas** de una base en disco buscando el token del enlace, el
+   de la sesión y el valor de la cookie: no aparecen; sí aparecen sus hashes. El `Registro` no contiene tokens,
+   cookies ni el correo.
+3. **Sesiones:** caducan a los 30 días exactos (un milisegundo antes valen); `DELETE /sesion` invalida al
+   instante y borra la cookie (`Max-Age=0`); `cerrar-todas` revoca las demás.
+4. **Los tres ataques:** (a) cookie con la firma cambiada, sin firma, con otra clave, con basura o usando el hash
+   guardado: `401`; (b) suplantación por cuerpo (`jugador`) y cabeceras (`x-jugador`, `x-cuenta`): `400` y nada
+   guardado; (c) enlace usado, caducado a los 15 minutos exactos o inexistente: **la misma respuesta**, y con dos
+   usos simultáneos abre sesión solo uno.
+5. **Enumeración:** `POST /cuentas/enlace` responde idéntico (estado, cuerpo y cabeceras) para un correo con cuenta
+   y otro sin ella.
+6. **Límites:** 5 enlaces por hora y correo, 20 por hora y origen y 10 entradas por minuto y origen, con `429` y
+   `retry-after`, que vuelven a pasar al acabar la ventana.
+7. **Cookie:** `HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=2592000`; el cuerpo sin
+   `content-type: application/json` da `415` (en **todas** las rutas, también las de órdenes de T-062).
+8. **Borrado:** sin `{"confirmo": true}` no hace nada; confirmado, anonimiza, revoca las sesiones, invalida los
+   enlaces pendientes, deja `cuenta = NULL` en `participante` y **no toca la partida**; el mismo correo puede
+   volver a registrarse como cuenta nueva.
+9. **Migración 2:** se aplica, es idempotente y se revierte (la prueba de migraciones recorre ya las dos).
+10. **HTTP real de punta a punta:** enlace → correo en memoria → entrar → `GET /partidas/mias` con la cookie → cerrar
+    sesión → `401`.
+11. `npm run verificar` en verde.
+
+**Decisiones no escritas antes:**
+
+- El límite de enlaces **por correo** se persiste (cuenta filas de `enlace_de_acceso`) y los de **origen** son en
+  memoria, como el limitador de frecuencia de T-062: con varias instancias haría falta compartirlos.
+- La respuesta a «demasiados enlaces para ese correo» lleva un `retry-after` fijo de 60 s: no revela si la cuenta
+  existe ni cuándo pidió el último.
+- El identificador de cuenta es `c-<16 hex>` aleatorio y no guarda relación con el correo.
+- Exigir `content-type: application/json` a cualquier cuerpo no vacío toca la API de T-062; el adaptador y el
+  ayudante de pruebas lo mandan.
+- Queda para el despliegue: confiar en `x-forwarded-for` solo desde proxies conocidos (el «origen» es hoy la
+  dirección del socket).

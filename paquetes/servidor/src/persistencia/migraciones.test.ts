@@ -55,11 +55,14 @@ describe('las migraciones', () => {
     expect(tablas(ruta)).toEqual([
       'auditoria_resolucion',
       'cronica',
+      'cuenta',
+      'enlace_de_acceso',
       'estado_turno',
       'migracion',
       'orden',
       'participante',
       'partida',
+      'sesion',
       'suceso_turno',
     ]);
   });
@@ -92,7 +95,7 @@ describe('las migraciones', () => {
   it('una base de una version futura no se abre: esquema-desactualizado', async () => {
     const ruta = fichero();
     const conMas: Migracion = {
-      version: 2,
+      version: MIGRACIONES.length + 1,
       nombre: 'futura',
       subir: ['CREATE TABLE futura (x INTEGER)'],
       bajar: ['DROP TABLE futura'],

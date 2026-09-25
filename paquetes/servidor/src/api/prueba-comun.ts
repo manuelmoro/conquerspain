@@ -89,7 +89,10 @@ export async function apiDePrueba(
       api({
         metodo,
         ruta,
-        cabeceras: cuenta === null ? {} : { 'x-cuenta': cuenta },
+        cabeceras: {
+          ...(cuenta === null ? {} : { 'x-cuenta': cuenta }),
+          ...(cuerpo === undefined ? {} : { 'content-type': 'application/json' }),
+        },
         cuerpo:
           cuerpo === undefined
             ? null

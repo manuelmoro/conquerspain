@@ -14,6 +14,16 @@ export type {
   Repositorio,
   ResolucionDeTurno,
 } from './persistencia/repositorio.ts';
+export { CorreoEnMemoria } from './cuentas/correo.ts';
+export type { EnviadorDeCorreo, MensajeDeEnlace } from './cuentas/correo.ts';
+export { autenticadorDeSesiones } from './cuentas/autenticador.ts';
+export { ServicioDeCuentas } from './cuentas/servicio.ts';
+export type { DependenciasDeCuentas } from './cuentas/servicio.ts';
+export type { Cuenta, RepositorioDeCuentas } from './persistencia/cuentas.ts';
+export { crearApi } from './api/manejadores.ts';
+export type { DependenciasDeApi } from './api/manejadores.ts';
+export { servirHttp } from './api/http.ts';
+export type { Autenticador, PeticionHttp, RespuestaHttp } from './api/tipos.ts';
 export { reproducirTurno } from './reloj/auditoria.ts';
 export { proximaResolucion, turnosDebidos } from './reloj/calendario.ts';
 export { proveedorDeRecorte } from './reloj/mundoDeLaPartida.ts';
