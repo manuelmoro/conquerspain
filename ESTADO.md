@@ -10,7 +10,16 @@
 
 ## Tarea en curso
 
-**Ninguna.** T-061 (reloj de turnos) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
+**[T-062 · API de partida, órdenes y vista por jugador](docs/plan/T-062-api.md)** (Fase 3) — **ficha
+detallada el 25-09-2026**; implementación por empezar. Decisiones tomadas: `node:http` con un
+enrutador mínimo (sin Fastify), el `Autenticador` como interfaz hasta T-063, **intención → orden**
+construida en el núcleo con los costes de la casa, idempotencia por `idCliente`, límites y una prueba
+de fuga sobre el JSON serializado. Detecta una carrera real (una orden sellada con el turno N que llega
+tras resolverse el N tumbaría la partida en el reloj) y fija dos arreglos. Orden de trabajo: (A)
+`intencion.ts` en el núcleo; (B) los dos arreglos; (C) errores, enrutador, límites y manejadores;
+(D) fuga y HTTP real.
+
+Fase 2 completa: T-047 v1 cerrada con excepciones el 25-09-2026 ([T-047 §9](docs/plan/T-047-equilibrio-v1.md)).
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -20,10 +29,8 @@
 
 ## Siguiente tarea
 
-**[T-062 · API de partida, órdenes y vista por jugador](docs/plan/T-062-api.md)** (Fase 3). Su ficha
-está **esbozada**: detallarla es la primera mitad de la tarea. Se apoya en el `Repositorio`
-(`guardarOrden`, `ultimoEstado`, `cronica`) y en `vistaDeJugador` del núcleo. Recordar: la API sella
-`turnoAlta` de cada orden con el turno de la partida cuando llega.
+Tras T-062: **[T-063 · Cuentas, sesiones y seguridad](docs/plan/T-063-cuentas.md)** (ficha esbozada). Pondrá
+el autenticador real que T-062 deja como interfaz.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
