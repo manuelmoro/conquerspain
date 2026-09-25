@@ -138,6 +138,11 @@ export interface Repositorio {
   /** true si estaba pendiente y ahora esta cancelada; false si ya no se podia. */
   cancelarOrden(id: IdPartida, orden: IdOrden, motivo: string): Promise<boolean>;
 
+  /** Las ordenes que entraron al motor en ese turno, en el orden en que se le dieron. */
+  ordenesDelTurno(id: IdPartida, turno: number): Promise<readonly OrdenGuardada[]>;
+  /** El instante de la proxima resolucion mas cercana de cualquier partida activa, si hay. */
+  proximaHora(): Promise<number | null>;
+
   cronica(id: IdPartida, turno: number, jugador: IdJugador): Promise<Cronica | null>;
   auditoria(id: IdPartida, turno: number): Promise<AuditoriaDeResolucion | null>;
 

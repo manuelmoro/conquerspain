@@ -10,7 +10,7 @@
 
 ## Tarea en curso
 
-**Ninguna.** T-060 (persistencia) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
+**Ninguna.** T-061 (reloj de turnos) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -20,9 +20,10 @@
 
 ## Siguiente tarea
 
-**[T-061 · Reloj de turnos idempotente con auditoría](docs/plan/T-061-reloj-de-turnos.md)** (Fase 3).
-Su ficha está **esbozada**: detallarla es la primera mitad de la tarea. Se apoya en
-`Repositorio.guardarResolucion`, `partidasPorResolver` y `detenerPartida` de T-060.
+**[T-062 · API de partida, órdenes y vista por jugador](docs/plan/T-062-api.md)** (Fase 3). Su ficha
+está **esbozada**: detallarla es la primera mitad de la tarea. Se apoya en el `Repositorio`
+(`guardarOrden`, `ultimoEstado`, `cronica`) y en `vistaDeJugador` del núcleo. Recordar: la API sella
+`turnoAlta` de cada orden con el turno de la partida cuando llega.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
@@ -110,6 +111,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-061 hecha: el reloj de turnos.** `paquetes/servidor/src/reloj/`: calendario anclado (`ancla + N·intervalo`, sin deriva), resolución de un turno con todas sus salvaguardas, `Reloj` (`pasada`, `iniciar`/`parar`, `avanzarManual` solo en partidas de prueba), recuperación **en cadena** con tope, concurrencia optimista (el conflicto de turno se descarta y se registra), partida detenida con su motivo si el motor falla, mundo reconstruido y comprobado con su huella, y `reproducirTurno` que reproduce cualquier turno pasado contra su auditoría. Probado con un proceso que muere antes de guardar, una carrera provocada entre dos relojes, el reloj real (desviación < 2 s) y 20 turnos con órdenes. Riesgo anotado para T-065: el mundo se reconstruye sin orígenes fijos. 19 pruebas nuevas; 1099 en verde |
 | 25-09-2026 | **T-060 hecha: persistencia y esquema de datos.** `paquetes/servidor/src/persistencia/`: interfaz `Repositorio` asíncrona y `RepositorioSqlite` sobre `node:sqlite` (sin dependencias), estado **completo por turno comprimido** con su huella comprobada al leer, migración inicial reversible, órdenes entrantes que nunca se borran y `guardarResolucion` en **una sola transacción** (`conflicto-de-turno` y `encadenado-roto`). **200 turnos con ocho casas ocupan 5,09 MB**; proyección de 12 jugadores y 240 turnos, ~12 MB. Fallo inyectado, corrupción, idempotencia y «sin SQL fuera de la capa» comprobados. `cuenta` queda a T-063. 24 pruebas nuevas; 1080 en verde |
 | 25-09-2026 | **T-047 v1 cerrada con excepciones; Fase 2 completa** (también T-053 y T-059, v1). Por decisión del usuario, el equilibrio se cierra como v1 con las excepciones documentadas en [T-047 §9](docs/plan/T-047-equilibrio-v1.md) —prestigio, escasez, tierra, dominio y el capítulo de comercio— y se reabre tras T-103; no se movió ningún umbral. Base de referencia `E-feria3-*`: **352 filas cumplen de 471**. Lo último que entró: la **expedición que vive de la tierra** (`Recua.enExpedicion`; la tierra sin tocar baja 6–11 puntos en las nueve partidas), la **comarca con feria que da de comer** (los salineros venden en feria por primera vez), `feriar` con bolsa y ventas hacia la feria (robots 11). Resolver la Mesta como feriante se intentó con siete ensayos y **no se consiguió**: el límite es estructural (tramos de 4–10 jornadas contra un porte de 10), en [T-059 §9.3](docs/plan/T-059-las-ferias-se-conocen.md). 1056 pruebas en verde. Siguiente: T-060 |
 | 23-09-2026 | **T-052 abierta desde dentro de T-047**: la geografía de precios no es una cifra. Al turno 100, entre las diez plazas de una partida, la dispersión de precios es de **0,0 puntos en la lana, 0,4 en el hierro y 0,6 en la sal**: lo que distingue una comarca de otra cuesta lo mismo en todas partes, y la comisión sola es un 2 % por lado. Se ensayaron y descartaron las dos palancas de datos que quedaban (liquidez de los menores a 300, que además **quita el comprador** y hunde el prestigio a 0 de 24 filas; y margen al 2 %, que no mueve la dispersión). La razón se lee en el código: el precio de una plaza solo cambia si alguien compra o vende allí, y la sal, el hierro y la lana no se comercian en ninguna parte, así que se quedan clavados en su único `precioBaseMil` global. **Ninguna cifra puede abaratar la sal de Añana frente a la de Sevilla.** Ficha [T-052](docs/plan/T-052-geografia-de-precios.md) escrita y detallada: precio base por comarca derivado de sus potenciales, con su tabla de abundancia, los cuatro sitios que hoy usan el número global y criterios de aceptación con cifras. T-047 se reanuda después |

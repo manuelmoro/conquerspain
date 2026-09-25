@@ -145,11 +145,16 @@ export function resolverParaGuardar(
 }
 
 /** Una orden entrante con forma valida (no hace falta que el motor la ejecute). */
-export function ordenDeEjemplo(id: string, jugador: IdJugador, comarca: IdComarca): Orden {
+export function ordenDeEjemplo(
+  id: string,
+  jugador: IdJugador,
+  comarca: IdComarca,
+  turnoAlta = 1,
+): Orden {
   return {
     id: id as IdOrden,
     jugador,
-    turnoAlta: 1,
+    turnoAlta,
     estado: 'pendiente',
     coste: { pan: 0, madera: 10, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 },
     turnosTotales: 2,

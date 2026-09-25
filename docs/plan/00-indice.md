@@ -98,7 +98,7 @@ mapa completo; ESTADO.md es la aguja.
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
 | [T-060](T-060-persistencia.md) | Persistencia y esquema de datos | **hecha** | T-047 |
-| [T-061](T-061-reloj-de-turnos.md) | Reloj de turnos idempotente con auditoría | pendiente | T-060 |
+| [T-061](T-061-reloj-de-turnos.md) | Reloj de turnos idempotente con auditoría | **hecha** | T-060 |
 | [T-062](T-062-api.md) | API de partida, órdenes y vista por jugador | pendiente | T-061 |
 | [T-063](T-063-cuentas.md) | Cuentas, sesiones y seguridad | pendiente | T-062 |
 | [T-064](T-064-avisos.md) | Avisos de resolución (SSE y correo) | pendiente | T-062 |

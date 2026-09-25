@@ -388,6 +388,22 @@ export class RepositorioSqlite implements Repositorio {
     };
   }
 
+  async ordenesDelTurno(id: IdPartida, turno: number): Promise<readonly OrdenGuardada[]> {
+    const filas = this.todos(
+      "SELECT * FROM orden WHERE partida = ? AND estado = 'aplicada' AND turno_aplicada = ? ORDER BY turno_recibida, recibida_en, id",
+      id,
+      turno,
+    );
+    return filas.map((f) => this.ordenGuardada(f));
+  }
+
+  async proximaHora(): Promise<number | null> {
+    const fila = this.uno(
+      "SELECT MIN(proxima_resolucion) AS hora FROM partida WHERE estado = 'activa' AND proxima_resolucion IS NOT NULL",
+    );
+    return fila === null ? null : enteroONulo(fila, 'hora');
+  }
+
   async cancelarOrden(id: IdPartida, orden: IdOrden, motivo: string): Promise<boolean> {
     const cambios = this.ejecutar(
       "UPDATE orden SET estado = 'cancelada', motivo = ? WHERE partida = ? AND id = ? AND estado = 'pendiente'",
