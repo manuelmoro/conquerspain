@@ -83,6 +83,14 @@ export { clasificacion } from './reglas/clasificacion.ts';
 export type { LineaDeClasificacion } from './reglas/clasificacion.ts';
 export { RUMBOS, rumboEntre, vistaDeJugador } from './reglas/vista.ts';
 export { atlasDeJugador } from './reglas/atlas.ts';
+export { fichaDeComarca } from './ficha.ts';
+export type {
+  AccionDeFicha,
+  BloqueoDeAccion,
+  FichaDeComarca,
+  ProduccionPrevista,
+} from './ficha.ts';
+export { BLOQUEOS } from './datos/bloqueos.ts';
 export type { AtlasDeJugador, ComarcaEnAtlas, TramoEnAtlas } from './reglas/atlas.ts';
 export type {
   CasaPublica,

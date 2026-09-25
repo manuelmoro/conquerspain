@@ -17,8 +17,17 @@ npm run banco -- --semilla prueba-jugabilidad --turnos 24 --repeticiones 1 --sin
 Produce informes en `herramientas/banco/informes/exploracion-local-prueba-jugabilidad.*` y estados
 cada diez turnos. No sobrescribe la referencia 1492. Es una simulación automática, no permite
 introducir órdenes humanas y conserva las limitaciones del arranque provisional del banco.
-La maqueta solo permite valorar dirección artística. Cliente y servidor todavía no permiten
-jugar; `npm run dev` se añadirá en T-080. No se anuncia ningún comando de juego local adicional.
+La maqueta solo permite valorar dirección artística.
+
+**Desde T-082 (25-09-2026) se puede hacer J-01.** Preparación:
+
+```bash
+npm run partida:prueba -- tu@correo.es hortelanos   # o cualquier otra casa
+npm run dev                                         # servidor y cliente
+```
+
+Abrir `http://localhost:5173`, escribir el correo, copiar el enlace que sale en la consola y abrir la
+partida. El turno se resuelve con «Resolver el turno ya» (solo en partidas de prueba).
 
 ## Puntos de control
 

@@ -71,12 +71,19 @@ const api = crearApi({
   canal,
   avisos: repo,
   altas: new ServicioDeAltas({ repo, mundoCompleto: mundo, reglas: TABLAS_DEL_JUEGO, ahora }),
+  avanzar: (id) => {
+    if (relojListo === null) throw new Error('El reloj aun no ha arrancado.');
+    return relojListo.avanzarManual(id);
+  },
 });
+// El reloj se crea despues de la API: la ruta de avance manual lo llama por esta referencia.
+let relojListo: Reloj | null = null;
 const reloj = new Reloj(
   { repo, reglas: TABLAS_DEL_JUEGO, proveedorDeMundo, resolverTurno, registro, ahora, canal },
   { despachador: new DespachadorDeCorreos({ repo, correo, registro, ahora }) },
 );
 const servidor = await servirHttp(api, { puerto });
+relojListo = reloj;
 reloj.iniciar();
 console.log(
   `ConquerSpain escucha en http://127.0.0.1:${String(servidor.puerto)} (base: ${baseDeDatos}).`,

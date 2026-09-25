@@ -107,6 +107,7 @@ npm run atlas:comprobar # Comprueba que el mundo generado sigue siendo el mismo 
 npm run dev            # Servidor (puerto 8471, base desarrollo.sqlite) y cliente con Vite (5173)
 npm run servidor       # Solo el servidor (PUERTO, BASE_DE_DATOS, CLAVE_DE_COOKIES, URL_PUBLICA)
 npm run cliente:tamano # Construye el cliente y comprueba su peso (<= 150 KB gzip; va en verificar)
+npm run partida:prueba -- correo [casa] # Deja lista una partida de prueba en la base de desarrollo
 ```
 
 En desarrollo el correo va a la consola: el enlace para entrar sale en la salida de `npm run dev`.

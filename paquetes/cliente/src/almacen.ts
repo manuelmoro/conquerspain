@@ -1,8 +1,8 @@
 // El estado del cliente y sus acciones (ficha T-080 §4.2 a §4.5). Las pantallas solo leen y llaman
 // acciones; nada de aqui toca el DOM.
-import type { AtlasDeJugador, TablasDeReglas } from '@conquer/nucleo';
+import type { AtlasDeJugador, FichaDeComarca, TablasDeReglas } from '@conquer/nucleo';
 
-import type { ClienteApi, CuentaDelCliente, EstadoRecibido } from './api.ts';
+import type { ClienteApi, CuentaDelCliente, EstadoRecibido, OrdenEnviada } from './api.ts';
 import type { Guardado } from './guardado.ts';
 import { preverBandeja } from './prevision.ts';
 import type { PrevisionDeBandeja } from './prevision.ts';
@@ -31,6 +31,10 @@ export interface EstadoDelCliente {
   readonly pendientes: readonly IntencionLocal[];
   readonly conexion: 'conectado' | 'sin-conexion';
   readonly turnoNuevo: number | null;
+  /** Las ordenes ya enviadas que esperan a la resolucion: se pueden retirar. */
+  readonly enviadas: readonly OrdenEnviada[];
+  /** La comarca cuya ficha esta abierta. */
+  readonly comarcaAbierta: string | null;
   readonly errores: readonly { readonly codigo: string; readonly mensaje: string }[];
 }
 
@@ -49,6 +53,8 @@ const INICIAL: EstadoDelCliente = {
   pendientes: [],
   conexion: 'conectado',
   turnoNuevo: null,
+  enviadas: [],
+  comarcaAbierta: null,
   errores: [],
 };
 
@@ -274,6 +280,52 @@ export class Almacen {
       );
     }
     this.cambiar({ conexion: 'conectado' });
+    await this.cargarEnviadas();
+  }
+
+  /** Trae del servidor las ordenes enviadas y aun sin resolver. */
+  async cargarEnviadas(): Promise<void> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    const r = await this.dep.api.ordenesPendientes(partida.id);
+    if (r.ok) this.cambiar({ enviadas: r.datos.ordenes });
+  }
+
+  /** Retira una orden enviada antes del corte. */
+  async retirar(orden: string): Promise<void> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    const r = await this.dep.api.retirarOrden(partida.id, orden);
+    if (!r.ok) this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+    await this.cargarEnviadas();
+  }
+
+  /** La ficha de una comarca de la partida abierta, o null si no se pudo traer. */
+  async pedirFicha(comarca: string): Promise<FichaDeComarca | null> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return null;
+    const r = await this.dep.api.ficha(partida.id, comarca);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return null;
+    }
+    return r.datos.ficha;
+  }
+
+  abrirComarca(comarca: string | null): void {
+    this.cambiar({ comarcaAbierta: comarca });
+  }
+
+  /** Solo partidas de prueba: resuelve el turno ya y trae el nuevo (J-01). */
+  async avanzar(): Promise<void> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    const r = await this.dep.api.avanzar(partida.id);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return;
+    }
+    await this.recargar();
   }
 
   /** Llego un turno nuevo: se avisa, no se cambia la pantalla (ficha T-080 §4.4). */
@@ -288,5 +340,6 @@ export class Almacen {
     if (partida === null) return;
     await this.abrirPartida(partida.id);
     await this.sincronizar();
+    await this.cargarEnviadas();
   }
 }

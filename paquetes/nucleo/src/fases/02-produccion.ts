@@ -15,11 +15,12 @@ import {
   siguienteAgotamiento,
   vecinosNecesarios,
 } from '../reglas/produccion.ts';
+import type { DatosDeComarcaParaProducir } from '../reglas/produccion.ts';
 import { factorDeAcontecimientos } from '../reglas/acontecimientos.ts';
 import { modificadoresDe, modificadoresDelJugador } from '../reglas/casas/index.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import { produccionDeRebanyos } from './02-rebanyos.ts';
-import type { Fuero } from '../tipos/estado.ts';
+import type { EstadoComarca, EstadoJugador, Fuero } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
 import type { TipoEdificio } from '../tipos/reglas.ts';
 import type { Recurso } from '../tipos/recursos.ts';
@@ -107,19 +108,7 @@ export function faseProduccion(ctx: Contexto): void {
       const region = ctx.mundo.comarcas[id]?.region ?? '';
       const casa = jugador === undefined ? undefined : modificadoresDelJugador(jugador, ctx.reglas);
       const explotaciones = explotacionesDe(
-        {
-          comarca,
-          region,
-          estacion: ctx.estacional.estacion,
-          clima: ctx.clima,
-          acontecimientos: ctx.estado.acontecimientos,
-          turno: ctx.turno,
-          terreno: ctx.mundo.comarcas[id]?.terreno,
-          casaMil: casa?.produccionMil ?? {},
-          casa,
-          enVega: esVega(ctx, id),
-          nivelesActivos: nivelesActivos.get(id) ?? {},
-        },
+        datosDeProduccion(ctx, comarca, jugador, nivelesActivos.get(id) ?? {}),
         ctx.reglas,
       );
 
@@ -203,6 +192,32 @@ export function faseProduccion(ctx: Contexto): void {
 }
 
 /** La comarca es de vega o tiene rio: lo que cuenta para quien rinde mas (o menos) con el agua. */
+/**
+ * Lo que necesita `explotacionesDe` para una comarca este turno. Lo usa la fase y la ficha de comarca
+ * (T-082), para que la prevision cuente exactamente igual; sin `nivelesActivos`, trabajan todos.
+ */
+export function datosDeProduccion(
+  ctx: Contexto,
+  comarca: EstadoComarca,
+  jugador: EstadoJugador | undefined,
+  nivelesActivos?: Readonly<Partial<Record<TipoEdificio, number>>>,
+): DatosDeComarcaParaProducir {
+  const casa = jugador === undefined ? undefined : modificadoresDelJugador(jugador, ctx.reglas);
+  return {
+    comarca,
+    region: ctx.mundo.comarcas[comarca.id]?.region ?? '',
+    estacion: ctx.estacional.estacion,
+    clima: ctx.clima,
+    acontecimientos: ctx.estado.acontecimientos,
+    turno: ctx.turno,
+    terreno: ctx.mundo.comarcas[comarca.id]?.terreno,
+    casaMil: casa?.produccionMil ?? {},
+    casa,
+    enVega: esVega(ctx, comarca.id),
+    ...(nivelesActivos === undefined ? {} : { nivelesActivos }),
+  };
+}
+
 function esVega(ctx: Contexto, id: string): boolean {
   const geografia = ctx.mundo.comarcas[id];
   return geografia?.terreno === 'vega' || (geografia?.rasgos.includes('vega-fluvial') ?? false);

@@ -2,7 +2,7 @@
 // error del servidor (con su codigo y su mensaje en espanyol) y **ninguna respuesta** (red caida),
 // que es la que decide si una orden se queda en la bandeja para reintentarla.
 import { VERSION_REGLAS } from '@conquer/nucleo';
-import type { AtlasDeJugador, Cronica, VistaJugador } from '@conquer/nucleo';
+import type { AtlasDeJugador, Cronica, FichaDeComarca, Orden, VistaJugador } from '@conquer/nucleo';
 
 export type RespuestaDeApi<T> =
   | { readonly ok: true; readonly estado: number; readonly datos: T }
@@ -42,6 +42,14 @@ export interface OfertaRecibida {
   readonly perfil: string;
   readonly ventaja: string;
   readonly limitacion: string;
+}
+
+/** Una orden ya enviada que el servidor guarda hasta resolver el turno. */
+export interface OrdenEnviada {
+  readonly id: string;
+  readonly estado: string;
+  readonly turnoRecibida: number;
+  readonly orden: Orden;
 }
 
 export interface ConvocatoriaRecibida {
@@ -175,6 +183,27 @@ export class ClienteApi {
     );
   }
 
+  ficha(partida: string, comarca: string) {
+    return this.pedir<{ turno: number; ficha: FichaDeComarca }>(
+      'GET',
+      `/partidas/${encodeURIComponent(partida)}/comarcas/${encodeURIComponent(comarca)}`,
+    );
+  }
+
+  retirarOrden(partida: string, orden: string) {
+    return this.pedir<{ retirada: string }>(
+      'DELETE',
+      `/partidas/${encodeURIComponent(partida)}/ordenes/${encodeURIComponent(orden)}`,
+    );
+  }
+
+  avanzar(partida: string) {
+    return this.pedir<{ resultado: string }>(
+      'POST',
+      `/partidas/${encodeURIComponent(partida)}/avanzar`,
+    );
+  }
+
   cronica(partida: string, turno: number) {
     return this.pedir<{ cronica: Cronica }>(
       'GET',
@@ -191,7 +220,7 @@ export class ClienteApi {
   }
 
   ordenesPendientes(partida: string) {
-    return this.pedir<{ ordenes: { id: string }[] }>(
+    return this.pedir<{ ordenes: OrdenEnviada[] }>(
       'GET',
       `/partidas/${encodeURIComponent(partida)}/ordenes`,
     );

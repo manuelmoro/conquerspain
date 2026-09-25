@@ -3,13 +3,14 @@
 import {
   VERSION_REGLAS,
   atlasDeJugador,
+  fichaDeComarca,
   canonico,
   construirOrden,
   explicar,
   validarIntencion,
   vistaDeJugador,
 } from '@conquer/nucleo';
-import type { IdJugador, IdOrden, IdPartida, TablasDeReglas } from '@conquer/nucleo';
+import type { IdComarca, IdJugador, IdOrden, IdPartida, TablasDeReglas } from '@conquer/nucleo';
 
 import { ErrorDePersistencia } from '../persistencia/repositorio.ts';
 import type { FilaDePartida, Repositorio } from '../persistencia/repositorio.ts';
@@ -51,6 +52,8 @@ export interface DependenciasDeApi {
   readonly avisos?: RepositorioDeAvisos;
   /** Alta de partidas (T-065): convocar, unirse, sortear y elegir. */
   readonly altas?: ServicioDeAltas;
+  /** Resuelve un turno ya, solo en partidas de prueba (T-061 §4.7); si falta, no hay esa ruta. */
+  readonly avanzar?: (id: IdPartida) => Promise<{ readonly tipo: string }>;
   /** Cada cuanto se manda un latido por el flujo de eventos; por defecto, 25 s. */
   readonly latidoMs?: number;
 }
@@ -214,6 +217,40 @@ export function crearApi(
   const verAtlas: Manejador = async (ctx) => {
     const { estado, mundo, vista } = await estadoYVista(ctx);
     return { estado: 200, datos: { turno: estado.turno, atlas: atlasDeJugador(vista, mundo) } };
+  };
+
+  const verFicha: Manejador = async (ctx) => {
+    const { fila, jugador, id } = await partidaDelJugador(ctx);
+    const estado = await dep.repo.ultimoEstado(id);
+    if (estado === null) throw new Error(`La partida "${id}" no tiene ningun estado guardado.`);
+    const mundo = dep.proveedorDeMundo(fila, estado);
+    const ficha = fichaDeComarca(
+      estado,
+      jugador,
+      (ctx.parametros['comarca'] ?? '') as IdComarca,
+      mundo,
+      dep.reglas,
+    );
+    if (ficha === null) {
+      throw new ErrorDeApi(
+        'comarca-desconocida',
+        'No sabes nada de esa comarca: explorala o espera a oir de ella.',
+      );
+    }
+    return { estado: 200, datos: { turno: estado.turno, ficha } };
+  };
+
+  const avanzar = dep.avanzar;
+  const avanzarTurno: Manejador = async (ctx) => {
+    const { fila, id } = await partidaDelJugador(ctx);
+    if (avanzar === undefined || !fila.esDePrueba) {
+      throw new ErrorDeApi(
+        'solo-en-pruebas',
+        'Solo las partidas de prueba se pueden avanzar a mano.',
+      );
+    }
+    const resultado = await avanzar(id);
+    return { estado: 200, datos: { resultado: resultado.tipo } };
   };
 
   const clasificacion: Manejador = async (ctx) => {
@@ -572,6 +609,8 @@ export function crearApi(
     { metodo: 'GET', patron: '/partidas/:id/estado', manejador: privada(verEstado) },
     { metodo: 'GET', patron: '/partidas/:id/clasificacion', manejador: privada(clasificacion) },
     { metodo: 'GET', patron: '/partidas/:id/atlas', manejador: privada(verAtlas) },
+    { metodo: 'GET', patron: '/partidas/:id/comarcas/:comarca', manejador: privada(verFicha) },
+    { metodo: 'POST', patron: '/partidas/:id/avanzar', manejador: privada(avanzarTurno) },
     { metodo: 'GET', patron: '/partidas/:id/cronica/:turno', manejador: privada(verCronica) },
     { metodo: 'GET', patron: '/partidas/:id/ordenes', manejador: privada(listarOrdenes) },
     { metodo: 'POST', patron: '/partidas/:id/ordenes', manejador: privada(darOrden) },
