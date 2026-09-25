@@ -10,14 +10,7 @@
 
 ## Tarea en curso
 
-**[T-060 · Persistencia y esquema de datos](docs/plan/T-060-persistencia.md)** (Fase 3) — **ficha
-detallada el 25-09-2026**; implementación por empezar. Decisiones ya tomadas y medidas: SQLite con
-`node:sqlite` (sin dependencias), **estado completo por turno comprimido** (18 KB por turno con ocho
-casas; ~7 MB una partida de 12 jugadores y 240 turnos), huella comprobada al leer, órdenes entrantes
-que nunca se borran y `cuenta` dejada a T-063. Siguiente paso: `codec.ts` y la migración 1 con sus
-pruebas, después el repositorio y la transacción de resolución.
-
-Fase 2 completa: T-047 v1 cerrada con excepciones el 25-09-2026 ([T-047 §9](docs/plan/T-047-equilibrio-v1.md)).
+**Ninguna.** T-060 (persistencia) hecha el 25-09-2026; Fase 2 completa desde T-047 v1.
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -27,8 +20,9 @@ Fase 2 completa: T-047 v1 cerrada con excepciones el 25-09-2026 ([T-047 §9](doc
 
 ## Siguiente tarea
 
-Tras T-060: **[T-061 · Reloj de turnos idempotente con auditoría](docs/plan/T-061-reloj-de-turnos.md)**
-(ficha esbozada: detallarla es su primera mitad).
+**[T-061 · Reloj de turnos idempotente con auditoría](docs/plan/T-061-reloj-de-turnos.md)** (Fase 3).
+Su ficha está **esbozada**: detallarla es la primera mitad de la tarea. Se apoya en
+`Repositorio.guardarResolucion`, `partidasPorResolver` y `detenerPartida` de T-060.
 
 ### Lo que T-047 v1 deja abierto (se reabre tras T-103)
 
@@ -70,7 +64,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
+| `paquetes/` | `servidor`: persistencia (T-060) hecha, sin reloj ni API todavía; `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `servidor` y `cliente`, vacíos salvo su versión (fases 3 y 4) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -116,6 +110,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 25-09-2026 | **T-060 hecha: persistencia y esquema de datos.** `paquetes/servidor/src/persistencia/`: interfaz `Repositorio` asíncrona y `RepositorioSqlite` sobre `node:sqlite` (sin dependencias), estado **completo por turno comprimido** con su huella comprobada al leer, migración inicial reversible, órdenes entrantes que nunca se borran y `guardarResolucion` en **una sola transacción** (`conflicto-de-turno` y `encadenado-roto`). **200 turnos con ocho casas ocupan 5,09 MB**; proyección de 12 jugadores y 240 turnos, ~12 MB. Fallo inyectado, corrupción, idempotencia y «sin SQL fuera de la capa» comprobados. `cuenta` queda a T-063. 24 pruebas nuevas; 1080 en verde |
 | 25-09-2026 | **T-047 v1 cerrada con excepciones; Fase 2 completa** (también T-053 y T-059, v1). Por decisión del usuario, el equilibrio se cierra como v1 con las excepciones documentadas en [T-047 §9](docs/plan/T-047-equilibrio-v1.md) —prestigio, escasez, tierra, dominio y el capítulo de comercio— y se reabre tras T-103; no se movió ningún umbral. Base de referencia `E-feria3-*`: **352 filas cumplen de 471**. Lo último que entró: la **expedición que vive de la tierra** (`Recua.enExpedicion`; la tierra sin tocar baja 6–11 puntos en las nueve partidas), la **comarca con feria que da de comer** (los salineros venden en feria por primera vez), `feriar` con bolsa y ventas hacia la feria (robots 11). Resolver la Mesta como feriante se intentó con siete ensayos y **no se consiguió**: el límite es estructural (tramos de 4–10 jornadas contra un porte de 10), en [T-059 §9.3](docs/plan/T-059-las-ferias-se-conocen.md). 1056 pruebas en verde. Siguiente: T-060 |
 | 23-09-2026 | **T-052 abierta desde dentro de T-047**: la geografía de precios no es una cifra. Al turno 100, entre las diez plazas de una partida, la dispersión de precios es de **0,0 puntos en la lana, 0,4 en el hierro y 0,6 en la sal**: lo que distingue una comarca de otra cuesta lo mismo en todas partes, y la comisión sola es un 2 % por lado. Se ensayaron y descartaron las dos palancas de datos que quedaban (liquidez de los menores a 300, que además **quita el comprador** y hunde el prestigio a 0 de 24 filas; y margen al 2 %, que no mueve la dispersión). La razón se lee en el código: el precio de una plaza solo cambia si alguien compra o vende allí, y la sal, el hierro y la lana no se comercian en ninguna parte, así que se quedan clavados en su único `precioBaseMil` global. **Ninguna cifra puede abaratar la sal de Añana frente a la de Sevilla.** Ficha [T-052](docs/plan/T-052-geografia-de-precios.md) escrita y detallada: precio base por comarca derivado de sus potenciales, con su tabla de abundancia, los cuatro sitios que hoy usan el número global y criterios de aceptación con cifras. T-047 se reanuda después |
 | 24-09-2026 | **La aritmética del comercio, hasta el fondo.** Con libertad para hacer lo mejor para el juego, fui a que el comercio exista. **Adoptado**: el arbitraje ordenaba las parejas de plazas con los precios acolchados (puja 20 %, rebaja 10 %), así que necesitaba una diferencia bruta **del 33 %** antes de mirar siquiera; con la sal de 9800 a 12600 entre dos plazas suyas no veía **ni una pareja en toda la partida**. Ahora ordena por lo que sabe y el acolchado se queda en los límites de la orden, que deben ser holgados o la compra se cae por precio. De 0 parejas a **106**, sin mover el recuento. **La causa última, con el volcado delante**: 106 parejas, 200 maravedís de bolsa y **`hueco = 0`** — no falta ocasión, ni dinero, ni plazas, ni precio, **falta sitio en la recua**: doce cargas de pan para un porte de diez. Cuatro caminos medidos y descartados, uno de ellos con **el primer negocio rentable de toda la investigación** (margen +51) a costa de hundir la escasez. La salida la tiene escrita el diseño desde T-035: la venta da de comer a las recuas. Ficha [T-055](docs/plan/T-055-la-venta-da-de-comer.md). 1021 tests en verde |

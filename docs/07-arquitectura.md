@@ -115,6 +115,19 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
 
 - Node + Fastify. Persistencia: **SQLite** (fichero por instancia) en desarrollo y primeras
   partidas; capa de acceso aislada para poder pasar a Postgres sin tocar la lógica.
+- **Persistencia** (T-060, `paquetes/servidor/src/persistencia/`): interfaz `Repositorio` asíncrona y
+  una única implementación con SQL, `RepositorioSqlite`, sobre `node:sqlite` (viene con Node 22; es
+  experimental y por eso está aislada en una sola clase).
+  - Se guarda el **estado completo de cada turno**, en forma canónica comprimida con gzip, con su
+    huella (se recalcula al leer: `huella-no-coincide` si no cuadra) y la firma del turno.
+  - Tablas: `partida`, `participante`, `estado_turno`, `orden` (entrantes: solo se añaden y cambian de
+    estado), `cronica`, `suceso_turno`, `auditoria_resolucion` y `migracion`. La clave `(partida, turno)`
+    de estado y auditoría hace imposible guardar dos veces el mismo turno.
+  - `guardarResolucion` escribe estado, crónicas, sucesos, auditoría, órdenes y avance de la partida en
+    **una transacción**, o nada; falla con `conflicto-de-turno` si la partida ya no está en ese turno y
+    con `encadenado-roto` si el estado nuevo no encadena con el guardado.
+  - Migraciones versionadas y reversibles; una base más nueva que el servidor no se abre.
+  - **Tamaño medido:** 200 turnos con ocho casas, 5,09 MB; 12 jugadores y 240 turnos, unos 12 MB.
 - **Reloj de turnos**: un proceso de resolución que despierta, busca partidas con
   `proxima_resolucion <= ahora` y las resuelve una a una.
   - Idempotente: la resolución del turno N se guarda en una transacción junto con el avance del

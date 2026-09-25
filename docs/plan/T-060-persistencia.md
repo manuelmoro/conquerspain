@@ -1,6 +1,6 @@
 # T-060 · Persistencia y esquema de datos
 
-**Fase:** 3 · Servidor · **Depende de:** T-047 · **Estado:** en curso (ficha **detallada el 25-09-2026**)
+**Fase:** 3 · Servidor · **Depende de:** T-047 · **Estado:** **hecha (25-09-2026)**
 
 ## 1. Contexto
 
@@ -57,8 +57,11 @@ Política de retención (decisión, no código todavía): no se borra nada mient
   coincide, se lanza `ErrorDePersistencia('huella-no-coincide', …)` con la partida y el turno.
 - Al leer también se valida con `validarEstado` (el núcleo) contra el mundo de la partida, salvo que
   se pida lo contrario (lectura de auditoría).
-- El estado guardado del turno N+1 lleva `huellaTurnoAnterior = huella(estado N)` (lo pone el motor):
-  se comprueba en la transacción de resolución que **encadena** con el guardado del turno N.
+- El estado del turno N+1 lleva `huellaTurnoAnterior`, que el motor calcula como la huella de ese
+  mismo estado con la firma del turno N todavía puesta. La transacción de resolución la **recalcula**
+  con la firma que trae guardada el estado N (`estado_turno.huella_turno_anterior`) y rechaza el
+  estado nuevo si no sale igual (`encadenado-roto`); además comprueba que la huella de entrada de la
+  auditoría es la del estado N guardado.
 
 ### 4.4 Las órdenes
 
@@ -119,6 +122,7 @@ CREATE TABLE estado_turno (
   turno      INTEGER NOT NULL,
   huella     TEXT NOT NULL,
   contenido  BLOB NOT NULL,                   -- gzip(canónico(estado))
+  huella_turno_anterior TEXT,               -- la firma del turno que trae el propio estado (§4.3)
   bytes_sin_comprimir INTEGER NOT NULL,
   guardado_en INTEGER NOT NULL,
   PRIMARY KEY (partida, turno)
@@ -232,7 +236,8 @@ paquetes/servidor/src/persistencia/
   migraciones/index.ts    lista ordenada
   migraciones/0001-inicial.ts
   codec.ts                estado ⇄ bytes (canónico + gzip), huella
-  memoria.ts              RepositorioEnMemoria (SQLite ':memory:') para pruebas de otros paquetes
+  validarCronica.ts       validador de la crónica guardada (se valida al leer, como el estado)
+  prueba-comun.ts         partida real y resolución lista para guardar (solo pruebas)
 paquetes/servidor/src/persistencia/*.test.ts
 docs/07-arquitectura.md   §7.4: tabla de decisiones y esquema
 ```
@@ -277,7 +282,36 @@ npx vitest run paquetes/servidor
 3. `docs/07-arquitectura.md` §7.4: esquema, decisiones y tamaño proyectado.
 4. Commit: `T-060: persistencia y esquema de datos`.
 
-## 12. Dónde va
+## 12. Cierre (25-09-2026)
 
-Ficha detallada el 25-09-2026. **Nada implementado todavía.** Siguiente paso: `codec.ts` y la migración
-1 con sus tests, después `RepositorioSqlite` y la transacción de resolución.
+**Hecha.** `paquetes/servidor/src/persistencia/`: `repositorio.ts` (interfaz, tipos), `errores.ts` (nueve
+códigos cerrados), `codec.ts` (canónico + gzip + huella), `validarCronica.ts`, `migraciones/` (la
+`0001-inicial`, reversible), `sqlite.ts` (la única clase con SQL, sobre `node:sqlite`) y sus pruebas:
+24 pruebas nuevas (1056 → 1080).
+
+**Criterios:**
+
+1. **Tamaño:** 200 turnos con ocho casas (208 comarcas) ocupan **5,09 MB** en disco, con estados,
+   crónicas de cada jugador, sucesos y auditoría. Proyección a 12 jugadores y 240 turnos (unas 400
+   comarcas): **~12 MB**. Más que los ~7 MB del cálculo previo, que solo contaba estados; sigue siendo poco.
+2. **Ida y vuelta:** los 31 estados de una partida de 30 turnos vuelven con la misma huella y la misma
+   forma canónica.
+3. **Corrupción:** un estado alterado con su huella vieja, o bytes que no son un gzip, lanzan
+   `huella-no-coincide` (con partida y turno); una forma rota, `estado-invalido`.
+4. **Transacción:** con la auditoría de ese turno ya existente (fallo inyectado tras escribir el
+   estado y las crónicas), no queda estado nuevo, ni crónicas, ni avance.
+5. **Idempotencia:** la segunda resolución del mismo turno lanza `conflicto-de-turno` sin tocar nada.
+6. **Encadenado:** firma falsa, estado tocado sin recalcular la firma o entrada distinta de la
+   guardada: `encadenado-roto`, sin escribir.
+7. **Órdenes:** ninguna operación de borrado; pendiente → aplicada / cancelada / rechazada; una ya
+   aplicada o rechazada no se cancela; el identificador repetido se rechaza.
+8. **Migraciones:** se aplican sobre base vacía y con datos, son idempotentes, se revierten de una en
+   una, una futura no se abre (`esquema-desactualizado`) y una que falla se deshace entera.
+9. **Sin SQL fuera de la capa:** un test recorre `paquetes/servidor/src` y falla si otro archivo que no
+   sea `sqlite.ts` o `migraciones/` tiene SQL o importa `node:sqlite`.
+10. `npm run verificar` en verde.
+
+**Decisiones que no estaban escritas:** `RepositorioSqlite.revertirUna()` (no está en la interfaz:
+es para pruebas y operación manual); los métodos son `async` de verdad, de modo que un fallo es una
+promesa rechazada y no una excepción síncrona; el estado se valida siempre en forma al leerlo y contra
+el mundo solo si se da; `cuenta` es un texto sin más hasta T-063.
