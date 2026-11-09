@@ -90,6 +90,13 @@ Comprar y vender con precio límite en las paradas llega con el mercado (T-084).
 Precios conocidos por plaza, con su fecha. Órdenes con precio límite. Calendario de ferias.
 Histórico de precios como gráfico pequeño (el precio de la lana es una historia).
 
+**Hecho en T-084.** «Mercado», en la cabecera, abre en el panel las plazas que conoces: abiertas primero, con
+cuándo abren las demás y **la fecha y la fuente de cada precio** («de hace 5 turnos, de oídas»). Un precio de
+más de seis turnos sale apagado y avisa de que puede haber cambiado. Cada precio va con ↓ barato o ↑ caro frente
+al base de esa comarca. La ficha de una plaza trae cada precio con su base y su serie pequeña (los precios que
+supiste en el último año), y el formulario de orden, con una frase que explica el precio límite. La orden pone a
+tratar a la recua si hace falta. En las paradas de una ruta se vende y se compra con precio límite.
+
 ### 8.2.8 Crónica, hitos y clasificación
 El parte del turno, el archivo de turnos anteriores, los hitos conseguidos y la clasificación
 pública con desglose por capítulos.

@@ -24,7 +24,8 @@ y sus bloqueos explicados, como las acciones de la ficha (T-082).
 
 **Entra:** fuero y carga fiscal en la ficha de una comarca propia; obras mayores con su avance;
 elección de tradición cuando hay ronda abierta (con aviso en la crónica); editor de reglas del
-mayordomo (condición y acción cerradas, 3 a 6 activas, docs/02 §2.5.3); traslado de la corte.
+mayordomo (condición y acción cerradas, 3 a 6 activas, docs/02 §2.5.3); traslado de la corte; la letra de
+cambio de los mercaderes (privilegio de casa; viene de T-084).
 
 **No entra:** lo que necesite a otro jugador (fase 5).
 

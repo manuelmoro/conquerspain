@@ -15,7 +15,9 @@ import { NOMBRE_DE_ESTADO } from '../nombres.ts';
 import { describirOrden, fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
 import { tocar } from '../editor-de-ruta.ts';
+import type { MercadoRecibido } from '../api.ts';
 import { pantallaDeFicha } from './ficha.ts';
+import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
 import { pantallaDeUnidades } from './unidades.ts';
 import { dialogoDeResumen } from './resumen.ts';
@@ -154,6 +156,30 @@ function fichaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null
     return el('section', { class: 'ficha tarjeta hoja' }, el('p', {}, 'Cargando la comarca…'));
   }
   return pantallaDeFicha(almacen, guardada, partida.recibido.turno);
+}
+
+/** El mercado traido, por partida e instante de la vista: cambia al resolverse el turno. */
+const mercados = new Map<string, MercadoRecibido | 'cargando'>();
+
+function mercadoDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
+  const partida = estado.partida;
+  if (partida === null || estado.mercado === null) return null;
+  const clave = `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`;
+  const guardado = mercados.get(clave);
+  if (guardado === undefined) {
+    mercados.set(clave, 'cargando');
+    void almacen.pedirMercado().then((m) => {
+      if (m === null) mercados.delete(clave);
+      else mercados.set(clave, m);
+      almacen.refrescar();
+    });
+  }
+  return pantallaDeMercado(
+    almacen,
+    guardado === undefined || guardado === 'cargando' ? null : guardado,
+    estado.mercado.plaza,
+    nombreDeComarcaEn(estado),
+  );
 }
 
 function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
@@ -308,6 +334,16 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       `corte: ${tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())}`,
     ),
   );
+  cabecera.append(
+    boton(
+      'Mercado',
+      () => {
+        if (almacen.estado.mercado === null) almacen.abrirMercado();
+        else almacen.cerrarMercado();
+      },
+      'secundario empuje',
+    ),
+  );
   if (vista.configuracion.esDePrueba) {
     cabecera.append(
       boton(
@@ -315,7 +351,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         () => {
           void almacen.avanzar();
         },
-        'empuje',
+        '',
       ),
     );
   }
@@ -356,9 +392,9 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       : ([...vista.recuas, ...vista.rebanyos].find((u) => u.id === editor.unidad.id)?.nombre ??
         'la unidad');
   const ficha =
-    editor === null
-      ? fichaDe(almacen, estado)
-      : pantallaDeRuta(almacen, editor, nombreDeUnidad, nombre);
+    editor !== null
+      ? pantallaDeRuta(almacen, editor, nombreDeUnidad, nombre)
+      : (mercadoDe(almacen, estado) ?? fichaDe(almacen, estado));
   partes.push(
     el(
       'div',

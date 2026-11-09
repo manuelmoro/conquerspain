@@ -2,13 +2,22 @@
 // desde el almacen hasta las ordenes que acepta el servidor.
 import { describe, expect, it } from 'vitest';
 
-import type { FichaDeComarca, PrevisionDeRuta } from '@conquer/nucleo';
+import { recursosSegun } from '@conquer/nucleo';
+import type {
+  FichaDeComarca,
+  IdComarca,
+  IdJugador,
+  IdRecua,
+  PrevisionDeRuta,
+  Recua,
+} from '@conquer/nucleo';
 
 import {
   alternarCircular,
   conPrevision,
   editorDe,
   fijarCarga,
+  fijarTrato,
   intencionesDe,
   puedeConfirmar,
   quitar,
@@ -17,6 +26,31 @@ import {
 } from './editor-de-ruta.ts';
 import { claveOrdenada } from './almacen.ts';
 import { montar } from './prueba-comun.ts';
+
+/** Una recua quieta y vacia, con lo que se le cambie. */
+function recuaDePrueba(cambios: Partial<Recua>): Recua {
+  return {
+    id: 'r' as IdRecua,
+    jugador: 'yo' as IdJugador,
+    nombre: 'Recua de prueba',
+    situacion: { donde: 'comarca', comarca: 'a' as IdComarca },
+    ruta: [],
+    rutaCircular: false,
+    paradas: [],
+    siguienteParada: 0,
+    enParada: null,
+    acemilas: 10,
+    porte: 10,
+    carga: recursosSegun(() => 0),
+    vecinos: 0,
+    cometido: null,
+    turnosDeCometido: 0,
+    avisadaSinBastimento: false,
+    enExpedicion: false,
+    fallosDePrecio: 0,
+    ...cambios,
+  };
+}
 
 const BUENA: PrevisionDeRuta = {
   ok: true,
@@ -53,13 +87,53 @@ describe('el estado del editor de ruta', () => {
     e = fijarCarga(e, 2, 'cargar', 'lana', 5);
     e = subir(e, 2);
     expect(e.paradas).toEqual(['a', 'c', 'b']);
-    expect(e.cargas[1]).toEqual({ lana: 5 });
+    expect(e.tratos[1]?.cargar).toEqual({ lana: 5 });
     e = tocar(e, 'b');
     expect(e.paradas).toEqual(['a', 'c']);
     e = quitar(e, 0);
     expect(e.paradas).toEqual(['c']);
-    expect(e.cargas).toEqual([{ lana: 5 }]);
-    expect(fijarCarga(e, 0, 'cargar', 'lana', 0).cargas).toEqual([{}]);
+    expect(e.tratos.map((t) => t.cargar)).toEqual([{ lana: 5 }]);
+    expect(fijarCarga(e, 0, 'cargar', 'lana', 0).tratos[0]?.cargar).toEqual({});
+  });
+
+  it('vender y comprar con precio límite en una parada llegan al motor tal cual (T-084, criterio 5)', () => {
+    let e = tocar(editorDe({ clase: 'recua', id: 'r' }, null), 'a');
+    e = fijarTrato(e, 0, 'vender', 'lana', { cantidad: 8, precioMil: 52000 });
+    e = fijarTrato(e, 0, 'comprar', 'sal', { cantidad: 3, precioMil: 15000 });
+    e = fijarTrato(e, 0, 'vender', 'maravedis', { cantidad: 3, precioMil: 1 });
+    e = conPrevision(e, e.version, BUENA);
+    const ruta = intencionesDe(e, false)[0];
+    expect(ruta?.['paradas']).toEqual([
+      {
+        comarca: 'a',
+        cargar: {},
+        descargar: {},
+        vender: { lana: { cantidad: 8, precioMinimoMil: 52000 } },
+        comprar: { sal: { cantidad: 3, precioMaximoMil: 15000 } },
+      },
+    ]);
+    // Y se vuelve a leer igual de la recua que ya la lleva: un circuito se edita sin rehacerlo.
+    const leida = editorDe(
+      { clase: 'recua', id: 'r' },
+      recuaDePrueba({
+        rutaCircular: true,
+        paradas: [
+          {
+            comarca: 'a' as IdComarca,
+            cargar: {},
+            descargar: {},
+            vender: { lana: { cantidad: 8, precioMinimoMil: 52000 } },
+            comprar: {},
+          },
+        ],
+      }),
+    );
+    expect(leida.tratos[0]?.vender).toEqual({ lana: { cantidad: 8, precioMil: 52000 } });
+    expect(leida.circular).toBe(true);
+    // Quitar la cantidad quita el trato.
+    expect(
+      fijarTrato(e, 0, 'vender', 'lana', { cantidad: 0, precioMil: 1 }).tratos[0]?.vender,
+    ).toEqual({});
   });
 
   it('una previsión vieja no pisa la de un cambio nuevo; fuera de casa no se carga', () => {

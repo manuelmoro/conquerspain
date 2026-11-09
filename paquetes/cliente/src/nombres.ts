@@ -101,12 +101,11 @@ export interface QueHacer {
   /** Lo que se le propone al jugador, en una frase. */
   readonly texto: string;
   /** Donde se hace hoy; null si todavia no hay pantalla. */
-  readonly donde: 'ficha' | 'bandeja' | 'unidades' | null;
+  readonly donde: 'ficha' | 'bandeja' | 'unidades' | 'mercado' | null;
   /** Si no hay pantalla, cuando llega. */
   readonly llega: string | null;
 }
 
-const CON_EL_MERCADO = 'llegará con la pantalla del mercado';
 const CON_EL_GOBIERNO = 'llegará con la pantalla de gobierno';
 
 /** La accion sugerida de cada aviso de la cronica, en castellano (ficha T-088 §2.9). */
@@ -155,11 +154,15 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
     donde: 'ficha',
     llega: null,
   },
-  mercado: { texto: 'Compra o vende en una plaza.', donde: null, llega: CON_EL_MERCADO },
+  mercado: {
+    texto: 'Compra o vende desde el mercado, con una recua en la plaza.',
+    donde: 'mercado',
+    llega: null,
+  },
   'letra-de-cambio': {
     texto: 'Mueve dinero con una letra de cambio.',
     donde: null,
-    llega: CON_EL_MERCADO,
+    llega: CON_EL_GOBIERNO,
   },
   politica: {
     texto: 'Cambia el fuero o la carga fiscal de la comarca.',

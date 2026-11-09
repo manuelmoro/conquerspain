@@ -430,7 +430,7 @@ export class Tablero {
   }
 
   /** Los edificios de una comarca, tal como los sabe el jugador: los suyos y los de lo explorado. */
-  private edificiosSabidos(id: IdComarca): Readonly<Record<string, number>> {
+  edificiosSabidos(id: IdComarca): Readonly<Record<string, number>> {
     return this.esPropia(id)
       ? (this.propias.find((c) => c.id === id)?.edificios ?? {})
       : (this.explorada(id)?.datos?.edificios ?? {});

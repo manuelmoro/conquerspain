@@ -9,6 +9,23 @@ export interface UnidadEditada {
   readonly id: string;
 }
 
+/** Lo que se hace en una parada: lo mismo que `ParadaDeRuta` del nucleo, sin la comarca. */
+export interface TratosDeParada {
+  readonly cargar: Readonly<Partial<Record<Recurso, number>>>;
+  readonly descargar: Readonly<Partial<Record<Recurso, number>>>;
+  /** Vender con precio minimo (T-084): «no menos de». */
+  readonly vender: Readonly<Partial<Record<Recurso, LineaDeTrato>>>;
+  /** Comprar con precio maximo (T-084): «no mas de». */
+  readonly comprar: Readonly<Partial<Record<Recurso, LineaDeTrato>>>;
+}
+
+export interface LineaDeTrato {
+  readonly cantidad: number;
+  readonly precioMil: number;
+}
+
+const SIN_TRATOS: TratosDeParada = { cargar: {}, descargar: {}, vender: {}, comprar: {} };
+
 export interface EditorDeRuta {
   readonly unidad: UnidadEditada;
   readonly paradas: readonly string[];
@@ -16,9 +33,8 @@ export interface EditorDeRuta {
   readonly circular: boolean;
   /** Si sale de casa con menos bastimento del que come el viaje, cargarlo antes de salir. */
   readonly cargarBastimento: boolean;
-  /** Lo que se carga y se descarga en cada parada, por su posicion (recuas). */
-  readonly cargas: readonly Readonly<Partial<Record<Recurso, number>>>[];
-  readonly descargas: readonly Readonly<Partial<Record<Recurso, number>>>[];
+  /** Lo que se hace en cada parada, por su posicion (recuas): cargar, descargar y tratar. */
+  readonly tratos: readonly TratosDeParada[];
   /** La prevision de lo que hay ahora en el editor, o null si aun no ha llegado. */
   readonly prevision: PrevisionDeRuta | null;
   /** Cuenta los cambios: una prevision de un cambio anterior no pisa la de uno nuevo. */
@@ -27,6 +43,19 @@ export interface EditorDeRuta {
 
 /** Hasta cuantas paradas se trazan a mano: las mismas que acepta la API. */
 export const PARADAS_MAXIMAS = 12;
+
+/** Los tratos de una parada del nucleo, con su precio limite, como los guarda el editor. */
+function lineasDe<T extends { readonly cantidad: number }>(
+  tratos: Readonly<Partial<Record<Recurso, T>>>,
+  precio: (t: T) => number,
+): Partial<Record<Recurso, LineaDeTrato>> {
+  const fuera: Partial<Record<Recurso, LineaDeTrato>> = {};
+  for (const r of RECURSOS) {
+    const t = tratos[r];
+    if (t !== undefined) fuera[r] = { cantidad: t.cantidad, precioMil: precio(t) };
+  }
+  return fuera;
+}
 
 /**
  * El editor de una unidad. De una recua se parte de las paradas que ya lleva, para cambiar un
@@ -40,8 +69,12 @@ export function editorDe(unidad: UnidadEditada, actual: Recua | null): EditorDeR
     paradas,
     circular,
     cargarBastimento: true,
-    cargas: paradas.map((_, i) => actual?.paradas[i]?.cargar ?? {}),
-    descargas: paradas.map((_, i) => actual?.paradas[i]?.descargar ?? {}),
+    tratos: (actual?.paradas ?? []).map((p): TratosDeParada => ({
+      cargar: p.cargar,
+      descargar: p.descargar,
+      vender: lineasDe(p.vender, (v) => v.precioMinimoMil),
+      comprar: lineasDe(p.comprar, (v) => v.precioMaximoMil),
+    })),
     prevision: null,
     version: 0,
   };
@@ -55,23 +88,15 @@ function cambiado(e: EditorDeRuta, cambios: Partial<EditorDeRuta>): EditorDeRuta
 export function tocar(e: EditorDeRuta, comarca: string): EditorDeRuta {
   if (e.paradas.at(-1) === comarca) return quitar(e, e.paradas.length - 1);
   if (e.unidad.clase === 'rebanyo') {
-    return cambiado(e, { paradas: [comarca], cargas: [{}], descargas: [{}] });
+    return cambiado(e, { paradas: [comarca], tratos: [SIN_TRATOS] });
   }
   if (e.paradas.length >= PARADAS_MAXIMAS) return e;
-  return cambiado(e, {
-    paradas: [...e.paradas, comarca],
-    cargas: [...e.cargas, {}],
-    descargas: [...e.descargas, {}],
-  });
+  return cambiado(e, { paradas: [...e.paradas, comarca], tratos: [...e.tratos, SIN_TRATOS] });
 }
 
 export function quitar(e: EditorDeRuta, i: number): EditorDeRuta {
   const fuera = <T>(lista: readonly T[]): T[] => lista.filter((_, j) => j !== i);
-  return cambiado(e, {
-    paradas: fuera(e.paradas),
-    cargas: fuera(e.cargas),
-    descargas: fuera(e.descargas),
-  });
+  return cambiado(e, { paradas: fuera(e.paradas), tratos: fuera(e.tratos) });
 }
 
 /** Sube una parada un puesto (la primera no se mueve). */
@@ -85,11 +110,7 @@ export function subir(e: EditorDeRuta, i: number): EditorDeRuta {
     copia[i] = a;
     return copia;
   };
-  return cambiado(e, {
-    paradas: cambiar(e.paradas),
-    cargas: cambiar(e.cargas),
-    descargas: cambiar(e.descargas),
-  });
+  return cambiado(e, { paradas: cambiar(e.paradas), tratos: cambiar(e.tratos) });
 }
 
 export function alternarCircular(e: EditorDeRuta): EditorDeRuta {
@@ -110,17 +131,45 @@ export function fijarCarga(
   recurso: Recurso,
   cantidad: number,
 ): EditorDeRuta {
-  const lista = que === 'cargar' ? e.cargas : e.descargas;
-  const nueva = lista.map((c, j) => {
-    if (j !== i) return c;
+  const tratos = e.tratos.map((t, j) => {
+    if (j !== i) return t;
     const copia: Partial<Record<Recurso, number>> = {};
     for (const r of RECURSOS) {
-      const valor = r === recurso ? Math.floor(cantidad) : (c[r] ?? 0);
+      const valor = r === recurso ? Math.floor(cantidad) : (t[que][r] ?? 0);
       if (valor > 0) copia[r] = valor;
     }
-    return copia;
+    return { ...t, [que]: copia };
   });
-  return cambiado(e, que === 'cargar' ? { cargas: nueva } : { descargas: nueva });
+  return cambiado(e, { tratos });
+}
+
+/**
+ * Vender (con precio minimo) o comprar (con precio maximo) un recurso en una parada (T-084); una
+ * cantidad de 0 lo quita. Los maravedis no se tratan: son la moneda.
+ */
+export function fijarTrato(
+  e: EditorDeRuta,
+  i: number,
+  que: 'vender' | 'comprar',
+  recurso: Recurso,
+  linea: LineaDeTrato,
+): EditorDeRuta {
+  if (recurso === 'maravedis') return e;
+  const tratos = e.tratos.map((t, j) => {
+    if (j !== i) return t;
+    const copia: Partial<Record<Recurso, LineaDeTrato>> = {};
+    for (const r of RECURSOS) {
+      const actual = r === recurso ? linea : t[que][r];
+      if (actual !== undefined && actual.cantidad > 0) {
+        copia[r] = {
+          cantidad: Math.floor(actual.cantidad),
+          precioMil: Math.max(0, Math.floor(actual.precioMil)),
+        };
+      }
+    }
+    return { ...t, [que]: copia };
+  });
+  return cambiado(e, { tratos });
 }
 
 /** La prevision que llega del servidor, si es de la version que hay ahora. */
@@ -147,13 +196,30 @@ export function intencionesDe(
 ): readonly Readonly<Record<string, unknown>>[] {
   const p = e.prevision;
   if (p === null || !p.ok) return [];
-  const paradas = e.paradas.map((comarca, i) => ({
-    comarca,
-    cargar: e.cargas[i] ?? {},
-    descargar: e.descargas[i] ?? {},
-    vender: {},
-    comprar: {},
-  }));
+  const paradas = e.paradas.map((comarca, i) => {
+    const t = e.tratos[i] ?? SIN_TRATOS;
+    const lineas = (
+      que: 'vender' | 'comprar',
+    ): Partial<Record<Recurso, Record<string, number>>> => {
+      const fuera: Partial<Record<Recurso, Record<string, number>>> = {};
+      for (const r of RECURSOS) {
+        const l = t[que][r];
+        if (l === undefined) continue;
+        fuera[r] =
+          que === 'vender'
+            ? { cantidad: l.cantidad, precioMinimoMil: l.precioMil }
+            : { cantidad: l.cantidad, precioMaximoMil: l.precioMil };
+      }
+      return fuera;
+    };
+    return {
+      comarca,
+      cargar: t.cargar,
+      descargar: t.descargar,
+      vender: lineas('vender'),
+      comprar: lineas('comprar'),
+    };
+  });
   if (e.unidad.clase === 'rebanyo') {
     return [
       {

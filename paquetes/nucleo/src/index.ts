@@ -155,6 +155,13 @@ export type { PlazaConocida } from './prevision/tablero.ts';
 export { planDeMision } from './prevision/misiones.ts';
 export type { ImposibleDeMision, Mision, PlanDeMision } from './prevision/misiones.ts';
 export { previsionDeRuta } from './prevision/ruta.ts';
+export { RECURSOS_DE_MERCADO, panelDeMercado } from './prevision/mercado.ts';
+export type {
+  PanelDeMercado,
+  PlazaEnPanel,
+  PrecioEnPlaza,
+  RecuaEnPlaza,
+} from './prevision/mercado.ts';
 export type { PrevisionDeRuta, TramoPrevisto, UnidadQueViaja } from './prevision/ruta.ts';
 export {
   TURNOS_MAXIMOS_DE_VIAJE,

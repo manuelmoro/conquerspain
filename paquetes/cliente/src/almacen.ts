@@ -2,7 +2,13 @@
 // acciones; nada de aqui toca el DOM.
 import type { AtlasDeJugador, FichaDeComarca, TablasDeReglas } from '@conquer/nucleo';
 
-import type { ClienteApi, CuentaDelCliente, EstadoRecibido, OrdenEnviada } from './api.ts';
+import type {
+  ClienteApi,
+  CuentaDelCliente,
+  EstadoRecibido,
+  MercadoRecibido,
+  OrdenEnviada,
+} from './api.ts';
 import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
 import { conPrevision, editorDe, intencionesDe } from './editor-de-ruta.ts';
 import type { Guardado } from './guardado.ts';
@@ -46,6 +52,8 @@ export interface EstadoDelCliente {
   readonly errores: readonly { readonly codigo: string; readonly mensaje: string }[];
   /** El editor de ruta abierto (T-083): mientras lo esta, tocar el mapa anyade paradas. */
   readonly editor: EditorDeRuta | null;
+  /** El mercado abierto en el panel (T-084), con la plaza que se mira, o null si esta cerrado. */
+  readonly mercado: { readonly plaza: string | null } | null;
 }
 
 export interface DependenciasDelAlmacen {
@@ -69,6 +77,7 @@ const INICIAL: EstadoDelCliente = {
   resumenAbierto: false,
   errores: [],
   editor: null,
+  mercado: null,
 };
 
 function claveDeVista(partida: string): string {
@@ -349,7 +358,9 @@ export class Almacen {
   }
 
   abrirComarca(comarca: string | null): void {
-    this.cambiar({ comarcaAbierta: comarca });
+    this.cambiar(
+      comarca === null ? { comarcaAbierta: null } : { comarcaAbierta: comarca, mercado: null },
+    );
   }
 
   /** Solo partidas de prueba: resuelve el turno ya y trae el nuevo (J-01). */
@@ -392,6 +403,29 @@ export class Almacen {
     });
   }
 
+  // ——— El mercado (T-084 §4.3) —————————————————————————————————————————————————
+
+  /** Abre el mercado en el panel (en una plaza, si se dice); cierra la ficha y el editor. */
+  abrirMercado(plaza: string | null = null): void {
+    this.cambiar({ mercado: { plaza }, comarcaAbierta: null, editor: null });
+  }
+
+  cerrarMercado(): void {
+    this.cambiar({ mercado: null });
+  }
+
+  /** El panel de mercado y las series de la partida abierta, o null si no se pudo traer. */
+  async pedirMercado(): Promise<MercadoRecibido | null> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return null;
+    const r = await this.dep.api.mercado(partida.id);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return null;
+    }
+    return r.datos;
+  }
+
   // ——— El editor de ruta (T-083 §4.5) ————————————————————————————————————————
 
   /** Abre el editor de una recua o un rebanyo propios; cierra la ficha que hubiera abierta. */
@@ -400,7 +434,12 @@ export class Almacen {
     if (vista === undefined) return;
     const recua =
       unidad.clase === 'recua' ? (vista.recuas.find((r) => r.id === unidad.id) ?? null) : null;
-    this.cambiar({ editor: editorDe(unidad, recua), comarcaAbierta: null, resumenAbierto: false });
+    this.cambiar({
+      editor: editorDe(unidad, recua),
+      comarcaAbierta: null,
+      resumenAbierto: false,
+      mercado: null,
+    });
     void this.preverRuta();
   }
 

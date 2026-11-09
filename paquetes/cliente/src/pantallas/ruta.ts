@@ -1,14 +1,15 @@
 // El editor de ruta en el panel (ficha T-083 §4.5): las paradas que se van tocando en el mapa, la
 // prevision tramo a tramo con el turno de llegada a cada parada, y los avisos antes de confirmar.
-import { BLOQUEOS, RECURSOS } from '@conquer/nucleo';
+import { BLOQUEOS, RECURSOS, RECURSOS_DE_MERCADO } from '@conquer/nucleo';
 import type { Recurso } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
-import type { EditorDeRuta } from '../editor-de-ruta.ts';
+import type { EditorDeRuta, LineaDeTrato } from '../editor-de-ruta.ts';
 import {
   alternarBastimento,
   alternarCircular,
   fijarCarga,
+  fijarTrato,
   puedeConfirmar,
   quitar,
   subir,
@@ -39,21 +40,84 @@ function campoDeCarga(
   return el('label', { class: 'campo-carga' }, MARCA_DE_RECURSO[recurso], entrada);
 }
 
+/** Vender o comprar un recurso en una parada: cantidad y precio limite en maravedis (T-084). */
+function campoDeTrato(
+  almacen: Almacen,
+  i: number,
+  que: 'vender' | 'comprar',
+  recurso: Recurso,
+  linea: LineaDeTrato | undefined,
+): HTMLElement {
+  const cantidad = el('input', {
+    type: 'number',
+    min: '0',
+    inputmode: 'numeric',
+    value: linea === undefined ? '' : String(linea.cantidad),
+    placeholder: '0',
+    'aria-label': `${que === 'vender' ? 'Vender' : 'Comprar'} ${NOMBRE_DE_RECURSO[recurso]}: cantidad`,
+  });
+  const precio = el('input', {
+    type: 'number',
+    min: '0',
+    step: '0.1',
+    inputmode: 'decimal',
+    value: linea === undefined ? '' : String(linea.precioMil / 1000),
+    placeholder: 'mrs',
+    'aria-label': `${que === 'vender' ? 'Precio mínimo' : 'Precio máximo'} de ${NOMBRE_DE_RECURSO[recurso]}`,
+  });
+  const cambiar = (): void => {
+    const c = Number(cantidad.value);
+    const mil = Math.round(Number(precio.value) * 1000);
+    almacen.editar((e) =>
+      fijarTrato(e, i, que, recurso, {
+        cantidad: Number.isFinite(c) ? c : 0,
+        precioMil: Number.isFinite(mil) ? mil : 0,
+      }),
+    );
+  };
+  cantidad.addEventListener('change', cambiar);
+  precio.addEventListener('change', cambiar);
+  return el('label', { class: 'campo-carga' }, MARCA_DE_RECURSO[recurso], cantidad, '×', precio);
+}
+
 function cargasDeParada(almacen: Almacen, e: EditorDeRuta, i: number): HTMLElement {
-  const plegable = el('details', {}, el('summary', {}, 'Cargar y descargar aquí'));
+  const t = e.tratos[i];
+  const plegable = el('details', {}, el('summary', {}, 'Cargar, descargar y tratar aquí'));
   for (const que of ['cargar', 'descargar'] as const) {
-    const lista = que === 'cargar' ? e.cargas : e.descargas;
     const fila = el(
       'p',
       { class: 'fila' },
       el('span', { class: 'suave' }, que === 'cargar' ? 'Cargar:' : 'Descargar:'),
     );
     for (const recurso of RECURSOS)
-      fila.append(campoDeCarga(almacen, i, que, recurso, lista[i]?.[recurso] ?? 0));
+      fila.append(campoDeCarga(almacen, i, que, recurso, t?.[que][recurso] ?? 0));
     plegable.append(fila);
   }
-  if (Object.keys(e.cargas[i] ?? {}).length + Object.keys(e.descargas[i] ?? {}).length > 0)
-    plegable.setAttribute('open', '');
+  plegable.append(
+    el(
+      'p',
+      { class: 'consejo' },
+      'Si en la parada hay plaza abierta, la recua vende o compra allí ese turno: vendiendo, a no menos del precio que pongas; comprando, a no más.',
+    ),
+  );
+  for (const que of ['vender', 'comprar'] as const) {
+    const fila = el(
+      'p',
+      { class: 'fila' },
+      el(
+        'span',
+        { class: 'suave' },
+        que === 'vender' ? 'Vender (cantidad × mínimo):' : 'Comprar (cantidad × máximo):',
+      ),
+    );
+    for (const recurso of RECURSOS_DE_MERCADO)
+      fila.append(campoDeTrato(almacen, i, que, recurso, t?.[que][recurso]));
+    plegable.append(fila);
+  }
+  const algo =
+    t !== undefined &&
+    [t.cargar, t.descargar, t.vender, t.comprar].some((x) => Object.keys(x).length > 0);
+  if (algo) plegable.setAttribute('open', '');
   return plegable;
 }
 

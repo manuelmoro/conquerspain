@@ -7,7 +7,9 @@ import type {
   Cronica,
   FichaDeComarca,
   Orden,
+  PanelDeMercado,
   PrevisionDeRuta,
+  Recurso,
   VistaJugador,
 } from '@conquer/nucleo';
 
@@ -52,6 +54,15 @@ export interface OfertaRecibida {
 }
 
 /** Una orden ya enviada que el servidor guarda hasta resolver el turno. */
+/** El mercado del jugador (T-084 §4.2): su panel y la serie de precios que supo por plaza. */
+export interface MercadoRecibido {
+  readonly turno: number;
+  readonly panel: PanelDeMercado;
+  readonly series: Readonly<
+    Record<string, Readonly<Partial<Record<Recurso, readonly { turno: number; mil: number }[]>>>>
+  >;
+}
+
 export interface OrdenEnviada {
   readonly id: string;
   readonly estado: string;
@@ -195,6 +206,10 @@ export class ClienteApi {
       'GET',
       `/partidas/${encodeURIComponent(partida)}/comarcas/${encodeURIComponent(comarca)}`,
     );
+  }
+
+  mercado(partida: string) {
+    return this.pedir<MercadoRecibido>('GET', `/partidas/${encodeURIComponent(partida)}/mercado`);
   }
 
   /** La prevision de una ruta que se esta trazando (T-083 §4.3). */

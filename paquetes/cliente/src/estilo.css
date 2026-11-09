@@ -390,3 +390,25 @@ details.bloqueadas > summary {
     padding: 0.05rem 0.45rem;
   }
 }
+
+/* El mercado (T-084): lo barato y lo caro con flecha además del color, y la serie de precios. */
+.chip.precio.barato {
+  border-color: var(--verde);
+  color: var(--verde);
+}
+.chip.precio.caro {
+  border-color: var(--rojo);
+  color: var(--rojo);
+}
+.plaza.vieja {
+  opacity: 0.7;
+}
+svg.serie {
+  width: 120px;
+  height: 28px;
+}
+svg.serie polyline {
+  fill: none;
+  stroke: var(--cobalto);
+  stroke-width: 1.5;
+}

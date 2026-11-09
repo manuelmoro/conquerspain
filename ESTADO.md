@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 9 de noviembre de 2026 (T-083 hecha; T-088 a falta de repetir J-01; sigue T-084)
+**Última actualización:** 9 de noviembre de 2026 (T-083 y T-084 hechas; T-088 a falta de repetir J-01; sigue T-085)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -25,10 +25,9 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 ## Siguiente tarea
 
-**T-084 · Mercado, ferias y precios** (primero, detallar su ficha). Hereda de T-083 comprar y vender con precio
-límite en las paradas de una ruta. Cuando el usuario pueda, que cierre el checkpoint **J-01 · Entender y
-ordenar** para dar por cerrada T-088; con T-083 hecha, ya puede probar también la expansión (recuas presentes y
-exploradoras desde la ficha).
+**T-085 · Crónica, hitos y clasificación** (primero, detallar su ficha). Después, T-089 (gobierno) y T-086.
+Cuando el usuario pueda, que cierre el checkpoint **J-01 · Entender y ordenar** para dar por cerrada T-088. Con
+T-083 y T-084 hechas, ya puede probar también la expansión y el comercio. J-02 llega tras T-085.
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
 ```bash
@@ -126,6 +125,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-084 hecha: el mercado.** El panel de plazas conocidas se compone en el núcleo (`panelDeMercado`) desde el tablero del jugador, y la API (`GET /partidas/:id/mercado`) le añade la serie de precios que supo, leída de sus estados guardados. En el cliente, cada precio va **con su fecha y su fuente** (apagado si pasa de seis turnos), ↓ barato o ↑ caro frente al base de la comarca, la serie pequeña por recurso y la orden con precio límite explicada, que pone a tratar a la recua si hace falta (probado: el motor la casa). Las paradas de una ruta venden y compran con precio límite. La letra de cambio va a T-089. 1268 pruebas en verde; 46,2 KB gzip |
 | 09-11-2026 | **T-083 hecha: recuas y rebaños sobre el mapa; la expansión ya se juega.** La previsión de viajes vive en el núcleo (`prevision/`) y la comparten robots, servidor y cliente. La ficha de una neutral manda una recua **a estar presente** o **a explorar** de una vez (cargar, ir, encargo y vuelta), con su llegada y su influencia previstas y probadas resolviendo turnos. Editor de ruta tocando el mapa, con previsión del servidor (`POST /partidas/:id/prevision-de-ruta`): tramos, llegada a cada parada, bastimento y avisos de puerto o de calor. Hay circular, carga por parada y la ruta propuesta dibujada. «Tus recuas y rebaños» en el panel y «Darle ruta» desde los avisos de la crónica (`EntradaDeCronica.unidad`). **Regla nueva:** una ruta releva a una circular sin pararla. **Fallo encontrado en el navegador y arreglado:** las órdenes de una misión entraban en la cola en cualquier orden porque el cliente daba claves al azar; ahora van ordenadas. 1260 pruebas en verde; 43,9 KB gzip |
 | 09-11-2026 | **T-083 (en curso): ficha detallada y primeros pasos.** La previsión de viajes de los robots (`Tablero`, `preverViaje`, `provisionPara`…) pasa al núcleo (`prevision/`) para que el cliente vea el mismo turno de llegada que el motor; el banco no cambia. **Regla nueva** (docs/02 §2.5.2): una orden `ruta` releva a una ruta circular sin pararla antes; antes la ruta nueva se quedaba esperando para siempre. Comprar y vender con precio límite en las paradas se lleva a T-084. 1246 pruebas en verde |
 | 09-11-2026 | **T-088 (en curso): hechos los puntos 6 a 9 de la segunda sesión de J-01; solo falta repetir J-01.** La vista da tu influencia también en las comarcas oídas (null si ya tienen dueño, como en las exploradas), y el modo Dominios la rotula. La ficha de toda neutral conocida explica **cómo ganarla** (`comoGanarLa`, sobre `fuentesDeInfluencia`, la misma función de la fase 8): actual frente a 60, cambio del turno con sus motivos, turnos hasta llegar y qué lo aceleraría; probado contra la fase al resolver. Regalo e incorporación también en las oídas (decidido sin el usuario, por encargo suyo: no cambia ninguna regla) y el consejo de explorarlas. `rebanyo.sin-pasto` y `cometido.sin-efecto` llevan su comarca: lo segundo lo encontró la prueba nueva de crónica larga (72 turnos, ocho casas). Acción sugerida en castellano (`QUE_HACER`), que dice cuándo llega si aún no tiene pantalla. Se abre **T-089** (gobierno en el cliente: fuero, obra mayor, tradiciones, mayordomo y corte), que no tenía tarea. 1245 pruebas en verde; 39,9 KB gzip |
