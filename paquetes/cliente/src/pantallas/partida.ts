@@ -35,6 +35,7 @@ import { dialogoDeHistorial } from './historial.ts';
 import { pantallaDeCasa } from './casa.ts';
 import { pantallaDeCronica } from './cronica.ts';
 import { pantallaDeFicha } from './ficha.ts';
+import { pantallaDePlano } from './plano.ts';
 import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
 import { pantallaDeUnidades } from './unidades.ts';
@@ -117,6 +118,8 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   };
   const partida = estado.partida;
   if (partida === null || partida.atlas === null) return el('p', {}, 'Sin mapa todavía.');
+  const plano = planoDe(almacen, estado);
+  if (plano !== null) return plano;
   if (atlas.svg === null) {
     atlas.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     atlas.svg.setAttribute('class', 'atlas');
@@ -173,10 +176,23 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
           ),
     ),
   );
+  const abierta = estado.comarcaAbierta;
+  const volverAlPlano =
+    abierta !== null && abierta === mapaEn
+      ? boton(
+          '🏘️ Ver su plano',
+          () => {
+            mapaEn = null;
+            almacen.refrescar();
+          },
+          'secundario',
+        )
+      : '';
   return el(
     'div',
     { class: 'mapa' },
     modos,
+    volverAlPlano,
     el(
       'p',
       { class: 'suave' },
@@ -204,6 +220,37 @@ function claveDeVista(estado: EstadoDelCliente): string {
   return partida === null
     ? ''
     : `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`;
+}
+
+/** La comarca propia en la que se ha pedido volver al mapa en vez de ver su plano. */
+let mapaEn: string | null = null;
+
+/** Con una comarca tuya abierta, el mapa deja sitio a su plano (T-092); no mientras se traza una ruta. */
+function planoDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
+  const partida = estado.partida;
+  const comarca = estado.comarcaAbierta;
+  if (comarca === null) mapaEn = null;
+  if (partida === null || comarca === null || estado.editor !== null || mapaEn === comarca)
+    return null;
+  const ficha = fichas.leer(
+    `${claveDeVista(estado)}|${comarca}`,
+    () => almacen.pedirFicha(comarca),
+    () => {
+      almacen.refrescar();
+    },
+  );
+  if (ficha === null) return null;
+  return pantallaDePlano(
+    ficha,
+    partida.recibido.vista.jugador.capital === comarca,
+    () => {
+      mapaEn = comarca;
+      almacen.refrescar();
+    },
+    () => {
+      almacen.refrescar();
+    },
+  );
 }
 
 function fichaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {

@@ -29,7 +29,7 @@ import type { Mundo, NivelPotencial, Potencial, Terreno } from './tipos/mundo.ts
 import type { Orden } from './tipos/ordenes.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS, recursosSegun } from './tipos/recursos.ts';
-import { TIPOS_DE_EDIFICIO } from './tipos/reglas.ts';
+import { TIPOS_DE_EDIFICIO, esTipoDeEdificio } from './tipos/reglas.ts';
 import type { TablasDeReglas, TipoEdificio } from './tipos/reglas.ts';
 import { validarIntencion } from './ordenes/intencion.ts';
 import { multiplicarFactores } from './utiles/enteros.ts';
@@ -86,7 +86,13 @@ export interface DetalleDePropia {
     nivel: number;
     maximo: number;
   }[];
-  readonly obras: readonly { que: string; avanceMil: number; necesarioMil: number }[];
+  readonly obras: readonly {
+    que: string;
+    /** El edificio que se levanta, que ya ocupa su solar; null en una obra mayor (T-092). */
+    edificio: TipoEdificio | null;
+    avanceMil: number;
+    necesarioMil: number;
+  }[];
   /** Lo que produjo en el ultimo turno resuelto. */
   readonly producido: Recursos;
   /** Lo que producira este turno con lo que hay, si no faltan insumos, con su desglose. */
@@ -461,6 +467,7 @@ export function fichaDeComarca(
       })),
       obras: obras.map((o) => ({
         que: o.que,
+        edificio: o.tipo === 'edificio' && esTipoDeEdificio(o.que) ? o.que : null,
         avanceMil: o.avanceMil,
         necesarioMil: o.avanceNecesarioMil,
       })),

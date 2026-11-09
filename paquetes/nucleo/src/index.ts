@@ -97,6 +97,7 @@ export type { ComoGanarLa, PartidaDeInfluencia } from './reglas/ganar-comarca.ts
 export type {
   AccionDeFicha,
   BloqueoDeAccion,
+  DetalleDePropia,
   FichaDeComarca,
   ProduccionPrevista,
 } from './ficha.ts';

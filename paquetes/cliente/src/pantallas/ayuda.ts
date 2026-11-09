@@ -38,7 +38,7 @@ const TEMAS: readonly Tema[] = [
     pasos: [
       'Toca una comarca tuya en el mapa: su ficha dice qué tiene y qué puedes hacer.',
       'Pulsa «Elegir» en una acción y después «Dar la orden». Se paga al empezar.',
-      'Cada edificio ocupa un solar; ampliar uno que ya tienes no gasta solar.',
+      'Cada nivel de cada edificio ocupa un solar: una granja de nivel 3 ocupa tres. Lo ves en el plano de la comarca.',
     ],
     ir: {
       texto: 'Ver tu capital',
@@ -117,7 +117,10 @@ const GLOSARIO: readonly (readonly [string, string])[] = [
     'Vecinos y «caben»',
     'La gente de la comarca y el tope hasta el que puede crecer. Por encima del tope no crece: hacen falta casas.',
   ],
-  ['Solares', 'Huecos para edificios. Ampliar uno no gasta solar; uno nuevo, sí.'],
+  [
+    'Solares',
+    'Las parcelas de la comarca. Cada nivel de cada edificio ocupa una, y cada obra en marcha la suya.',
+  ],
   ['Nivel de un edificio', 'Los puntos ●●●○ son el nivel que tiene frente al máximo que admite.'],
   [
     'Lealtad',

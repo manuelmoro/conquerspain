@@ -76,8 +76,8 @@ export function datoDeSolares(usados: number, total: number): DatoDeComarca {
     valor: `${String(usados)} de ${String(total)} ocupados`,
     nota:
       libres === 0
-        ? 'Llenos: para un edificio nuevo hay que derribar otro. Ampliar uno que ya tienes no gasta solar.'
-        : `Quedan ${String(libres)} para edificios nuevos.`,
+        ? 'Llenos: cada nivel de cada edificio ocupa uno, así que para construir o ampliar hay que derribar algo.'
+        : `Quedan ${String(libres)}: cada nivel nuevo, construido o ampliado, ocupa uno.`,
     alerta: libres === 0,
   };
 }

@@ -18,6 +18,7 @@ import {
 import { textoDeGanar } from '../ganar.ts';
 import { fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
+import { planoEnFicha } from './plano.ts';
 
 const TURNOS_DE_PLAN = 6;
 /** La accion abierta y la ultima dada, por comarca: sobreviven a las repintadas. */
@@ -171,6 +172,13 @@ export function pantallaDeFicha(
           ),
         ),
       ),
+      planoEnFicha(
+        ficha,
+        almacen.estado.partida?.recibido.vista.jugador.capital === ficha.id,
+        () => {
+          almacen.refrescar();
+        },
+      ) ?? '',
       el('h3', {}, 'Edificios'),
       p.edificios.length === 0
         ? el('p', { class: 'suave' }, 'Ninguno todavía.')
