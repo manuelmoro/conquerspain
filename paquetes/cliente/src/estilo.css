@@ -1136,7 +1136,8 @@ button.chip.elegido {
   border-bottom: 1px solid var(--borde);
 }
 .tabla-de-precios tr.vieja {
-  opacity: 0.6;
+  /* Un precio viejo se distingue por el fondo, no apagando el texto (contraste, T-088). */
+  background: #efe6cf;
 }
 .orden-en-palabras .frase-de-orden {
   margin: 0 0 0.3rem;
