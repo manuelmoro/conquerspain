@@ -27,7 +27,7 @@ import { altaDelBanco } from '../partida.ts';
 import type { Robot } from './index.ts';
 import { origenPreferido, robotDe } from './index.ts';
 import { Pedidos } from './pedidos.ts';
-import { Tablero } from './tablero.ts';
+import { Tablero } from '@conquer/nucleo';
 
 const REGLAS = TABLAS_DEL_JUEGO;
 /** Turnos que se juegan antes de mirar: los robots ya tienen recuas, obras y tierra conocida. */

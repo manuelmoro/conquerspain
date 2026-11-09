@@ -148,3 +148,23 @@ export {
   sortearOrigenes,
 } from './reglas/casas/origenes.ts';
 export * from './partidas/index.ts';
+
+// La prevision de lo que sabe un jugador: tablero y viajes (T-050, compartida desde T-083).
+export { Tablero } from './prevision/tablero.ts';
+export type { PlazaConocida } from './prevision/tablero.ts';
+export {
+  TURNOS_MAXIMOS_DE_VIAJE,
+  leLlega,
+  margenDePan,
+  panDePresencia,
+  preverRebanyo,
+  preverViaje,
+  provisionPara,
+} from './prevision/viaje.ts';
+export type {
+  Parada,
+  Prevision,
+  Provision,
+  ResultadoDeViaje,
+  ViajeImposible,
+} from './prevision/viaje.ts';

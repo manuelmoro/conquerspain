@@ -10,8 +10,7 @@ import type { IdComarca, Rebanyo } from '@conquer/nucleo';
 
 import type { Decision } from './impulsos.ts';
 import type { Estrategia } from './robot.ts';
-import { Tablero } from './tablero.ts';
-import { preverRebanyo } from './viaje.ts';
+import { Tablero, preverRebanyo } from '@conquer/nucleo';
 
 /** Rebanyos que quiere: el primero en cuanto pueda, y uno mas por cada 150 maravedis, hasta cinco. */
 const REBANYOS_MAXIMOS = 5;

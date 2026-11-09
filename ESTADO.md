@@ -23,9 +23,12 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 > identificadores provisionales del atlas se renumeran cada vez que el catálogo crece. Escribir esa
 > capa ahora sería trabajo para rehacer.
 
+**T-083 · Recuas y rebaños en el mapa** (en curso, a la vez: no depende de J-01). Ficha detallada; hecho la
+previsión de viajes compartida en el núcleo y el relevo de la ruta circular. Dónde va, en la ficha §9.
+
 ## Siguiente tarea
 
-**T-083 · Recuas y rebaños en el mapa** (primero, detallar su ficha), que también hace jugable la expansión.
+Terminar **T-083**, que también hace jugable la expansión.
 Cuando el usuario pueda, que cierre el checkpoint **J-01 · Entender y ordenar** para dar por cerrada T-088.
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
@@ -124,6 +127,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-083 (en curso): ficha detallada y primeros pasos.** La previsión de viajes de los robots (`Tablero`, `preverViaje`, `provisionPara`…) pasa al núcleo (`prevision/`) para que el cliente vea el mismo turno de llegada que el motor; el banco no cambia. **Regla nueva** (docs/02 §2.5.2): una orden `ruta` releva a una ruta circular sin pararla antes; antes la ruta nueva se quedaba esperando para siempre. Comprar y vender con precio límite en las paradas se lleva a T-084. 1246 pruebas en verde |
 | 09-11-2026 | **T-088 (en curso): hechos los puntos 6 a 9 de la segunda sesión de J-01; solo falta repetir J-01.** La vista da tu influencia también en las comarcas oídas (null si ya tienen dueño, como en las exploradas), y el modo Dominios la rotula. La ficha de toda neutral conocida explica **cómo ganarla** (`comoGanarLa`, sobre `fuentesDeInfluencia`, la misma función de la fase 8): actual frente a 60, cambio del turno con sus motivos, turnos hasta llegar y qué lo aceleraría; probado contra la fase al resolver. Regalo e incorporación también en las oídas (decidido sin el usuario, por encargo suyo: no cambia ninguna regla) y el consejo de explorarlas. `rebanyo.sin-pasto` y `cometido.sin-efecto` llevan su comarca: lo segundo lo encontró la prueba nueva de crónica larga (72 turnos, ocho casas). Acción sugerida en castellano (`QUE_HACER`), que dice cuándo llega si aún no tiene pantalla. Se abre **T-089** (gobierno en el cliente: fuero, obra mayor, tradiciones, mayordomo y corte), que no tenía tarea. 1245 pruebas en verde; 39,9 KB gzip |
 | 25-09-2026 | **J-01, segunda sesión: el mapa, la ficha y el resumen ya funcionan; salen seis hallazgos nuevos**, anotados en el checkpoint y repartidos en el plan: a T-088, la influencia visible en las comarcas oídas, la ficha que explica cómo ganar una comarca, la crónica sin huecos (`{comarca}` en el rebaño sin pasto) y la acción sugerida legible; a T-083, la expansión jugable (recuas presentes y exploradoras desde la ficha) y mover los rebaños desde sus avisos |
 | 25-09-2026 | **T-088 (en curso): arreglos de J-01, a falta de repetir el checkpoint.** El clic en escritorio no abría la ficha por dos causas: la captura del puntero al pulsar y un camino que pasaba por encima de la capital; ahora el toque se separa del arrastre por 4 px y busca la comarca en toda la pila bajo el puntero. Panel lateral en escritorio y hoja inferior en móvil, confirmación dentro de la tarjeta de la acción, entrada con formulario y errores a la vista, nombres en castellano, fichas de recursos, leyenda y explicación de cada modo. **Resumen del turno** al resolver: por recurso tenías / producido / otros / tienes / cambio, vecinos y la crónica por secciones. Probado en Chrome sin cabeza en escritorio y en móvil táctil. 38,5 KB gzip |

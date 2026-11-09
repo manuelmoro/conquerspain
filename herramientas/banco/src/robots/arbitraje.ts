@@ -13,10 +13,8 @@ import type { IdMercado, OperacionDeMercado, Recua, Recurso } from '@conquer/nuc
 import type { Decision, Rutina } from './impulsos.ts';
 import { COMERCIABLES, volverACasa } from './impulsos.ts';
 import { parada } from './pedidos.ts';
-import type { PlazaConocida } from './tablero.ts';
-import { Tablero } from './tablero.ts';
-import type { Parada, Provision } from './viaje.ts';
-import { provisionPara } from './viaje.ts';
+import { Tablero, provisionPara } from '@conquer/nucleo';
+import type { Parada, PlazaConocida, Provision } from '@conquer/nucleo';
 
 /** Maravedis que se lleva la recua para comprar, como mucho. */
 const BOLSA_MAXIMA = 200;

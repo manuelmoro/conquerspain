@@ -3,8 +3,8 @@
 import { costeDeAperos, costeDeEdificio } from '@conquer/nucleo';
 
 import type { Decision } from './impulsos.ts';
-import type { Tablero } from './tablero.ts';
 import type { Estrategia } from './robot.ts';
+import type { Tablero } from '@conquer/nucleo';
 
 /** Madera para levantar la carbonera y la ferreria y tener la primera carga de carbon. */
 const MADERA_PARA_FERRERIA = 50;

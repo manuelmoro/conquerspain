@@ -30,8 +30,7 @@ import type {
   TipoObraMayor,
   Tradicion,
 } from '@conquer/nucleo';
-
-import type { Tablero } from './tablero.ts';
+import type { Tablero } from '@conquer/nucleo';
 
 export type Cantidades = Readonly<Partial<Record<Recurso, number>>>;
 

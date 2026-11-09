@@ -114,7 +114,9 @@ function leTocaEnSuCola(ctx: Contexto, orden: Orden, idRecua: IdRecua): boolean 
     return false;
   }
   const recua = ctx.estado.recuas[idRecua];
-  if (recua !== undefined && !recuaLibre(recua)) {
+  // Una ruta nueva releva a una circular sin pararla antes (docs/02 §2.5.2): el circuito no acaba.
+  const relevaCircular = orden.tipo === 'ruta' && recua?.rutaCircular === true;
+  if (recua !== undefined && !recuaLibre(recua) && !relevaCircular) {
     dejarEnEspera(ctx, orden, 'recua-ocupada');
     return false;
   }

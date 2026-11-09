@@ -1,57 +1,47 @@
-// Lo que un robot sabe al decidir: su vista, y lo que de ella se deduce. Nada mas.
+// Lo que un jugador sabe al decidir: su vista, y lo que de ella se deduce. Nada mas. Lo usan los
+// robots del banco y el cliente para prever (T-083): asi las dos previsiones son la misma cuenta.
 //
-// El robot recibe el mundo entero porque es el atlas que tiene cualquier cliente, pero solo puede
-// mirarlo a traves de este tablero, que lo filtra por lo que el jugador conoce: de una comarca oida
-// sabe el nombre, donde esta en el mapa y, si tiene feria, su feria, porque el atlas y el calendario
-// de ferias son publicos (T-059); de una explorada o propia, ademas, su geografia; de una
-// desconocida, nada. Asi un robot no puede hacer trampas aunque quiera (lo vigila `robots.test.ts`
+// Recibe el mundo entero porque es el atlas que tiene cualquier cliente, pero solo se puede mirar a
+// traves de este tablero, que lo filtra por lo que el jugador conoce: de una comarca oida sabe el
+// nombre, donde esta en el mapa y, si tiene feria, su feria, porque el atlas y el calendario de
+// ferias son publicos (T-059); de una explorada o propia, ademas, su geografia; de una desconocida,
+// nada. Asi un robot no puede hacer trampas aunque quiera (lo vigila `robots.test.ts` en el banco,
 // con vistas manipuladas).
+import { calendarioDe, estadoEstacionalDe } from '../reglas/calendario.ts';
 import {
-  calendarioDe,
-  capacidadDe,
-  comarcasTransitables,
-  comparar,
-  costeDeTramoMil,
-  cuadrillasDe,
-  estadoEstacionalDe,
-  idDeMercadoDeFeria,
-  idDeMercadoLocal,
   modificadoresDelJugador,
-  opcionesDeRutaDeRebanyo,
   permisosDelJugador,
-  precioBaseLocalMil,
   prohibicionesDelJugador,
-  recursosSegun,
+} from '../reglas/casas/index.ts';
+import { cuadrillasDe } from '../reglas/cuadrillas.ts';
+import { capacidadDe } from '../reglas/poblar.ts';
+import { precioBaseLocalMil } from '../reglas/precios.ts';
+import { opcionesDeRutaDeRebanyo } from '../reglas/rebanyos.ts';
+import {
+  comarcasTransitables,
+  costeDeTramoMil,
   rutaPorParadas,
   tieneCalzada,
   tramoEntre,
-} from '@conquer/nucleo';
+} from '../reglas/ruta.ts';
+import { idDeMercadoDeFeria, idDeMercadoLocal } from '../tipos/ids.ts';
+import { recursosSegun } from '../tipos/recursos.ts';
+import { comparar } from '../utiles/orden.ts';
+import type { Calendario, EstadoEstacional } from '../reglas/calendario.ts';
+import type { Ruta } from '../reglas/ruta.ts';
+import type { VistaComarca, VistaJugador } from '../reglas/vista.ts';
+import type { EstadoComarca, EstadoJugador, Rebanyo, Recua } from '../tipos/estado.ts';
+import type { IdComarca, IdMercado } from '../tipos/ids.ts';
+import type { Camino, ComarcaMundo, Feria, Mundo, VolumenFeria } from '../tipos/mundo.ts';
+import type { Orden } from '../tipos/ordenes.ts';
+import type { Recurso, Recursos } from '../tipos/recursos.ts';
 import type {
-  Calendario,
-  Camino,
-  EstadoEstacional,
-  ComarcaMundo,
-  EstadoComarca,
-  EstadoJugador,
-  Feria,
-  IdComarca,
-  IdMercado,
   Modificadores,
-  Mundo,
-  Orden,
   Permisos,
   Prohibiciones,
-  Rebanyo,
-  Recua,
-  Recurso,
-  Recursos,
-  Ruta,
   TablasDeReglas,
   TipoEdificio,
-  VolumenFeria,
-  VistaComarca,
-  VistaJugador,
-} from '@conquer/nucleo';
+} from '../tipos/reglas.ts';
 
 /** Una plaza que el jugador conoce: donde esta, si es de feria y cuando abre. */
 export interface PlazaConocida {

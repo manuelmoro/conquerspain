@@ -212,6 +212,10 @@ Una recua puede fijar una **ruta circular**: `Covaleda → Soria (descargar made
 Covaleda`, repetida indefinidamente, con precios límite para las compras y ventas. Se detiene sola
 si falta bastimento o si el precio límite no se cumple, y lo dice en la crónica.
 
+Una ruta circular **se cambia sin pararla antes**: una orden `ruta` nueva para esa recua la releva
+en cuanto le toca en su cola. La recua termina el tramo que lleva y sigue la ruta nueva, circular o
+no. La carga y el cometido siguen esperando a que la recua quede libre (T-083).
+
 ### 2.5.3 Mayordomo
 
 El mayordomo es un conjunto pequeño de reglas condicionales, con un número limitado de reglas

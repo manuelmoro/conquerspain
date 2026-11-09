@@ -6,17 +6,17 @@
 // el verano que pide sal, el primer turno que come del almacen y la venta que le da de comer si
 // lleva con que pagarla— sale como saldra en el turno.
 import {
-  avanzar,
   bastimentoDe,
   bastimentoDeLaRecuaMil,
-  bastimentoDePresencia,
   costeEnLaVenta,
-  pasoDeRebanyo,
-  pasoDeRecua,
-  pesoDeLaCarga,
   ventaDelTurno,
-} from '@conquer/nucleo';
-import type { IdComarca, Recua, Recurso, Recursos, SituacionMovil } from '@conquer/nucleo';
+} from '../reglas/bastimento.ts';
+import { avanzar, pasoDeRecua, pesoDeLaCarga } from '../reglas/movimiento.ts';
+import { bastimentoDePresencia } from '../reglas/presencia.ts';
+import { pasoDeRebanyo } from '../reglas/rebanyos.ts';
+import type { Recua, SituacionMovil } from '../tipos/estado.ts';
+import type { IdComarca } from '../tipos/ids.ts';
+import type { Recurso, Recursos } from '../tipos/recursos.ts';
 
 import type { Tablero } from './tablero.ts';
 
@@ -58,11 +58,11 @@ export interface Prevision {
   readonly maravedis: number;
 }
 
-export type Resultado<T> =
+export type ResultadoDeViaje<T> =
   | { readonly ok: true; readonly valor: T }
   | { readonly ok: false; readonly motivo: ViajeImposible };
 
-function fallo<T>(motivo: ViajeImposible): Resultado<T> {
+function fallo<T>(motivo: ViajeImposible): ResultadoDeViaje<T> {
   return { ok: false, motivo };
 }
 
@@ -85,7 +85,7 @@ export function preverViaje(
   carga: Recursos,
   /** Turnos que faltan para salir: 0 si sale este turno. */
   salida = 0,
-): Resultado<Prevision> {
+): ResultadoDeViaje<Prevision> {
   const desde = recua.situacion.donde === 'comarca' ? recua.situacion.comarca : null;
   if (desde === null || paradas.length === 0) return fallo('sin-ruta');
   const ruta = t.rutaDeRecua(
@@ -217,7 +217,7 @@ export function provisionPara(
   /** Turnos que faltan para salir: la compra en casa se hace hoy y la recua sale el que viene. */
   salida = 0,
   bolsaParaVentas = 0,
-): Resultado<Provision> {
+): ResultadoDeViaje<Provision> {
   if (bolsaParaVentas > 0) {
     const tanteo = provisionConMaravedis(t, recua, paradas, mercancia, salida, bolsaParaVentas);
     if (!tanteo.ok) return tanteo;
@@ -238,7 +238,7 @@ function provisionConMaravedis(
   mercancia: Partial<Recursos>,
   salida: number,
   maravedis: number,
-): Resultado<Provision> {
+): ResultadoDeViaje<Provision> {
   const base: Record<Recurso, number> = { ...recua.carga };
   for (const [recurso, cantidad] of Object.entries(mercancia) as [Recurso, number][]) {
     base[recurso] += cantidad;
@@ -302,7 +302,11 @@ export function panDePresencia(t: Tablero, turnos: number): { pan: number; sal: 
 }
 
 /** Turnos que tardaria hoy un rebanyo en ir de una comarca a un pasto, o por que no puede ir. */
-export function preverRebanyo(t: Tablero, desde: IdComarca, destino: IdComarca): Resultado<number> {
+export function preverRebanyo(
+  t: Tablero,
+  desde: IdComarca,
+  destino: IdComarca,
+): ResultadoDeViaje<number> {
   const ruta = t.rutaDeRebanyo(desde, destino);
   if (ruta === null) return fallo('sin-ruta');
   let situacion: SituacionMovil = { donde: 'comarca', comarca: desde };

@@ -17,9 +17,8 @@ import { jugarTurno } from '../ejecutar.ts';
 import { altaDelBanco, mundoPeninsula } from '../partida.ts';
 import { papeles } from './impulsos.ts';
 import { ESTRATEGIAS, robotDe } from './index.ts';
-import type { PlazaConocida } from './tablero.ts';
-import { Tablero } from './tablero.ts';
-import { leLlega, preverViaje, provisionPara } from './viaje.ts';
+import { Tablero, leLlega, preverViaje, provisionPara } from '@conquer/nucleo';
+import type { PlazaConocida } from '@conquer/nucleo';
 
 const REGLAS = TABLAS_DEL_JUEGO;
 const YO = 'hortelanos' as IdJugador;

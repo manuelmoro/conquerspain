@@ -7,8 +7,8 @@ import type { EstadoPartida, IdComarca, IdJugador, Recursos } from '@conquer/nuc
 
 import { altaDelBanco, mundoPeninsula } from '../partida.ts';
 import { esperadoEn } from './arbitraje.ts';
-import type { PlazaConocida } from './tablero.ts';
-import { Tablero } from './tablero.ts';
+import { Tablero } from '@conquer/nucleo';
+import type { PlazaConocida } from '@conquer/nucleo';
 
 const REGLAS = TABLAS_DEL_JUEGO;
 const YO = 'mercaderes' as IdJugador;

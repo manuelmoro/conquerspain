@@ -447,6 +447,44 @@ describe('las ordenes de recua', () => {
     ]);
     expect(de(actual, 'recua-1').ruta).toHaveLength(2);
   });
+
+  it('una ruta nueva, en su cola, releva a la circular sin pararla antes (T-083 §4.4)', () => {
+    const estado = escenario({ recuas: [recua('recua-1', { carga: recursos({ pan: 10 }) })] });
+    let actual = turno(estado, [ordenRuta(estado.turno, 'recua-1', ['prueba-vega'], true)]).estado;
+    actual = turno(actual).estado;
+    expect(de(actual, 'recua-1').rutaCircular).toBe(true);
+    const nueva: Orden = {
+      ...ordenRuta(actual.turno, 'recua-1', ['prueba-rio']),
+      cola: 'recua:recua-1',
+    };
+    const relevo = turno(actual, [nueva]);
+    expect(
+      relevo.sucesos.some(
+        (s) =>
+          s.tipo === 'orden.estado' &&
+          s.datos['orden'] === nueva.id &&
+          s.datos['estado'] === 'terminada',
+      ),
+    ).toBe(true);
+    const r = de(relevo.estado, 'recua-1');
+    expect(r.rutaCircular).toBe(false);
+    expect(r.paradas.map((p) => p.comarca)).toEqual(['prueba-rio']);
+    // Una carga detras sigue esperando a que la recua quede libre.
+    const carga: Orden = {
+      ...base(actual.turno),
+      tipo: 'carga',
+      recua: 'recua-1' as IdRecua,
+      cargar: {},
+      descargar: {},
+      vecinosCargados: 0,
+      cola: 'recua:recua-1',
+    };
+    const conCarga = turno(actual, [carga]).estado;
+    expect(conCarga.ordenes.find((o) => o.id === carga.id)).toMatchObject({
+      estado: 'en cola',
+      motivoEspera: 'recua-ocupada',
+    });
+  });
 });
 
 describe('simultaneidad', () => {

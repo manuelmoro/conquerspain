@@ -8,7 +8,7 @@ import { decidirComoSiempre } from './impulsos.ts';
 import type { Motivo } from './motivos.ts';
 import { Motivos } from './motivos.ts';
 import { Pedidos } from './pedidos.ts';
-import { Tablero } from './tablero.ts';
+import { Tablero } from '@conquer/nucleo';
 
 /** Lo que decide un robot: sus ordenes y, si su via no avanza, por que (ficha T-050 §6.4). */
 export interface Decidido {

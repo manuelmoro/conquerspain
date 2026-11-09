@@ -1,10 +1,6 @@
 # T-083 · Recuas y rebaños: rutas sobre el mapa
 
-**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** pendiente (ficha **esbozada**)
-
-> Esta ficha está esbozada a propósito. **Detallarla es la primera mitad de la tarea**: antes de
-> escribir código, complétala al nivel de las fichas de las fases 0 a 2 (diseño detallado con
-> firmas, fórmulas y casos límite) y anota en `ESTADO.md` que ya está detallada.
+**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** en curso (ficha **detallada** el 09-11-2026)
 
 ## 1. Contexto
 
@@ -18,44 +14,146 @@ cabezas») que el jugador no puede atender. Esta tarea es la que hace **jugable 
 hacerse desde la ficha de la comarca de destino, en pocos toques, «mandar una recua a estar presente» y
 «mandar una recua a explorar», y mover un rebaño desde el aviso que lo pide.
 
+Lee antes: [docs/08-interfaz.md](../08-interfaz.md) §8.2.6 y §8.3; [docs/02](../02-diseno-nucleo.md) §2.5.1 y
+§2.5.2; [docs/06](../06-competicion.md) §6.2.
+
 ## 2. Objetivo
 
-Editor de rutas sobre el mapa, con coste por tramo, avisos estacionales y rutas circulares.
+Que el jugador vea sus recuas y rebaños, les trace una ruta tocando el mapa con el turno de llegada y los avisos
+exactos antes de confirmar, y que desde la ficha de una comarca neutral pueda mandar una recua a estar presente
+o a explorar con una sola confirmación.
 
 ## 3. Alcance
 
-**Entra:** lista y ficha de unidades móviles, editor de ruta, carga y descarga, cometidos, rutas permanentes.
+**Entra:** la previsión de viajes compartida en el núcleo; misiones de presencia y exploración desde la ficha;
+lista y ficha de unidades; editor de ruta (recua y rebaño) con paradas, carga y descarga, circular y bastimento;
+avisos estacionales antes de confirmar; desde un aviso de la crónica, abrir la unidad; ruta nueva que releva una
+circular.
 
-**No entra:** contratos ni portazgos (fase 5).
+**No entra (y a dónde va):** comprar y vender con precio límite en las paradas → **T-084** (es la pantalla del
+mercado, con la que comparte el explicar qué es un límite); contratos y portazgos → fase 5.
 
-## 4. Puntos que hay que resolver al detallar
+## 4. Diseño detallado
 
-- Trazado de ruta tocando comarcas, con el coste en jornadas acumulado y el turno de llegada.
-- Aviso si un puerto de la ruta se cierra antes de que llegue la recua.
-- Gestión de la carga con el porte disponible.
-- Rutas circulares con precios límite, editables sin rehacerlas.
-- Desde la ficha de una comarca neutral: «Enviar una recua a estar presente» y «Enviar una recua a explorar»
-  (forma la recua si no hay una libre, traza la ruta y fija el cometido), con la subida de influencia prevista.
-- Desde un aviso de la crónica o del resumen del turno («no encuentra pasto»): llevar al rebaño a su ruta.
+### 4.1 La previsión, una sola cuenta (núcleo)
 
-## 5. Criterios de aceptación provisionales
+`Tablero` y la previsión de viajes (`preverViaje`, `provisionPara`, `preverRebanyo`, `leLlega`,
+`panDePresencia`) pasan de `herramientas/banco/src/robots/` a `paquetes/nucleo/src/prevision/`, sin cambiar una
+línea de lógica, y se exportan. Los robots las importan del núcleo; el servidor las usa para el cliente. Así el
+turno de llegada que ve el jugador es **la misma función** que ya se prueba contra el motor (T-050). La prueba de
+que el banco no cambia: sus pruebas y huellas siguen iguales.
 
-1. El turno de llegada que muestra la interfaz coincide con el real.
-2. Se puede montar una ruta circular completa en móvil en menos de un minuto.
-3. Los avisos estacionales aparecen antes de confirmar.
+### 4.2 Misiones desde la ficha (núcleo, `prevision/misiones.ts`)
+
+```ts
+type Mision = 'presencia' | 'explorar';
+interface PlanDeMision {
+  readonly recua: IdRecua;
+  readonly desde: IdComarca;          // donde está la recua
+  readonly intenciones: readonly Record<string, unknown>[]; // en el orden en que se dan
+  readonly llegada: number;           // turnos hasta llegar (1 = este)
+  readonly pan: number; readonly sal: number; // lo que carga del almacén
+  readonly turnosPresente: number | null;     // solo presencia: cuántos aguanta antes de volver
+}
+function planDeMision(t: Tablero, destino: IdComarca, mision: Mision):
+  ResultadoDeViaje<PlanDeMision> | { ok: false; motivo: 'sin-recua-libre' }
+```
+
+- **Recua:** la libre (`t.libre`) quieta en comarca propia que llegue antes al destino; empate, la más antigua.
+- **Explorar** (destino oído o explorado): `provisionPara(t, recua, [ida, vuelta])` con vuelta a
+  `t.casaMasCercana(destino)`; intenciones: `carga` (pan y sal que falten, descarga el resto),
+  `ruta` a destino con `expedicion: true`, `cometido explorar`, `ruta` de vuelta. Como hace el robot.
+- **Presencia** (neutral explorada u oída): provisión de ida y vuelta, más todo el pan que quepa en el porte;
+  `turnosPresente = floor((pan − pan de la vuelta) / pan de un turno presente)` (`panDePresencia`), al menos 1;
+  intenciones: `carga`, `ruta` a destino, `cometido presencia`, y `ruta` de vuelta **programada** para el turno
+  `turno + llegada + turnosPresente` (`turnoProgramado`, plan de temporada; tope `turnosDePlan`, se recorta).
+- Si la previsión falla, el motivo es el de `ViajeImposible` (sin ruta, puerto cerrado, no cabe, sin pan…).
+
+`fichaDeComarca` añade, en toda neutral conocida, las acciones `mision-presencia` (no en las oídas: hay que
+saber dónde se está) y `mision-explorar`, con su efecto previsto («llega en 2 turnos; +2 de influencia por turno
+durante 5 turnos» / «llega en 2 turnos y vuelve a Burgos»), su coste (lo que carga) y sus bloqueos con causa y
+salida (`sin-recua-libre` → «forma una recua en una comarca tuya»; los de viaje, con su texto). `AccionDeFicha`
+gana `intenciones: readonly Record<string, unknown>[]` (para las demás, la suya sola) y el cliente las manda
+todas, en orden.
+
+### 4.3 Previsión de una ruta a mano (servidor)
+
+`POST /partidas/:id/prevision-de-ruta` con `{ recua | rebanyo, paradas: IdComarca[], circular }` devuelve, con el
+`Tablero` de la vista del jugador:
+
+```ts
+interface PrevisionDeRuta {
+  readonly ok: boolean;
+  readonly motivo: ViajeImposible | null;    // con su texto en BLOQUEOS
+  readonly tramos: readonly { desde; hasta; jornadas; puerto: string | null; cierraEnInvierno: boolean }[];
+  readonly llegadas: readonly number[];      // turno de llegada a cada parada (1 = este)
+  readonly pan: number; readonly sal: number; // bastimento del viaje (recua)
+  readonly avisos: readonly string[];         // puertos que cierran durante el viaje, verano sin sal…
+}
+```
+
+Para un rebaño, `preverRebanyo` hasta su única parada. Los tramos salen de la ruta conocida (`t.rutaDeRecua` /
+`t.rutaDeRebanyo`), con las jornadas de este turno. El aviso del puerto: si algún tramo de la ruta tiene puerto
+que cierra en invierno y el calendario dice que el invierno empieza antes de la llegada, se avisa aunque la
+previsión pase («Pajares cierra en 2 turnos y llegas en 3»); si se cierra antes de cruzarlo, `puerto-cerrado`.
+
+### 4.4 Una ruta nueva releva una circular (núcleo)
+
+`leTocaEnSuCola` deja empezar una orden `ruta` aunque la recua no esté libre si va en ruta circular
+(`recua.rutaCircular`); `fijarRuta` ya termina el tramo en curso. Regla escrita en docs/02 §2.5.2.
+
+### 4.5 Cliente
+
+- **Unidades** (`pantallas/unidades.ts`): pestaña junto a la bandeja con recuas y rebaños: dónde están (o de
+  camino entre A y B), qué llevan con su porte, ruta que les queda, cometido, y «Darle ruta».
+- **Editor de ruta** (`editor-de-ruta.ts`, estado puro y probado; `pantallas/ruta.ts`): mientras está abierto,
+  tocar una comarca del mapa añade una parada (tocar la última la quita). Lista de paradas con ↑↓ y quitar; para
+  recuas, cargar y descargar por parada y «circular». Cada cambio pide la previsión (§4.3) y enseña tramo a tramo
+  las jornadas, el turno de llegada a cada parada, el bastimento y los avisos, **antes** de confirmar. Si sale de
+  casa, ofrece cargar el bastimento previsto (una intención `carga` delante de la ruta).
+- **Desde la crónica:** `EntradaDeCronica` gana `unidad: { clase: 'recua' | 'rebanyo'; id } | null` (sale de
+  los datos del suceso); en el resumen, una entrada con unidad y acción `ruta` lleva «Darle ruta», que abre el
+  editor con esa unidad. `QUE_HACER` de `ruta`, `carga` y `cometido` pasa a decir dónde se hace.
+- **En el mapa:** las paradas del editor se dibujan como ruta propuesta (capa de movimiento, trazo discontinuo).
+
+## 5. Archivos
+
+- `paquetes/nucleo/src/prevision/{tablero,viaje,misiones,ruta}.ts`, `index.ts`, `ficha.ts`,
+  `fases/04-movimiento.ts`, `reglas/cronica.ts`, `tipos/cronica.ts`, `datos/bloqueos.ts`.
+- `paquetes/servidor/src/api/manejadores.ts` y su prueba.
+- `paquetes/cliente/src/{editor-de-ruta.ts,nombres.ts,almacen.ts,api.ts}`, `pantallas/{unidades,ruta,ficha,resumen,partida}.ts`, `atlas/componer.ts`.
+- `herramientas/banco/src/robots/*` (solo imports).
+
+## 6. Criterios de aceptación
+
+1. El turno de llegada que muestra la interfaz coincide con el real: probado dando la ruta prevista y resolviendo
+   hasta que llega (servidor y núcleo).
+2. Se puede montar una ruta circular completa en móvil en pocos toques: tocar paradas, «circular», confirmar
+   (probado en el estado puro del editor; la medida de un minuto se hace en J-02).
+3. Los avisos estacionales (puerto que cierra, verano sin sal) aparecen antes de confirmar: probado en la
+   previsión.
 4. Desde la ficha de una comarca vecina neutral se deja una recua presente o se manda a explorar sin salir de la
-   ficha, y el turno siguiente la influencia sube lo previsto (J-01, hallazgo 8).
-5. Un aviso de rebaño sin pasto lleva a una pantalla donde se le puede dar ruta (J-01, hallazgo 11).
+   ficha, y el turno en que llega y se queda la influencia sube lo previsto: probado resolviendo turnos.
+5. Un aviso de rebaño sin pasto lleva al editor de ese rebaño: probado (la entrada lleva la unidad).
+6. Una ruta nueva releva una circular sin pararla antes: probado en el motor.
+7. El banco da las mismas huellas tras mover la previsión al núcleo; `npm run verificar` en verde y el cliente
+   por debajo de su presupuesto.
 
-## 6. Verificación
+## 7. Verificación
 
 ```bash
 npm run verificar
 ```
 
-Más las comprobaciones propias que se añadan al detallar la ficha.
-
-## 7. Al terminar
+## 8. Al terminar
 
 Marca la tarea como `hecha` en `00-indice.md`, actualiza `ESTADO.md` (siguiente tarea y bitácora) y
 haz commit con `T-083: <resumen>`.
+
+## 9. Dónde va (09-11-2026)
+
+- **Hecho y verificado:** §4.1 (previsión movida al núcleo: `paquetes/nucleo/src/prevision/`, el banco solo
+  cambia sus imports y sus pruebas siguen iguales; `Resultado` de viaje pasa a llamarse `ResultadoDeViaje` para
+  no chocar con el de validación) y §4.4 (relevo de la circular, con su prueba en `movimiento.test.ts`).
+- **Falta, por este orden:** §4.2 misiones (`prevision/misiones.ts` y las acciones de la ficha con
+  `intenciones`), §4.3 previsión de ruta en el servidor, unidad en `EntradaDeCronica`, y el cliente (§4.5).

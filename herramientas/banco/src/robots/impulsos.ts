@@ -31,10 +31,15 @@ import type {
 import type { Motivo, Motivos } from './motivos.ts';
 import type { Cantidades, Pedidos } from './pedidos.ts';
 import { parada } from './pedidos.ts';
-import type { PlazaConocida } from './tablero.ts';
-import { Tablero } from './tablero.ts';
-import type { Parada, Provision, ViajeImposible } from './viaje.ts';
-import { leLlega, margenDePan, panDePresencia, preverViaje, provisionPara } from './viaje.ts';
+import {
+  Tablero,
+  leLlega,
+  margenDePan,
+  panDePresencia,
+  preverViaje,
+  provisionPara,
+} from '@conquer/nucleo';
+import type { Parada, PlazaConocida, Provision, ViajeImposible } from '@conquer/nucleo';
 
 /** Lo que una recua hace para su casa. Cada robot dice cuantas tiene y en que orden las forma. */
 export type Papel = 'explorar' | 'emisario' | 'tratar' | 'feriar' | 'poblar' | 'arbitraje';
