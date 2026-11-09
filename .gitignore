@@ -6,5 +6,7 @@ dist-pruebas/
 cobertura/
 herramientas/atlas/cache/
 *.sqlite
+*.sqlite-shm
+*.sqlite-wal
 herramientas/banco/informes/estados/
 dist-web/
