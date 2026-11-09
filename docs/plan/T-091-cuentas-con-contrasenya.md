@@ -1,7 +1,6 @@
 # T-091 · Cuentas con contraseña: registro, entrar, recordarme y restablecer
 
-**Fase:** 4 · Cliente · **Depende de:** T-063, T-090 · **Estado:** en curso (abierta el 09-11-2026 a petición del
-usuario)
+**Fase:** 4 · Cliente · **Depende de:** T-063, T-090 · **Estado:** hecha (09-11-2026)
 
 ## 1. Contexto
 
@@ -82,3 +81,26 @@ confirmar el correo y como alternativa para entrar.
    - al restablecer, las sesiones anteriores dejan de valer;
    - la contraseña antigua ya no entra.
 7. Con sesión abierta, la pantalla principal es «Mis partidas». `npm run verificar` en verde.
+
+## 5. Cierre (09-11-2026)
+
+Hecho todo lo de §3:
+
+- **Servidor:**
+  - migración 5;
+  - `cuentas/contrasenyas.ts`;
+  - en el servicio, `registrar`, `entrarConClave`, `pedirRestablecimiento` y `restablecer`;
+  - las cuatro rutas y los tres códigos de error nuevos;
+  - los correos con su motivo.
+- **Cliente:**
+  - `pantallas/cuenta.ts`: la barra con «Entrar» y «Crear cuenta», o tu nombre y «Salir», y el diálogo con
+    entrar, crear, olvido, enlace y restablecer;
+  - la portada lleva «Crear cuenta y jugar» y «Ya tengo cuenta» en lugar de «Empieza a jugar»;
+  - con sesión abierta se ve «Mis partidas», con la barra arriba.
+- **Pruebas:** los siete criterios, en `servidor/src/cuentas/contrasenyas.test.ts` (servicio) y en
+  `cliente/src/cuenta.test.ts` (de punta a punta por HTTP real).
+- **Verificado:** visto en Chrome sin cabeza. 1311 pruebas y 61,8 KB gzip.
+
+**Queda fuera, como tareas futuras si se quieren:**
+- cambiar la contraseña con la sesión abierta (hoy se hace con «olvidé la contraseña»);
+- la verificación en dos pasos.

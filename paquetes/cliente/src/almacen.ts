@@ -25,6 +25,12 @@ import { resumirTurno } from './resumen.ts';
 import type { ResumenDeTurno } from './resumen.ts';
 import type { PrevisionDeBandeja } from './prevision.ts';
 
+/** Lo que responde una accion de cuenta: si fue bien y que decirle al jugador. */
+export interface Resultado {
+  readonly ok: boolean;
+  readonly mensaje: string;
+}
+
 export interface IntencionLocal {
   readonly idCliente: string;
   /** La intencion tal como se manda, con su `idCliente` dentro. */
@@ -216,6 +222,47 @@ export class Almacen {
     }
     this.cambiar({ cuenta: r.datos.cuenta });
     return true;
+  }
+
+  // ——— Contrasenyas (T-091): cada una devuelve el mensaje para la pantalla ———
+
+  /** Lo que dice una respuesta: el mensaje del servidor, o el de no tener red. */
+  private mensajeDe(r: { ok: false; mensaje: string }): string {
+    return r.mensaje;
+  }
+
+  async registrar(correo: string, nombre: string, clave: string): Promise<Resultado> {
+    const r = await this.dep.api.registrar({ correo, nombre, clave });
+    return r.ok
+      ? { ok: true, mensaje: r.datos.mensaje }
+      : { ok: false, mensaje: this.mensajeDe(r) };
+  }
+
+  async entrarConClave(correo: string, clave: string, recordar: boolean): Promise<Resultado> {
+    const r = await this.dep.api.entrarConClave({ correo, clave, recordar });
+    if (!r.ok) return { ok: false, mensaje: this.mensajeDe(r) };
+    this.cambiar({ cuenta: r.datos.cuenta, errores: [] });
+    return { ok: true, mensaje: '' };
+  }
+
+  async olvido(correo: string): Promise<Resultado> {
+    const r = await this.dep.api.olvido(correo);
+    return r.ok
+      ? { ok: true, mensaje: r.datos.mensaje }
+      : { ok: false, mensaje: this.mensajeDe(r) };
+  }
+
+  async restablecer(token: string, clave: string): Promise<Resultado> {
+    const r = await this.dep.api.restablecer(token, clave);
+    if (!r.ok) return { ok: false, mensaje: this.mensajeDe(r) };
+    this.cambiar({ cuenta: r.datos.cuenta, errores: [] });
+    return { ok: true, mensaje: '' };
+  }
+
+  /** Cierra la sesion de este navegador y vuelve a la portada. */
+  async salir(): Promise<void> {
+    await this.dep.api.salir();
+    this.cambiar({ cuenta: null, partida: null });
   }
 
   /** Mira si hay sesion abierta (la cookie la guarda el navegador). */

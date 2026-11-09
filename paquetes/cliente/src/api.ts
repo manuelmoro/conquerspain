@@ -191,6 +191,26 @@ export class ClienteApi {
     return this.pedir<{ cerrada: boolean }>('DELETE', '/sesion');
   }
 
+  // ——— Contrasenyas (T-091) ———
+  registrar(datos: { correo: string; nombre: string; clave: string }) {
+    return this.pedir<{ mensaje: string }>('POST', '/cuentas/registro', datos);
+  }
+
+  entrarConClave(datos: { correo: string; clave: string; recordar: boolean }) {
+    return this.pedir<{ cuenta: CuentaDelCliente }>('POST', '/sesion/clave', datos);
+  }
+
+  olvido(correo: string) {
+    return this.pedir<{ mensaje: string }>('POST', '/cuentas/olvido', { correo });
+  }
+
+  restablecer(token: string, clave: string) {
+    return this.pedir<{ cuenta: CuentaDelCliente }>('POST', '/cuentas/restablecer', {
+      token,
+      clave,
+    });
+  }
+
   cuenta() {
     return this.pedir<{ cuenta: CuentaDelCliente }>('GET', '/cuenta');
   }

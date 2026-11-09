@@ -10,7 +10,6 @@ import { RITMOS, abastecimiento, esperaOrdenes, pasoDe, ritmoEnPalabras } from '
 import { NOMBRE_DE_POTENCIAL } from '../nombres.ts';
 import { EMBLEMA_DE_CASA, VINYETA_DE_PERFIL } from '../arte/index.ts';
 import { boton, el } from './dom.ts';
-import { portada } from './portada.ts';
 
 type Modo = 'lista' | 'convocar' | 'unirse';
 
@@ -54,6 +53,14 @@ const estado: {
   error: null,
   casa: 'hortelanos',
 };
+
+/** Al salir de la cuenta: la lista era de quien ha salido (T-091). */
+export function olvidarPartidas(): void {
+  estado.partidas = null;
+  estado.convocatorias = null;
+  estado.modo = 'lista';
+  estado.error = null;
+}
 
 function recargar(almacen: Almacen, api: ClienteApi): void {
   if (estado.cargando) return;
@@ -362,18 +369,16 @@ export function pantallaDePartidas(
   const partidas = estado.partidas;
   if (partidas === null) partes.push(el('p', { class: 'suave' }, 'Cargando…'));
   else if (partidas.length === 0 && (estado.convocatorias ?? []).length === 0) {
-    // Sin partidas, la portada entera: de que va el juego y por donde empezar (T-090).
-    return portada(
+    partes.push(
       el(
         'div',
-        { class: 'entrada tarjeta' },
+        { class: 'tarjeta vacia' },
         el('h2', {}, 'Tu primera partida'),
         el(
           'p',
           {},
-          'Convoca una partida, elige tu casa y comparte el código con quien quieras. También puedes jugarla tú solo.',
+          'Convoca una partida, elige tu casa y comparte el código con quien quieras. También puedes jugarla tú solo, o unirte a una con el código que te pasen.',
         ),
-        ...botonesDeEmpezar(almacen),
       ),
     );
   } else {

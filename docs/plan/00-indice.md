@@ -119,7 +119,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-089](T-089-gobierno-cliente.md) | Gobierno: fuero y carga, obra mayor, tradiciones, mayordomo y corte | **hecha** | T-082 |
 | [T-086](T-086-alta-y-origen-cliente.md) | Mis partidas, crear partida, elegir casa y origen | **hecha** | T-085, T-089 |
 | [T-090](T-090-portada-y-pulido-visual.md) | Portada, tipografía, emblemas, tutorial y pulido visual | **hecha** | T-086 |
-| [T-091](T-091-cuentas-con-contrasenya.md) | Cuentas con contraseña: registro, entrar, recordarme y restablecer | en curso | T-063, T-090 |
+| [T-091](T-091-cuentas-con-contrasenya.md) | Cuentas con contraseña: registro, entrar, recordarme y restablecer | **hecha** | T-063, T-090 |
 | [T-087](T-087-movil-y-rendimiento.md) | Móvil, accesibilidad y rendimiento | en curso | T-086 |
 
 ## Fase 5 · Multijugador

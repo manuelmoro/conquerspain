@@ -167,6 +167,17 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
   `EnviadorDeCorreo` (SMTP en T-064). Tokens de 256 bits de los que **solo se guarda el SHA-256**; sesión con
   cookie `HttpOnly; Secure; SameSite=Lax` firmada con HMAC y caducidad absoluta de 30 días; misma respuesta
   exista o no el correo; límites por correo y origen; borrado que anonimiza y deja al jugador vivo hasta T-105.
+- **Contraseñas (T-091, revisa T-063 a petición del usuario).** Además del enlace, cuentas con contraseña.
+  - **Hash:** scrypt de `node:crypto`, sin dependencias (N = 2^15, r = 8, p = 1, sal propia y comparación en
+    tiempo constante).
+  - **Política:** de 10 a 200 caracteres, ni el correo ni una común.
+  - **Confirmación:** el correo se confirma con el enlace antes de poder entrar con contraseña.
+  - **Sin enumerar cuentas:** misma respuesta en el registro repetido y en el olvido, y un scrypt de relleno
+    cuando el correo no existe.
+  - **Fuerza bruta:** límite por origen y, además, cinco fallos seguidos bloquean la cuenta 15 minutos.
+  - **«Recordarme»:** sesión de 30 días con `Max-Age`; sin él, cookie de sesión y 12 horas en el servidor.
+  - **Restablecer:** token de 256 bits (solo su SHA-256), 30 minutos y un solo uso, consumido de forma atómica.
+    Al cambiar la contraseña se revocan todas las sesiones.
 
 ## 7.5 Cliente
 

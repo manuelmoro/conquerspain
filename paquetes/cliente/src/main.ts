@@ -14,6 +14,8 @@ import { guardadoDelNavegador } from './guardado.ts';
 import { pantallaDeEntrada } from './pantallas/entrar.ts';
 import { pantallaDePartida } from './pantallas/partida.ts';
 import { pantallaDePartidas } from './pantallas/partidas.ts';
+import { abrirRestablecer, barraDeCuenta } from './pantallas/cuenta.ts';
+import { el } from './pantallas/dom.ts';
 
 const BASE = '/api';
 const raiz = document.getElementById('aplicacion');
@@ -75,7 +77,7 @@ function pintar(): void {
     estado.cuenta === null
       ? pantallaDeEntrada(almacen, estado)
       : estado.partida === null
-        ? pantallaDePartidas(almacen, api, abrir)
+        ? el('div', {}, barraDeCuenta(almacen, estado), pantallaDePartidas(almacen, api, abrir))
         : pantallaDePartida(almacen, estado);
   raiz.replaceChildren(pantalla);
   for (const n of document.querySelectorAll<HTMLElement>('[data-conservar-scroll]')) {
@@ -91,6 +93,9 @@ addEventListener('online', () => {
 
 async function arrancar(): Promise<void> {
   const parametros = new URLSearchParams(location.search);
+  // El enlace de restablecer la contrasenya abre su formulario (T-091).
+  const restablecer = parametros.get('restablecer');
+  if (restablecer !== null) abrirRestablecer(restablecer);
   const token = parametros.get('token');
   if (token !== null) {
     history.replaceState(null, '', location.pathname);
