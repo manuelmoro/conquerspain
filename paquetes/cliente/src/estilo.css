@@ -649,8 +649,22 @@ svg.serie polyline {
   display: block;
   width: calc(100% + 1.7rem);
   margin: 0 -0.85rem 0.6rem;
-  height: 7rem;
+  /* La vinyeta en su proporcion (16:9): estirada a lo ancho solo se veia una franja (T-090). */
+  aspect-ratio: 16 / 9;
+  height: auto;
   object-fit: cover;
+}
+.lista.ofertas {
+  display: grid;
+  gap: 0.75rem;
+}
+.lista.ofertas > li {
+  margin: 0;
+}
+@media (min-width: 900px) {
+  .lista.ofertas {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .heroe .entrada {
@@ -757,4 +771,26 @@ button.pestanya.activa {
   display: grid;
   gap: 0.3rem;
   max-width: 24rem;
+}
+
+/* El foco del tutorial (T-090): todo oscuro salvo lo que hay que mirar, y la tarjeta a su lado. */
+.foco {
+  position: fixed;
+  z-index: 7;
+  border-radius: 12px;
+  outline: 3px solid var(--oro);
+  box-shadow: 0 0 0 200vmax #1a120bb3;
+  pointer-events: none;
+  transition:
+    left 0.25s,
+    top 0.25s,
+    width 0.25s,
+    height 0.25s;
+}
+.foco[hidden] {
+  display: none;
+}
+.tutorial.junto {
+  bottom: auto;
+  z-index: 9;
 }

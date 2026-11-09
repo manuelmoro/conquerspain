@@ -30,7 +30,7 @@ export type Capa = (typeof CAPAS)[number];
 
 export interface Figura {
   readonly capa: Capa;
-  readonly forma: 'poligono' | 'linea' | 'circulo' | 'texto';
+  readonly forma: 'poligono' | 'linea' | 'circulo' | 'texto' | 'torre';
   readonly puntos: readonly Punto[];
   readonly clase: string;
   /** Color de relleno, de la paleta (`paleta.ts`). */
@@ -257,6 +257,18 @@ export function componerAtlas(
       forma: 'linea',
       puntos: propuesta,
       clase: 'ruta propuesta',
+    });
+  }
+
+  // La capital se ve de un vistazo: una torre sobre su comarca, que tambien abre su ficha (T-090).
+  const capital = centros.get(vista.jugador.capital);
+  if (capital !== undefined) {
+    figuras.push({
+      capa: 'avisos',
+      forma: 'torre',
+      puntos: [capital],
+      clase: 'torre-de-capital',
+      comarca: vista.jugador.capital,
     });
   }
 

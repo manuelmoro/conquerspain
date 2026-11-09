@@ -179,7 +179,7 @@ function tarjetaDeConvocatoria(
       partes.push(
         el('p', { class: 'consejo' }, 'Elige dónde empieza tu casa. Es para toda la partida.'),
       );
-      const ofertas = el('ul', { class: 'lista' });
+      const ofertas = el('ul', { class: 'lista ofertas' });
       for (const o of c.misOfertas) {
         const perfil = POTENCIALES.find((x) => x === o.perfil);
         ofertas.append(

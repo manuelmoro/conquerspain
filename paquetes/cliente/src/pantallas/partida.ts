@@ -21,6 +21,7 @@ import { comarcasEnLista, textoDeLaBarra } from '../accesibilidad.ts';
 import { CacheDeServidor } from '../cache.ts';
 import { EMBLEMA_DE_CASA } from '../arte/index.ts';
 import { PASOS_DEL_TUTORIAL, terminado } from '../tutorial.ts';
+import { enfocar } from './foco.ts';
 
 import type { MercadoRecibido } from '../api.ts';
 import { pantallaDeCasa } from './casa.ts';
@@ -649,6 +650,12 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
   );
   const tutorial = tarjetaDelTutorial(almacen, estado);
   if (tutorial !== null) partes.push(tutorial);
+  // Oscurece lo que no importa y pone la tarjeta junto a lo que hay que mirar (T-090).
+  const paso =
+    estado.tutorial === null || terminado(estado.tutorial)
+      ? undefined
+      : PASOS_DEL_TUTORIAL[estado.tutorial.paso];
+  enfocar(paso === undefined ? [] : paso.objetivo(vista.jugador.capital), tutorial);
   if (estado.resumen !== null && estado.resumenAbierto) {
     partes.push(dialogoDeResumen(almacen, estado.resumen, nombreDeComarcaEn(estado)));
   }

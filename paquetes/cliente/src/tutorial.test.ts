@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   PASOS_DEL_TUTORIAL,
   alDia,
+  junto,
   leerProgreso,
   progresoInicial,
   saltar,
@@ -45,5 +46,34 @@ describe('el tutorial', () => {
     expect(leerProgreso(JSON.stringify(p), 9)).toEqual(p);
     expect(leerProgreso('{roto', 9)).toEqual(progresoInicial(9));
     expect(leerProgreso(null, 2)).toEqual(progresoInicial(2));
+  });
+});
+
+describe('dónde va la tarjeta del tutorial', () => {
+  const tarjeta = { ancho: 300, alto: 200 };
+  const ventana = { ancho: 1400, alto: 900 };
+
+  it('a la derecha de lo que señala si cabe; si no, a la izquierda; y si tampoco, debajo', () => {
+    expect(junto({ x: 100, y: 100, ancho: 200, alto: 40 }, tarjeta, ventana)).toEqual({
+      x: 316,
+      y: 20,
+    });
+    expect(junto({ x: 1000, y: 400, ancho: 300, alto: 100 }, tarjeta, ventana)).toEqual({
+      x: 684,
+      y: 350,
+    });
+    const ancho = junto({ x: 0, y: 100, ancho: 1400, alto: 50 }, tarjeta, ventana);
+    expect(ancho).toEqual({ x: 550, y: 166 });
+  });
+
+  it('nunca se sale de la ventana', () => {
+    const p = junto({ x: 0, y: 850, ancho: 1400, alto: 40 }, tarjeta, ventana);
+    expect(p.y + tarjeta.alto).toBeLessThanOrEqual(ventana.alto);
+    expect(p.y).toBeGreaterThanOrEqual(16);
+  });
+
+  it('cada paso señala algo de la pantalla', () => {
+    for (const paso of PASOS_DEL_TUTORIAL)
+      expect(paso.objetivo('burgos').length, paso.id).toBeGreaterThan(0);
   });
 });

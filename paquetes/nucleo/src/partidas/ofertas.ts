@@ -8,7 +8,7 @@
 // origenes en toda la peninsula— se quedarian sin mapa.
 import { elegirOrigenes, origenesPosibles, perfilDe } from '../reglas/casas/origenes.ts';
 import type { IdComarca, IdJugador } from '../tipos/ids.ts';
-import type { ComarcaMundo, Mundo, Potencial } from '../tipos/mundo.ts';
+import type { ComarcaMundo, Mundo, Potencial, Rasgo } from '../tipos/mundo.ts';
 import { POTENCIALES } from '../tipos/mundo.ts';
 import type { Casa, TablasDeReglas } from '../tipos/reglas.ts';
 import { azarDe } from '../utiles/azar.ts';
@@ -57,6 +57,34 @@ function flaquezaDe(comarca: ComarcaMundo): Potencial {
   return peor;
 }
 
+/** Los rasgos de una comarca como los lee el jugador: nunca su identificador (T-090). */
+export const NOMBRE_DE_RASGO: Readonly<Record<Rasgo, string>> = {
+  'salinas-historicas': 'salinas de siempre',
+  'vena-de-hierro': 'vena de hierro',
+  'ferreria-de-agua': 'ferrería de agua',
+  'cantera-noble': 'cantera de piedra noble',
+  'pinar-maderable': 'pinar maderable',
+  'pasto-de-verano': 'pastos de verano',
+  'pasto-de-invierno': 'pastos de invierno',
+  dehesa: 'dehesa',
+  marisma: 'marisma',
+  'vega-fluvial': 'vega de río',
+  'ciudad-episcopal': 'sede de obispado',
+  'villa-de-feria': 'villa de feria',
+  'puerto-de-mar': 'puerto de mar',
+  'camino-de-santiago': 'Camino de Santiago',
+  'calzada-romana': 'calzada romana',
+  vinyedo: 'viñedo',
+  montado: 'montado',
+};
+
+/** «a», «a y b», «a, b y c». */
+function enLista(partes: readonly string[]): string {
+  return partes.length <= 1
+    ? (partes[0] ?? '')
+    : `${partes.slice(0, -1).join(', ')} y ${partes.at(-1) ?? ''}`;
+}
+
 /** La tarjeta que ve el jugador: nada que no pueda mirar en el mapa antes de empezar. */
 export function tarjetaDe(
   comarca: ComarcaMundo,
@@ -65,7 +93,10 @@ export function tarjetaDe(
 ): OfertaDeOrigen {
   const perfil = perfilDe(comarca);
   const flaqueza = flaquezaDe(comarca);
-  const rasgos = comarca.rasgos.length === 0 ? '' : `, con ${comarca.rasgos.join(' y ')}`;
+  const rasgos =
+    comarca.rasgos.length === 0
+      ? ''
+      : `, con ${enLista(comarca.rasgos.map((r) => NOMBRE_DE_RASGO[r]))}`;
   const feria = comarca.ferias.length > 0 ? ' y feria propia' : '';
   return {
     comarca: comarca.id,

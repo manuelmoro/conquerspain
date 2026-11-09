@@ -43,6 +43,24 @@ function figuraSvg(f: Figura, escala: number): SVGElement {
         r: String(5 / escala),
         class: f.clase,
       });
+    case 'torre': {
+      // Una torre almenada con banderola, del mismo tamanyo en pantalla a cualquier zoom: se dibuja
+      // en pixeles y se escala al reves que el mapa. La base queda justo encima del rotulo.
+      const g = nodo('g', {
+        class: f.clase,
+        transform: `translate(${String(x)} ${String(y)}) scale(${String(1 / escala)})`,
+      });
+      g.append(
+        nodo('path', {
+          class: 'torre-cuerpo',
+          d: 'M-9 -12V-30h3v-4h4v4h4v-4h4v4h3V-12z',
+        }),
+        nodo('path', { class: 'torre-puerta', d: 'M-3 -12v-6a3 3 0 0 1 6 0v6z' }),
+        nodo('path', { class: 'torre-asta', d: 'M0 -34v-10' }),
+        nodo('path', { class: 'torre-banderola', d: 'M0 -44l10 3-10 3z' }),
+      );
+      return g;
+    }
     case 'texto': {
       const t = nodo('text', {
         x: String(x),

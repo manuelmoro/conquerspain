@@ -191,3 +191,26 @@ nav.modos button[aria-pressed='true'] {
 .leyenda span.puerto-cerrado::before {
   border-top-color: #b0282b;
 }
+
+/* La torre de la capital (T-090). */
+.torre-de-capital {
+  cursor: pointer;
+}
+.torre-cuerpo {
+  fill: #f4ecd8;
+  stroke: #2b2118;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.torre-puerta {
+  fill: #5c4331;
+}
+.torre-asta {
+  stroke: #2b2118;
+  stroke-width: 1.6;
+}
+.torre-banderola {
+  fill: var(--cobalto, #1f4e9c);
+  stroke: #2b2118;
+  stroke-width: 1;
+}

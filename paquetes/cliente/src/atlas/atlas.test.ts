@@ -231,6 +231,15 @@ describe('el encuadre (criterio 4)', () => {
   });
 });
 
+describe('la capital (T-090)', () => {
+  it('lleva una torre sobre su comarca, que abre su ficha', () => {
+    const d = componerAtlas(atlas, vista, { modo: 'economico', estacion: 'verano' });
+    const torres = d.figuras.filter((f) => f.forma === 'torre');
+    expect(torres).toHaveLength(1);
+    expect(torres[0]?.comarca).toBe(vista.jugador.capital);
+  });
+});
+
 describe('el presupuesto (criterio 5)', () => {
   it('el mayor dibujo, con el mapa de ocho casas entero y en modo logistico, tiene menos de 2000 figuras', () => {
     const { atlas: todo, vista: v } = atlasCompleto();

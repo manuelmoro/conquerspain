@@ -16,6 +16,11 @@ export interface PasoDelTutorial {
   readonly id: string;
   readonly titulo: string;
   readonly texto: string;
+  /**
+   * Donde mirar: selectores CSS, en orden de preferencia; el primero que exista se resalta y el resto
+   * de la pantalla se oscurece. Vacio si no hay nada que senyalar.
+   */
+  readonly objetivo: (capital: string) => readonly string[];
   /** Se da por hecho al pasar esto; null si el jugador dice «Entendido». */
   readonly hecho: ((s: SituacionDelTutorial, alEmpezar: number) => boolean) | null;
 }
@@ -26,13 +31,15 @@ export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
     titulo: 'Esto es lo que tienes',
     texto:
       'Arriba ves tus recursos: pan para comer, madera y piedra para construir, maravedís para pagar. El pan es lo primero: si falta, tu gente pasa hambre.',
+    objetivo: () => ['.barra-de-recursos'],
     hecho: null,
   },
   {
     id: 'capital',
     titulo: 'Toca tu capital',
     texto:
-      'Tu capital está marcada en el mapa con borde azul. Tócala: su ficha te dice qué produce y qué puedes hacer en ella.',
+      'Tu capital es la de la torre con banderola. Tócala: su ficha te dice qué produce y qué puedes hacer en ella.',
+    objetivo: (capital) => [`.capa-comarcas [data-comarca="${capital}"]`, '.contenedor-atlas'],
     hecho: (s) => s.comarcaAbierta === s.capital,
   },
   {
@@ -40,6 +47,7 @@ export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
     titulo: 'Da tu primera orden',
     texto:
       'En la ficha, elige qué construir (una granja da más pan) y pulsa «Dar la orden». Se paga al empezar, y hasta el corte la puedes retirar.',
+    objetivo: () => ['.panel .ficha'],
     hecho: (s) => s.ordenes > 0,
   },
   {
@@ -47,6 +55,7 @@ export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
     titulo: 'El turno se resuelve a su hora',
     texto:
       'Cuando llegue el corte, se resuelven las órdenes de todos a la vez y te llega la crónica de lo que ha pasado. No hace falta estar conectado.',
+    objetivo: () => ['.cabecera button.empuje', '.titulo-de-partida'],
     hecho: (s, alEmpezar) => s.turno > alEmpezar,
   },
   {
@@ -54,6 +63,7 @@ export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
     titulo: 'Gana tierra',
     texto:
       'Toca una comarca vecina: «Cómo ganarla» te dice cuánta influencia tienes y qué la sube. Una recua presente o un regalo al concejo la acercan.',
+    objetivo: () => ['.contenedor-atlas'],
     hecho: (s) => s.comarcaAbierta !== null && !s.abiertaEsPropia,
   },
 ];
@@ -116,4 +126,49 @@ export function leerProgreso(texto: string | null, turno: number): ProgresoDelTu
     // Lo guardado no se entiende: se empieza de nuevo.
   }
   return progresoInicial(turno);
+}
+
+export interface Caja {
+  readonly x: number;
+  readonly y: number;
+  readonly ancho: number;
+  readonly alto: number;
+}
+
+/**
+ * Donde poner la tarjeta del tutorial para que quede al lado de lo que senyala sin taparlo: a la
+ * derecha si cabe, si no a la izquierda, debajo o encima; y siempre dentro de la ventana.
+ */
+export function junto(
+  objetivo: Caja,
+  tarjeta: { readonly ancho: number; readonly alto: number },
+  ventana: { readonly ancho: number; readonly alto: number },
+  hueco = 16,
+): { readonly x: number; readonly y: number } {
+  const dentro = (v: number, tam: number, max: number): number =>
+    Math.max(hueco, Math.min(v, max - tam - hueco));
+  const centradoEnY = objetivo.y + objetivo.alto / 2 - tarjeta.alto / 2;
+  const centradoEnX = objetivo.x + objetivo.ancho / 2 - tarjeta.ancho / 2;
+  if (objetivo.x + objetivo.ancho + hueco + tarjeta.ancho + hueco <= ventana.ancho) {
+    return {
+      x: objetivo.x + objetivo.ancho + hueco,
+      y: dentro(centradoEnY, tarjeta.alto, ventana.alto),
+    };
+  }
+  if (objetivo.x - hueco - tarjeta.ancho >= hueco) {
+    return {
+      x: objetivo.x - hueco - tarjeta.ancho,
+      y: dentro(centradoEnY, tarjeta.alto, ventana.alto),
+    };
+  }
+  if (objetivo.y + objetivo.alto + hueco + tarjeta.alto + hueco <= ventana.alto) {
+    return {
+      x: dentro(centradoEnX, tarjeta.ancho, ventana.ancho),
+      y: objetivo.y + objetivo.alto + hueco,
+    };
+  }
+  return {
+    x: dentro(centradoEnX, tarjeta.ancho, ventana.ancho),
+    y: dentro(objetivo.y - hueco - tarjeta.alto, tarjeta.alto, ventana.alto),
+  };
 }

@@ -9,7 +9,9 @@ import { describe, expect, it } from 'vitest';
 import { arranqueDe, panDelAnyo, panQueComeElAnyo } from '../src/partidas/arranque.ts';
 import { fundarPartida } from '../src/partidas/fundar.ts';
 import { jornadasDesde } from '../src/partidas/distancias.ts';
+import { NOMBRE_DE_RASGO, tarjetaDe } from '../src/partidas/ofertas.ts';
 import type { Participante } from '../src/partidas/ofertas.ts';
+import { RASGOS } from '../src/tipos/mundo.ts';
 import { prepararPartida } from '../src/partidas/preparar.ts';
 import { faltasDelRecorte } from '../src/partidas/recorte.ts';
 import { impedimentoDeConstruir } from '../src/reglas/obras.ts';
@@ -194,6 +196,16 @@ describe('las ofertas de origen', () => {
     expect(oferta?.ventaja).toContain('nivel');
     expect(oferta?.limitacion).toContain('solares');
     expect(oferta?.nombre).toBe(MUNDO.comarcas[oferta?.comarca ?? '']?.nombre);
+  });
+
+  it('los rasgos se leen en castellano, nunca con su identificador (T-090)', () => {
+    const base = Object.values(MUNDO.comarcas)[0];
+    if (base === undefined) throw new Error('sin comarcas');
+    for (const rasgo of RASGOS) {
+      const t = tarjetaDe({ ...base, rasgos: [rasgo, 'dehesa'] }, REGLAS, 'mesta');
+      expect(t.ventaja, rasgo).toContain(NOMBRE_DE_RASGO[rasgo]);
+      expect(t.ventaja, rasgo).not.toMatch(/[a-z]+-[a-z]+/);
+    }
   });
 
   it('permutar la lista de participantes no cambia nada', () => {
