@@ -50,6 +50,8 @@ export interface EstadoRecibido {
   readonly proximaResolucion: number | null;
   /** Quien convoco la partida: puede avanzar el turno a mano (T-090). */
   readonly esAdministrador?: boolean;
+  /** Las comarcas que ya puede incorporar, para resaltarlas en el mapa (T-092). */
+  readonly incorporables?: readonly string[];
   readonly vista: VistaJugador;
 }
 

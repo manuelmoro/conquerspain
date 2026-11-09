@@ -9,6 +9,7 @@ import { comarcasDe, turnosDeReserva } from '../src/reglas/consumo.ts';
 import {
   balancePanMil,
   estadoTrasIncorporar,
+  comarcasIncorporables,
   ganadorDeIncorporacion,
   impedimentoDeIncorporar,
   jornadasHastaElDominio,
@@ -80,6 +81,25 @@ function impedimento(
     opciones.tablas ?? reglas,
   );
 }
+
+describe('las comarcas que ya se pueden incorporar (el mapa las resalta)', () => {
+  it('sale la que cumple, con lo que el jugador sabe, y deja de salir al pedirla', () => {
+    const estado = conInfluencia({ [UNO]: 70 }, { conDos: false });
+    expect(comarcasIncorporables(estado, UNO, mundo, reglas)).toContain(VEGA);
+    expect(
+      comarcasIncorporables(conInfluencia({ [UNO]: 50 }, { conDos: false }), UNO, mundo, reglas),
+    ).not.toContain(VEGA);
+    const pedida: Orden = {
+      ...base(estado.turno),
+      tipo: 'incorporar',
+      comarca: c(VEGA),
+      estado: 'en curso',
+    };
+    expect(
+      comarcasIncorporables({ ...estado, ordenes: [pedida] }, UNO, mundo, reglas),
+    ).not.toContain(VEGA);
+  });
+});
 
 describe('los requisitos de incorporar', () => {
   it('una comarca con dueño no se incorpora', () => {

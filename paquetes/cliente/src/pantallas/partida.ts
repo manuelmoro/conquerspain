@@ -141,6 +141,7 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       modo: atlas.modo,
       estacion: estacionDe(partida.recibido.turno, TABLAS_DEL_JUEGO),
       propuesta,
+      incorporables: partida.recibido.incorporables ?? [],
     });
     atlas.pintado = clave;
     // Se pinta cuando el <svg> ya esta en el documento, para que tenga tamanyo.
@@ -194,11 +195,34 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
           'secundario',
         )
       : '';
+  // Lo que ya se puede ganar, ademas de resaltado: el rotulo del mapa puede quedar tapado (T-092).
+  const incorporables = (partida.recibido.incorporables ?? []).flatMap((id) => {
+    const c = partida.atlas?.comarcas.find((x) => x.id === id);
+    return c === undefined ? [] : [c];
+  });
+  const avisoDeIncorporar =
+    incorporables.length === 0
+      ? ''
+      : el(
+          'p',
+          { class: 'aviso aviso-incorporable fila' },
+          el('strong', {}, '✨ Ya puedes incorporar:'),
+          ...incorporables.map((c) =>
+            boton(
+              c.nombre,
+              () => {
+                almacen.abrirComarca(c.id);
+              },
+              'secundario',
+            ),
+          ),
+        );
   return el(
     'div',
     { class: 'mapa' },
     modos,
     volverAlPlano,
+    avisoDeIncorporar,
     el(
       'p',
       { class: 'suave' },

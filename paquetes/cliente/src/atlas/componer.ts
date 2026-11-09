@@ -53,7 +53,14 @@ export interface Dibujo {
   };
 }
 
-export const PRIORIDAD = { capital: 100, propia: 80, explorada: 50, oida: 20, dato: 10 } as const;
+export const PRIORIDAD = {
+  capital: 100,
+  incorporable: 90,
+  propia: 80,
+  explorada: 50,
+  oida: 20,
+  dato: 10,
+} as const;
 
 export const NOMBRE_DE_POTENCIAL: Readonly<Record<Potencial, string>> = {
   labor: 'labor',
@@ -140,6 +147,8 @@ export interface OpcionesDeComposicion {
   readonly estacion: Estacion;
   /** La ruta que se esta trazando en el editor, comarca a comarca desde donde sale (T-083). */
   readonly propuesta?: readonly string[];
+  /** Las comarcas que ya se pueden incorporar: se resaltan en todas las vistas (T-092). */
+  readonly incorporables?: readonly string[];
 }
 
 export function componerAtlas(
@@ -244,6 +253,27 @@ export function componerAtlas(
       clase: 'rotulo dato ruta',
       texto: `${String(Math.max(0, Math.ceil(restante / 1000)))} j`,
       prioridad: PRIORIDAD.propia,
+    });
+  }
+
+  // Lo que ya se puede ganar llama la atencion: un contorno dorado y su rotulo (T-092, tras jugar).
+  const incorporables = new Set(opciones.incorporables ?? []);
+  for (const c of atlas.comarcas) {
+    if (!incorporables.has(c.id)) continue;
+    figuras.push({
+      capa: 'avisos',
+      forma: 'poligono',
+      puntos: c.poligono,
+      clase: 'incorporable',
+      comarca: c.id,
+    });
+    figuras.push({
+      capa: 'rotulos',
+      forma: 'texto',
+      puntos: [c.centro],
+      clase: 'rotulo aviso-incorporable',
+      texto: '¡Incorporable!',
+      prioridad: PRIORIDAD.incorporable,
     });
   }
 

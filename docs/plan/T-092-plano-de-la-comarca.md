@@ -61,6 +61,10 @@ corregido el texto.
   este turno», y el jugador las volvía a dar: dos regalos, ocho compras de pan.
 - **Incorporar con hambre.** La escasez ya no impide incorporar: no es obra ni expedición, y sumar tierra es
   una salida del hambre. «Cómo ganarla» dice si ya se puede incorporar o por qué no, sin esconderlo.
+- **Lo que ya se puede incorporar llama la atención.** En todas las vistas del mapa, la comarca lleva un
+  contorno dorado que late y su rótulo, y encima del mapa sale «✨ Ya puedes incorporar:» con un botón por
+  comarca. La cuenta es la de la ficha, con lo que el jugador sabe de las demás casas
+  (`comarcasIncorporables`, que el servidor manda con el estado).
 - **Núcleo:** cada obra de la ficha dice qué edificio levanta (`edificio`, null en las obras mayores).
 
 ## 3. Criterios de aceptación

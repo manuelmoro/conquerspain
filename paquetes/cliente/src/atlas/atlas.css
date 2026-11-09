@@ -214,3 +214,25 @@ nav.modos button[aria-pressed='true'] {
   stroke: #2b2118;
   stroke-width: 1;
 }
+
+/* Una comarca que ya se puede incorporar (T-092): contorno dorado que late, encima de todo. */
+.incorporable {
+  fill: #e8b923;
+  fill-opacity: 0.28;
+  stroke: #c98a00;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+  animation: latido-incorporable 1.6s ease-in-out infinite;
+}
+@keyframes latido-incorporable {
+  50% {
+    fill-opacity: 0.08;
+    stroke-width: 5;
+  }
+}
+.rotulo.aviso-incorporable {
+  fill: #7a4b00;
+  font-weight: 700;
+}

@@ -10,6 +10,7 @@ import {
   canonico,
   construirOrden,
   explicar,
+  comarcasIncorporables,
   regaloYaPedido,
   validarIntencion,
   vistaDeJugador,
@@ -226,11 +227,13 @@ export function crearApi(
   };
 
   const verEstado: Manejador = async (ctx) => {
-    const { fila, estado, vista, id } = await estadoYVista(ctx);
+    const { fila, estado, vista, id, jugador, mundo } = await estadoYVista(ctx);
     return {
       estado: 200,
       datos: {
         turno: estado.turno,
+        // Lo que ya puede incorporar, con lo que sabe (T-092): el mapa lo resalta.
+        incorporables: comarcasIncorporables(estado, jugador, mundo, dep.reglas),
         estadoDeLaPartida: fila.estado,
         proximaResolucion: fila.proximaResolucion,
         // Quien administra ve el boton de avanzar el turno (T-090).

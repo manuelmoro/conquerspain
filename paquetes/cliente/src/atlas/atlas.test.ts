@@ -81,6 +81,28 @@ describe('la niebla del dibujo es la del atlas (criterio 1)', () => {
   });
 });
 
+describe('lo que se puede incorporar (T-092)', () => {
+  it('se resalta en cualquier vista, con su rótulo', () => {
+    const neutral = atlas.comarcas.find((c) => c.nivel !== 'propia');
+    if (neutral === undefined) throw new Error('falta una comarca ajena');
+    for (const modo of ['economico', 'logistico', 'politico'] as const) {
+      const d = componerAtlas(atlas, vista, {
+        modo,
+        estacion: 'primavera',
+        incorporables: [neutral.id],
+      });
+      expect(
+        de(d, 'avisos')
+          .filter((f) => f.clase === 'incorporable')
+          .map((f) => f.comarca),
+      ).toEqual([neutral.id]);
+      expect(de(d, 'rotulos').some((f) => f.texto === '¡Incorporable!')).toBe(true);
+    }
+    const sin = componerAtlas(atlas, vista, { modo: 'politico', estacion: 'primavera' });
+    expect(de(sin, 'avisos').some((f) => f.clase === 'incorporable')).toBe(false);
+  });
+});
+
 describe('los tres modos (criterio 2)', () => {
   it('economico: cada comarca vista, tintada por su potencial principal y rotulada con el', () => {
     const d = componerAtlas(atlas, vista, { modo: 'economico', estacion: 'primavera' });

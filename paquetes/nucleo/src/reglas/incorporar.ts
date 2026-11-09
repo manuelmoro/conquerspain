@@ -20,6 +20,7 @@ import {
 } from './administracion.ts';
 import { comarcasDe, panDeLasCuadrillas, turnosDeReserva } from './consumo.ts';
 import { comarcasTransitables } from './ruta.ts';
+import { vistaDeJugador } from './vista.ts';
 
 export type MotivoSinIncorporar =
   'comarca-con-duenyo' | 'influencia-baja' | 'sin-ventaja' | 'muy-lejos';
@@ -207,4 +208,42 @@ export function previsionIncorporar(
         : administracionTotal(despues, propietario, mundo, reglas) -
           administracionTotal(estado, antes, mundo, reglas),
   };
+}
+
+/**
+ * Las comarcas que el jugador puede incorporar ya, para resaltarlas en el mapa (T-092, tras jugar).
+ * La misma cuenta que la ficha: con lo que sabe de las demas casas (nada de una oida; lo visto, de una
+ * explorada), y sin las que ya tienen pedida o en marcha su incorporacion.
+ */
+export function comarcasIncorporables(
+  estado: EstadoPartida,
+  jugador: IdJugador,
+  mundo: Mundo,
+  reglas: TablasDeReglas,
+): IdComarca[] {
+  const yo = estado.jugadores[jugador];
+  if (yo === undefined) return [];
+  const vista = vistaDeJugador(estado, jugador, mundo);
+  const yaPedidas = new Set(
+    estado.ordenes.flatMap((o) =>
+      o.tipo === 'incorporar' && o.jugador === jugador && o.estado !== 'cancelada'
+        ? [o.comarca]
+        : [],
+    ),
+  );
+  const resultado: IdComarca[] = [];
+  for (const [id, conocida] of Object.entries(vista.comarcas)) {
+    const real = estado.comarcas[id];
+    if (real === undefined || conocida.nivel === 'propia' || conocida.influenciaPropia === null)
+      continue;
+    if (yaPedidas.has(id as IdComarca)) continue;
+    const ajenas = conocida.nivel === 'explorada' ? conocida.influenciasAjenas : {};
+    const conLoSabido: EstadoComarca = {
+      ...real,
+      influencias: { ...ajenas, [jugador]: real.influencias[jugador] ?? 0 },
+    };
+    if (impedimentoDeIncorporar(estado, conLoSabido, yo, mundo, reglas) === null)
+      resultado.push(id as IdComarca);
+  }
+  return resultado.sort(comparar);
 }
