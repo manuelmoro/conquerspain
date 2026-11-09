@@ -426,3 +426,8 @@ svg.serie polyline {
   background: linear-gradient(to right, var(--cobalto) var(--ancho), var(--borde) var(--ancho));
   border-radius: 3px;
 }
+
+/* La eleccion de casa (T-086): la elegida se marca con borde y etiqueta. */
+.casa.elegida {
+  border: 2px solid var(--cobalto);
+}

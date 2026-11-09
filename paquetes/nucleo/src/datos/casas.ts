@@ -121,7 +121,8 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     nombre: 'Ferrones de Vizcaya',
     privilegio:
       'Ferrería de monte: con hierro 1 basta, y cada carbonera sostiene dos de sus niveles.',
-    herramienta: 'Aperos de cuarta: nivel 4 (los demás, 3) y, con T-103, venderlos instalados.',
+    herramienta:
+      'Aperos de cuarta: nivel 4 (los demás, 3) y, cuando haya contratos entre casas, venderlos instalados.',
     limite: 'Monte devorado: el agotamiento del monte le sube un 50 % más deprisa.',
     modificadores: {
       potencialMinimoEdificio: { ferreria: 1 },
@@ -142,7 +143,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
   canteros: casa({
     nombre: 'Canteros trasmeranos',
     privilegio:
-      'Contrato de obra: con T-103, sus cuadrillas trabajarán obras mayores en tierra ajena.',
+      'Contrato de obra: cuando haya contratos entre casas, sus cuadrillas trabajarán obras mayores en tierra ajena.',
     herramienta:
       'Maestría: obras mayores un 25 % más baratas, un 30 % más rápidas y sin frenazo de invierno.',
     limite: 'Pocas manos para el campo: un solar menos en cada comarca.',
@@ -173,7 +174,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     privilegio:
       'Carta puebla: funda pueblas con la mitad de gente y la lealtad de sus comarcas no baja de 50.',
     herramienta: 'Monasterio: una obra mayor un 30 % más barata.',
-    limite: 'Pobreza declarada: sin carga fiscal dura y, con T-103, sin cobrar portazgos.',
+    limite: 'Pobreza declarada: sin carga fiscal dura y, cuando haya portazgos, sin cobrarlos.',
     modificadores: {
       lealtadMinima: 50,
       vecinosParaPueblaMil: 500,
@@ -208,7 +209,8 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
   }),
   arrieros: casa({
     nombre: 'Arrieros maragatos',
-    privilegio: 'Portazgo: con T-103, cobra por sus caminos y sus recuas no pagan el ajeno.',
+    privilegio:
+      'Portazgo: cuando haya portazgos, cobra por sus caminos y sus recuas no pagan el ajeno.',
     herramienta: 'Recua maragata: un 40 % más barata, una jornada más de paso y cinco de porte.',
     limite: 'Poca raíz: un vecino menos por nivel de casas y no puede levantar catedral.',
     modificadores: {

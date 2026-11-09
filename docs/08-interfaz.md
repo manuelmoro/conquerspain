@@ -27,9 +27,18 @@ Tarjetas con capital, casa, turno y quincena del calendario, cuenta atrás a la 
 estado de abastecimiento, prestigio y puesto. Distingue de un vistazo las partidas con ritmos
 distintos y avisa de las que tienen órdenes sin dar.
 
+**Hecho en T-086.** Cada partida va en una tarjeta con su casa, el turno, la quincena y el corte, el pan que le
+queda (o «hambre», en rojo y con texto), su prestigio y su puesto, y «Sin órdenes este turno» si no has dado
+ninguna. Las que esperan algo de ti van primero. Debajo van las convocatorias en marcha, con lo que toca en cada
+una: compartir el código y sortear, esperar o elegir origen.
+
 ### 8.2.2 Crear partida y elegir casa
 Elección de casa con su privilegio, su herramienta y su límite escritos sin marketing: lo que hace y
 lo que te va a doler. Después, ritmo de turno y modo.
+
+**Hecho en T-086.** Al convocar o al unirse, las ocho casas van en tarjetas con privilegio, herramienta y
+límite, los tres con el mismo peso. Los textos que lee el jugador no nombran tareas del plan, y una prueba lo
+vigila.
 
 ### 8.2.3 Elegir origen
 Tres localidades reales sorteadas y filtradas por la casa. Cada tarjeta: ilustración del entorno,

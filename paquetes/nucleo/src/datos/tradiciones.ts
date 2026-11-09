@@ -159,7 +159,7 @@ export const TRADICIONES: Readonly<Record<string, DatosTradicion>> = {
     criterio: 'profundizar',
     nombre: 'Maestros de forja',
     descripcion:
-      'Tus aperos rinden un 30 % más, pero tu pan un 10 % menos; con T-103, los vendidos pagan más renta.',
+      'Tus aperos rinden un 30 % más, pero tu pan un 10 % menos; cuando haya contratos entre casas, los vendidos pagan más renta.',
     nota: 'Las rejas, azadas y hoces de hierro vizcaíno se vendían por toda Castilla: un buen apero duraba una vida y se heredaba.',
     modificadores: { efectoAperosMil: 1300, produccionMil: { pan: 900 } },
   }),
@@ -265,7 +265,7 @@ export const TRADICIONES: Readonly<Record<string, DatosTradicion>> = {
     criterio: 'compensar',
     nombre: 'Gremio',
     descripcion:
-      'Una cuadrilla más en cada comarca; con T-103, además, contratos de obra simultáneos.',
+      'Una cuadrilla más en cada comarca; cuando haya contratos entre casas, además, contratos de obra simultáneos.',
     nota: 'Las cuadrillas de Trasmiera salían cada primavera de sus valles con el maestro al frente y volvían por San Martín: el oficio pasaba de padres a hijos.',
     modificadores: { cuadrillasExtra: 1 },
   }),
@@ -617,7 +617,7 @@ export const TRADICIONES: Readonly<Record<string, DatosTradicion>> = {
     criterio: 'compensar',
     nombre: 'Ventas reales',
     descripcion:
-      'Tus recuas comen un 30 % menos en el camino y tus ventas cuestan un 30 % menos; con T-102, dan noticias.',
+      'Tus recuas comen un 30 % menos en el camino y tus ventas cuestan un 30 % menos; cuando haya mercado común, dan noticias.',
     nota: 'Las ventas, a una jornada unas de otras, daban cama, pienso y noticias: allí se sabía todo antes que en la corte.',
     modificadores: { bastimentoMil: 700, costeEdificioMil: { venta: 700 } },
   }),
@@ -695,7 +695,7 @@ export const TRADICIONES: Readonly<Record<string, DatosTradicion>> = {
     criterio: 'profundizar',
     nombre: 'Tribunal de las aguas',
     descripcion:
-      'El riego repartido con justicia: huertas y granjas de vega rinden un 20 % más. Con T-103, también a tus aliados.',
+      'El riego repartido con justicia: huertas y granjas de vega rinden un 20 % más. Cuando haya alianzas, también a tus aliados.',
     nota: 'El Tribunal de las Aguas de València se reúne cada jueves a la puerta de la catedral: juicio oral, en valenciano y sin apelación.',
     modificadores: { produccionEdificioEnVegaMil: { huerta: 1200, granja: 1200 } },
   }),

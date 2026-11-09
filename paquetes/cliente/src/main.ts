@@ -72,7 +72,7 @@ function pintar(): void {
     estado.cuenta === null
       ? pantallaDeEntrada(almacen, estado)
       : estado.partida === null
-        ? pantallaDePartidas(api, abrir)
+        ? pantallaDePartidas(almacen, api, abrir)
         : pantallaDePartida(almacen, estado);
   raiz.replaceChildren(pantalla);
   for (const n of document.querySelectorAll<HTMLElement>('[data-conservar-scroll]')) {

@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 9 de noviembre de 2026 (T-083, T-084, T-085 y T-089 hechas; T-088 a falta de J-01; sigue T-086)
+**Última actualización:** 9 de noviembre de 2026 (T-083 a T-086 y T-089 hechas; T-088 a falta de J-01; sigue T-087)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -25,7 +25,8 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 ## Siguiente tarea
 
-**T-086 · Mis partidas, crear partida, elegir casa y origen** (primero, detallar su ficha); después T-087. **Checkpoints pendientes del usuario:** J-01 (para cerrar
+**T-087 · Móvil, accesibilidad y rendimiento** (primero, detallar su ficha). Antes de cerrarla, J-02 y J-03
+con personas (los checkpoints los hace el usuario). **Checkpoints pendientes del usuario:** J-01 (para cerrar
 T-088) y **J-02 · ciclo completo, casas y ausencia**, que ya se puede hacer: T-083, T-084 y T-085 están hechas.
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
@@ -124,6 +125,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-086 hecha: la entrada al juego.** La lista de partidas avisa de lo que importa: pan que queda o hambre, prestigio y puesto, y **«Sin órdenes este turno»**, con las que esperan algo de ti primero (`resumenParaLaLista` en el núcleo y `GET /partidas/mias`). Convocar o unirse eligiendo casa con su privilegio, herramienta y límite del mismo peso, sortear y elegir origen entre tres ofertas. Los textos de casas y tradiciones dejan de citar tareas del plan. 1283 pruebas en verde; 52,8 KB gzip |
 | 09-11-2026 | **T-089 hecha: el gobierno, jugable.** Además del gobierno en la ficha de la comarca, «Tu casa» trae las tradiciones de las rondas abiertas, el **mayordomo** (sus reglas en una frase, el límite y un formulario cerrado de condición y acción, con cada combinación aceptada por el servidor) y la sal de las conservas. Toda orden tiene ya su sitio en la interfaz salvo la letra de cambio, que espera a T-103. 1279 pruebas en verde; 51,2 KB gzip |
 | 09-11-2026 | **T-089 (en curso): el gobierno de la comarca en su ficha.** Fuero, carga fiscal, dehesa, obras mayores (puente y calzada por tramo) y traslado de la corte, cada uno con su efecto y con el bloqueo que pondría la fase (`impedimentoDePolitica`, extraída de la fase 8 sin cambiar huellas). **Fallo de T-036 arreglado:** trasladar la corte no cobraba sus 200 mrs y 50 de piedra. La letra de cambio no entra: el servidor la rechaza hasta T-103. 1276 pruebas en verde |
 | 09-11-2026 | **T-085 hecha: crónica, hitos y clasificación.** «Crónica» abre el archivo de turnos (← →, por año), con avisos primero y su acción, con el mismo pintado que el resumen (`pantallas/entradas.ts`). La clasificación pública (`clasificacionPublica`, sobre `prestigioDe`, la cuenta de la fase 11) trae el desglose por capítulos de cada casa, que es público, y las primicias. Los hitos con fecha, solo los propios, con los que quedan por lograr. **J-02 ya se puede hacer.** 1273 pruebas en verde; 47,5 KB gzip |

@@ -22,6 +22,7 @@ import type { TarroDeCookies } from './api.ts';
 import { escucharEventos, esperaDeReconexion } from './eventos.ts';
 import type { FuenteDeEventos } from './eventos.ts';
 import { GuardadoEnMemoria } from './guardado.ts';
+import { abastecimiento, esperaOrdenes, pasoDe } from './inicio.ts';
 import { preverBandeja } from './prevision.ts';
 
 describe('la prevision es exacta (criterio 1)', () => {
@@ -292,14 +293,25 @@ describe('de punta a punta con el servidor real (criterio 6)', () => {
         plazas: 1,
       });
       if (!convocada.ok) throw new Error(convocada.mensaje);
+      // Lo que toca en cada momento (T-086): quien convoca sortea; despues, elegir origen.
+      const abierta = await cliente.convocatoria(convocada.datos.id);
+      if (!abierta.ok) throw new Error(abierta.mensaje);
+      expect(pasoDe(abierta.datos.convocatoria).tipo).toBe('sortear');
       const sorteada = await cliente.sortear(convocada.datos.id);
       if (!sorteada.ok) throw new Error(sorteada.mensaje);
+      expect(pasoDe(sorteada.datos.convocatoria).tipo).toBe('elegir-origen');
       const comarca = sorteada.datos.convocatoria.misOfertas[0]?.comarca ?? '';
       const elegida = await cliente.elegir(convocada.datos.id, comarca);
       expect(elegida.ok && elegida.datos.convocatoria.estado).toBe('fundada');
 
       const mias = await cliente.misPartidas();
       expect(mias.ok && mias.datos.partidas.map((p) => p.id)).toEqual([convocada.datos.id]);
+      // La lista avisa de que espera órdenes y trae su abastecimiento (T-086, criterio 3).
+      const lista = mias.ok ? mias.datos.partidas[0] : undefined;
+      if (lista === undefined) throw new Error('sin partida en la lista');
+      expect(esperaOrdenes(lista)).toBe(true);
+      expect(lista.resumen?.turnosDePan).toBeGreaterThan(0);
+      expect(abastecimiento(lista)?.texto).toMatch(/^Pan para \d+ turnos?$/);
       await almacen.abrirPartida(convocada.datos.id);
       expect(almacen.estado.partida?.recibido.vista.jugador.capital).toBe(comarca);
       await almacen.anyadir({ tipo: 'roturar', comarca });
@@ -308,6 +320,10 @@ describe('de punta a punta con el servidor real (criterio 6)', () => {
       expect(enElServidor.ok && enElServidor.datos.ordenes.map((o) => o.id)).toEqual([
         `o-1-hortelanos-k1`,
       ]);
+      const conOrden = await cliente.misPartidas();
+      const yaDada = conOrden.ok ? conOrden.datos.partidas[0] : undefined;
+      expect(yaDada?.ordenesDadas).toBe(1);
+      expect(yaDada === undefined ? true : esperaOrdenes(yaDada)).toBe(false);
     } finally {
       await servidor.cerrar();
       await repo.cerrar();

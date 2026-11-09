@@ -5,6 +5,8 @@ export type { Arranque } from './arranque.ts';
 export { caminoMasCorto, indiceDeCaminos, jornadasDesde } from './distancias.ts';
 export type { IndiceDeCaminos } from './distancias.ts';
 export { fundarPartida } from './fundar.ts';
+export { resumenParaLaLista } from './lista.ts';
+export type { ResumenParaLaLista } from './lista.ts';
 export type { PeticionDeFundacion } from './fundar.ts';
 export { ofertasDeOrigen, tarjetaDe } from './ofertas.ts';
 export type { Ofertas, OfertaDeOrigen, Participante } from './ofertas.ts';

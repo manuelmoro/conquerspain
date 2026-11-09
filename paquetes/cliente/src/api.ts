@@ -3,6 +3,7 @@
 // que es la que decide si una orden se queda en la bandeja para reintentarla.
 import { VERSION_REGLAS } from '@conquer/nucleo';
 import type {
+  ResumenParaLaLista,
   AtlasDeJugador,
   ClasificacionPublica,
   Cronica,
@@ -37,6 +38,10 @@ export interface PartidaDeLaLista {
   readonly turno: number;
   readonly estado: string;
   readonly proximaResolucion: number | null;
+  /** Lo que la lista avisa (T-086): fecha, prestigio y puesto, y abastecimiento. */
+  readonly resumen: ResumenParaLaLista | null;
+  /** Ordenes suyas recibidas este turno y aun sin resolver. */
+  readonly ordenesDadas: number;
 }
 
 export interface EstadoRecibido {
@@ -75,6 +80,9 @@ export interface ConvocatoriaRecibida {
   readonly id: string;
   readonly nombre: string;
   readonly estado: 'abierta' | 'eligiendo' | 'fundada';
+  readonly intervaloMinutos: number;
+  readonly plazas: number;
+  readonly esDePrueba: boolean;
   readonly codigo: string | null;
   readonly jugadores: readonly { casa: string; nombre: string; haElegido: boolean }[];
   readonly misOfertas: readonly OfertaRecibida[];
@@ -285,6 +293,10 @@ export class ClienteApi {
 
   unirse(codigo: string, casa: string) {
     return this.pedir<{ id: string }>('POST', '/convocatorias/unirse', { codigo, casa });
+  }
+
+  misConvocatorias() {
+    return this.pedir<{ convocatorias: ConvocatoriaRecibida[] }>('GET', '/convocatorias/mias');
   }
 
   convocatoria(id: string) {

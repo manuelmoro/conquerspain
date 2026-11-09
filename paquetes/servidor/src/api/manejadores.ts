@@ -3,6 +3,7 @@
 // de precios, T-084): ninguna ruta devuelve el estado completo ni los sucesos crudos.
 import {
   clasificacionPublica,
+  resumenParaLaLista,
   VERSION_REGLAS,
   atlasDeJugador,
   fichaDeComarca,
@@ -189,10 +190,21 @@ export function crearApi(
 
   const misPartidas: Manejador = async (ctx) => {
     const filas = await dep.repo.partidasDeCuenta(ctx.cuenta);
-    return {
-      estado: 200,
-      datos: {
-        partidas: filas.map((p) => ({
+    const partidas = await Promise.all(
+      filas.map(async (p) => {
+        // Lo que la lista avisa (T-086): abastecimiento, puesto y si ya dio ordenes este turno.
+        const estado = await dep.repo.ultimoEstado(p.partida.id);
+        const resumen =
+          estado === null
+            ? null
+            : resumenParaLaLista(
+                estado,
+                p.jugador,
+                dep.proveedorDeMundo(p.partida, estado),
+                dep.reglas,
+              );
+        const pendientes = await dep.repo.ordenesPendientes(p.partida.id);
+        return {
           id: p.partida.id,
           nombre: p.partida.nombre,
           casa: p.casa,
@@ -200,9 +212,12 @@ export function crearApi(
           estado: p.partida.estado,
           proximaResolucion: p.partida.proximaResolucion,
           esDePrueba: p.partida.esDePrueba,
-        })),
-      },
-    };
+          resumen,
+          ordenesDadas: pendientes.filter((o) => o.orden.jugador === p.jugador).length,
+        };
+      }),
+    );
+    return { estado: 200, datos: { partidas } };
   };
 
   const verEstado: Manejador = async (ctx) => {

@@ -733,3 +733,18 @@ describe('lo que ninguna tradición puede romper', () => {
     expect(infractores).toEqual([]);
   });
 });
+
+describe('los textos que lee el jugador', () => {
+  it('ninguna casa ni tradición nombra una tarea del plan (T-086)', () => {
+    const textos = [
+      ...Object.values(CASAS_DE_OFICIO).flatMap((c) => [
+        c.nombre,
+        c.privilegio,
+        c.herramienta,
+        c.limite,
+      ]),
+      ...Object.values(TRADICIONES).flatMap((t) => [t.nombre, t.descripcion, t.nota]),
+    ];
+    for (const texto of textos) expect(texto, texto).not.toMatch(/T-\d{3}/);
+  });
+});
