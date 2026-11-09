@@ -30,6 +30,7 @@ export const CODIGOS_DE_API = [
   'configuracion-invalida',
   'sorteo-imposible',
   'comarca-desconocida',
+  'unidad-desconocida',
   'solo-en-pruebas',
   'error-interno',
 ] as const;
@@ -66,6 +67,7 @@ const ESTADO_HTTP: Readonly<Record<CodigoDeApi, number>> = {
   'configuracion-invalida': 400,
   'sorteo-imposible': 409,
   'comarca-desconocida': 404,
+  'unidad-desconocida': 404,
   'solo-en-pruebas': 403,
   'error-interno': 500,
 };

@@ -28,6 +28,8 @@ describe('la crónica de una partida larga de todas las casas', () => {
     const acciones = new Set<string>();
     const tipos = new Set<string>();
     let entradas = 0;
+    let sinPastoConRebanyo = 0;
+    const unidadesAjenas: string[] = [];
     for (let i = 0; i < TURNOS; i += 1) {
       const turno = jugarTurno(estado, robots, alta.mundo, reglas);
       const fuentes: FuentesDeCronica = {
@@ -45,6 +47,11 @@ describe('la crónica de una partida larga de todas las casas', () => {
           tipos.add(suceso.tipo);
           for (const hueco of entrada.faltan) faltan.add(`${suceso.tipo}: {${hueco}}`);
           if (entrada.accionSugerida !== null) acciones.add(entrada.accionSugerida);
+          // La unidad solo se nombra en la cronica de su duenyo (T-083 §4.5).
+          if (entrada.unidad !== null && suceso.jugador !== lector.id)
+            unidadesAjenas.push(suceso.tipo);
+          if (suceso.tipo === 'rebanyo.sin-pasto' && entrada.unidad?.clase === 'rebanyo')
+            sinPastoConRebanyo += 1;
         }
       }
       estado = turno.estado;
@@ -57,5 +64,8 @@ describe('la crónica de una partida larga de todas las casas', () => {
     expect(entradas).toBeGreaterThan(1000);
     expect(tipos.size).toBeGreaterThan(30);
     expect(tipos.has('rebanyo.sin-pasto')).toBe(true);
+    // El aviso de rebaño sin pasto lleva al rebaño (criterio 5 de T-083).
+    expect(sinPastoConRebanyo).toBeGreaterThan(0);
+    expect(unidadesAjenas).toEqual([]);
   }, 120_000);
 });

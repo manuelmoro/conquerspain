@@ -40,6 +40,13 @@ export interface EntradaDeCronica {
   readonly comarca: IdComarca | null;
   /** Orden que resolveria el aviso, para que la interfaz ofrezca el boton. */
   readonly accionSugerida: string | null;
+  /** La recua o el rebanyo propios de los que habla, para abrirlos desde el aviso (T-083). */
+  readonly unidad: UnidadDeCronica | null;
+}
+
+export interface UnidadDeCronica {
+  readonly clase: 'recua' | 'rebanyo';
+  readonly id: string;
 }
 
 export interface Cronica {

@@ -5,10 +5,13 @@ import { describe, expect, it } from 'vitest';
 import { BLOQUEOS } from '../src/datos/bloqueos.ts';
 import { fichaDeComarca } from '../src/ficha.ts';
 import type { AccionDeFicha } from '../src/ficha.ts';
+import { construirOrden, validarIntencion } from '../src/ordenes/intencion.ts';
 import { resolverTurno } from '../src/resolver.ts';
+import type { IdOrden } from '../src/tipos/ids.ts';
+import type { Orden } from '../src/tipos/ordenes.ts';
 import type { EstadoPartida } from '../src/tipos/estado.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
-import { DOS, UNO, c, conComarca, escenario, mundo, reglas } from './recuas.ts';
+import { DOS, UNO, c, conComarca, escenario, mundo, recua, recursos, reglas } from './recuas.ts';
 
 function comprobarAccion(a: AccionDeFicha): void {
   expect(a.titulo.length, a.clave).toBeGreaterThan(3);
@@ -91,7 +94,13 @@ describe('la ficha de una comarca ajena o neutral', () => {
     const f = fichaDeComarca(estado, UNO, c('prueba-vega'), mundo, reglas);
     expect(f?.nivel).toBe('explorada');
     expect(f?.propia).toBeNull();
-    expect(f?.acciones.map((a) => a.clave)).toEqual(['regalo', 'incorporar', 'construir-venta']);
+    expect(f?.acciones.map((a) => a.clave)).toEqual([
+      'regalo',
+      'incorporar',
+      'mision-presencia',
+      'mision-explorar',
+      'construir-venta',
+    ]);
     for (const a of f?.acciones ?? []) comprobarAccion(a);
     expect(f?.acciones.find((a) => a.clave === 'incorporar')?.bloqueo?.motivo).toBe(
       'influencia-baja',
@@ -148,8 +157,12 @@ describe('como se gana una comarca (T-088 §2.7)', () => {
     expect(f?.nivel).toBe('oida');
     expect(f?.influenciaPropia).toBe(14);
     expect(f?.consejo).toMatch(/Explórala con una recua/);
-    expect(f?.acciones.map((a) => a.clave)).toEqual(['regalo', 'incorporar']);
+    expect(f?.acciones.map((a) => a.clave)).toEqual(['regalo', 'incorporar', 'mision-explorar']);
     for (const a of f?.acciones ?? []) comprobarAccion(a);
+    // Sin recua, la mision dice por que no y como arreglarlo.
+    expect(f?.acciones.find((a) => a.clave === 'mision-explorar')?.bloqueo?.motivo).toBe(
+      'sin-recua-libre',
+    );
     expect(f?.comoGanarLa?.actual).toBe(14);
     expect(f?.comoGanarLa?.necesaria).toBe(reglas.influencia.minimaParaIncorporar);
   });
@@ -200,5 +213,80 @@ describe('como se gana una comarca (T-088 §2.7)', () => {
     // Hay de todo: algo que sube, algo que baja y algo recortado en el 100.
     expect(Object.values(previstos).some((v) => v > 0)).toBe(true);
     expect(Object.values(previstos).some((v) => v < 0)).toBe(true);
+  });
+});
+
+/** Las intenciones de una accion, convertidas en ordenes como lo haria la API. */
+function ordenesDe(
+  intenciones: readonly Readonly<Record<string, unknown>>[],
+  estado: EstadoPartida,
+): Orden[] {
+  return intenciones.map((intencion, i) => {
+    const forma = validarIntencion({ ...intencion, idCliente: `mision-${String(i)}` });
+    if (!forma.ok) throw new Error(JSON.stringify(forma.errores));
+    const orden = construirOrden(forma.valor, {
+      estado,
+      jugador: UNO,
+      mundo,
+      reglas,
+      id: `o-${String(estado.turno)}-mision-${String(i)}` as IdOrden,
+    });
+    if (!orden.ok) throw new Error(JSON.stringify(orden.errores));
+    return orden.valor;
+  });
+}
+
+describe('mandar una recua desde la ficha (T-083 §4.2, criterio 4)', () => {
+  const conRecua = (): EstadoPartida =>
+    conComarca(
+      escenario({ recuas: [recua('recua-1', { acemilas: 20, porte: 200, carga: recursos() })] }),
+      'prueba-vega',
+      { influencias: { [UNO]: 10 } },
+    );
+
+  it('presencia: llega cuando dice y, ya allí, la influencia sube lo que prevé la ficha', () => {
+    let estado = conRecua();
+    const accion = fichaDeComarca(estado, UNO, c('prueba-vega'), mundo, reglas)?.acciones.find(
+      (a) => a.clave === 'mision-presencia',
+    );
+    if (accion === undefined) throw new Error('falta la mision');
+    expect(accion.bloqueo).toBeNull();
+    expect(accion.intenciones.map((i) => i['tipo'])).toEqual(['carga', 'ruta', 'cometido', 'ruta']);
+    expect(accion.efecto).toMatch(/llega en \d+ turnos?; \+2 de influencia por turno/);
+    const llegada = accion.turnos;
+    estado = resolverTurno(estado, ordenesDe(accion.intenciones, estado), mundo, reglas).estado;
+    for (let k = 1; k < llegada; k += 1) estado = resolverTurno(estado, [], mundo, reglas).estado;
+    expect(estado.recuas['recua-1']?.situacion).toEqual({
+      donde: 'comarca',
+      comarca: 'prueba-vega',
+    });
+    // Desde que esta presente, cada turno sube lo que dice la ficha, y la ficha cuenta la presencia.
+    let presente = false;
+    for (let k = 0; k < 3; k += 1) {
+      const g = fichaDeComarca(estado, UNO, c('prueba-vega'), mundo, reglas)?.comoGanarLa;
+      const antes = estado.comarcas['prueba-vega']?.influencias[UNO] ?? 0;
+      estado = resolverTurno(estado, [], mundo, reglas).estado;
+      const cambio = (estado.comarcas['prueba-vega']?.influencias[UNO] ?? 0) - antes;
+      if (g?.motivos.some((m) => m.texto === 'una recua tuya presente') === true) {
+        presente = true;
+        expect(cambio).toBe(g.cambio);
+      }
+    }
+    expect(presente).toBe(true);
+  });
+
+  it('explorar: la recua va como expedición, explora y vuelve sola a casa', () => {
+    let estado = conMonteOido(conRecua());
+    const accion = fichaDeComarca(estado, UNO, c('prueba-monte'), mundo, reglas)?.acciones.find(
+      (a) => a.clave === 'mision-explorar',
+    );
+    if (accion === undefined || accion.bloqueo !== null) throw new Error('la mision no se puede');
+    estado = resolverTurno(estado, ordenesDe(accion.intenciones, estado), mundo, reglas).estado;
+    for (let k = 0; k < 12; k += 1) estado = resolverTurno(estado, [], mundo, reglas).estado;
+    expect(estado.jugadores[UNO]?.conocimiento['prueba-monte']?.nivel).toBe('explorada');
+    expect(estado.recuas['recua-1']?.situacion).toEqual({
+      donde: 'comarca',
+      comarca: 'prueba-llano',
+    });
   });
 });

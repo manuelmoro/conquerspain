@@ -12,6 +12,9 @@ import {
 } from './reglas/casas/index.ts';
 import type { ComoGanarLa } from './reglas/ganar-comarca.ts';
 import { comoGanarLa } from './reglas/ganar-comarca.ts';
+import { planDeMision } from './prevision/misiones.ts';
+import type { Mision } from './prevision/misiones.ts';
+import { Tablero } from './prevision/tablero.ts';
 import { impedimentoDeIncorporar } from './reglas/incorporar.ts';
 import { impedimentoDeConstruir, solaresOcupados, solaresDe } from './reglas/obras.ts';
 import { capacidadDe } from './reglas/poblar.ts';
@@ -26,6 +29,7 @@ import { RECURSOS, recursosSegun } from './tipos/recursos.ts';
 import { TIPOS_DE_EDIFICIO } from './tipos/reglas.ts';
 import type { TablasDeReglas, TipoEdificio } from './tipos/reglas.ts';
 import { validarIntencion } from './ordenes/intencion.ts';
+import { multiplicarFactores } from './utiles/enteros.ts';
 
 export interface BloqueoDeAccion {
   readonly motivo: string;
@@ -38,6 +42,11 @@ export interface AccionDeFicha {
   readonly titulo: string;
   /** Lo que se manda a la API (sin `idCliente`). */
   readonly intencion: Readonly<Record<string, unknown>>;
+  /**
+   * Todo lo que se manda, en orden: la `intencion` sola, o varias si la accion es una mision de
+   * recua (cargar, ir, cometido y vuelta; T-083 §4.2).
+   */
+  readonly intenciones: readonly Readonly<Record<string, unknown>>[];
   readonly coste: Recursos;
   /** Turnos que tarda en hacerse. */
   readonly turnos: number;
@@ -154,7 +163,16 @@ export function fichaDeComarca(
     const coste: Recursos = forma.ok
       ? costeDeIntencion(forma.valor.bosquejo, yo, real, reglas)
       : recursosSegun(() => 0);
-    return { clave, titulo, intencion, coste, turnos, efecto, bloqueo: bloqueo(motivo) };
+    return {
+      clave,
+      titulo,
+      intencion,
+      intenciones: [intencion],
+      coste,
+      turnos,
+      efecto,
+      bloqueo: bloqueo(motivo),
+    };
   };
 
   const real = estado.comarcas[comarca];
@@ -200,6 +218,45 @@ export function fichaDeComarca(
       ),
     ];
   };
+  /** Mandar una recua a estar presente o a explorar: la mision entera, con su prevision. */
+  const accionDeMision = (mision: Mision): AccionDeFicha => {
+    const plan = planDeMision(new Tablero(vista, mundo, reglas), comarca, mision);
+    const titulo =
+      mision === 'presencia' ? 'Enviar una recua a estar presente' : 'Enviar una recua a explorar';
+    const turnos = plan.ok ? plan.valor.llegada : 1;
+    const nada = recursosSegun(() => 0);
+    if (!plan.ok) {
+      return {
+        clave: `mision-${mision}`,
+        titulo,
+        intencion: {},
+        intenciones: [],
+        coste: nada,
+        turnos,
+        efecto:
+          mision === 'presencia'
+            ? 'Una recua presente suma influencia cada turno'
+            : 'Una recua que explora te dice qué tiene la comarca',
+        bloqueo: bloqueo(plan.motivo),
+      };
+    }
+    const p = plan.valor;
+    const llega = `${p.nombreDeRecua} llega en ${String(p.llegada)} turno${p.llegada === 1 ? '' : 's'}`;
+    const efecto =
+      mision === 'presencia'
+        ? `${llega}; +${String(multiplicarFactores(reglas.influencia.porPresencia, [casa.influenciaMil]))} de influencia por turno durante ${String(p.turnosPresente ?? 1)} turnos, y vuelve sola`
+        : `${llega}, la explora y vuelve a ${mundo.comarcas[p.vuelta]?.nombre ?? 'casa'}`;
+    return {
+      clave: `mision-${mision}`,
+      titulo,
+      intencion: p.intenciones[0] ?? {},
+      intenciones: p.intenciones,
+      coste: { ...nada, pan: p.pan, sal: p.sal },
+      turnos,
+      efecto,
+      bloqueo: null,
+    };
+  };
   const ganar =
     conocida.nivel !== 'propia' && conocida.influenciaPropia !== null && real !== undefined
       ? comoGanarLa(real, estado.jugadores[yo.id] ?? yo, estado, mundo, reglas)
@@ -216,14 +273,23 @@ export function fichaDeComarca(
       influenciaPropia: conocida.influenciaPropia,
       comoGanarLa: ganar,
       consejo: 'Explórala con una recua para saber qué tiene y de quién es.',
-      acciones: conocida.influenciaPropia === null ? [] : accionesDeNeutral({}),
+      acciones:
+        conocida.influenciaPropia === null
+          ? [accionDeMision('explorar')]
+          : [...accionesDeNeutral({}), accionDeMision('explorar')],
     };
   }
 
   if (conocida.nivel === 'explorada') {
     const datos = conocida.datos;
     const neutral = datos === null || datos.duenyo === null;
-    const acciones = neutral ? accionesDeNeutral(conocida.influenciasAjenas) : [];
+    const acciones = neutral
+      ? [
+          ...accionesDeNeutral(conocida.influenciasAjenas),
+          accionDeMision('presencia'),
+          accionDeMision('explorar'),
+        ]
+      : [accionDeMision('explorar')];
     if (neutral) {
       acciones.push(
         accion(

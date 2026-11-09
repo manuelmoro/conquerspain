@@ -13,7 +13,13 @@ import {
   PALABRAS,
   PLANTILLAS,
 } from '../datos/plantillas.ts';
-import type { Cronica, EntradaDeCronica, Plantilla, Suceso } from '../tipos/cronica.ts';
+import type {
+  Cronica,
+  EntradaDeCronica,
+  Plantilla,
+  Suceso,
+  UnidadDeCronica,
+} from '../tipos/cronica.ts';
 import { SECCIONES_DE_CRONICA } from '../tipos/cronica.ts';
 import type { EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { IdJugador } from '../tipos/ids.ts';
@@ -312,7 +318,17 @@ export function entradaDe(
     faltan: compuesto.faltan,
     comarca: suceso.comarca,
     accionSugerida: plantilla.accion,
+    unidad: suyo ? unidadDe(suceso) : null,
   };
+}
+
+/** La unidad propia de la que habla un suceso: solo se nombra en la cronica de su duenyo. */
+function unidadDe(suceso: Suceso): UnidadDeCronica | null {
+  const rebanyo = suceso.datos['rebanyo'];
+  if (typeof rebanyo === 'string') return { clase: 'rebanyo', id: rebanyo };
+  const recua = suceso.datos['recua'];
+  if (typeof recua === 'string') return { clase: 'recua', id: recua };
+  return null;
 }
 
 // ——— Lo que se compone aparte ———————————————————————————————————————————————
@@ -349,7 +365,7 @@ function resumenEconomico(lector: EstadoJugador, fuentes: FuentesDeCronica): Ent
       ? `, que dan para ${formatoNumero(Math.floor(pan / comen))} turnos al paso de ahora`
       : '';
   const texto = `${movimiento.charAt(0).toUpperCase()}${movimiento.slice(1)}. Quedan ${formatoNumero(pan)} de pan${dura}.`;
-  return { seccion: 'economia', texto, comarca: null, accionSugerida: null };
+  return { seccion: 'economia', texto, comarca: null, accionSugerida: null, unidad: null };
 }
 
 /** La clasificacion publica del turno, en una linea. */
@@ -370,6 +386,7 @@ function lineaDeClasificacion(fuentes: FuentesDeCronica): EntradaDeCronica | nul
     texto: `Clasificación: ${partes.join('; ')}.`,
     comarca: null,
     accionSugerida: null,
+    unidad: null,
   };
 }
 
@@ -394,6 +411,7 @@ export function componerCronica(jugador: IdJugador, fuentes: FuentesDeCronica): 
         texto: entrada.texto,
         comarca: entrada.comarca,
         accionSugerida: entrada.accionSugerida,
+        unidad: entrada.unidad,
       });
     }
   }

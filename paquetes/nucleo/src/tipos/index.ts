@@ -149,4 +149,5 @@ export type {
   PlantillaDeSuceso,
   SeccionDeCronica,
   Suceso,
+  UnidadDeCronica,
 } from './cronica.ts';

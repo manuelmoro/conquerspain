@@ -152,6 +152,10 @@ export * from './partidas/index.ts';
 // La prevision de lo que sabe un jugador: tablero y viajes (T-050, compartida desde T-083).
 export { Tablero } from './prevision/tablero.ts';
 export type { PlazaConocida } from './prevision/tablero.ts';
+export { planDeMision } from './prevision/misiones.ts';
+export type { ImposibleDeMision, Mision, PlanDeMision } from './prevision/misiones.ts';
+export { previsionDeRuta } from './prevision/ruta.ts';
+export type { PrevisionDeRuta, TramoPrevisto, UnidadQueViaja } from './prevision/ruta.ts';
 export {
   TURNOS_MAXIMOS_DE_VIAJE,
   leLlega,

@@ -152,8 +152,18 @@ haz commit con `T-083: <resumen>`.
 
 ## 9. Dónde va (09-11-2026)
 
-- **Hecho y verificado:** §4.1 (previsión movida al núcleo: `paquetes/nucleo/src/prevision/`, el banco solo
-  cambia sus imports y sus pruebas siguen iguales; `Resultado` de viaje pasa a llamarse `ResultadoDeViaje` para
-  no chocar con el de validación) y §4.4 (relevo de la circular, con su prueba en `movimiento.test.ts`).
-- **Falta, por este orden:** §4.2 misiones (`prevision/misiones.ts` y las acciones de la ficha con
-  `intenciones`), §4.3 previsión de ruta en el servidor, unidad en `EntradaDeCronica`, y el cliente (§4.5).
+- **Hecho y verificado (núcleo y servidor):**
+  - §4.1, la previsión en el núcleo (`paquetes/nucleo/src/prevision/`); el banco solo cambia sus imports.
+    `Resultado` de viaje se llama `ResultadoDeViaje` para no chocar con el de validación.
+  - §4.2, misiones (`prevision/misiones.ts`). La exploración se prevé **como expedición**, que es como la
+    trata el motor: con el bastimento normal no cabía en la recua de la Mesta. La ficha ofrece
+    `mision-presencia` (neutral explorada) y `mision-explorar` (explorada u oída) con `intenciones`; probado
+    resolviendo turnos (`ficha.test.ts`) y por la API (`servidor/src/api/prevision.test.ts`).
+  - §4.3, `POST /partidas/:id/prevision-de-ruta` (`servidor/src/api/prevision.ts`, código nuevo
+    `unidad-desconocida`) sobre `prevision/ruta.ts`; probado contra el motor (`prevision-de-ruta.test.ts`).
+  - §4.4, el relevo de la circular.
+  - `EntradaDeCronica.unidad`, solo en la crónica de su dueño. Las crónicas ya guardadas, sin ese campo, se
+    leen como nula (`validarCronica.ts`).
+- **Falta: el cliente (§4.5).** Mandar las `intenciones` de las misiones desde la ficha; la pestaña de
+  unidades; el editor de ruta con su estado puro y probado; «Darle ruta» en el resumen; la ruta propuesta en
+  el mapa; `QUE_HACER` de `ruta`, `carga` y `cometido` con su sitio.

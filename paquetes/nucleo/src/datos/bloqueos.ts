@@ -68,4 +68,33 @@ export const BLOQUEOS: Readonly<Record<string, TextoDeBloqueo>> = {
     causa: 'El concejo recibió un regalo tuyo hace poco.',
     salida: 'Espera unos turnos: los regalos seguidos no valen.',
   },
+  // Los viajes y las misiones de las recuas (T-083).
+  'sin-recua-libre': {
+    causa: 'No tienes ninguna recua quieta en casa y sin nada pendiente.',
+    salida: 'Forma una recua en una comarca tuya, o espera a que vuelva la que está fuera.',
+  },
+  'sin-ruta': {
+    causa: 'No conoces ningún camino que llegue hasta allí.',
+    salida: 'Explora las comarcas de en medio para saber por dónde se va.',
+  },
+  'puerto-cerrado': {
+    causa: 'Un puerto del camino se cierra antes de que la recua lo cruce.',
+    salida: 'Espera al deshielo, o busca otro camino que no pase por la sierra.',
+  },
+  'demasiado-largo': {
+    causa: 'El viaje dura más de lo que aguanta una recua.',
+    salida: 'Elige un destino más cercano, o gana antes tierra por el camino.',
+  },
+  'no-cabe': {
+    causa: 'El bastimento del viaje y la carga no caben en la recua.',
+    salida: 'Lleva menos carga, o elige un destino más cercano.',
+  },
+  'sin-sal': {
+    causa: 'En verano el camino pide sal para las conservas, y no tienes bastante.',
+    salida: 'Compra sal o espera a que pase el verano.',
+  },
+  'sin-pan': {
+    causa: 'No tienes pan bastante en el almacén para lo que se come el camino.',
+    salida: 'Junta pan antes: una granja más o comprarlo en una plaza.',
+  },
 };

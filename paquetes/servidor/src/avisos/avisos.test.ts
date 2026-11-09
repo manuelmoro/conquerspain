@@ -309,12 +309,19 @@ describe('el correo se lee sin abrir el juego (criterio 5)', () => {
       fecha: 'Segunda quincena de febrero del año 1',
       jugador: MESTA,
       entradas: [
-        { seccion: 'sucesos', texto: 'Llego la recua.', comarca: null, accionSugerida: null },
+        {
+          seccion: 'sucesos',
+          texto: 'Llego la recua.',
+          comarca: null,
+          accionSugerida: null,
+          unidad: null,
+        },
         {
           seccion: 'avisos',
           texto: 'Queda poco pan.',
           comarca: null,
           accionSugerida: 'comprar pan',
+          unidad: null,
         },
       ],
     };
