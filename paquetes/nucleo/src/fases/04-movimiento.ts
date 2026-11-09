@@ -319,8 +319,10 @@ function fijarRuta(ctx: Contexto, orden: OrdenDe<'ruta'>): void {
     dejarEnEspera(ctx, orden, 'destino-desconocido');
     return;
   }
-  // Con escasez no sale ninguna expedicion nueva; la que ya esta en camino puede cambiar de rumbo.
-  if (recua.situacion.donde === 'comarca' && !permiteIniciar(jugador)) {
+  // Con escasez no sale ninguna expedicion nueva (docs/03 §3.4); la que ya esta en camino puede
+  // cambiar de rumbo. Una ruta corriente si sale: es como se va a comprar el pan que falta, y
+  // bloquearla dejaba al hambriento sin salida (T-092, tras jugar).
+  if (orden.expedicion && recua.situacion.donde === 'comarca' && !permiteIniciar(jugador)) {
     dejarEnEspera(ctx, orden, 'escasez');
     return;
   }

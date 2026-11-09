@@ -388,6 +388,9 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'comarca-desleal': 'la comarca está descontenta',
   'recua-desconocida': 'esa recua ya no existe',
   'recua-sin-plaza': 'la recua no está en una plaza',
+  'recua-lejos': 'la recua no está en esa plaza',
+  'recua-en-ruta': 'la recua sigue de camino',
+  'recua-sin-cometido': 'la recua no tiene el encargo de tratar',
   'recua-fuera-de-casa': 'la recua no está en casa',
   'rebanyo-desconocido': 'ese rebaño ya no existe',
   'mercado-desconocido': 'no hay tal plaza',
@@ -455,6 +458,8 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'fuera-de-temporada': 'el plan solo llega a seis turnos',
   'cola-no-admitida': 'esa orden no va en esa cola',
   'cola-distinta': 'la cola ya no tiene esas órdenes',
+  anulada: 'la anulaste tú',
+  'orden-no-anulable': 'esa orden ya había empezado o ya no estaba',
   'detras-en-la-cola': 'hay otra antes en la cola',
   'recua-ocupada': 'la recua no ha terminado lo anterior',
   'mayordomo-lleno': 'el mayordomo no admite más reglas',
@@ -509,6 +514,7 @@ export const NOMBRES_DE_ORDEN: Readonly<Record<string, string>> = {
   mayordomo: 'mayordomo',
   'trasladar-corte': 'traslado de la corte',
   cola: 'orden de la cola',
+  anular: 'anular una orden',
 };
 
 /** Palabras sueltas de los sucesos, por campo y valor. */

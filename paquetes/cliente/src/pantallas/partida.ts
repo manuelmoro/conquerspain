@@ -1,7 +1,13 @@
 // La partida (T-081, T-082, T-088): cabecera con el turno y el corte; el mapa con su conmutador, su
 // explicacion y su leyenda; y el panel con la ficha de la comarca tocada y la bandeja. En escritorio el
 // panel va al lado y fijo; en movil, debajo, y la ficha sube como hoja sobre el mapa.
-import { RECURSOS, TABLAS_DEL_JUEGO, estacionDe } from '@conquer/nucleo';
+import {
+  ESTADOS_ANULABLES,
+  MOTIVOS,
+  RECURSOS,
+  TABLAS_DEL_JUEGO,
+  estacionDe,
+} from '@conquer/nucleo';
 import type { FichaDeComarca } from '@conquer/nucleo';
 
 import type { Almacen, EstadoDelCliente } from '../almacen.ts';
@@ -427,6 +433,14 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       p.error === null ? '' : el('p', { class: 'error' }, p.error.mensaje),
     ),
   );
+  // Una anulacion dice que orden anula, no solo «Anular una orden».
+  const textoDeEnviada = (orden: (typeof estado.enviadas)[number]['orden']): string => {
+    if (orden.tipo !== 'anular') return describirOrden(orden, nombre);
+    const objetivo = vista.ordenes.find((v) => v.id === orden.orden);
+    return objetivo === undefined
+      ? 'Anular una orden'
+      : `Anular: ${describirOrden(objetivo, nombre)}`;
+  };
   const enviadas = estado.enviadas.map((o) =>
     el(
       'li',
@@ -434,7 +448,7 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       el(
         'div',
         { class: 'fila' },
-        describirOrden(o.orden, nombre),
+        textoDeEnviada(o.orden),
         o.orden.turnoProgramado === null
           ? ''
           : el('span', { class: 'etiqueta' }, `para el turno ${String(o.orden.turnoProgramado)}`),
@@ -450,6 +464,10 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
     ),
   );
   const colas = colasDe(vista);
+  // Las que ya se ha pedido anular este turno (T-092): no se ofrecen otra vez.
+  const anulandose = new Set(
+    estado.enviadas.flatMap((o) => (o.orden.tipo === 'anular' ? [o.orden.orden] : [])),
+  );
   const enMarcha = vista.ordenes.map((o) => {
     const fila = el(
       'div',
@@ -457,27 +475,47 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       describirOrden(o, nombre),
       el('span', { class: 'etiqueta' }, NOMBRE_DE_ESTADO[o.estado]),
     );
+    const botones = el('div', { class: 'fila' });
     if (o.cola !== null && (colas.get(o.cola)?.length ?? 0) > 1) {
       for (const hacia of ['arriba', 'abajo'] as const) {
         const intencion = moverEnLaCola(vista, o.cola, o.id, hacia);
         if (intencion !== null) {
-          fila.append(
-            boton(
-              hacia === 'arriba' ? '↑' : '↓',
-              () => {
-                void almacen.anyadir(intencion);
-              },
-              'secundario icono',
-            ),
+          const b = boton(
+            hacia === 'arriba' ? '↑ Antes' : '↓ Después',
+            () => {
+              void almacen.anyadir(intencion);
+            },
+            'secundario icono',
           );
+          b.title =
+            hacia === 'arriba'
+              ? 'Que se intente antes que la de encima en su cola'
+              : 'Que se intente después que la de debajo en su cola';
+          botones.append(b);
         }
       }
+    }
+    if (anulandose.has(o.id)) {
+      botones.append(el('span', { class: 'etiqueta' }, 'se anulará al resolverse el turno'));
+    } else if (ESTADOS_ANULABLES.includes(o.estado)) {
+      botones.append(
+        boton(
+          'Anular',
+          () => {
+            void almacen.anyadir({ tipo: 'anular', orden: o.id });
+          },
+          'secundario icono',
+        ),
+      );
     }
     return el(
       'li',
       {},
       fila,
-      o.motivoEspera === null ? '' : el('p', { class: 'suave' }, `Espera: ${o.motivoEspera}`),
+      o.motivoEspera === null
+        ? ''
+        : el('p', { class: 'suave' }, `Espera: ${MOTIVOS[o.motivoEspera] ?? o.motivoEspera}.`),
+      botones.childElementCount === 0 ? '' : botones,
     );
   });
   partes.push(
@@ -496,6 +534,13 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       ? el('p', { class: 'suave' }, 'Ninguna todavía: toca una comarca en el mapa para dar una.')
       : el('ul', { class: 'lista' }, ...enviadas),
     el('h3', {}, 'En marcha'),
+    vista.ordenes.some((o) => o.cola !== null)
+      ? el(
+          'p',
+          { class: 'suave' },
+          'Las obras de una comarca y los encargos de una recua van en cola: se intentan de una en una, en este orden, y la primera que puede, empieza. Con «↑ Antes» y «↓ Después» cambias el orden; con «Anular» quitas la que se ha quedado esperando y te devuelve lo apartado.',
+        )
+      : '',
     enMarcha.length === 0
       ? el('p', { class: 'suave' }, 'Nada en marcha.')
       : el('ul', { class: 'lista' }, ...enMarcha),

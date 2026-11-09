@@ -46,6 +46,14 @@ corregido el texto.
 - **Un mercado o una venta del plano llevan a su plaza:** «⚖️ Comprar o vender aquí». Y sus precios se saben
   cada turno, porque es tu comarca (docs/02 §2.6.1). Antes, del mercado de tu propia capital no sabías nada
   sin una recua parada allí.
+- **Salir del hambre y de las colas atascadas** (tras jugar). En la partida del usuario, sin pan, la ruta de su
+  recua se quedó en cola «por escasez». Detrás de ella esperaba el encargo de tratar, y sin él las cuatro
+  órdenes de comprar pan esperaban también: el hambre impedía comprar el pan.
+  - La escasez solo frena las expediciones, como dice docs/03 §3.4; una ruta corriente sale.
+  - Nueva orden `anular` para quitar lo que espera sin remedio, como unos aperos sin hierro.
+  - En la bandeja, cada motivo de espera sale en castellano, y una prueba vigila que ninguno se quede sin
+    texto.
+  - Las flechas de la cola dicen «↑ Antes» y «↓ Después», con una frase que explica cómo va una cola.
 - **Núcleo:** cada obra de la ficha dice qué edificio levanta (`edificio`, null en las obras mayores).
 
 ## 3. Criterios de aceptación

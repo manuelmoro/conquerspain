@@ -50,6 +50,7 @@ export const NOMBRE_DE_ORDEN: Readonly<Record<TipoDeOrden, string>> = {
   mayordomo: 'Regla del mayordomo',
   'trasladar-corte': 'Trasladar la corte',
   cola: 'Reordenar la cola',
+  anular: 'Anular una orden',
 };
 
 export const NOMBRE_DE_COMETIDO: Readonly<Record<Cometido, string>> = {
@@ -139,6 +140,11 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
   },
   incorporar: { texto: 'Incorpora la comarca desde su ficha.', donde: 'ficha', llega: null },
   cola: { texto: 'Reordena la cola desde la bandeja de órdenes.', donde: 'bandeja', llega: null },
+  anular: {
+    texto: 'Anula la orden que espera desde «En marcha», en la bandeja.',
+    donde: 'bandeja',
+    llega: null,
+  },
   ruta: {
     texto: 'Dale otro camino a la recua o al rebaño desde «Tus recuas y rebaños».',
     donde: 'unidades',

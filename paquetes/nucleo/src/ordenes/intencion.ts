@@ -20,6 +20,7 @@ import { costeDeRoturar } from '../reglas/roturar.ts';
 import { comarcaConocida } from '../reglas/ruta.ts';
 import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { IdComarca, IdJugador, IdOrden } from '../tipos/ids.ts';
+import { ESTADOS_ANULABLES } from '../tipos/ordenes.ts';
 import type { Orden } from '../tipos/ordenes.ts';
 import type { Mundo } from '../tipos/mundo.ts';
 import type { Recursos } from '../tipos/recursos.ts';
@@ -287,6 +288,15 @@ function comprobarPropiedad(
       }
       break;
     }
+    case 'anular': {
+      const viva = estado.ordenes.find((v) => v.id === o.orden);
+      if (viva?.jugador !== ctx.jugador) {
+        errores.push(error('orden', `la orden "${o.orden}" no es tuya o ya no esta viva`));
+      } else if (!ESTADOS_ANULABLES.includes(viva.estado)) {
+        errores.push(error('orden', 'esa orden ya ha empezado: lo empezado no se anula'));
+      }
+      break;
+    }
     case 'tradicion':
       break;
   }
@@ -453,6 +463,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
     case 'tradicion':
     case 'mayordomo':
     case 'cola':
+    case 'anular':
       return valido({ ...o, ...fijos, ...sinCola });
   }
 }

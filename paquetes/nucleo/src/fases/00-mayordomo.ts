@@ -14,6 +14,7 @@ import { cumple, ordenDeAccion, reglasActivas, sobra } from '../reglas/mayordomo
 import { registrarSuceso } from '../sucesos.ts';
 import type { EstadoJugador } from '../tipos/estado.ts';
 import { nuevoId } from '../tipos/ids.ts';
+import { ESTADOS_ANULABLES } from '../tipos/ordenes.ts';
 import type { ReglaDeMayordomo } from '../tipos/ordenes.ts';
 import { comparar, idsEnOrden } from '../utiles/orden.ts';
 import { validarOrdenEntrante } from '../validacion/validarOrden.ts';
@@ -21,6 +22,7 @@ import { validarOrdenEntrante } from '../validacion/validarOrden.ts';
 export function faseMayordomo(ctx: Contexto): void {
   activarPlan(ctx);
   for (const orden of ordenesVivas(ctx, 'mayordomo')) cambiarReglas(ctx, orden);
+  for (const orden of ordenesVivas(ctx, 'anular')) anularOrden(ctx, orden);
   for (const orden of ordenesVivas(ctx, 'cola')) reordenarCola(ctx, orden);
   for (const id of idsEnOrden(ctx.estado.jugadores)) {
     const jugador = ctx.estado.jugadores[id];
@@ -54,6 +56,21 @@ function cambiarReglas(ctx: Contexto, orden: OrdenDe<'mayordomo'>): void {
   }
   reglas.sort((a, b) => a.prioridad - b.prioridad);
   aplicar(ctx, { tipo: 'mayordomo', jugador: jugador.id, reglas });
+  empezarOrden(ctx, orden, 'terminada');
+}
+
+/** Anula una orden propia que aun no ha empezado; si ya empezo o ya no esta, la anulacion se cae. */
+function anularOrden(ctx: Contexto, orden: OrdenDe<'anular'>): void {
+  const objetivo = ctx.estado.ordenes.find((o) => o.id === orden.orden);
+  if (
+    objetivo === undefined ||
+    objetivo.jugador !== orden.jugador ||
+    !ESTADOS_ANULABLES.includes(objetivo.estado)
+  ) {
+    cancelarOrden(ctx, orden, 'orden-no-anulable');
+    return;
+  }
+  cancelarOrden(ctx, objetivo, 'anulada');
   empezarOrden(ctx, orden, 'terminada');
 }
 

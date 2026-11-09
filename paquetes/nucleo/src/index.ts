@@ -102,6 +102,8 @@ export type {
   ProduccionPrevista,
 } from './ficha.ts';
 export { BLOQUEOS } from './datos/bloqueos.ts';
+export { MOTIVOS } from './datos/plantillas.ts';
+export { ESTADOS_ANULABLES } from './tipos/ordenes.ts';
 export { PARA_QUE_SIRVE } from './datos/para-que-sirve.ts';
 export type { AtlasDeJugador, ComarcaEnAtlas, TramoEnAtlas } from './reglas/atlas.ts';
 export type {

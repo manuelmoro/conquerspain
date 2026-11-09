@@ -47,6 +47,7 @@ export const TIPOS_DE_ORDEN = [
   'mayordomo',
   'trasladar-corte',
   'cola',
+  'anular',
 ] as const;
 export type TipoDeOrden = (typeof TIPOS_DE_ORDEN)[number];
 
@@ -277,6 +278,18 @@ export interface OrdenCola extends OrdenBase {
   readonly orden: readonly IdOrden[];
 }
 
+/**
+ * Anula una orden propia que todavia espera (en cola, en espera o programada) y devuelve lo que
+ * tuviera reservado. Lo ya empezado sigue: deshacer una obra a medias seria otra regla (T-092).
+ */
+export interface OrdenAnular extends OrdenBase {
+  readonly tipo: 'anular';
+  readonly orden: IdOrden;
+}
+
+/** Los estados de una orden que se pueden anular: los que aun no han empezado. */
+export const ESTADOS_ANULABLES: readonly EstadoDeOrden[] = ['en cola', 'en espera', 'programada'];
+
 export interface OrdenTrasladarCorte extends OrdenBase {
   readonly tipo: 'trasladar-corte';
   readonly comarca: IdComarca;
@@ -301,4 +314,5 @@ export type Orden =
   | OrdenTradicion
   | OrdenMayordomo
   | OrdenTrasladarCorte
-  | OrdenCola;
+  | OrdenCola
+  | OrdenAnular;

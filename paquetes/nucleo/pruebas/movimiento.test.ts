@@ -420,11 +420,24 @@ describe('las ordenes de recua', () => {
       almacen: { pan: 0 },
     });
     const { estado: despues } = turno(estado, [
-      ordenRuta(estado.turno, 'recua-1', ['prueba-vega']),
+      ordenRuta(estado.turno, 'recua-1', ['prueba-vega'], false, true),
     ]);
     expect(despues.jugadores[UNO]?.escasez).toBe(true);
     expect(despues.ordenes[0]).toMatchObject({ estado: 'en espera', motivoEspera: 'escasez' });
     expect(de(despues, 'recua-2').situacion).toEqual({ donde: 'comarca', comarca: 'prueba-vega' });
+  });
+
+  it('con escasez una ruta corriente sí sale: es como se va a comprar el pan que falta', () => {
+    const estado = escenario({
+      recuas: [recua('recua-1', { carga: recursos({ pan: 10 }) })],
+      almacen: { pan: 0 },
+    });
+    const { estado: despues } = turno(estado, [
+      ordenRuta(estado.turno, 'recua-1', ['prueba-vega']),
+    ]);
+    expect(despues.jugadores[UNO]?.escasez).toBe(true);
+    expect(despues.ordenes.some((o) => o.motivoEspera === 'escasez')).toBe(false);
+    expect(de(despues, 'recua-1').ruta).toEqual([c('prueba-vega')]);
   });
 
   it('una ruta circular da vueltas sin parar', () => {

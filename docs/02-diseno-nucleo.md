@@ -105,6 +105,8 @@ interface Orden {
 | Obra | `obra mayor` | Iniciar o financiar una obra monumental de varias decenas de turnos |
 | Casa | `tradicion` | Elegir una tradición en una ronda abierta: gratis, irreversible y vigente desde el turno siguiente (docs/04 §4.3) |
 | Gestión | `mayordomo` | Alta o baja de una regla permanente (ver §2.5) |
+| Gestión | `cola` | Reordenar las órdenes que esperan en una cola (§2.5.1) |
+| Gestión | `anular` | Quitar una orden propia que aún no ha empezado (en cola, en espera o programada) y devolver lo que tuviera apartado. Se resuelve en la fase 0, antes de que la orden se intente; lo empezado no se anula (T-092) |
 
 Cada familia se detalla en el documento de la mecánica correspondiente. El catálogo crece con las
 fases; lo que no cambia es la forma de la orden ni su ciclo de vida.

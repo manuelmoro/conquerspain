@@ -32,6 +32,7 @@ import type {
   OrdenRuta,
   OrdenTradicion,
   OrdenTrasladarCorte,
+  OrdenAnular,
   OrdenCola,
   ParadaDeRuta,
   ReglaDeMayordomo,
@@ -302,6 +303,12 @@ const cola: Validador<OrdenCola> = objeto<OrdenCola>({
   orden: lista(identificador<IdOrden>(), { maximo: 50 }),
 });
 
+const anular: Validador<OrdenAnular> = objeto<OrdenAnular>({
+  ...camposBase,
+  tipo: unoDe(['anular'] as const),
+  orden: identificador<IdOrden>(),
+});
+
 const trasladarCorte: Validador<OrdenTrasladarCorte> = objeto<OrdenTrasladarCorte>({
   ...camposBase,
   tipo: unoDe(['trasladar-corte'] as const),
@@ -328,6 +335,7 @@ const validarForma = porTipo<Orden>({
   mayordomo,
   'trasladar-corte': trasladarCorte,
   cola,
+  anular,
 });
 
 /** Valida la forma de una orden que llega de fuera. No comprueba si sus referencias existen. */
