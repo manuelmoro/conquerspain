@@ -99,7 +99,8 @@ function consumoDeJugador(ctx: Contexto, jugador: EstadoJugador): void {
         ctx.sucesos,
         ctx.fase,
         'consumo.aviso-hambre',
-        { turnos, reserva, balance },
+        // «Se acaba en 0 turnos» no se entendia (T-092): el aviso distingue si falta ya el turno que viene.
+        { turnos, reserva, balance, deficit: -balance, inminente: turnos === 0 ? 'si' : 'no' },
         { jugador: id },
       );
     }

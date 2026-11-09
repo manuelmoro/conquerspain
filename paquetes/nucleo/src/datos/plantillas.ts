@@ -106,10 +106,19 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     '[La administración deja {deuda} maravedís de deuda: las comarcas sin pagar pierden lealtad.]',
     'politica',
   ),
-  'consumo.aviso-hambre': aviso(
-    'Al paso de ahora, el pan se acaba en {turnos} turnos: quedan {reserva}.',
-    'mercado',
-  ),
+  'consumo.aviso-hambre': {
+    segun: 'inminente',
+    casos: {
+      si: aviso(
+        'El pan no llega al turno que viene: quedan {reserva} y gastas {deficit} más de lo que produces. Más pan: una granja o una huerta, comprarlo en una plaza con una recua, o roturar monte para tener más labor.',
+        'construir',
+      ),
+      no: aviso(
+        'Al paso de ahora, el pan se acaba en {turnos} turnos: quedan {reserva} y gastas {deficit} más de lo que produces. Más pan: una granja o una huerta, comprarlo en una plaza con una recua, o roturar monte para tener más labor.',
+        'construir',
+      ),
+    },
+  },
   'consumo.aviso-emigracion': aviso(
     'Van {escasecesSeguidas} turnos de hambre: en {turnosHastaEmigrar} empezará a irse la gente.',
     'mercado',

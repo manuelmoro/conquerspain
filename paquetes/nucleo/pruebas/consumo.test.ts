@@ -421,6 +421,14 @@ describe('el aviso de hambre', () => {
       turnos: 2,
       reserva: 31,
       balance: -11,
+      deficit: 11,
+      inminente: 'no',
+    });
+    // Sin pan para el turno que viene, el aviso lo dice así y no «se acaba en 0 turnos».
+    const ya = consumir(escenario({ almacen: { pan: 11, maravedis: 50 } }));
+    expect(ya.sucesos.find((s) => s.tipo === 'consumo.aviso-hambre')?.datos).toMatchObject({
+      turnos: 0,
+      inminente: 'si',
     });
   });
 });
