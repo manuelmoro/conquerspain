@@ -99,6 +99,21 @@ describe('registrarse y entrar', () => {
     expect((await m.servicio.entrarConClave(CORREO, BUENA, true, 'o3')).cuenta.nombre).toBe('Ana');
   });
 
+  it('registrarse con un correo que entraba solo por enlace manda el enlace para ponerle contraseña', async () => {
+    const m = await montar();
+    // Una cuenta de antes de las contraseñas: entró con un enlace a su correo.
+    await m.servicio.pedirEnlace(CORREO, 'Ana', 'o1');
+    await m.servicio.entrar(m.correo.ultimoToken(CORREO), 'o1');
+    await expect(m.servicio.registrar(CORREO, 'Ana', BUENA, 'o2')).resolves.toBeUndefined();
+    expect(m.correo.enviados.at(-1)?.motivo).toBe('restablecer');
+    // La contraseña del registro no vale sin abrir el enlace: así nadie se queda con la cuenta ajena.
+    expect(await codigo(m.servicio.entrarConClave(CORREO, BUENA, true, 'o3'))).toBe(
+      'credenciales-invalidas',
+    );
+    await m.servicio.restablecer(m.correo.ultimoToken(CORREO), BUENA, 'o3');
+    expect((await m.servicio.entrarConClave(CORREO, BUENA, true, 'o4')).cuenta.nombre).toBe('Ana');
+  });
+
   it('un correo sin cuenta da el mismo error que una contraseña mala', async () => {
     const m = await montar();
     await m.registrada();

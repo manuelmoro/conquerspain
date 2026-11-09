@@ -234,12 +234,48 @@ export class ServicioDeCuentas {
       this.dep.registro.anotar('info', 'cuenta-registrada', {});
       return;
     }
+    // El correo ya tenia cuenta. Si entraba solo por enlace (sin contrasenya), lo util es mandarle el
+    // enlace para ponerla; si ya tenia una, avisarle. La respuesta es la misma en los dos casos.
+    const existente = await this.dep.repo.cuentaConClave(correo);
+    if (existente !== null && existente.clave === null) {
+      await this.mandarRestablecimiento(existente.id, correo, existente.nombre, ahora);
+      return;
+    }
     await this.dep.correo.enviarEnlace({
       para: correo,
       nombre: null,
       motivo: 'ya-registrado',
       enlace: `${this.dep.urlPublica}/`,
       caducaEnMinutos: 0,
+    });
+  }
+
+  /** Crea un enlace de restablecer la contrasenya y lo manda (con el limite por cuenta y hora). */
+  private async mandarRestablecimiento(
+    cuenta: string,
+    correo: string,
+    nombre: string,
+    ahora: number,
+  ): Promise<void> {
+    if (
+      (await this.dep.repo.restablecimientosPedidos(cuenta, ahora - HORA_MS)) >=
+      RESTABLECIMIENTOS_POR_CUENTA_Y_HORA
+    ) {
+      return;
+    }
+    const token = nuevoToken();
+    await this.dep.repo.crearRestablecimiento({
+      hash: hashDeToken(token),
+      cuenta,
+      creadoEn: ahora,
+      expiraEn: ahora + CADUCIDAD_DEL_RESTABLECIMIENTO_MS,
+    });
+    await this.dep.correo.enviarEnlace({
+      para: correo,
+      nombre,
+      motivo: 'restablecer',
+      enlace: `${this.dep.urlPublica}/?restablecer=${token}`,
+      caducaEnMinutos: CADUCIDAD_DEL_RESTABLECIMIENTO_MS / 60_000,
     });
   }
 
@@ -295,26 +331,7 @@ export class ServicioDeCuentas {
     this.limitar(this.enlacesPorOrigen.usar(origen, ahora), 'restablecer');
     const cuenta = await this.dep.repo.cuentaConClave(correo);
     if (cuenta === null) return;
-    if (
-      (await this.dep.repo.restablecimientosPedidos(cuenta.id, ahora - HORA_MS)) >=
-      RESTABLECIMIENTOS_POR_CUENTA_Y_HORA
-    ) {
-      return;
-    }
-    const token = nuevoToken();
-    await this.dep.repo.crearRestablecimiento({
-      hash: hashDeToken(token),
-      cuenta: cuenta.id,
-      creadoEn: ahora,
-      expiraEn: ahora + CADUCIDAD_DEL_RESTABLECIMIENTO_MS,
-    });
-    await this.dep.correo.enviarEnlace({
-      para: correo,
-      nombre: cuenta.nombre,
-      motivo: 'restablecer',
-      enlace: `${this.dep.urlPublica}/?restablecer=${token}`,
-      caducaEnMinutos: CADUCIDAD_DEL_RESTABLECIMIENTO_MS / 60_000,
-    });
+    await this.mandarRestablecimiento(cuenta.id, correo, cuenta.nombre, ahora);
   }
 
   /**
