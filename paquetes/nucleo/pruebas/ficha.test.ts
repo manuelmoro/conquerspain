@@ -5,6 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { BLOQUEOS } from '../src/datos/bloqueos.ts';
 import { fichaDeComarca } from '../src/ficha.ts';
 import type { AccionDeFicha } from '../src/ficha.ts';
+import { resolverTurno } from '../src/resolver.ts';
+import type { EstadoPartida } from '../src/tipos/estado.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
 import { DOS, UNO, c, conComarca, escenario, mundo, reglas } from './recuas.ts';
 
@@ -123,5 +125,80 @@ describe('la ficha de una comarca ajena o neutral', () => {
     if (yo === undefined) throw new Error('falta el jugador');
     const ciego = { ...base, jugadores: { ...base.jugadores, [UNO]: { ...yo, conocimiento: {} } } };
     expect(fichaDeComarca(ciego, UNO, c('prueba-costa'), mundo, reglas)).toBeNull();
+  });
+});
+
+/** La uno oye hablar del monte (vecino de su llano) sin haberlo explorado. */
+function conMonteOido(estado: EstadoPartida): EstadoPartida {
+  const yo = estado.jugadores[UNO];
+  if (yo === undefined) throw new Error('falta el jugador');
+  const conocimiento = {
+    ...yo.conocimiento,
+    'prueba-monte': { nivel: 'oida' as const, turnoUltimaNoticia: 1, datos: null },
+  };
+  return { ...estado, jugadores: { ...estado.jugadores, [UNO]: { ...yo, conocimiento } } };
+}
+
+describe('como se gana una comarca (T-088 §2.7)', () => {
+  it('una oida ensenya la influencia propia, ofrece regalo e incorporar y aconseja explorarla', () => {
+    const estado = conComarca(conMonteOido(escenario()), 'prueba-monte', {
+      influencias: { [UNO]: 14 },
+    });
+    const f = fichaDeComarca(estado, UNO, c('prueba-monte'), mundo, reglas);
+    expect(f?.nivel).toBe('oida');
+    expect(f?.influenciaPropia).toBe(14);
+    expect(f?.consejo).toMatch(/Explórala con una recua/);
+    expect(f?.acciones.map((a) => a.clave)).toEqual(['regalo', 'incorporar']);
+    for (const a of f?.acciones ?? []) comprobarAccion(a);
+    expect(f?.comoGanarLa?.actual).toBe(14);
+    expect(f?.comoGanarLa?.necesaria).toBe(reglas.influencia.minimaParaIncorporar);
+  });
+
+  it('dice por que sube o baja: vecina propia +1, sin nadie allí −1, y que lo aceleraria', () => {
+    const estado = conComarca(escenario(), 'prueba-vega', { influencias: { [UNO]: 10 } });
+    const g = fichaDeComarca(estado, UNO, c('prueba-vega'), mundo, reglas)?.comoGanarLa;
+    expect(g?.motivos).toEqual([
+      { texto: 'comarcas tuyas vecinas', puntos: 1 },
+      { texto: 'nadie tuyo está ni comercia allí', puntos: -1 },
+    ]);
+    expect(g?.cambio).toBe(0);
+    expect(g?.turnosHastaLaNecesaria).toBeNull();
+    const textos = (g?.aceleraria ?? []).map((a) => a.texto).join(' | ');
+    expect(textos).toMatch(/recua presente/);
+    expect(textos).toMatch(/regalo al concejo/);
+    expect(textos).toMatch(/mercado/);
+    // Con un mercado en el llano sube un punto por turno: 50 que faltan, 50 turnos.
+    const conMercado = conComarca(estado, 'prueba-llano', {
+      edificios: { ...estado.comarcas['prueba-llano']?.edificios, mercado: 1 },
+    });
+    const h = fichaDeComarca(conMercado, UNO, c('prueba-vega'), mundo, reglas)?.comoGanarLa;
+    expect(h?.cambio).toBe(1);
+    expect(h?.turnosHastaLaNecesaria).toBe(50);
+  });
+
+  it('lo previsto coincide con lo que da la fase 8 al resolver (criterio 8)', () => {
+    let estado = conMonteOido(escenario());
+    estado = conComarca(estado, 'prueba-vega', { influencias: { [UNO]: 10 } });
+    estado = conComarca(estado, 'prueba-monte', { influencias: { [UNO]: 7 } });
+    estado = conComarca(estado, 'prueba-sierra', { influencias: { [UNO]: 3 } });
+    estado = conComarca(estado, 'prueba-rio', { influencias: { [UNO]: 100 } });
+    estado = conComarca(estado, 'prueba-llano', {
+      edificios: { ...estado.comarcas['prueba-llano']?.edificios, mercado: 1 },
+    });
+    const previstos: Record<string, number> = {};
+    for (const id of Object.keys(estado.comarcas)) {
+      const f = fichaDeComarca(estado, UNO, c(id), mundo, reglas);
+      if (f?.comoGanarLa !== null && f?.comoGanarLa !== undefined)
+        previstos[id] = f.comoGanarLa.cambio;
+    }
+    expect(Object.keys(previstos).length).toBeGreaterThanOrEqual(4);
+    const despues = resolverTurno(estado, [], mundo, reglas).estado;
+    for (const [id, cambio] of Object.entries(previstos)) {
+      const antes = estado.comarcas[id]?.influencias[UNO] ?? 0;
+      expect((despues.comarcas[id]?.influencias[UNO] ?? 0) - antes, id).toBe(cambio);
+    }
+    // Hay de todo: algo que sube, algo que baja y algo recortado en el 100.
+    expect(Object.values(previstos).some((v) => v > 0)).toBe(true);
+    expect(Object.values(previstos).some((v) => v < 0)).toBe(true);
   });
 });

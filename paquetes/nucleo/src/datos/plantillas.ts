@@ -204,7 +204,15 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     '{rebanyo} tiene por delante {puerto}, que cierra en {turnos} turnos.',
     'ruta',
   ),
-  'rebanyo.sin-pasto': aviso('{rebanyo} no encuentra pasto en {comarca}: {motivo}.', 'ruta'),
+  'rebanyo.sin-pasto': {
+    segun: 'motivo',
+    casos: {
+      estacion: aviso('{rebanyo} no encuentra pasto en {comarca}: {motivo}.', 'ruta'),
+      'sin-pasto': aviso('{rebanyo} no encuentra pasto en {comarca}: {motivo}.', 'ruta'),
+      saturado: aviso('{rebanyo} no encuentra pasto en {comarca}: {motivo}.', 'ruta'),
+      camino: aviso('{rebanyo} no come de camino: el tramo que anda no es cañada.', 'ruta'),
+    },
+  },
   'rebanyo.cabezas': aviso('{rebanyo} pierde {delta:abs} cabezas; le quedan {total}.'),
   'rebanyo.desaparece': aviso('{rebanyo} se ha perdido.'),
   'rebanyo.esquileo': suceso(

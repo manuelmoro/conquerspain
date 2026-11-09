@@ -84,6 +84,8 @@ export type { LineaDeClasificacion } from './reglas/clasificacion.ts';
 export { RUMBOS, rumboEntre, vistaDeJugador } from './reglas/vista.ts';
 export { atlasDeJugador } from './reglas/atlas.ts';
 export { fichaDeComarca } from './ficha.ts';
+export { comoGanarLa } from './reglas/ganar-comarca.ts';
+export type { ComoGanarLa, PartidaDeInfluencia } from './reglas/ganar-comarca.ts';
 export type {
   AccionDeFicha,
   BloqueoDeAccion,
@@ -99,7 +101,7 @@ export type {
   VistaComarca,
   VistaJugador,
 } from './reglas/vista.ts';
-export { componerCronica, fechaDe } from './reglas/cronica.ts';
+export { componerCronica, entradaDe, fechaDe } from './reglas/cronica.ts';
 export type { FuentesDeCronica } from './reglas/cronica.ts';
 export { redondearDeOido } from './reglas/rumores.ts';
 export {

@@ -10,6 +10,8 @@ import {
   permisosDelJugador,
   prohibicionesDelJugador,
 } from './reglas/casas/index.ts';
+import type { ComoGanarLa } from './reglas/ganar-comarca.ts';
+import { comoGanarLa } from './reglas/ganar-comarca.ts';
 import { impedimentoDeIncorporar } from './reglas/incorporar.ts';
 import { impedimentoDeConstruir, solaresOcupados, solaresDe } from './reglas/obras.ts';
 import { capacidadDe } from './reglas/poblar.ts';
@@ -88,6 +90,10 @@ export interface FichaDeComarca {
   readonly duenyo: IdJugador | null;
   readonly propia: DetalleDePropia | null;
   readonly influenciaPropia: number | null;
+  /** En las neutrales conocidas: cuanto falta para incorporarla, a que ritmo y que lo aceleraria. */
+  readonly comoGanarLa: ComoGanarLa | null;
+  /** Un consejo de lo que conviene hacer para saber mas, si lo hay. */
+  readonly consejo: string | null;
   readonly acciones: readonly AccionDeFicha[];
 }
 
@@ -132,18 +138,6 @@ export function fichaDeComarca(
   if (conocida === undefined || geografia === undefined) return null;
   const yo = vista.jugador;
   const base = { id: geografia.id, nombre: geografia.nombre };
-  if (conocida.nivel === 'oida') {
-    return {
-      ...base,
-      nivel: 'oida',
-      terreno: null,
-      potenciales: null,
-      duenyo: null,
-      propia: null,
-      influenciaPropia: null,
-      acciones: [],
-    };
-  }
   const casa = modificadoresDelJugador(yo, reglas);
   const permisos = permisosDelJugador(yo, reglas);
   const prohibiciones = prohibicionesDelJugador(yo, reglas);
@@ -163,53 +157,74 @@ export function fichaDeComarca(
     return { clave, titulo, intencion, coste, turnos, efecto, bloqueo: bloqueo(motivo) };
   };
 
+  const real = estado.comarcas[comarca];
+  /**
+   * Regalo e incorporacion, en toda neutral conocida (de oidas tambien: el concejo existe aunque no
+   * se hayan visto sus tierras). La incorporacion se juzga con lo que el jugador sabe de las demas
+   * casas, no con lo que hay.
+   */
+  const accionesDeNeutral = (ajenasSabidas: Readonly<Record<string, number>>): AccionDeFicha[] => {
+    const t = reglas.influencia;
+    const ultimo = real?.ultimoRegalo[yo.id];
+    const reciente = ultimo !== undefined && estado.turno - ultimo < t.turnosEntreRegalos;
+    const conLoSabido: EstadoComarca | undefined =
+      real === undefined
+        ? undefined
+        : { ...real, influencias: { ...ajenasSabidas, [yo.id]: real.influencias[yo.id] ?? 0 } };
+    return [
+      accion(
+        'regalo',
+        'Hacer un regalo al concejo',
+        { tipo: 'regalo', comarca },
+        1,
+        `+${String(t.porRegalo)} de influencia`,
+        reciente ? 'regalo-reciente' : null,
+        real,
+      ),
+      accion(
+        'incorporar',
+        'Incorporar la comarca',
+        { tipo: 'incorporar', comarca },
+        t.turnosIncorporar,
+        'La comarca pasa a ser tuya, con su gente y su lealtad por ganar',
+        conLoSabido === undefined
+          ? 'comarca-con-duenyo'
+          : impedimentoDeIncorporar(
+              estado,
+              conLoSabido,
+              estado.jugadores[yo.id] ?? yo,
+              mundo,
+              reglas,
+            ),
+        real,
+      ),
+    ];
+  };
+  const ganar =
+    conocida.nivel !== 'propia' && conocida.influenciaPropia !== null && real !== undefined
+      ? comoGanarLa(real, estado.jugadores[yo.id] ?? yo, estado, mundo, reglas)
+      : null;
+
+  if (conocida.nivel === 'oida') {
+    return {
+      ...base,
+      nivel: 'oida',
+      terreno: null,
+      potenciales: null,
+      duenyo: null,
+      propia: null,
+      influenciaPropia: conocida.influenciaPropia,
+      comoGanarLa: ganar,
+      consejo: 'Explórala con una recua para saber qué tiene y de quién es.',
+      acciones: conocida.influenciaPropia === null ? [] : accionesDeNeutral({}),
+    };
+  }
+
   if (conocida.nivel === 'explorada') {
-    const acciones: AccionDeFicha[] = [];
     const datos = conocida.datos;
     const neutral = datos === null || datos.duenyo === null;
+    const acciones = neutral ? accionesDeNeutral(conocida.influenciasAjenas) : [];
     if (neutral) {
-      const real = estado.comarcas[comarca];
-      const t = reglas.influencia;
-      const ultimo = real?.ultimoRegalo[yo.id];
-      const reciente = ultimo !== undefined && estado.turno - ultimo < t.turnosEntreRegalos;
-      acciones.push(
-        accion(
-          'regalo',
-          'Hacer un regalo al concejo',
-          { tipo: 'regalo', comarca },
-          1,
-          `+${String(t.porRegalo)} de influencia`,
-          reciente ? 'regalo-reciente' : null,
-          real,
-        ),
-      );
-      // La incorporacion se juzga con lo que el jugador sabe de las demas casas, no con lo que hay.
-      const conLoSabido: EstadoComarca | undefined =
-        real === undefined
-          ? undefined
-          : {
-              ...real,
-              influencias: { ...conocida.influenciasAjenas, [yo.id]: real.influencias[yo.id] ?? 0 },
-            };
-      acciones.push(
-        accion(
-          'incorporar',
-          'Incorporar la comarca',
-          { tipo: 'incorporar', comarca },
-          t.turnosIncorporar,
-          'La comarca pasa a ser tuya, con su gente y su lealtad por ganar',
-          conLoSabido === undefined
-            ? 'comarca-con-duenyo'
-            : impedimentoDeIncorporar(
-                estado,
-                conLoSabido,
-                estado.jugadores[yo.id] ?? yo,
-                mundo,
-                reglas,
-              ),
-          real,
-        ),
-      );
       acciones.push(
         accion(
           'construir-venta',
@@ -230,28 +245,30 @@ export function fichaDeComarca(
       duenyo: datos?.duenyo ?? null,
       propia: null,
       influenciaPropia: conocida.influenciaPropia,
+      comoGanarLa: ganar,
+      consejo: null,
       acciones,
     };
   }
 
-  const real = conocida.comarca;
+  const propia = conocida.comarca;
   const ctx = crearContexto(estado, [], mundo, reglas);
   const producir = (c: EstadoComarca) =>
     explotacionesDe(datosDeProduccion(ctx, c, estado.jugadores[yo.id]), reglas);
-  const prevision = producir(real);
+  const prevision = producir(propia);
   const antes = suma(prevision);
   const obras = vista.obras.filter((o) => o.comarca === comarca);
   const acciones: AccionDeFicha[] = [];
   for (const tipo of TIPOS_DE_EDIFICIO) {
     const datos = reglas.edificios[tipo];
-    const nivel = real.edificios[tipo] ?? 0;
-    const mas = { ...real, edificios: { ...real.edificios, [tipo]: nivel + 1 } };
+    const nivel = propia.edificios[tipo] ?? 0;
+    const mas = { ...propia, edificios: { ...propia.edificios, [tipo]: nivel + 1 } };
     let efecto = diferenciaEnTexto(antes, suma(producir(mas)));
     if (tipo === 'casas') {
-      efecto = `Capacidad de ${String(capacidadDe(real, reglas, casa.capacidadPorCasasExtra))} a ${String(capacidadDe(mas, reglas, casa.capacidadPorCasasExtra))} vecinos`;
+      efecto = `Capacidad de ${String(capacidadDe(propia, reglas, casa.capacidadPorCasasExtra))} a ${String(capacidadDe(mas, reglas, casa.capacidadPorCasasExtra))} vecinos`;
     }
     const motivo = impedimentoDeConstruir(
-      real,
+      propia,
       tipo,
       vista.obras,
       geografia.solares,
@@ -267,11 +284,11 @@ export function fichaDeComarca(
         datos.turnos,
         efecto === '' ? datos.nombre : efecto,
         motivo,
-        real,
+        propia,
       ),
     );
     if (nivel > 0) {
-      const menos = { ...real, edificios: { ...real.edificios, [tipo]: nivel - 1 } };
+      const menos = { ...propia, edificios: { ...propia.edificios, [tipo]: nivel - 1 } };
       const perdida = diferenciaEnTexto(antes, suma(producir(menos)));
       acciones.push(
         accion(
@@ -281,12 +298,12 @@ export function fichaDeComarca(
           reglas.obras.turnosDerribo,
           `Libera un solar${perdida === '' ? '' : `; ${perdida}`}`,
           null,
-          real,
+          propia,
         ),
       );
     }
   }
-  const sinRoturar = prohibiciones.roturar ? 'prohibido-por-la-casa' : impedimentoDeRoturar(real);
+  const sinRoturar = prohibiciones.roturar ? 'prohibido-por-la-casa' : impedimentoDeRoturar(propia);
   acciones.push(
     accion(
       'roturar',
@@ -295,10 +312,10 @@ export function fichaDeComarca(
       reglas.obras.turnosRoturar,
       'Un punto de monte pasa a labor',
       sinRoturar,
-      real,
+      propia,
     ),
   );
-  const conAperos = { ...real, aperos: real.aperos + 1 };
+  const conAperos = { ...propia, aperos: propia.aperos + 1 };
   acciones.push(
     accion(
       'aperos',
@@ -306,8 +323,8 @@ export function fichaDeComarca(
       { tipo: 'aperos', comarca },
       1,
       diferenciaEnTexto(antes, suma(producir(conAperos))) || 'Mejor labor',
-      real.aperos >= casa.aperosMaximo ? 'aperos-al-maximo' : null,
-      real,
+      propia.aperos >= casa.aperosMaximo ? 'aperos-al-maximo' : null,
+      propia,
     ),
   );
   acciones.push(
@@ -318,7 +335,7 @@ export function fichaDeComarca(
       1,
       `Una recua de ${String(reglas.movimiento.acemilasPorRecua)} acémilas`,
       yo.escasez ? 'escasez' : null,
-      real,
+      propia,
     ),
   );
   acciones.push(
@@ -329,7 +346,7 @@ export function fichaDeComarca(
       1,
       `Un rebaño de ${String(reglas.ganaderia.cabezasPorRebanyo)} cabezas`,
       yo.escasez ? 'escasez' : null,
-      real,
+      propia,
     ),
   );
 
@@ -337,24 +354,26 @@ export function fichaDeComarca(
     ...base,
     nivel: 'propia',
     terreno: geografia.terreno,
-    potenciales: real.potenciales,
+    potenciales: propia.potenciales,
     duenyo: yo.id,
     influenciaPropia: null,
+    comoGanarLa: null,
+    consejo: null,
     propia: {
-      poblacion: real.poblacion,
-      capacidad: capacidadDe(real, reglas, casa.capacidadPorCasasExtra),
-      lealtad: real.lealtad,
-      fuero: real.fuero,
-      cargaFiscal: real.cargaFiscal,
-      aperos: real.aperos,
+      poblacion: propia.poblacion,
+      capacidad: capacidadDe(propia, reglas, casa.capacidadPorCasasExtra),
+      lealtad: propia.lealtad,
+      fuero: propia.fuero,
+      cargaFiscal: propia.cargaFiscal,
+      aperos: propia.aperos,
       solares: {
-        usados: solaresOcupados(real, vista.obras),
+        usados: solaresOcupados(propia, vista.obras),
         total: solaresDe(geografia.solares, casa),
       },
-      edificios: TIPOS_DE_EDIFICIO.filter((t) => (real.edificios[t] ?? 0) > 0).map((t) => ({
+      edificios: TIPOS_DE_EDIFICIO.filter((t) => (propia.edificios[t] ?? 0) > 0).map((t) => ({
         tipo: t,
         nombre: reglas.edificios[t].nombre,
-        nivel: real.edificios[t] ?? 0,
+        nivel: propia.edificios[t] ?? 0,
         maximo: casa.nivelMaximoEdificio[t] ?? reglas.edificios[t].nivelMaximo,
       })),
       obras: obras.map((o) => ({
@@ -362,7 +381,7 @@ export function fichaDeComarca(
         avanceMil: o.avanceMil,
         necesarioMil: o.avanceNecesarioMil,
       })),
-      producido: real.produccionUltimoTurno,
+      producido: propia.produccionUltimoTurno,
       prevision: prevision.map((e) => ({
         edificio: e.edificio,
         nivel: e.nivel,

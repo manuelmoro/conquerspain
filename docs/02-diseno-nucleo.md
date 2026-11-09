@@ -287,7 +287,8 @@ juega los dos calendarios y compara el dominio turno a turno.
 - **La vista del jugador** (`vistaDeJugador`) es lo único que sale del servidor: lo propio entero;
   lo explorado, como se supo; lo oído, solo nombre y región; lo desconocido, nada. Las recuas y los
   rebaños ajenos se ven en lo propio y donde hay una recua propia, solo con su casa y su rumbo. La
-  influencia ajena en una comarca neutral, solo con presencia allí y en tramos de 10. El prestigio y
+  influencia propia, en toda comarca neutral que conoce, también de oídas (allí se acumula, docs/06
+  §6.2); la ajena, solo con presencia allí y en tramos de 10. El prestigio y
   la clasificación son públicos. La semilla de la partida no sale nunca.
 
 ## 2.7 El parte del turno (la crónica)

@@ -51,6 +51,7 @@ function partida(opciones: { presenciaEnLaVega?: boolean } = {}): EstadoPartida 
     poblacion: 55,
     influencias: { [UNO]: 23, [DOS]: 37 },
   });
+  estado = conComarca(estado, 'prueba-monte', { influencias: { [UNO]: 12, [DOS]: 41 } });
   const uno = estado.jugadores[UNO] as EstadoJugador;
   const dos = estado.jugadores[DOS] as EstadoJugador;
   const recuas: Record<string, Recua> = {
@@ -147,12 +148,19 @@ describe('la vista de un jugador, regla a regla', () => {
     expect(vega.datos?.poblacion).toBe(20);
   });
 
-  it('3. comarca oída: solo nombre y región', () => {
+  it('3. comarca oída: solo nombre, región y la influencia propia', () => {
     expect(vista.comarcas['prueba-monte']).toEqual({
       nivel: 'oida',
       turnoUltimaNoticia: 2,
       nombre: mundo.comarcas['prueba-monte']?.nombre,
       region: mundo.comarcas['prueba-monte']?.region,
+      influenciaPropia: 12,
+    });
+    // Si ya tiene duenyo, no hay influencia que dar: como en las exploradas.
+    const tomada = conComarca(estado, 'prueba-monte', { duenyo: DOS, influencias: {} });
+    expect(vistaDeJugador(tomada, UNO, mundo).comarcas['prueba-monte']).toMatchObject({
+      nivel: 'oida',
+      influenciaPropia: null,
     });
   });
 
@@ -242,6 +250,7 @@ describe('ninguna fuga de información', () => {
         'semilla-que-no-debe-salir',
         // La influencia exacta de la otra casa.
         `"${DOS}":37`,
+        `"${DOS}":41`,
       ];
       for (const prohibido of prohibidos) {
         expect(

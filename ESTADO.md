@@ -3,20 +3,19 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 25 de septiembre de 2026 (T-088 a falta de repetir J-01)
+**Última actualización:** 9 de noviembre de 2026 (T-088 completa a falta de repetir J-01; sigue T-083)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
 
 ## Tarea en curso
 
-**T-088 · Arreglos de J-01** ([ficha](docs/plan/T-088-arreglos-de-j01.md)). Todo el trabajo está hecho y
-verificado (también en navegador, escritorio y móvil). La **segunda sesión de J-01** (25-09-2026) encontró más
-cosas y se han añadido a la ficha (§2, puntos 6 a 9): influencia visible también en las comarcas oídas, la ficha
-que explica cómo se gana una comarca, crónica sin huecos `{comarca}` y acción sugerida legible; lo que necesita
-recuas (presencia, exploración, mover rebaños) va a T-083. Ya hecho de esa sesión: la ficha pone arriba lo que se
-puede hacer y pliega lo bloqueado, y los recursos van en una franja fija arriba. **Pendiente de decisión del usuario:** el regalo al
-concejo en comarcas oídas. Dónde va, en la ficha §4.
+**T-088 · Arreglos de J-01** ([ficha](docs/plan/T-088-arreglos-de-j01.md)). **Todo el trabajo está hecho y
+verificado**, también lo de la segunda sesión de J-01 (puntos 6 a 9, el 09-11-2026): tu influencia en las
+comarcas oídas, la ficha que explica cómo se gana una comarca con la misma cuenta que la fase 8, la crónica sin
+huecos (probado en 72 turnos de las ocho casas) y la acción sugerida en castellano. **Solo falta que el usuario
+repita J-01**; mientras, se avanza T-083, que no depende de él. Decisión tomada sin el usuario (lo pidió): el
+regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
 > T-015, no antes: sus datos son puertos, cañadas y ferias de toda la península —Pajares,
@@ -26,9 +25,9 @@ concejo en comarcas oídas. Dónde va, en la ficha §4.
 
 ## Siguiente tarea
 
-Terminar **T-088** (§2, puntos 6 a 9) y que el usuario cierre el checkpoint **J-01 · Entender y ordenar**; si
-supera, sigue **T-083**, que ahora también hace jugable la expansión
-(recuas y rebaños en el mapa). Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
+**T-083 · Recuas y rebaños en el mapa** (primero, detallar su ficha), que también hace jugable la expansión.
+Cuando el usuario pueda, que cierre el checkpoint **J-01 · Entender y ordenar** para dar por cerrada T-088.
+Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
 ```bash
 npm run partida:prueba -- tu@correo.es hortelanos
@@ -125,6 +124,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-088 (en curso): hechos los puntos 6 a 9 de la segunda sesión de J-01; solo falta repetir J-01.** La vista da tu influencia también en las comarcas oídas (null si ya tienen dueño, como en las exploradas), y el modo Dominios la rotula. La ficha de toda neutral conocida explica **cómo ganarla** (`comoGanarLa`, sobre `fuentesDeInfluencia`, la misma función de la fase 8): actual frente a 60, cambio del turno con sus motivos, turnos hasta llegar y qué lo aceleraría; probado contra la fase al resolver. Regalo e incorporación también en las oídas (decidido sin el usuario, por encargo suyo: no cambia ninguna regla) y el consejo de explorarlas. `rebanyo.sin-pasto` y `cometido.sin-efecto` llevan su comarca: lo segundo lo encontró la prueba nueva de crónica larga (72 turnos, ocho casas). Acción sugerida en castellano (`QUE_HACER`), que dice cuándo llega si aún no tiene pantalla. Se abre **T-089** (gobierno en el cliente: fuero, obra mayor, tradiciones, mayordomo y corte), que no tenía tarea. 1245 pruebas en verde; 39,9 KB gzip |
 | 25-09-2026 | **J-01, segunda sesión: el mapa, la ficha y el resumen ya funcionan; salen seis hallazgos nuevos**, anotados en el checkpoint y repartidos en el plan: a T-088, la influencia visible en las comarcas oídas, la ficha que explica cómo ganar una comarca, la crónica sin huecos (`{comarca}` en el rebaño sin pasto) y la acción sugerida legible; a T-083, la expansión jugable (recuas presentes y exploradoras desde la ficha) y mover los rebaños desde sus avisos |
 | 25-09-2026 | **T-088 (en curso): arreglos de J-01, a falta de repetir el checkpoint.** El clic en escritorio no abría la ficha por dos causas: la captura del puntero al pulsar y un camino que pasaba por encima de la capital; ahora el toque se separa del arrastre por 4 px y busca la comarca en toda la pila bajo el puntero. Panel lateral en escritorio y hoja inferior en móvil, confirmación dentro de la tarjeta de la acción, entrada con formulario y errores a la vista, nombres en castellano, fichas de recursos, leyenda y explicación de cada modo. **Resumen del turno** al resolver: por recurso tenías / producido / otros / tienes / cambio, vecinos y la crónica por secciones. Probado en Chrome sin cabeza en escritorio y en móvil táctil. 38,5 KB gzip |
 | 25-09-2026 | **T-082 hecha: ficha de comarca y bandeja; el juego ya se puede jugar a mano.** La ficha se compone en el núcleo (`fichaDeComarca`): cada acción con coste (el mismo que cobra el servidor), turnos y efecto previsto, recalculado con la misma función de producción que la fase 2 (`datosDeProduccion`, extraída sin cambiar ninguna huella); cada bloqueo con causa y salida; la incorporación juzgada con lo que el jugador sabe de las otras casas, para no filtrar la niebla. La bandeja separa disponible, reservado y producido, dice cuánto falta para el corte y agrupa por enviar / enviadas (retirables) / en marcha, con colas ↑↓ y plan de seis turnos. Para J-01: `POST /partidas/:id/avanzar` en partidas de prueba y `npm run partida:prueba`. **J-01 pendiente de sesión humana.** 17 pruebas nuevas; 1234 en verde |

@@ -42,6 +42,12 @@ export type VistaComarca =
       readonly turnoUltimaNoticia: number;
       readonly nombre: string;
       readonly region: string;
+      /**
+       * La influencia propia de hoy, si la comarca es neutral: se acumula con solo conocerla de
+       * oidas (docs/06 §6.2), y es un dato del propio jugador. Null, como en las exploradas, si ya
+       * tiene duenyo: el concejo deja de atender y eso se nota.
+       */
+      readonly influenciaPropia: number | null;
     };
 
 export const RUMBOS = [
@@ -177,6 +183,8 @@ export function vistaDeJugador(
         turnoUltimaNoticia: c.turnoUltimaNoticia,
         nombre: geografia.nombre,
         region: geografia.region,
+        influenciaPropia:
+          hoy !== undefined && hoy.duenyo === null ? (hoy.influencias[jugador] ?? 0) : null,
       };
     }
   }

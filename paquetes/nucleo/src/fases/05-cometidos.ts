@@ -76,7 +76,11 @@ function sinEfecto(ctx: Contexto, recua: Recua, motivo: string, termina: boolean
     ctx.fase,
     'cometido.sin-efecto',
     { recua: recua.id, cometido: recua.cometido ?? '', motivo },
-    { jugador: recua.jugador },
+    // Los cometidos solo se cumplen con la recua quieta en una comarca: es la que nombra el aviso.
+    {
+      jugador: recua.jugador,
+      comarca: recua.situacion.donde === 'comarca' ? recua.situacion.comarca : null,
+    },
   );
   if (termina) aplicar(ctx, { tipo: 'recua-cometido', recua: recua.id, cometido: null });
 }

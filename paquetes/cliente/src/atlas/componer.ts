@@ -280,7 +280,12 @@ export function componerAtlas(
     }
     if (modo === 'politico') {
       const v = vista.comarcas[c.id];
-      if (v?.nivel === 'explorada' && v.influenciaPropia !== null && c.duenyo === null)
+      if (
+        v !== undefined &&
+        v.nivel !== 'propia' &&
+        v.influenciaPropia !== null &&
+        c.duenyo === null
+      )
         texto = `${c.nombre} · ${String(v.influenciaPropia)}`;
     }
     figuras.push({

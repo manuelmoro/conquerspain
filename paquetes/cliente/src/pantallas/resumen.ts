@@ -5,7 +5,7 @@ import type { SeccionDeCronica } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
 import type { ResumenDeTurno } from '../resumen.ts';
-import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO } from '../nombres.ts';
+import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO, queHacer } from '../nombres.ts';
 import { boton, el } from './dom.ts';
 
 const TITULO: Readonly<Record<SeccionDeCronica, string>> = {
@@ -114,8 +114,11 @@ export function dialogoDeResumen(
     const lista = el('ul', { class: `lista seccion-${seccion}` });
     for (const entrada of entradas) {
       const item = el('li', {}, entrada.texto);
-      if (entrada.accionSugerida !== null)
-        item.append(el('p', { class: 'suave' }, `Qué hacer: ${entrada.accionSugerida}`));
+      const sugerida = queHacer(entrada.accionSugerida);
+      if (sugerida !== null) {
+        const cuando = sugerida.llega === null ? '' : ` (desde aquí todavía no: ${sugerida.llega})`;
+        item.append(el('p', { class: 'suave' }, `Qué hacer: ${sugerida.texto}${cuando}`));
+      }
       const comarca = entrada.comarca;
       if (comarca !== null) {
         item.append(

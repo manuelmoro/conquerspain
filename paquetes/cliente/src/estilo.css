@@ -107,6 +107,19 @@ label {
   color: var(--tinta-suave);
   font-size: 0.9rem;
 }
+.ganar {
+  border-left: 4px solid var(--cobalto);
+  padding: 0.2rem 0 0.2rem 0.75rem;
+  margin: 0.75rem 0;
+}
+.ganar ul {
+  margin: 0.3rem 0;
+  padding-left: 1.2rem;
+}
+.consejo {
+  border-left: 4px solid var(--oro);
+  padding: 0.4rem 0.75rem;
+}
 
 .tarjeta {
   background: var(--papel-claro);

@@ -6,6 +6,7 @@ import type { AccionDeFicha, FichaDeComarca } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
 import { NOMBRE_DE_POTENCIAL, NOMBRE_DE_TERRENO } from '../nombres.ts';
+import { textoDeGanar } from '../ganar.ts';
 import { fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
 
@@ -82,7 +83,13 @@ export function pantallaDeFicha(
   ];
   const partes: (Node | string)[] = [...cabecera];
   const dueño =
-    ficha.nivel === 'propia' ? 'Tuya' : ficha.duenyo === null ? 'De nadie' : 'De otra casa';
+    ficha.nivel === 'propia'
+      ? 'Tuya'
+      : ficha.nivel === 'oida'
+        ? 'Solo la conoces de oídas'
+        : ficha.duenyo === null
+          ? 'De nadie'
+          : 'De otra casa';
   const terreno = ficha.terreno === null ? '' : ` · ${NOMBRE_DE_TERRENO[ficha.terreno]}`;
   partes.push(el('p', { class: 'suave' }, `${dueño}${terreno}`));
   if (ficha.potenciales !== null) {
@@ -149,8 +156,28 @@ export function pantallaDeFicha(
     }
     partes.push(desglose);
   }
-  if (ficha.influenciaPropia !== null)
-    partes.push(el('p', {}, `Tu influencia aquí: ${String(ficha.influenciaPropia)} de 100`));
+  if (ficha.comoGanarLa !== null) {
+    const t = textoDeGanar(ficha.comoGanarLa);
+    const bloque = el(
+      'section',
+      { class: 'ganar' },
+      el('h3', {}, 'Cómo ganarla'),
+      el('p', {}, t.cabecera),
+      el('p', {}, el('strong', {}, t.ritmo)),
+    );
+    if (t.motivos.length > 0) {
+      const lista = el('ul', { class: 'suave' });
+      for (const m of t.motivos) lista.append(el('li', {}, m));
+      bloque.append(lista);
+    }
+    const mas = el('details', {}, el('summary', {}, 'Qué la haría subir más deprisa'));
+    const lista = el('ul', { class: 'suave' });
+    for (const a of t.aceleraria) lista.append(el('li', {}, a));
+    mas.append(lista);
+    bloque.append(mas);
+    partes.push(bloque);
+  }
+  if (ficha.consejo !== null) partes.push(el('p', { class: 'consejo' }, ficha.consejo));
 
   // Lo que se puede hacer, arriba (derribar al final); lo bloqueado, debajo y plegado (J-01).
   const posibles = ficha.acciones
@@ -167,7 +194,7 @@ export function pantallaDeFicha(
   };
   partes.push(el('h3', {}, 'Qué puedes hacer'));
   if (ficha.acciones.length === 0) {
-    partes.push(el('p', { class: 'suave' }, 'De esta comarca solo conoces el nombre.'));
+    partes.push(el('p', { class: 'suave' }, 'Aquí no puedes dar ninguna orden.'));
   } else {
     partes.push(
       posibles.length === 0

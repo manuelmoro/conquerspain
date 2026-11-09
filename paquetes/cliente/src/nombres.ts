@@ -79,3 +79,79 @@ export function nombreDeOrden(tipo: unknown): string {
   const encontrado = Object.entries(NOMBRE_DE_ORDEN).find(([clave]) => clave === tipo);
   return encontrado === undefined ? 'Orden' : encontrado[1];
 }
+
+/** Donde se da cada orden en el cliente, o en que pantalla llegara si aun no hay ninguna. */
+export interface QueHacer {
+  /** Lo que se le propone al jugador, en una frase. */
+  readonly texto: string;
+  /** Donde se hace hoy; null si todavia no hay pantalla. */
+  readonly donde: 'ficha' | 'bandeja' | null;
+  /** Si no hay pantalla, cuando llega. */
+  readonly llega: string | null;
+}
+
+const CON_LAS_RECUAS = 'llegará con las rutas sobre el mapa';
+const CON_EL_MERCADO = 'llegará con la pantalla del mercado';
+const CON_EL_GOBIERNO = 'llegará con la pantalla de gobierno';
+
+/** La accion sugerida de cada aviso de la cronica, en castellano (ficha T-088 §2.9). */
+export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
+  construir: {
+    texto: 'Levanta o amplía un edificio desde la ficha de la comarca.',
+    donde: 'ficha',
+    llega: null,
+  },
+  derribar: {
+    texto: 'Derriba un edificio desde la ficha de la comarca.',
+    donde: 'ficha',
+    llega: null,
+  },
+  roturar: { texto: 'Rotura monte desde la ficha de la comarca.', donde: 'ficha', llega: null },
+  aperos: { texto: 'Instala aperos desde la ficha de la comarca.', donde: 'ficha', llega: null },
+  'formar-recua': {
+    texto: 'Forma una recua desde la ficha de una comarca tuya.',
+    donde: 'ficha',
+    llega: null,
+  },
+  'formar-rebanyo': {
+    texto: 'Forma un rebaño desde la ficha de una comarca tuya.',
+    donde: 'ficha',
+    llega: null,
+  },
+  regalo: {
+    texto: 'Haz un regalo al concejo desde la ficha de la comarca.',
+    donde: 'ficha',
+    llega: null,
+  },
+  incorporar: { texto: 'Incorpora la comarca desde su ficha.', donde: 'ficha', llega: null },
+  cola: { texto: 'Reordena la cola desde la bandeja de órdenes.', donde: 'bandeja', llega: null },
+  ruta: { texto: 'Cambia el camino de la recua o del rebaño.', donde: null, llega: CON_LAS_RECUAS },
+  carga: { texto: 'Carga o descarga la recua.', donde: null, llega: CON_LAS_RECUAS },
+  cometido: { texto: 'Dale otro encargo a la recua.', donde: null, llega: CON_LAS_RECUAS },
+  mercado: { texto: 'Compra o vende en una plaza.', donde: null, llega: CON_EL_MERCADO },
+  'letra-de-cambio': {
+    texto: 'Mueve dinero con una letra de cambio.',
+    donde: null,
+    llega: CON_EL_MERCADO,
+  },
+  politica: {
+    texto: 'Cambia el fuero o la carga fiscal de la comarca.',
+    donde: null,
+    llega: CON_EL_GOBIERNO,
+  },
+  'obra-mayor': { texto: 'Emprende una obra mayor.', donde: null, llega: CON_EL_GOBIERNO },
+  tradicion: { texto: 'Elige una tradición para tu casa.', donde: null, llega: CON_EL_GOBIERNO },
+  mayordomo: { texto: 'Deja una regla al mayordomo.', donde: null, llega: CON_EL_GOBIERNO },
+  'trasladar-corte': {
+    texto: 'Traslada la corte a otra comarca.',
+    donde: null,
+    llega: CON_EL_GOBIERNO,
+  },
+};
+
+/** La accion sugerida en palabras, o null si no hay o no se reconoce (nunca el identificador). */
+export function queHacer(accion: string | null): QueHacer | null {
+  if (accion === null) return null;
+  const encontrado = Object.entries(QUE_HACER).find(([clave]) => clave === accion);
+  return encontrado === undefined ? null : encontrado[1];
+}

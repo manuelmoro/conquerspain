@@ -356,7 +356,11 @@ function pastar(ctx: Contexto): void {
         ctx.fase,
         'rebanyo.sin-pasto',
         { rebanyo: rebanyo.id, motivo, pastoMil },
-        { jugador: rebanyo.jugador },
+        {
+          jugador: rebanyo.jugador,
+          // De camino no hay comarca en la que pasta: la plantilla de ese caso no la nombra.
+          comarca: rebanyo.situacion.donde === 'comarca' ? rebanyo.situacion.comarca : null,
+        },
       );
     }
     contarPasto(ctx, rebanyo, pastoMil);

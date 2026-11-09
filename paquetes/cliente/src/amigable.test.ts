@@ -7,7 +7,14 @@ import type { VistaJugador } from '@conquer/nucleo';
 
 import { apiDePrueba, CUENTAS } from '../../servidor/src/api/prueba-comun.ts';
 import { esArrastre } from './atlas/gestos.ts';
-import { NOMBRE_DE_ESTADO, NOMBRE_DE_ORDEN, nombreDeOrden } from './nombres.ts';
+import { textoDeGanar } from './ganar.ts';
+import {
+  NOMBRE_DE_ESTADO,
+  NOMBRE_DE_ORDEN,
+  QUE_HACER,
+  nombreDeOrden,
+  queHacer,
+} from './nombres.ts';
 import { resumirTurno } from './resumen.ts';
 
 describe('los nombres (criterio 5)', () => {
@@ -23,6 +30,60 @@ describe('los nombres (criterio 5)', () => {
   it('un tipo desconocido se lee «Orden», nunca «¿?» ni el texto crudo', () => {
     expect(nombreDeOrden('inventado')).toBe('Orden');
     expect(nombreDeOrden(undefined)).toBe('Orden');
+  });
+
+  it('toda acción sugerida se lee en castellano y, si no tiene pantalla, dice cuándo llega (criterio 9)', () => {
+    for (const tipo of TIPOS_DE_ORDEN) {
+      const q = QUE_HACER[tipo];
+      expect(queHacer(tipo)).toBe(q);
+      expect(q.texto, tipo).toMatch(/^[A-ZÁÉÍÓÚ].*\.$/);
+      expect(q.texto, tipo).not.toContain(tipo.includes('-') ? tipo : `«${tipo}»`);
+      expect(q.donde === null, tipo).toBe(q.llega !== null);
+    }
+    expect(queHacer('inventada')).toBeNull();
+    expect(queHacer(null)).toBeNull();
+  });
+});
+
+describe('cómo ganar una comarca, en palabras (T-088 §2.7)', () => {
+  const base = {
+    actual: 12,
+    necesaria: 60,
+    ventaja: 15,
+    cambio: 2,
+    motivos: [
+      { texto: 'una recua tuya presente', puntos: 2 },
+      { texto: 'comarcas tuyas vecinas', puntos: 1 },
+      { texto: 'nadie tuyo está ni comercia allí', puntos: -1 },
+    ],
+    aceleraria: [{ texto: 'un regalo al concejo', puntos: 5 }],
+    turnosHastaLaNecesaria: 24,
+  };
+
+  it('dice lo que tiene, lo que falta, el ritmo y el porqué con su signo', () => {
+    const t = textoDeGanar(base);
+    expect(t.cabecera).toBe(
+      'Tu influencia: 12 de los 60 que pide incorporarla (y 15 de ventaja sobre la segunda casa).',
+    );
+    expect(t.ritmo).toBe('Este turno: +2. A este paso llegas en 24 turnos.');
+    expect(t.motivos).toEqual([
+      '+2: una recua tuya presente',
+      '+1: comarcas tuyas vecinas',
+      '-1: nadie tuyo está ni comercia allí',
+    ]);
+    expect(t.aceleraria).toEqual(['+5: un regalo al concejo']);
+  });
+
+  it('si no se mueve o baja, avisa de que así no se llega', () => {
+    expect(textoDeGanar({ ...base, cambio: 0, turnosHastaLaNecesaria: null }).ritmo).toBe(
+      'Este turno no se mueve. A este paso no llegas.',
+    );
+    expect(textoDeGanar({ ...base, cambio: -1, turnosHastaLaNecesaria: null }).ritmo).toBe(
+      'Este turno: -1. A este paso no llegas.',
+    );
+    expect(textoDeGanar({ ...base, actual: 70, turnosHastaLaNecesaria: 0 }).cabecera).toMatch(
+      /Ya llega/,
+    );
   });
 });
 

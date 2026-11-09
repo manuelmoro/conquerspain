@@ -43,7 +43,16 @@ function atlasCompleto(): { atlas: AtlasDeJugador; vista: VistaJugador } {
   const conocidas = Object.fromEntries(
     comarcas.map(
       (c) =>
-        [c.id, { nivel: 'oida', turnoUltimaNoticia: 1, nombre: c.nombre, region: 'x' }] as const,
+        [
+          c.id,
+          {
+            nivel: 'oida',
+            turnoUltimaNoticia: 1,
+            nombre: c.nombre,
+            region: 'x',
+            influenciaPropia: null,
+          },
+        ] as const,
     ),
   );
   const todo = atlasDeJugador({ ...v, comarcas: conocidas }, grande.mundo);

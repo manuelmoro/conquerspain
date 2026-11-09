@@ -53,9 +53,11 @@ entrada calla los errores y todo es poco amigable. Esta tarea arregla eso **ante
     franja fija arriba, con el turno y el corte (en móvil solo se queda fija la fila de recursos, compacta); el
     panel ya no lo repite. Comprobado en Chrome sin cabeza en escritorio y en móvil.
 
-**Pendiente de decisión del usuario:** permitir el **regalo al concejo** también en comarcas oídas (el concejo
-existe aunque no se hayan visto sus tierras). Si se acepta, es un cambio de regla: docs/06 §6.2, `validarOrden`,
-la ficha y su prueba. Si no, se queda solo para las exploradas.
+**Decidido (09-11-2026, por encargo del usuario de decidir sin él):** el **regalo al concejo** se ofrece
+también en las comarcas oídas, y con él la incorporación. No es un cambio de regla: docs/06 §6.2 ya dice que
+basta conocer la comarca de oídas para acumular influencia, y la fase 8 y `construirOrden` ya aceptaban el
+regalo en una oída; solo la ficha no lo ofrecía. La decisión que añade: regalar a ciegas (sin saber qué tiene
+la comarca) o gastar antes una recua en explorarla.
 
 ## 3. Criterios de aceptación
 
@@ -76,10 +78,10 @@ la ficha y su prueba. Si no, se queda solo para las exploradas.
 9. (Segunda sesión) Ninguna crónica de una partida larga de todas las casas deja un hueco sin rellenar, y
    ninguna acción sugerida se enseña con su identificador.
 
-## 4. Dónde va (25-09-2026)
+## 4. Dónde va (09-11-2026)
 
-**Hecho lo de la primera sesión (§2, puntos 1 a 5). Falta lo de la segunda (§2, puntos 6 a 9, criterios 7 a 9) y
-que el usuario termine J-01.** Por eso la tarea sigue abierta.
+**Todo el trabajo está hecho (§2, puntos 1 a 10; criterios 1 a 5 y 7 a 9). Solo falta que el usuario repita
+J-01 (criterio 6).** Por eso la tarea sigue abierta.
 
 - **Mapa:** gestos reescritos en `atlas/svg.ts` con `atlas/gestos.ts` (umbral de 4 px, puro y probado). La causa
   de fondo del fallo en escritorio era doble: la captura del puntero al pulsar, y que **un camino pasa por encima
@@ -103,6 +105,25 @@ que el usuario termine J-01.** Por eso la tarea sigue abierta.
 
 - **Segunda sesión, punto 10:** hecho (ficha ordenada y recursos arriba); `npm run verificar` en verde, 39,1 KB gzip.
 
-**Siguiente paso:** implementar §2, puntos 6 a 9 (y el regalo en oídas si el usuario lo acepta); después el usuario
-termina J-01 (`npm run dev`, su partida de prueba sigue en `desarrollo.sqlite`).
-Si supera, se cierra T-088 y se marca J-01; si no, sus hallazgos se anotan aquí y se arreglan.
+- **Segunda sesión, puntos 6 a 9 (09-11-2026): hechos.**
+  - **6.** `VistaComarca` oída lleva `influenciaPropia` (null si ya tiene dueño, como en las exploradas: el
+    concejo deja de atender y eso se nota). El modo Dominios la rotula también en las oídas. Prueba de fuga
+    ampliada: la influencia ajena en una oída no sale nunca (`vista.test.ts`).
+  - **7.** `comoGanarLa` (`nucleo/src/reglas/ganar-comarca.ts`) usa `fuentesDeInfluencia`, la misma función
+    de la fase 8, sin el comercio del turno (que aún no ha pasado), y recorta a 0..100 igual que la fase:
+    influencia actual frente a los 60, cambio de este turno con sus motivos, turnos hasta llegar y qué lo
+    aceleraría. La ficha lo enseña en «Cómo ganarla» (`cliente/src/ganar.ts`, puro y probado), y en las oídas
+    añade el consejo de explorarla. Probado que lo previsto coincide con lo que da la fase al resolver, en
+    comarcas que suben, que bajan y que están en el 100 (`ficha.test.ts`).
+  - **8.** `rebanyo.sin-pasto` lleva su comarca (y de camino tiene plantilla propia, sin comarca). La prueba
+    larga (`herramientas/banco/src/cronica.test.ts`: 72 turnos, las ocho casas con sus robots) encontró otro
+    hueco que nadie había visto: `cometido.sin-efecto` tampoco llevaba la comarca. Arreglado. Ningún
+    hueco en más de mil entradas de más de treinta tipos.
+  - **9.** `QUE_HACER` en `cliente/src/nombres.ts`: una frase por tipo de orden y dónde se da; si aún no
+    tiene pantalla, el resumen dice cuándo llega. Cinco tipos (`politica`, `obra-mayor`, `tradicion`,
+    `mayordomo`, `trasladar-corte`) no tenían tarea de cliente en el plan: se abre **T-089**.
+  - `npm run verificar` en verde: 1245 pruebas, 39,9 KB gzip. Ninguna huella de reproducción cambia.
+
+**Siguiente paso:** que el usuario termine J-01 (`npm run dev`; su partida de prueba sigue en
+`desarrollo.sqlite`). Si supera, se cierra T-088 y se marca J-01; si no, sus hallazgos se anotan aquí y se
+arreglan. Mientras tanto se puede avanzar T-083, que no depende de J-01.
