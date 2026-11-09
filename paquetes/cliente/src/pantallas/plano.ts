@@ -129,6 +129,21 @@ function detalle(
     el('strong', {}, `${icono} ${texto.titulo}`),
     ...texto.lineas.map((l) => el('p', {}, l)),
   );
+  // Un mercado o una venta son una plaza: el atajo a comprar y vender en ella (T-092, tras jugar).
+  if (
+    parcela.clase === 'edificio' &&
+    (parcela.edificio === 'mercado' || parcela.edificio === 'venta')
+  )
+    caja.append(
+      el(
+        'p',
+        { class: 'fila' },
+        boton('⚖️ Comprar o vender aquí', () => {
+          almacen.abrirMercado(ficha.id);
+        }),
+        el('span', { class: 'suave' }, 'Hace falta una recua tuya en la comarca.'),
+      ),
+    );
   if (acciones.length > 0) {
     caja.append(
       el('h4', {}, parcela.clase === 'libre' ? 'Qué puedes levantar aquí' : 'Qué puedes hacer'),

@@ -43,6 +43,9 @@ corregido el texto.
   Las tarjetas de acción viven en `pantallas/acciones.ts`, compartidas con la ficha, y cada una enseña su efecto
   sin abrirla. Cuando un edificio no cambia ningún recurso, su efecto es para qué sirve
   (`PARA_QUE_SIRVE`, en el núcleo junto a los bloqueos). Arreglado de paso: la marca «✓ enviada» no salía nunca.
+- **Un mercado o una venta del plano llevan a su plaza:** «⚖️ Comprar o vender aquí». Y sus precios se saben
+  cada turno, porque es tu comarca (docs/02 §2.6.1). Antes, del mercado de tu propia capital no sabías nada
+  sin una recua parada allí.
 - **Núcleo:** cada obra de la ficha dice qué edificio levanta (`edificio`, null en las obras mayores).
 
 ## 3. Criterios de aceptación

@@ -54,14 +54,17 @@ function saberPrecios(
 }
 
 /**
- * Las comarcas donde el jugador tiene gente suya: donde para una recua y donde tiene la venta que
- * levanto en tierra de nadie (ficha T-053). De las dos sabe lo que pasa y lo que se paga; una
- * venta sin ventero que cuente los precios no serviria para decidir ningun viaje.
+ * Las comarcas donde el jugador tiene gente suya: las suyas, donde para una recua y donde tiene la
+ * venta que levanto en tierra de nadie (ficha T-053). De todas sabe lo que pasa y lo que se paga; una
+ * venta sin ventero que cuente los precios no serviria para decidir ningun viaje, y no saber lo que se
+ * paga en el mercado de tu propia capital no tenia sentido (T-092, tras jugar).
  */
 function dondeTieneGente(ctx: Contexto, jugador: EstadoJugador): IdComarca[] {
   const suyas = new Set<IdComarca>(comarcasConRecua(ctx.estado, jugador));
   for (const id of idsEnOrden(ctx.estado.comarcas)) {
-    if (ctx.estado.comarcas[id]?.ventaDe === jugador.id) suyas.add(id as IdComarca);
+    const comarca = ctx.estado.comarcas[id];
+    if (comarca?.ventaDe === jugador.id || comarca?.duenyo === jugador.id)
+      suyas.add(id as IdComarca);
   }
   return [...suyas].sort(comparar);
 }

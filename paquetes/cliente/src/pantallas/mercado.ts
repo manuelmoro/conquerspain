@@ -239,7 +239,12 @@ export function pantallaDeMercado(
       el('p', {}, 'Cargando el mercado…'),
     );
   }
-  const abierta = plaza === null ? undefined : m.panel.plazas.find((p) => p.id === plaza);
+  // Desde el plano de una comarca se llega con la comarca, no con la plaza (T-092): vale su plaza local.
+  const abierta =
+    plaza === null
+      ? undefined
+      : (m.panel.plazas.find((p) => p.id === plaza) ??
+        m.panel.plazas.find((p) => p.comarca === plaza && p.tipo === 'local'));
   if (abierta !== undefined) return fichaDePlaza(almacen, abierta, m, nombre);
   const lista = el('ul', { class: 'lista' });
   for (const p of m.panel.plazas) {

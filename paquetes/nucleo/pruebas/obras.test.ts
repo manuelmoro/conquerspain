@@ -552,6 +552,16 @@ describe('la venta, plaza del camino (T-053)', () => {
     expect(sabido?.preciosMil.sal).toBe(estado.mercados[plaza]?.preciosMil.sal);
   });
 
+  it('del mercado de una comarca propia se saben los precios cada turno, sin recua allí', () => {
+    const inicial = conVecinaDeNadie();
+    const estado = jugar(inicial, 6, [construir(inicial.turno, 'mercado', 'prueba-llano')]);
+    const plaza = `local-${String(c('prueba-llano'))}`;
+    expect(estado.mercados[plaza]).toBeDefined();
+    const sabido = estado.jugadores[UNO]?.plazas[plaza];
+    expect(sabido?.turno).toBe(estado.turno - 1);
+    expect(sabido?.preciosMil.pan).toBe(estado.mercados[plaza]?.preciosMil.pan);
+  });
+
   it('quien incorpora la comarca se queda con la venta', () => {
     const inicial = conVecinaDeNadie();
     const conVenta = jugar(inicial, 4, [construir(inicial.turno, 'venta', 'prueba-vega')]);

@@ -280,6 +280,9 @@ juega los dos calendarios y compara el dominio turno a turno.
 
 - **Lo que ven las recuas.** Donde hay una recua propia quieta al acabar el turno, se saben los
   precios exactos de las plazas abiertas y, si la comarca ya estaba explorada, se ve como está hoy.
+- **Lo que cuenta el concejo propio** (T-092). De las plazas de tus comarcas, y de la venta que
+  levantaste en tierra de nadie, sabes cada turno los precios exactos, aunque no haya ninguna recua allí.
+  Para comprar o vender sí hace falta una recua en la plaza.
 - **Los precios** se guardan por plaza, con su turno y su fuente (`visita`, `corresponsal` o
   `rumor`), en `EstadoJugador.plazas`. No se actualizan solos.
 - **Los rumores** llegan por tres vías: una recua quieta en una feria abierta (1, 2 o 3 según su
