@@ -67,7 +67,12 @@ export type {
   SituacionMovil,
   TipoDeObra,
 } from './estado.ts';
-export { ESTADOS_DE_ORDEN, TIPOS_DE_ORDEN } from './ordenes.ts';
+export {
+  ACCIONES_DE_MAYORDOMO,
+  CONDICIONES_DE_MAYORDOMO,
+  ESTADOS_DE_ORDEN,
+  TIPOS_DE_ORDEN,
+} from './ordenes.ts';
 export type {
   AccionDeMayordomo,
   CondicionDeMayordomo,

@@ -73,6 +73,18 @@ y ofrece el camino para desbloquearla.
 hoja inferior. Las acciones son tarjetas con su coste en fichas y sus turnos; al elegir una, la confirmación
 (efecto previsto, coste, turnos y cuándo) se abre dentro de la misma tarjeta.
 
+**Gobierno (T-089).** La ficha de una comarca propia trae también:
+- el fuero, la carga fiscal y la dehesa;
+- las obras mayores (el puente y la calzada, por tramo hacia cada vecina);
+- el traslado de la corte.
+
+Cada una lleva su efecto en palabras y el mismo bloqueo que pondría la fase. «Tu casa», en la cabecera, abre en
+el panel tres cosas:
+- las tradiciones de cada ronda abierta, que se eligen para siempre;
+- el mayordomo, con sus reglas en una frase («Si te quedan menos de 40 de pan para gastar, …»), las que
+  quedan fuera del límite y un formulario cerrado de condición y acción;
+- la sal de las conservas.
+
 ### 8.2.6 Recuas y rebaños
 Lista y ficha: dónde están, qué llevan, qué jornadas les quedan, qué comen. Editor de ruta sobre el
 mapa, con el coste en jornadas por tramo y el aviso si un puerto se cierra antes de que lleguen.

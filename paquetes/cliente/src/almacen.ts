@@ -60,6 +60,8 @@ export interface EstadoDelCliente {
   readonly editor: EditorDeRuta | null;
   /** El mercado abierto en el panel (T-084), con la plaza que se mira, o null si esta cerrado. */
   readonly mercado: { readonly plaza: string | null } | null;
+  /** «Tu casa» abierta en el panel (T-089). */
+  readonly casa: boolean;
   /** La cronica abierta en el panel (T-085): el turno del archivo o la clasificacion. */
   readonly cronica: { readonly turno: number; readonly vista: 'cronica' | 'clasificacion' } | null;
 }
@@ -87,6 +89,7 @@ const INICIAL: EstadoDelCliente = {
   editor: null,
   mercado: null,
   cronica: null,
+  casa: false,
 };
 
 function claveDeVista(partida: string): string {
@@ -412,6 +415,16 @@ export class Almacen {
     });
   }
 
+  // ——— Tu casa (T-089 §4.3) ———————————————————————————————————————————————————
+
+  abrirCasa(): void {
+    this.cambiar({ casa: true, comarcaAbierta: null, editor: null, mercado: null, cronica: null });
+  }
+
+  cerrarCasa(): void {
+    this.cambiar({ casa: false });
+  }
+
   // ——— La cronica y la clasificacion (T-085 §4.3) ————————————————————————————————
 
   /** Abre el archivo en un turno (por defecto, el ultimo resuelto) o la clasificacion. */
@@ -424,6 +437,7 @@ export class Almacen {
       comarcaAbierta: null,
       editor: null,
       mercado: null,
+      casa: false,
     });
   }
 
@@ -457,7 +471,13 @@ export class Almacen {
 
   /** Abre el mercado en el panel (en una plaza, si se dice); cierra la ficha y el editor. */
   abrirMercado(plaza: string | null = null): void {
-    this.cambiar({ mercado: { plaza }, comarcaAbierta: null, editor: null, cronica: null });
+    this.cambiar({
+      mercado: { plaza },
+      comarcaAbierta: null,
+      editor: null,
+      cronica: null,
+      casa: false,
+    });
   }
 
   cerrarMercado(): void {
@@ -490,6 +510,7 @@ export class Almacen {
       resumenAbierto: false,
       mercado: null,
       cronica: null,
+      casa: false,
     });
     void this.preverRuta();
   }

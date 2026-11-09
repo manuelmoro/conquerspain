@@ -101,12 +101,12 @@ export interface QueHacer {
   /** Lo que se le propone al jugador, en una frase. */
   readonly texto: string;
   /** Donde se hace hoy; null si todavia no hay pantalla. */
-  readonly donde: 'ficha' | 'bandeja' | 'unidades' | 'mercado' | null;
+  readonly donde: 'ficha' | 'bandeja' | 'unidades' | 'mercado' | 'casa' | null;
   /** Si no hay pantalla, cuando llega. */
   readonly llega: string | null;
 }
 
-const CON_EL_GOBIERNO = 'llegará con la pantalla de gobierno';
+const CON_LOS_CONTRATOS = 'llegará con los contratos entre casas';
 
 /** La accion sugerida de cada aviso de la cronica, en castellano (ficha T-088 §2.9). */
 export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
@@ -162,20 +162,24 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
   'letra-de-cambio': {
     texto: 'Mueve dinero con una letra de cambio.',
     donde: null,
-    llega: CON_EL_GOBIERNO,
+    llega: CON_LOS_CONTRATOS,
   },
   politica: {
-    texto: 'Cambia el fuero o la carga fiscal de la comarca.',
-    donde: null,
-    llega: CON_EL_GOBIERNO,
+    texto: 'Cambia el fuero, la carga fiscal o la dehesa desde la ficha de la comarca.',
+    donde: 'ficha',
+    llega: null,
   },
-  'obra-mayor': { texto: 'Emprende una obra mayor.', donde: null, llega: CON_EL_GOBIERNO },
-  tradicion: { texto: 'Elige una tradición para tu casa.', donde: null, llega: CON_EL_GOBIERNO },
-  mayordomo: { texto: 'Deja una regla al mayordomo.', donde: null, llega: CON_EL_GOBIERNO },
+  'obra-mayor': {
+    texto: 'Emprende una obra mayor desde la ficha de la comarca.',
+    donde: 'ficha',
+    llega: null,
+  },
+  tradicion: { texto: 'Elige una tradición desde «Tu casa».', donde: 'casa', llega: null },
+  mayordomo: { texto: 'Deja una regla al mayordomo desde «Tu casa».', donde: 'casa', llega: null },
   'trasladar-corte': {
-    texto: 'Traslada la corte a otra comarca.',
-    donde: null,
-    llega: CON_EL_GOBIERNO,
+    texto: 'Traslada la corte desde la ficha de la comarca de destino.',
+    donde: 'ficha',
+    llega: null,
   },
 };
 

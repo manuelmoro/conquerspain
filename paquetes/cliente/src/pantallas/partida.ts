@@ -18,6 +18,7 @@ import { tocar } from '../editor-de-ruta.ts';
 import type { ClasificacionPublica, Cronica } from '@conquer/nucleo';
 
 import type { MercadoRecibido } from '../api.ts';
+import { pantallaDeCasa } from './casa.ts';
 import { pantallaDeCronica } from './cronica.ts';
 import { pantallaDeFicha } from './ficha.ts';
 import { pantallaDeMercado } from './mercado.ts';
@@ -239,6 +240,34 @@ function cronicaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | nu
   );
 }
 
+function casaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
+  const partida = estado.partida;
+  if (partida === null || !estado.casa) return null;
+  const vista = partida.recibido.vista;
+  const nombre = nombreDeComarcaEn(estado);
+  // Las plazas, con su nombre, salen del mercado: el atlas no las nombra.
+  const mercado = traer(
+    mercados,
+    `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`,
+    () => almacen.pedirMercado(),
+    almacen,
+  );
+  const plazas = (mercado?.panel.plazas ?? []).map((p) => ({ id: p.id, nombre: p.nombre }));
+  const comarcas = (partida.atlas?.comarcas ?? []).map((c) => ({ id: c.id, nombre: c.nombre }));
+  const propias = comarcas.filter((c) => vista.comarcas[c.id]?.nivel === 'propia');
+  const unidades = [...vista.recuas, ...vista.rebanyos];
+  return pantallaDeCasa(
+    almacen,
+    vista,
+    {
+      comarca: nombre,
+      plaza: (id) => plazas.find((p) => p.id === id)?.nombre ?? 'una plaza',
+      unidad: (id) => unidades.find((u) => u.id === id)?.nombre ?? 'una recua',
+    },
+    { plazas, comarcas, propias },
+  );
+}
+
 function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const partida = estado.partida;
   if (partida === null) return el('div');
@@ -400,12 +429,20 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
   );
   cabecera.append(
     boton(
+      'Tu casa',
+      () => {
+        if (almacen.estado.casa) almacen.cerrarCasa();
+        else almacen.abrirCasa();
+      },
+      'secundario empuje',
+    ),
+    boton(
       'Crónica',
       () => {
         if (almacen.estado.cronica === null) almacen.abrirCronica();
         else almacen.cerrarCronica();
       },
-      'secundario empuje',
+      'secundario',
     ),
     boton(
       'Mercado',
@@ -466,7 +503,10 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
   const ficha =
     editor !== null
       ? pantallaDeRuta(almacen, editor, nombreDeUnidad, nombre)
-      : (mercadoDe(almacen, estado) ?? cronicaDe(almacen, estado) ?? fichaDe(almacen, estado));
+      : (mercadoDe(almacen, estado) ??
+        cronicaDe(almacen, estado) ??
+        casaDe(almacen, estado) ??
+        fichaDe(almacen, estado));
   partes.push(
     el(
       'div',

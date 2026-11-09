@@ -1,6 +1,6 @@
 # T-089 · Gobierno: fuero y carga, obra mayor, tradiciones, mayordomo y corte
 
-**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** en curso (ficha **detallada** el 09-11-2026)
+**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** hecha (09-11-2026)
 
 ## 1. Contexto
 
@@ -92,13 +92,14 @@ npm run verificar
 Marca la tarea como `hecha` en `00-indice.md`, actualiza `ESTADO.md` (siguiente tarea y bitácora) y
 haz commit con `T-089: <resumen>`.
 
-## 8. Dónde va (09-11-2026)
+## 8. Cierre (09-11-2026)
 
-- **Hecho y verificado (§4.1 y §4.2):** `reglas/politica.ts` (la fase 8 la usa, las huellas no cambian),
-  `datos/gobierno.ts`, `ficha-gobierno.ts` y los bloqueos nuevos. Probado en `ficha.test.ts`: lo que la ficha
-  bloquea, la fase lo deja en espera; lo libre se aplica.
-- **Arreglado de paso (T-036):** el traslado de la corte no cobraba su coste (`costeTraslado` no se usaba en
-  ninguna parte). Ahora la orden lo reserva y lo paga como cualquier otra (`costeDeIntencion` y
-  `construirOrden`), con prueba en `intencion.test.ts`.
-- **Falta (§4.3):** la pantalla «Tu casa» en el cliente: tradiciones, mayordomo y sal de las conservas;
-  `QUE_HACER` sin ningún «llegará con» salvo la letra de cambio (T-103).
+- **Núcleo:** `reglas/politica.ts` (la fase 8 la usa y las huellas no cambian), `datos/gobierno.ts`,
+  `ficha-gobierno.ts` y los bloqueos nuevos. Se exportan también `CONDICIONES_DE_MAYORDOMO` y
+  `ACCIONES_DE_MAYORDOMO`.
+- **Arreglado de paso (T-036):** el traslado de la corte no cobraba su coste. Ahora lo reserva y lo paga como
+  cualquier otra orden, con prueba.
+- **Cliente:** `casa.ts` (puro: rondas por elegir, límite, la regla en castellano y cómo se compone) y
+  `pantallas/casa.ts`. `QUE_HACER` lleva cada orden a su sitio; solo la letra de cambio espera, a los contratos
+  (T-103), porque el servidor aún la rechaza.
+- **Verificado:** los cinco criterios probados y vistos en Chrome sin cabeza. 1279 pruebas; 51,2 KB gzip.
