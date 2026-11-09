@@ -3,6 +3,8 @@
 import type { AtlasDeJugador, FichaDeComarca, TablasDeReglas } from '@conquer/nucleo';
 
 import type { ClienteApi, CuentaDelCliente, EstadoRecibido, OrdenEnviada } from './api.ts';
+import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
+import { conPrevision, editorDe, intencionesDe } from './editor-de-ruta.ts';
 import type { Guardado } from './guardado.ts';
 import { preverBandeja } from './prevision.ts';
 import { resumirTurno } from './resumen.ts';
@@ -42,6 +44,8 @@ export interface EstadoDelCliente {
   /** Si el resumen esta a la vista; al cerrarlo se sigue usando en la bandeja. */
   readonly resumenAbierto: boolean;
   readonly errores: readonly { readonly codigo: string; readonly mensaje: string }[];
+  /** El editor de ruta abierto (T-083): mientras lo esta, tocar el mapa anyade paradas. */
+  readonly editor: EditorDeRuta | null;
 }
 
 export interface DependenciasDelAlmacen {
@@ -64,6 +68,7 @@ const INICIAL: EstadoDelCliente = {
   resumen: null,
   resumenAbierto: false,
   errores: [],
+  editor: null,
 };
 
 function claveDeVista(partida: string): string {
@@ -75,6 +80,15 @@ function claveDePendientes(partida: string): string {
 }
 
 /** La bandeja guardada, leida con cuidado: si algo no tiene forma, se descarta esa entrada. */
+/**
+ * Una clave de orden que ordena por el instante en que se crea. El servidor da de alta las ordenes
+ * por su identificador, que lleva la clave, y ese es su puesto en una cola: las que se dan despues
+ * van detras (T-083).
+ */
+export function claveOrdenada(instante: number, azar: string): string {
+  return `${Math.max(0, Math.floor(instante)).toString(36).padStart(9, '0')}${azar.replaceAll('-', '').slice(0, 12)}`;
+}
+
 export function leerPendientes(texto: string | null): IntencionLocal[] {
   if (texto === null) return [];
   let dato: unknown;
@@ -253,6 +267,20 @@ export class Almacen {
     return idCliente;
   }
 
+  /**
+   * Varias intenciones que van juntas (una mision, una ruta con su carga), en este orden: comparten
+   * clave con un sufijo creciente, asi entran en la cola de la recua en el orden en que se dieron.
+   */
+  async anyadirVarias(intenciones: readonly Readonly<Record<string, unknown>>[]): Promise<void> {
+    const clave = this.dep.nuevaClave();
+    const nuevas = intenciones.map((intencion, i) => {
+      const idCliente = `${clave}-${String(i).padStart(2, '0')}`;
+      return { idCliente, intencion: { ...intencion, idCliente }, error: null };
+    });
+    this.guardarPendientes([...this.estadoActual.pendientes, ...nuevas]);
+    await this.sincronizar();
+  }
+
   quitar(idCliente: string): void {
     this.guardarPendientes(this.estadoActual.pendientes.filter((p) => p.idCliente !== idCliente));
   }
@@ -362,6 +390,63 @@ export class Almacen {
       resumen: resumirTurno(antes, ahora.recibido.vista, cronicas),
       resumenAbierto: true,
     });
+  }
+
+  // ——— El editor de ruta (T-083 §4.5) ————————————————————————————————————————
+
+  /** Abre el editor de una recua o un rebanyo propios; cierra la ficha que hubiera abierta. */
+  abrirEditor(unidad: UnidadEditada): void {
+    const vista = this.estadoActual.partida?.recibido.vista;
+    if (vista === undefined) return;
+    const recua =
+      unidad.clase === 'recua' ? (vista.recuas.find((r) => r.id === unidad.id) ?? null) : null;
+    this.cambiar({ editor: editorDe(unidad, recua), comarcaAbierta: null, resumenAbierto: false });
+    void this.preverRuta();
+  }
+
+  cerrarEditor(): void {
+    this.cambiar({ editor: null });
+  }
+
+  /** Aplica un cambio al editor y, si cambia la ruta, pide la prevision nueva. */
+  editar(cambio: (e: EditorDeRuta) => EditorDeRuta): void {
+    const editor = this.estadoActual.editor;
+    if (editor === null) return;
+    const nuevo = cambio(editor);
+    this.cambiar({ editor: nuevo });
+    if (nuevo.version !== editor.version) void this.preverRuta();
+  }
+
+  private async preverRuta(): Promise<void> {
+    const partida = this.estadoActual.partida;
+    const editor = this.estadoActual.editor;
+    if (partida === null || editor === null || editor.paradas.length === 0) return;
+    const r = await this.dep.api.previsionDeRuta(partida.id, {
+      [editor.unidad.clase]: editor.unidad.id,
+      paradas: editor.paradas,
+      circular: editor.circular,
+    });
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return;
+    }
+    const actual = this.estadoActual.editor;
+    if (actual !== null)
+      this.cambiar({ editor: conPrevision(actual, editor.version, r.datos.prevision) });
+  }
+
+  /** Da la ruta del editor (con su carga, si hace falta) y lo cierra. */
+  async confirmarEditor(): Promise<void> {
+    const editor = this.estadoActual.editor;
+    const vista = this.estadoActual.partida?.recibido.vista;
+    if (editor === null || vista === undefined) return;
+    const recua = vista.recuas.find((r) => r.id === editor.unidad.id);
+    const donde = recua?.situacion.donde === 'comarca' ? recua.situacion.comarca : null;
+    const enCasa = donde !== null && vista.comarcas[donde]?.nivel === 'propia';
+    const intenciones = intencionesDe(editor, enCasa);
+    if (intenciones.length === 0) return;
+    this.cambiar({ editor: null });
+    await this.anyadirVarias(intenciones);
   }
 
   abrirResumen(): void {

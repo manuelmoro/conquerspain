@@ -94,6 +94,11 @@ svg.atlas {
   stroke-dasharray: 3 2;
   fill: none;
 }
+.ruta.propuesta {
+  stroke: var(--oro, #c9a227);
+  stroke-width: 2.4;
+  stroke-dasharray: 5 3;
+}
 .recua {
   fill: var(--cobalto);
 }

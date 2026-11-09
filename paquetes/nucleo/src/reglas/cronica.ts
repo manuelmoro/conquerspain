@@ -362,7 +362,7 @@ function resumenEconomico(lector: EstadoJugador, fuentes: FuentesDeCronica): Ent
   const pan = lector.almacen.pan;
   const dura =
     comen > 0
-      ? `, que dan para ${formatoNumero(Math.floor(pan / comen))} turnos al paso de ahora`
+      ? `, que dan para ${formatoNumero(Math.floor(pan / comen))} turno${Math.floor(pan / comen) === 1 ? '' : 's'} al paso de ahora`
       : '';
   const texto = `${movimiento.charAt(0).toUpperCase()}${movimiento.slice(1)}. Quedan ${formatoNumero(pan)} de pan${dura}.`;
   return { seccion: 'economia', texto, comarca: null, accionSugerida: null, unidad: null };

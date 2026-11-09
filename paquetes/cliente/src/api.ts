@@ -2,7 +2,14 @@
 // error del servidor (con su codigo y su mensaje en espanyol) y **ninguna respuesta** (red caida),
 // que es la que decide si una orden se queda en la bandeja para reintentarla.
 import { VERSION_REGLAS } from '@conquer/nucleo';
-import type { AtlasDeJugador, Cronica, FichaDeComarca, Orden, VistaJugador } from '@conquer/nucleo';
+import type {
+  AtlasDeJugador,
+  Cronica,
+  FichaDeComarca,
+  Orden,
+  PrevisionDeRuta,
+  VistaJugador,
+} from '@conquer/nucleo';
 
 export type RespuestaDeApi<T> =
   | { readonly ok: true; readonly estado: number; readonly datos: T }
@@ -187,6 +194,23 @@ export class ClienteApi {
     return this.pedir<{ turno: number; ficha: FichaDeComarca }>(
       'GET',
       `/partidas/${encodeURIComponent(partida)}/comarcas/${encodeURIComponent(comarca)}`,
+    );
+  }
+
+  /** La prevision de una ruta que se esta trazando (T-083 §4.3). */
+  previsionDeRuta(
+    partida: string,
+    pedida: {
+      readonly recua?: string;
+      readonly rebanyo?: string;
+      readonly paradas: readonly string[];
+      readonly circular: boolean;
+    },
+  ) {
+    return this.pedir<{ turno: number; prevision: PrevisionDeRuta }>(
+      'POST',
+      `/partidas/${encodeURIComponent(partida)}/prevision-de-ruta`,
+      pedida,
     );
   }
 

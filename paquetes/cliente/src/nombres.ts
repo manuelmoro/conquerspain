@@ -1,6 +1,13 @@
 // Lo que se lee en pantalla, en castellano (ficha T-088 §2.5): ningun identificador interno llega al
 // jugador. Las tablas son completas por tipo: si el nucleo anyade un valor, esto no compila.
-import type { EstadoDeOrden, Potencial, Recurso, Terreno, TipoDeOrden } from '@conquer/nucleo';
+import type {
+  Cometido,
+  EstadoDeOrden,
+  Potencial,
+  Recurso,
+  Terreno,
+  TipoDeOrden,
+} from '@conquer/nucleo';
 
 export const NOMBRE_DE_RECURSO: Readonly<Record<Recurso, string>> = {
   pan: 'pan',
@@ -45,6 +52,15 @@ export const NOMBRE_DE_ORDEN: Readonly<Record<TipoDeOrden, string>> = {
   cola: 'Reordenar la cola',
 };
 
+export const NOMBRE_DE_COMETIDO: Readonly<Record<Cometido, string>> = {
+  explorar: 'explorar',
+  portear: 'portear',
+  tratar: 'tratar en la plaza',
+  poblar: 'fundar puebla',
+  presencia: 'estar presente',
+  disolver: 'disolverse',
+};
+
 export const NOMBRE_DE_ESTADO: Readonly<Record<EstadoDeOrden, string>> = {
   pendiente: 'por empezar',
   'en curso': 'en marcha',
@@ -85,12 +101,11 @@ export interface QueHacer {
   /** Lo que se le propone al jugador, en una frase. */
   readonly texto: string;
   /** Donde se hace hoy; null si todavia no hay pantalla. */
-  readonly donde: 'ficha' | 'bandeja' | null;
+  readonly donde: 'ficha' | 'bandeja' | 'unidades' | null;
   /** Si no hay pantalla, cuando llega. */
   readonly llega: string | null;
 }
 
-const CON_LAS_RECUAS = 'llegará con las rutas sobre el mapa';
 const CON_EL_MERCADO = 'llegará con la pantalla del mercado';
 const CON_EL_GOBIERNO = 'llegará con la pantalla de gobierno';
 
@@ -125,9 +140,21 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
   },
   incorporar: { texto: 'Incorpora la comarca desde su ficha.', donde: 'ficha', llega: null },
   cola: { texto: 'Reordena la cola desde la bandeja de órdenes.', donde: 'bandeja', llega: null },
-  ruta: { texto: 'Cambia el camino de la recua o del rebaño.', donde: null, llega: CON_LAS_RECUAS },
-  carga: { texto: 'Carga o descarga la recua.', donde: null, llega: CON_LAS_RECUAS },
-  cometido: { texto: 'Dale otro encargo a la recua.', donde: null, llega: CON_LAS_RECUAS },
+  ruta: {
+    texto: 'Dale otro camino a la recua o al rebaño desde «Tus recuas y rebaños».',
+    donde: 'unidades',
+    llega: null,
+  },
+  carga: {
+    texto: 'Carga o descarga en las paradas de su ruta, desde «Tus recuas y rebaños».',
+    donde: 'unidades',
+    llega: null,
+  },
+  cometido: {
+    texto: 'Mándala a estar presente o a explorar desde la ficha de la comarca.',
+    donde: 'ficha',
+    llega: null,
+  },
   mercado: { texto: 'Compra o vende en una plaza.', donde: null, llega: CON_EL_MERCADO },
   'letra-de-cambio': {
     texto: 'Mueve dinero con una letra de cambio.',

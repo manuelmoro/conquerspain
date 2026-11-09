@@ -20,7 +20,10 @@ export function textoDeGanar(g: ComoGanarLa): TextoDeGanar {
       ? `Tu influencia: ${String(g.actual)}. Ya llega a los ${String(g.necesaria)} que pide incorporarla, si sacas ${String(g.ventaja)} de ventaja a la segunda casa.`
       : `Tu influencia: ${String(g.actual)} de los ${String(g.necesaria)} que pide incorporarla (y ${String(g.ventaja)} de ventaja sobre la segunda casa).`;
   let ritmo: string;
-  if (g.cambio === 0) ritmo = 'Este turno no se mueve.';
+  const soloResta = g.motivos.length > 0 && g.motivos.every((m) => m.puntos < 0);
+  if (g.cambio === 0 && g.actual === 0 && soloResta)
+    ritmo = 'Este turno no se mueve: no baja de 0.';
+  else if (g.cambio === 0) ritmo = 'Este turno no se mueve.';
   else ritmo = `Este turno: ${conSigno(g.cambio)}.`;
   if (g.actual < g.necesaria) {
     ritmo +=

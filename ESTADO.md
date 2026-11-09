@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 9 de noviembre de 2026 (T-088 completa a falta de repetir J-01; sigue T-083)
+**Última actualización:** 9 de noviembre de 2026 (T-083 hecha; T-088 a falta de repetir J-01; sigue T-084)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -14,7 +14,7 @@
 verificado**, también lo de la segunda sesión de J-01 (puntos 6 a 9, el 09-11-2026): tu influencia en las
 comarcas oídas, la ficha que explica cómo se gana una comarca con la misma cuenta que la fase 8, la crónica sin
 huecos (probado en 72 turnos de las ocho casas) y la acción sugerida en castellano. **Solo falta que el usuario
-repita J-01**; mientras, se avanza T-083, que no depende de él. Decisión tomada sin el usuario (lo pidió): el
+repita J-01**; mientras, el plan sigue (T-083 ya hecha). Decisión tomada sin el usuario (lo pidió): el
 regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 > **Cambio de orden (18-09-2026).** T-013 (caminos y cañadas) y T-014 (ferias) se hacen después de
@@ -23,13 +23,12 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 > identificadores provisionales del atlas se renumeran cada vez que el catálogo crece. Escribir esa
 > capa ahora sería trabajo para rehacer.
 
-**T-083 · Recuas y rebaños en el mapa** (en curso, a la vez: no depende de J-01). Ficha detallada; hecho la
-previsión de viajes compartida en el núcleo y el relevo de la ruta circular. Dónde va, en la ficha §9.
-
 ## Siguiente tarea
 
-Terminar **T-083**, que también hace jugable la expansión.
-Cuando el usuario pueda, que cierre el checkpoint **J-01 · Entender y ordenar** para dar por cerrada T-088.
+**T-084 · Mercado, ferias y precios** (primero, detallar su ficha). Hereda de T-083 comprar y vender con precio
+límite en las paradas de una ruta. Cuando el usuario pueda, que cierre el checkpoint **J-01 · Entender y
+ordenar** para dar por cerrada T-088; con T-083 hecha, ya puede probar también la expansión (recuas presentes y
+exploradoras desde la ficha).
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
 ```bash
@@ -81,7 +80,7 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | Documentación de diseño (`docs/01` a `docs/09`) | Completa para las fases 0 a 5; la fase 6 (conflicto) está esbozada |
 | Plan de tareas (`docs/plan/`) | Índice completo; fichas detalladas de las fases 0 a 2 |
 | `maqueta/` | Maqueta visual v0.1 publicada y congelada. Referencia de dirección de arte, **no** es el juego |
-| `paquetes/` | `servidor`: persistencia (T-060), reloj (T-061), API (T-062), cuentas (T-063), avisos (T-064) y alta (T-065) hechos; falta el transporte de correo real (T-066); `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `cliente`: armazón (T-080), atlas (T-081), ficha y bandeja (T-082) |
+| `paquetes/` | `cliente` desde T-083: recuas y rebaños con editor de ruta y misiones desde la ficha; `nucleo/src/prevision/`: la previsión compartida. `servidor`: persistencia (T-060), reloj (T-061), API (T-062), cuentas (T-063), avisos (T-064) y alta (T-065) hechos; falta el transporte de correo real (T-066); `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `cliente`: armazón (T-080), atlas (T-081), ficha y bandeja (T-082) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
 | Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
@@ -127,6 +126,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-083 hecha: recuas y rebaños sobre el mapa; la expansión ya se juega.** La previsión de viajes vive en el núcleo (`prevision/`) y la comparten robots, servidor y cliente. La ficha de una neutral manda una recua **a estar presente** o **a explorar** de una vez (cargar, ir, encargo y vuelta), con su llegada y su influencia previstas y probadas resolviendo turnos. Editor de ruta tocando el mapa, con previsión del servidor (`POST /partidas/:id/prevision-de-ruta`): tramos, llegada a cada parada, bastimento y avisos de puerto o de calor. Hay circular, carga por parada y la ruta propuesta dibujada. «Tus recuas y rebaños» en el panel y «Darle ruta» desde los avisos de la crónica (`EntradaDeCronica.unidad`). **Regla nueva:** una ruta releva a una circular sin pararla. **Fallo encontrado en el navegador y arreglado:** las órdenes de una misión entraban en la cola en cualquier orden porque el cliente daba claves al azar; ahora van ordenadas. 1260 pruebas en verde; 43,9 KB gzip |
 | 09-11-2026 | **T-083 (en curso): ficha detallada y primeros pasos.** La previsión de viajes de los robots (`Tablero`, `preverViaje`, `provisionPara`…) pasa al núcleo (`prevision/`) para que el cliente vea el mismo turno de llegada que el motor; el banco no cambia. **Regla nueva** (docs/02 §2.5.2): una orden `ruta` releva a una ruta circular sin pararla antes; antes la ruta nueva se quedaba esperando para siempre. Comprar y vender con precio límite en las paradas se lleva a T-084. 1246 pruebas en verde |
 | 09-11-2026 | **T-088 (en curso): hechos los puntos 6 a 9 de la segunda sesión de J-01; solo falta repetir J-01.** La vista da tu influencia también en las comarcas oídas (null si ya tienen dueño, como en las exploradas), y el modo Dominios la rotula. La ficha de toda neutral conocida explica **cómo ganarla** (`comoGanarLa`, sobre `fuentesDeInfluencia`, la misma función de la fase 8): actual frente a 60, cambio del turno con sus motivos, turnos hasta llegar y qué lo aceleraría; probado contra la fase al resolver. Regalo e incorporación también en las oídas (decidido sin el usuario, por encargo suyo: no cambia ninguna regla) y el consejo de explorarlas. `rebanyo.sin-pasto` y `cometido.sin-efecto` llevan su comarca: lo segundo lo encontró la prueba nueva de crónica larga (72 turnos, ocho casas). Acción sugerida en castellano (`QUE_HACER`), que dice cuándo llega si aún no tiene pantalla. Se abre **T-089** (gobierno en el cliente: fuero, obra mayor, tradiciones, mayordomo y corte), que no tenía tarea. 1245 pruebas en verde; 39,9 KB gzip |
 | 25-09-2026 | **J-01, segunda sesión: el mapa, la ficha y el resumen ya funcionan; salen seis hallazgos nuevos**, anotados en el checkpoint y repartidos en el plan: a T-088, la influencia visible en las comarcas oídas, la ficha que explica cómo ganar una comarca, la crónica sin huecos (`{comarca}` en el rebaño sin pasto) y la acción sugerida legible; a T-083, la expansión jugable (recuas presentes y exploradoras desde la ficha) y mover los rebaños desde sus avisos |

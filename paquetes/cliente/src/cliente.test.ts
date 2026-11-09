@@ -5,7 +5,6 @@ import { describe, expect, it } from 'vitest';
 import { TABLAS_DEL_JUEGO, costeDeIntencion, validarIntencion } from '@conquer/nucleo';
 import type { IdPartida } from '@conquer/nucleo';
 
-import { apiDePrueba, CUENTAS } from '../../servidor/src/api/prueba-comun.ts';
 import { servirHttp } from '../../servidor/src/api/http.ts';
 import { crearApi } from '../../servidor/src/api/manejadores.ts';
 import { ServicioDeAltas } from '../../servidor/src/altas/servicio.ts';
@@ -17,56 +16,13 @@ import { RepositorioSqlite } from '../../servidor/src/persistencia/sqlite.ts';
 import { proveedorDeRecorte } from '../../servidor/src/reloj/mundoDeLaPartida.ts';
 import { RegistroEnMemoria } from '../../servidor/src/reloj/registro.ts';
 import { Almacen, leerPendientes } from './almacen.ts';
+import { MESTA, montar } from './prueba-comun.ts';
 import { ClienteApi } from './api.ts';
 import type { TarroDeCookies } from './api.ts';
 import { escucharEventos, esperaDeReconexion } from './eventos.ts';
 import type { FuenteDeEventos } from './eventos.ts';
 import { GuardadoEnMemoria } from './guardado.ts';
 import { preverBandeja } from './prevision.ts';
-
-const MESTA = CUENTAS['mesta'] ?? '';
-
-/** Un cliente contra la API de pruebas por HTTP real, entrando como una cuenta (cabecera x-cuenta). */
-async function montar(opciones: { turnosJugados?: number } = {}) {
-  const e = await apiDePrueba({ turnosJugados: opciones.turnosJugados ?? 1 });
-  const servidor = await servirHttp(e.api);
-  const base = `http://127.0.0.1:${String(servidor.puerto)}`;
-  const red = { caida: false, perderRespuestas: false };
-  const conCuenta: typeof fetch = async (url, init) => {
-    if (red.caida) throw new TypeError('fetch failed');
-    const respuesta = await fetch(url, {
-      ...init,
-      headers: { ...Object.fromEntries(new Headers(init?.headers).entries()), 'x-cuenta': MESTA },
-    });
-    if (red.perderRespuestas) throw new TypeError('fetch failed');
-    return respuesta;
-  };
-  const api = new ClienteApi({ base, fetch: conCuenta });
-  const guardado = new GuardadoEnMemoria();
-  let n = 0;
-  const almacen = new Almacen({
-    api,
-    guardado,
-    reglas: TABLAS_DEL_JUEGO,
-    ahora: () => AHORA + 1000,
-    nuevaClave: () => {
-      n += 1;
-      return `k${String(n)}`;
-    },
-  });
-  const capital = (await e.repo.ultimoEstado('p1' as IdPartida))?.jugadores['mesta']?.capital ?? '';
-  return {
-    e,
-    almacen,
-    guardado,
-    red,
-    capital,
-    cerrar: async () => {
-      await servidor.cerrar();
-      await e.repo.cerrar();
-    },
-  };
-}
 
 describe('la prevision es exacta (criterio 1)', () => {
   it('el coste que prevé el cliente con su vista es el de la orden que construye el servidor', async () => {

@@ -81,6 +81,16 @@ describe('cómo ganar una comarca, en palabras (T-088 §2.7)', () => {
     expect(textoDeGanar({ ...base, cambio: -1, turnosHastaLaNecesaria: null }).ritmo).toBe(
       'Este turno: -1. A este paso no llegas.',
     );
+    const enCero = {
+      ...base,
+      actual: 0,
+      cambio: 0,
+      motivos: [{ texto: 'nadie', puntos: -1 }],
+      turnosHastaLaNecesaria: null,
+    };
+    expect(textoDeGanar(enCero).ritmo).toBe(
+      'Este turno no se mueve: no baja de 0. A este paso no llegas.',
+    );
     expect(textoDeGanar({ ...base, actual: 70, turnosHastaLaNecesaria: 0 }).cabecera).toMatch(
       /Ya llega/,
     );

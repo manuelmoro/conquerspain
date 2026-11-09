@@ -14,7 +14,10 @@ import { colasDe, moverEnLaCola, resumenDeRecursos, tiempoHastaElCorte } from '.
 import { NOMBRE_DE_ESTADO } from '../nombres.ts';
 import { describirOrden, fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
+import { tocar } from '../editor-de-ruta.ts';
 import { pantallaDeFicha } from './ficha.ts';
+import { pantallaDeRuta } from './ruta.ts';
+import { pantallaDeUnidades } from './unidades.ts';
 import { dialogoDeResumen } from './resumen.ts';
 
 const NOMBRE_DE_MODO: Readonly<Record<ModoDeAtlas, string>> = {
@@ -43,9 +46,24 @@ function nombreDeComarcaEn(estado: EstadoDelCliente): (id: string) => string {
   return (id) => comarcas.find((c) => c.id === id)?.nombre ?? 'una comarca';
 }
 
+/** La ruta del editor para dibujarla: desde donde esta la unidad, por los tramos previstos. */
+function rutaPropuesta(estado: EstadoDelCliente): string[] {
+  const e = estado.editor;
+  const vista = estado.partida?.recibido.vista;
+  if (e === null || vista === undefined || e.paradas.length === 0) return [];
+  const unidades = e.unidad.clase === 'recua' ? vista.recuas : vista.rebanyos;
+  const situacion = unidades.find((u) => u.id === e.unidad.id)?.situacion;
+  if (situacion === undefined) return [];
+  const desde = situacion.donde === 'comarca' ? situacion.comarca : situacion.desde;
+  const tramos = e.prevision?.tramos ?? [];
+  return tramos.length > 0 ? [desde, ...tramos.map((t) => t.hasta)] : [desde, ...e.paradas];
+}
+
 function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
+  // Con el editor de ruta abierto, tocar el mapa traza la ruta; si no, abre la ficha.
   alTocarComarca = (comarca) => {
-    almacen.abrirComarca(comarca);
+    if (almacen.estado.editor !== null) almacen.editar((e) => tocar(e, comarca));
+    else almacen.abrirComarca(comarca);
   };
   const partida = estado.partida;
   if (partida === null || partida.atlas === null) return el('p', {}, 'Sin mapa todavía.');
@@ -57,11 +75,13 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       alTocarComarca(comarca);
     });
   }
-  const clave = `${partida.id}|${String(partida.recibido.turno)}|${atlas.modo}|${String(partida.recibidaEn)}`;
+  const propuesta = rutaPropuesta(estado);
+  const clave = `${partida.id}|${String(partida.recibido.turno)}|${atlas.modo}|${String(partida.recibidaEn)}|${propuesta.join(',')}`;
   if (clave !== atlas.pintado) {
     const dibujo = componerAtlas(partida.atlas, partida.recibido.vista, {
       modo: atlas.modo,
       estacion: estacionDe(partida.recibido.turno, TABLAS_DEL_JUEGO),
+      propuesta,
     });
     atlas.pintado = clave;
     // Se pinta cuando el <svg> ya esta en el documento, para que tenga tamanyo.
@@ -104,7 +124,9 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
     el(
       'p',
       { class: 'suave' },
-      `${EXPLICACION_DE_MODO[atlas.modo]} Toca una comarca para ver su ficha.`,
+      estado.editor === null
+        ? `${EXPLICACION_DE_MODO[atlas.modo]} Toca una comarca para ver su ficha.`
+        : 'Trazando una ruta: toca las comarcas donde parar.',
     ),
     el('div', { class: 'contenedor-atlas' }, atlas.svg),
     leyenda,
@@ -326,7 +348,17 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
   }
   for (const e of estado.errores)
     partes.push(el('p', { class: 'mensaje-error', role: 'alert' }, e.mensaje));
-  const ficha = fichaDe(almacen, estado);
+  const nombre = nombreDeComarcaEn(estado);
+  const editor = estado.editor;
+  const nombreDeUnidad =
+    editor === null
+      ? ''
+      : ([...vista.recuas, ...vista.rebanyos].find((u) => u.id === editor.unidad.id)?.nombre ??
+        'la unidad');
+  const ficha =
+    editor === null
+      ? fichaDe(almacen, estado)
+      : pantallaDeRuta(almacen, editor, nombreDeUnidad, nombre);
   partes.push(
     el(
       'div',
@@ -336,6 +368,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         'aside',
         { class: 'panel', 'data-conservar-scroll': 'panel' },
         ...(ficha === null ? [] : [ficha]),
+        pantallaDeUnidades(almacen, vista.recuas, vista.rebanyos, nombre),
         bandejaDe(almacen, estado),
       ),
     ),

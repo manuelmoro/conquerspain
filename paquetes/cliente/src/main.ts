@@ -4,7 +4,7 @@ import './atlas/atlas.css';
 
 import { TABLAS_DEL_JUEGO } from '@conquer/nucleo';
 
-import { Almacen } from './almacen.ts';
+import { Almacen, claveOrdenada } from './almacen.ts';
 import { ClienteApi } from './api.ts';
 import { escucharEventos } from './eventos.ts';
 import { guardadoDelNavegador } from './guardado.ts';
@@ -22,7 +22,7 @@ const almacen = new Almacen({
   guardado: guardadoDelNavegador(),
   reglas: TABLAS_DEL_JUEGO,
   ahora: () => Date.now(),
-  nuevaClave: () => crypto.randomUUID().replaceAll('-', '').slice(0, 24),
+  nuevaClave: () => claveOrdenada(Date.now(), crypto.randomUUID()),
 });
 
 let desconectarEventos: (() => void) | null = null;

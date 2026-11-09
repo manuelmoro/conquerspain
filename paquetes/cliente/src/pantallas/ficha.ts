@@ -26,6 +26,37 @@ function confirmacion(almacen: Almacen, accion: AccionDeFicha, turno: number): H
       el('p', {}, el('strong', {}, 'Qué hacer: '), accion.bloqueo.salida),
     );
   }
+  // Una mision son varias ordenes encadenadas con sus fechas: se da entera y ahora.
+  if (accion.intenciones.length > 1) {
+    return el(
+      'div',
+      { class: 'confirmacion' },
+      el('p', {}, el('strong', {}, 'Previsto: '), accion.efecto),
+      el(
+        'p',
+        { class: 'fila' },
+        el('strong', {}, 'Se lleva del almacén:'),
+        fichasDeRecursos(accion.coste),
+      ),
+      el(
+        'p',
+        { class: 'fila' },
+        boton('Mandarla', () => {
+          dada = accion.clave;
+          abierta = null;
+          void almacen.anyadirVarias(accion.intenciones);
+        }),
+        boton(
+          'Cancelar',
+          () => {
+            abierta = null;
+            almacen.refrescar();
+          },
+          'secundario',
+        ),
+      ),
+    );
+  }
   const cuando = el('select', { 'aria-label': 'Cuándo' });
   cuando.append(el('option', { value: '' }, 'Ahora'));
   for (let t = turno + 1; t <= turno + TURNOS_DE_PLAN; t += 1) {

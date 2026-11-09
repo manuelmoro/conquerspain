@@ -119,6 +119,18 @@ export function dialogoDeResumen(
         const cuando = sugerida.llega === null ? '' : ` (desde aquí todavía no: ${sugerida.llega})`;
         item.append(el('p', { class: 'suave' }, `Qué hacer: ${sugerida.texto}${cuando}`));
       }
+      const unidad = entrada.unidad;
+      if (unidad !== null && entrada.accionSugerida === 'ruta') {
+        item.append(
+          boton(
+            unidad.clase === 'rebanyo' ? 'Darle ruta al rebaño' : 'Darle ruta a la recua',
+            () => {
+              almacen.abrirEditor(unidad);
+            },
+            'secundario icono',
+          ),
+        );
+      }
       const comarca = entrada.comarca;
       if (comarca !== null) {
         item.append(

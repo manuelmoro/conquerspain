@@ -138,6 +138,8 @@ function posicion(
 export interface OpcionesDeComposicion {
   readonly modo: ModoDeAtlas;
   readonly estacion: Estacion;
+  /** La ruta que se esta trazando en el editor, comarca a comarca desde donde sale (T-083). */
+  readonly propuesta?: readonly string[];
 }
 
 export function componerAtlas(
@@ -242,6 +244,19 @@ export function componerAtlas(
       clase: 'rotulo dato ruta',
       texto: `${String(Math.max(0, Math.ceil(restante / 1000)))} j`,
       prioridad: PRIORIDAD.propia,
+    });
+  }
+
+  const propuesta = (opciones.propuesta ?? []).flatMap((id) => {
+    const punto = centros.get(id);
+    return punto === undefined ? [] : [punto];
+  });
+  if (propuesta.length > 1) {
+    figuras.push({
+      capa: 'movimiento',
+      forma: 'linea',
+      puntos: propuesta,
+      clase: 'ruta propuesta',
     });
   }
 

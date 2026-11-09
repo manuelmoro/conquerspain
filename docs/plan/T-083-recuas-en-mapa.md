@@ -1,6 +1,6 @@
 # T-083 · Recuas y rebaños: rutas sobre el mapa
 
-**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** en curso (ficha **detallada** el 09-11-2026)
+**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** hecha (09-11-2026)
 
 ## 1. Contexto
 
@@ -150,20 +150,24 @@ npm run verificar
 Marca la tarea como `hecha` en `00-indice.md`, actualiza `ESTADO.md` (siguiente tarea y bitácora) y
 haz commit con `T-083: <resumen>`.
 
-## 9. Dónde va (09-11-2026)
+## 9. Cierre (09-11-2026)
 
-- **Hecho y verificado (núcleo y servidor):**
-  - §4.1, la previsión en el núcleo (`paquetes/nucleo/src/prevision/`); el banco solo cambia sus imports.
-    `Resultado` de viaje se llama `ResultadoDeViaje` para no chocar con el de validación.
-  - §4.2, misiones (`prevision/misiones.ts`). La exploración se prevé **como expedición**, que es como la
-    trata el motor: con el bastimento normal no cabía en la recua de la Mesta. La ficha ofrece
-    `mision-presencia` (neutral explorada) y `mision-explorar` (explorada u oída) con `intenciones`; probado
-    resolviendo turnos (`ficha.test.ts`) y por la API (`servidor/src/api/prevision.test.ts`).
-  - §4.3, `POST /partidas/:id/prevision-de-ruta` (`servidor/src/api/prevision.ts`, código nuevo
-    `unidad-desconocida`) sobre `prevision/ruta.ts`; probado contra el motor (`prevision-de-ruta.test.ts`).
-  - §4.4, el relevo de la circular.
-  - `EntradaDeCronica.unidad`, solo en la crónica de su dueño. Las crónicas ya guardadas, sin ese campo, se
-    leen como nula (`validarCronica.ts`).
-- **Falta: el cliente (§4.5).** Mandar las `intenciones` de las misiones desde la ficha; la pestaña de
-  unidades; el editor de ruta con su estado puro y probado; «Darle ruta» en el resumen; la ruta propuesta en
-  el mapa; `QUE_HACER` de `ruta`, `carga` y `cometido` con su sitio.
+Todo lo de §4, hecho y verificado:
+
+- **Núcleo:** `prevision/` (tablero, viajes, misiones, ruta) y el relevo de la circular.
+- **Servidor:** `POST /partidas/:id/prevision-de-ruta`.
+- **Crónica:** `EntradaDeCronica.unidad`; las crónicas antiguas se leen con unidad nula.
+- **Cliente:** `editor-de-ruta.ts`, `pantallas/{unidades,ruta}.ts`, la ruta propuesta en el atlas, las
+  misiones en la ficha y «Darle ruta» en el resumen.
+
+Probado en Chrome sin cabeza (escritorio): formar una recua, abrirle el editor, tocar dos comarcas con su
+llegada prevista y mandar una misión de exploración desde la ficha de una comarca oída.
+
+**Lo que encontró la prueba en navegador.** Las órdenes de una misión entraban en la cola de la recua en
+cualquier orden. El servidor da de alta las órdenes por su identificador, que lleva la clave del cliente, y el
+cliente generaba claves al azar. Ahora las órdenes que van juntas comparten clave con un sufijo creciente
+(`anyadirVarias`), y las claves sueltas empiezan por el instante en que se crean (`claveOrdenada`). Una prueba
+con claves decrecientes lo vigila: falla sin el arreglo.
+
+Criterios: 1, 3, 4, 5, 6 y 7 probados con pruebas automáticas. El 2 está probado en el estado puro; la medida
+de un minuto en un móvil de verdad se hace en J-02.

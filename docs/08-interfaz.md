@@ -77,6 +77,15 @@ hoja inferior. Las acciones son tarjetas con su coste en fichas y sus turnos; al
 Lista y ficha: dónde están, qué llevan, qué jornadas les quedan, qué comen. Editor de ruta sobre el
 mapa, con el coste en jornadas por tramo y el aviso si un puerto se cierra antes de que lleguen.
 
+**Hecho en T-083.** En el panel, «Tus recuas y rebaños», cada una con «Darle ruta». Con el editor abierto, tocar
+el mapa añade paradas (tocar la última la quita) y la ruta propuesta se dibuja en dorado. Cada cambio trae del
+servidor la previsión, que sale de la vista del jugador con la misma cuenta que el motor: tramos con sus
+jornadas, turno de llegada a cada parada, bastimento y avisos (puerto que se cierra, calor sin sal). También
+trae la casilla «circular», la carga y descarga por parada, y la de cargar el bastimento antes de salir. Desde la
+ficha de una comarca neutral, «Enviar una recua a estar presente» o «a explorar» lo hace todo de una vez
+(cargar, ir, encargo y vuelta). Un aviso de la crónica sobre una recua o un rebaño lleva «Darle ruta».
+Comprar y vender con precio límite en las paradas llega con el mercado (T-084).
+
 ### 8.2.7 Mercado y ferias
 Precios conocidos por plaza, con su fecha. Órdenes con precio límite. Calendario de ferias.
 Histórico de precios como gráfico pequeño (el precio de la lana es una historia).
