@@ -247,9 +247,8 @@ function planoDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null
       mapaEn = comarca;
       almacen.refrescar();
     },
-    () => {
-      almacen.refrescar();
-    },
+    almacen,
+    partida.recibido.turno,
   );
 }
 

@@ -4,6 +4,7 @@
 import { crearContexto } from './contexto.ts';
 import { accionesDeGobierno } from './ficha-gobierno.ts';
 import { BLOQUEOS } from './datos/bloqueos.ts';
+import { PARA_QUE_SIRVE } from './datos/para-que-sirve.ts';
 import { datosDeProduccion } from './fases/02-produccion.ts';
 import { costeDeIntencion } from './ordenes/intencion.ts';
 import {
@@ -360,7 +361,7 @@ export function fichaDeComarca(
         `${nivel > 0 ? 'Ampliar' : 'Construir'} ${datos.nombre.toLowerCase()}`,
         { tipo: 'construir', comarca, edificio: tipo },
         datos.turnos,
-        efecto === '' ? datos.nombre : efecto,
+        efecto === '' ? PARA_QUE_SIRVE[tipo] : efecto,
         motivo,
         propia,
       ),

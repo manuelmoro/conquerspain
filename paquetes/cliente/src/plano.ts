@@ -1,29 +1,10 @@
 // El plano de una comarca propia (ficha T-092): cada solar es una parcela, y se ve que la ocupa y por
 // que. Cada nivel de cada edificio ocupa una, cada obra de edificio la suya, y el resto quedan libres.
 // Puro: la pantalla solo dibuja lo que esto decide.
-import type { DetalleDePropia, TipoEdificio } from '@conquer/nucleo';
+import { PARA_QUE_SIRVE, TABLAS_DEL_JUEGO } from '@conquer/nucleo';
+import type { AccionDeFicha, DetalleDePropia, Recurso, TipoEdificio } from '@conquer/nucleo';
 
 import { NOMBRE_DE_RECURSO } from './nombres.ts';
-
-/** Para que sirve cada edificio, en una linea (docs/03 §3.2). */
-export const PARA_QUE_SIRVE: Readonly<Record<TipoEdificio, string>> = {
-  granja: 'Campos de cereal: da pan, más o menos según la estación.',
-  huerta: 'Regadío pegado al pueblo: da pan sin depender de la estación.',
-  molino: 'Muele el grano: más pan de las granjas de la comarca.',
-  granero: 'Guarda el grano: se pudre menos y cabe más en el almacén.',
-  aserradero: 'Tala el monte: da madera, y el monte se va agotando.',
-  carbonera: 'Quema madera para hacer carbón, que piden las ferrerías.',
-  cantera: 'Saca piedra para obras y edificios; la veta se agota.',
-  ferreria: 'Funde el hierro de la comarca; consume carbón.',
-  salina: 'Evapora agua salada: da sal, que se vende cara.',
-  majada: 'Corrales y pasto: un rebaño puede invernar aquí.',
-  lonja: 'Lonja de pescado: da pan del mar y gasta algo de sal.',
-  mercado: 'Plaza del pueblo: da maravedís y abre el comercio local.',
-  venta: 'Posada del camino: abre plaza y cobra a quien pasa.',
-  casas: 'Viviendas: más sitio para vecinos, y con ellos más brazos.',
-  cerca: 'Muralla de piedra: la comarca es más leal y está más segura.',
-  acequia: 'Canal de riego: la tierra de labor rinde más.',
-};
 
 export type Parcela =
   | {
@@ -109,7 +90,7 @@ export function explicarParcela(
       titulo: 'Solar libre',
       lineas: [
         'Aquí cabe un edificio nuevo o un nivel más de uno que ya tienes.',
-        'Mira «Qué puedes hacer» en la ficha para elegir qué levantar.',
+        'Debajo tienes lo que puedes levantar ya, con lo que cuesta y lo que da cada turno.',
       ],
     };
   }
@@ -130,7 +111,27 @@ export function explicarParcela(
   ];
   if (produce.length > 0)
     lineas.push(
-      `${parcela.nivel === 1 ? 'Da' : 'Entre todos sus niveles da'} ${produce.join(' y ')} por turno.`,
+      `Cada turno: ${parcela.nivel === 1 ? 'da' : 'entre sus niveles da'} ${produce.join(' y ')}.`,
     );
+  const consumo = Object.entries(TABLAS_DEL_JUEGO.edificios[parcela.edificio].consumo)
+    .filter((par): par is [Recurso, number] => par[1] > 0)
+    .map(([r, n]) => `${String(n * parcela.nivel)} de ${NOMBRE_DE_RECURSO[r]}`);
+  if (consumo.length > 0) lineas.push(`Gasta ${consumo.join(' y ')} por turno; sin eso, se para.`);
   return { titulo: parcela.nombre, lineas };
+}
+
+/**
+ * Lo que se puede hacer desde una parcela: en un edificio, ampliarlo o derribar un nivel (lo bloqueado
+ * tambien, para ver por que); en un solar libre, lo que se puede levantar ya; en una obra, nada.
+ */
+export function accionesDeParcela(
+  parcela: Parcela,
+  acciones: readonly AccionDeFicha[],
+): readonly AccionDeFicha[] {
+  if (parcela.clase === 'obra') return [];
+  if (parcela.clase === 'edificio') {
+    const propias = [`construir-${parcela.edificio}`, `derribar-${parcela.edificio}`];
+    return acciones.filter((a) => propias.includes(a.clave));
+  }
+  return acciones.filter((a) => a.clave.startsWith('construir-') && a.bloqueo === null);
 }

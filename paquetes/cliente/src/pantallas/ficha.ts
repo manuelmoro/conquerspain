@@ -17,98 +17,12 @@ import {
 } from '../estado-de-comarca.ts';
 import { textoDeGanar } from '../ganar.ts';
 import { fichasDeRecursos } from './comun.ts';
+import { accionAbierta, cerrarAccion, tarjetaDeAccion } from './acciones.ts';
 import { boton, el } from './dom.ts';
 import { planoEnFicha } from './plano.ts';
 
-const TURNOS_DE_PLAN = 6;
-/** La accion abierta y la ultima dada, por comarca: sobreviven a las repintadas. */
-let abierta: string | null = null;
-let dada: string | null = null;
 /** Si el jugador ha desplegado lo que todavia no puede hacer; se recuerda entre repintadas. */
 let verBloqueadas = false;
-
-function confirmacion(almacen: Almacen, accion: AccionDeFicha, turno: number): HTMLElement {
-  if (accion.bloqueo !== null) {
-    return el(
-      'div',
-      { class: 'confirmacion' },
-      el('p', {}, el('strong', {}, 'No se puede: '), accion.bloqueo.causa),
-      el('p', {}, el('strong', {}, 'Qué hacer: '), accion.bloqueo.salida),
-    );
-  }
-  // Una mision son varias ordenes encadenadas con sus fechas: se da entera y ahora.
-  if (accion.intenciones.length > 1) {
-    return el(
-      'div',
-      { class: 'confirmacion' },
-      el('p', {}, el('strong', {}, 'Previsto: '), accion.efecto),
-      el(
-        'p',
-        { class: 'fila' },
-        el('strong', {}, 'Se lleva del almacén:'),
-        fichasDeRecursos(accion.coste),
-      ),
-      el(
-        'p',
-        { class: 'fila' },
-        boton('Mandarla', () => {
-          dada = accion.clave;
-          abierta = null;
-          void almacen.anyadirVarias(accion.intenciones);
-        }),
-        boton(
-          'Cancelar',
-          () => {
-            abierta = null;
-            almacen.refrescar();
-          },
-          'secundario',
-        ),
-      ),
-    );
-  }
-  const cuando = el('select', { 'aria-label': 'Cuándo' });
-  cuando.append(el('option', { value: '' }, 'Ahora'));
-  for (let t = turno + 1; t <= turno + TURNOS_DE_PLAN; t += 1) {
-    cuando.append(el('option', { value: String(t) }, `En el turno ${String(t)}`));
-  }
-  return el(
-    'div',
-    { class: 'confirmacion' },
-    el('p', {}, el('strong', {}, 'Previsto: '), accion.efecto),
-    el('p', { class: 'fila' }, el('strong', {}, 'Coste:'), fichasDeRecursos(accion.coste)),
-    el(
-      'p',
-      {},
-      el('strong', {}, 'Tarda: '),
-      `${String(accion.turnos)} turno${accion.turnos === 1 ? '' : 's'}`,
-    ),
-    el(
-      'p',
-      { class: 'fila' },
-      el('label', { class: 'suave' }, 'Cuándo'),
-      cuando,
-      boton(
-        'Dar la orden',
-        () => {
-          const programado = cuando.value === '' ? {} : { turnoProgramado: Number(cuando.value) };
-          dada = accion.clave;
-          abierta = null;
-          void almacen.anyadir({ ...accion.intencion, ...programado });
-        },
-        'dar-la-orden',
-      ),
-      boton(
-        'Cancelar',
-        () => {
-          abierta = null;
-          almacen.refrescar();
-        },
-        'secundario',
-      ),
-    ),
-  );
-}
 
 export function pantallaDeFicha(
   almacen: Almacen,
@@ -121,7 +35,7 @@ export function pantallaDeFicha(
     boton(
       '✕',
       () => {
-        abierta = null;
+        cerrarAccion();
         almacen.abrirComarca(null);
       },
       'cerrar secundario icono',
@@ -175,9 +89,8 @@ export function pantallaDeFicha(
       planoEnFicha(
         ficha,
         almacen.estado.partida?.recibido.vista.jugador.capital === ficha.id,
-        () => {
-          almacen.refrescar();
-        },
+        almacen,
+        turno,
       ) ?? '',
       el('h3', {}, 'Edificios'),
       p.edificios.length === 0
@@ -296,7 +209,7 @@ export function pantallaDeFicha(
       el('summary', {}, `Todavía no puedes (${String(bloqueadas.length)})`),
       listaDe(bloqueadas),
     );
-    const abiertaAqui = bloqueadas.some((a) => abierta === `${ficha.id}|${a.clave}`);
+    const abiertaAqui = bloqueadas.some((a) => accionAbierta(ficha.id, a.clave));
     if (verBloqueadas || abiertaAqui) plegable.setAttribute('open', '');
     plegable.addEventListener('toggle', () => {
       verBloqueadas = plegable.hasAttribute('open');
@@ -308,37 +221,4 @@ export function pantallaDeFicha(
     { class: 'ficha tarjeta hoja', 'data-conservar-scroll': 'ficha' },
     ...partes,
   );
-}
-
-function tarjetaDeAccion(
-  almacen: Almacen,
-  comarca: string,
-  accion: AccionDeFicha,
-  turno: number,
-): HTMLElement {
-  const clave = `${comarca}|${accion.clave}`;
-  const item = el('li', {
-    class: accion.bloqueo === null ? 'accion' : 'accion bloqueada',
-    'data-clave': accion.clave,
-  });
-  item.append(
-    el(
-      'div',
-      { class: 'fila' },
-      el('span', { class: 'titulo' }, accion.titulo),
-      accion.bloqueo === null ? fichasDeRecursos(accion.coste, { vacio: 'gratis' }) : '',
-      el('span', { class: 'etiqueta' }, `${String(accion.turnos)} t`),
-      dada === clave ? el('span', { class: 'etiqueta' }, '✓ enviada') : '',
-      boton(
-        abierta === clave ? 'Cerrar' : accion.bloqueo === null ? 'Elegir' : 'Por qué',
-        () => {
-          abierta = abierta === clave ? null : clave;
-          almacen.refrescar();
-        },
-        'secundario icono empuje',
-      ),
-    ),
-  );
-  if (abierta === clave) item.append(confirmacion(almacen, accion, turno));
-  return item;
 }

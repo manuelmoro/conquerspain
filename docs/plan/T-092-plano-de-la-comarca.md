@@ -34,6 +34,15 @@ corregido el texto.
     («Nivel 2 de 4: cada nivel ocupa un solar, y este es el 1.º de 2») y lo que da;
   - en móvil, la hoja de la ficha tapa el mapa, así que el plano va también dentro de la ficha (el CSS lo
     oculta en escritorio).
+- **Acciones desde la parcela** (tras jugar):
+  - al tocar un edificio salen debajo «Ampliar» y «Derribar un nivel», con su coste, lo que tardan y lo que
+    dan, y se dan desde ahí mismo;
+  - al tocar un solar libre sale todo lo que se puede levantar ya;
+  - cada parcela dice lo que da y lo que gasta cada turno («Gasta 8 de madera por turno; sin eso, se para»).
+
+  Las tarjetas de acción viven en `pantallas/acciones.ts`, compartidas con la ficha, y cada una enseña su efecto
+  sin abrirla. Cuando un edificio no cambia ningún recurso, su efecto es para qué sirve
+  (`PARA_QUE_SIRVE`, en el núcleo junto a los bloqueos). Arreglado de paso: la marca «✓ enviada» no salía nunca.
 - **Núcleo:** cada obra de la ficha dice qué edificio levanta (`edificio`, null en las obras mayores).
 
 ## 3. Criterios de aceptación
@@ -42,7 +51,8 @@ corregido el texto.
 2. Cada edificio se reconoce por su dibujo, y todos son distintos (prueba). ✔
 3. Tocar una parcela dice qué es, por qué ocupa el solar y qué produce. ✔
 4. Se puede volver al mapa sin cerrar la ficha, y en móvil el plano se ve dentro de la hoja. ✔
-5. La regla de los solares se explica bien en la ficha, en la Ayuda y en el glosario. ✔
+5. Desde una parcela se amplía, se derriba o se levanta algo nuevo, viendo coste, duración y efecto. ✔
+6. La regla de los solares se explica bien en la ficha, en la Ayuda y en el glosario. ✔
 
 ## 4. Verificación
 

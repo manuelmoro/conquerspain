@@ -1084,3 +1084,8 @@ svg.grafico-historial {
   height: auto;
   aspect-ratio: 3 / 2;
 }
+
+.efecto-de-accion {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+}

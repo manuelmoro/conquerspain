@@ -1,11 +1,11 @@
 // El plano de una comarca (T-092): una parcela por solar, cada una con lo que la ocupa y por que.
 import { describe, expect, it } from 'vitest';
 
-import { TIPOS_DE_EDIFICIO } from '@conquer/nucleo';
-import type { DetalleDePropia } from '@conquer/nucleo';
+import { PARA_QUE_SIRVE, TIPOS_DE_EDIFICIO } from '@conquer/nucleo';
+import type { AccionDeFicha, DetalleDePropia } from '@conquer/nucleo';
 
 import { dibujoDeEdificio, dibujoDeObra, dibujoDePlaza, dibujoLibre } from './arte/edificios.ts';
-import { PARA_QUE_SIRVE, explicarParcela, parcelasDe, rejillaDelPlano } from './plano.ts';
+import { accionesDeParcela, explicarParcela, parcelasDe, rejillaDelPlano } from './plano.ts';
 
 const NADA = { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 };
 
@@ -75,9 +75,53 @@ describe('las parcelas de una comarca', () => {
     const g = explicarParcela(granja, c);
     expect(g.titulo).toBe('Granja');
     expect(g.lineas.join(' ')).toMatch(/cada nivel ocupa un solar, y este es el 1\.º de 3/);
-    expect(g.lineas.join(' ')).toMatch(/Entre todos sus niveles da 27 de pan/);
+    expect(g.lineas.join(' ')).toMatch(/Cada turno: entre sus niveles da 27 de pan/);
     expect(explicarParcela(obra, c).lineas.join(' ')).toMatch(/ya ocupa su solar/);
     expect(explicarParcela(libre, c).titulo).toBe('Solar libre');
+  });
+});
+
+describe('lo que se hace desde una parcela', () => {
+  const accion = (clave: string, bloqueada = false): AccionDeFicha => ({
+    clave,
+    titulo: clave,
+    intencion: {},
+    intenciones: [{}],
+    coste: { ...NADA },
+    turnos: 1,
+    efecto: '',
+    bloqueo: bloqueada ? { motivo: 'nivel-maximo', causa: 'c', salida: 's' } : null,
+  });
+  const acciones = [
+    accion('construir-granja'),
+    accion('derribar-granja'),
+    accion('construir-salina', true),
+    accion('construir-mercado'),
+    accion('roturar'),
+  ];
+
+  it('en un edificio: ampliarlo o derribar un nivel; en lo libre, lo que se puede levantar ya', () => {
+    const [, granja, , , obra, libre] = parcelasDe(comarca());
+    if (granja === undefined || obra === undefined || libre === undefined)
+      throw new Error('faltan');
+    expect(accionesDeParcela(granja, acciones).map((a) => a.clave)).toEqual([
+      'construir-granja',
+      'derribar-granja',
+    ]);
+    expect(accionesDeParcela(libre, acciones).map((a) => a.clave)).toEqual([
+      'construir-granja',
+      'construir-mercado',
+    ]);
+    expect(accionesDeParcela(obra, acciones)).toEqual([]);
+  });
+
+  it('un edificio con insumos dice lo que gasta cada turno', () => {
+    const c = comarca({
+      edificios: [{ tipo: 'carbonera', nombre: 'Carbonera', nivel: 2, maximo: 2 }],
+    });
+    const [carbonera] = parcelasDe(c);
+    if (carbonera === undefined) throw new Error('falta');
+    expect(explicarParcela(carbonera, c).lineas.join(' ')).toMatch(/Gasta 8 de madera por turno/);
   });
 });
 
