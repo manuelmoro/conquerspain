@@ -66,6 +66,7 @@ describe('las migraciones', () => {
       'partida',
       'plaza_convocatoria',
       'preferencia_aviso',
+      'restablecimiento',
       'sesion',
       'suceso_turno',
     ]);

@@ -51,15 +51,11 @@ export function valorEnLaCabecera(cabecera: string | undefined): string | null {
 
 export function cabeceraSetCookie(
   valor: string,
-  opciones: { readonly maxAgeSegundos: number; readonly segura: boolean },
+  /** `maxAgeSegundos` null: cookie de sesion del navegador, que se borra al cerrarlo (T-091). */
+  opciones: { readonly maxAgeSegundos: number | null; readonly segura: boolean },
 ): string {
-  const partes = [
-    `${NOMBRE_DE_COOKIE}=${valor}`,
-    'HttpOnly',
-    'SameSite=Lax',
-    'Path=/',
-    `Max-Age=${String(opciones.maxAgeSegundos)}`,
-  ];
+  const partes = [`${NOMBRE_DE_COOKIE}=${valor}`, 'HttpOnly', 'SameSite=Lax', 'Path=/'];
+  if (opciones.maxAgeSegundos !== null) partes.push(`Max-Age=${String(opciones.maxAgeSegundos)}`);
   if (opciones.segura) partes.push('Secure');
   return partes.join('; ');
 }

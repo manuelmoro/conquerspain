@@ -469,6 +469,77 @@ export function crearApi(
               };
             }),
           },
+          // ——— Contrasenyas (T-091): mismas respuestas exista o no la cuenta ———
+          {
+            metodo: 'POST',
+            patron: '/cuentas/registro',
+            manejador: publica(async (base) => {
+              const cuerpo = objetoJson(base.peticion.cuerpo);
+              await cuentas.registrar(
+                cuerpo['correo'],
+                cuerpo['nombre'],
+                cuerpo['clave'],
+                base.origen,
+              );
+              return {
+                estado: 202,
+                datos: {
+                  mensaje:
+                    'Te hemos mandado un correo para confirmar tu cuenta: ábrelo y ya podrás entrar. Si ya tenías cuenta con ese correo, te lo decimos allí.',
+                },
+              };
+            }),
+          },
+          {
+            metodo: 'POST',
+            patron: '/sesion/clave',
+            manejador: publica(async (base) => {
+              const cuerpo = objetoJson(base.peticion.cuerpo);
+              const abierta = await cuentas.entrarConClave(
+                cuerpo['correo'],
+                cuerpo['clave'],
+                cuerpo['recordar'],
+                base.origen,
+              );
+              return {
+                estado: 200,
+                datos: { cuenta: { id: abierta.cuenta.id, nombre: abierta.cuenta.nombre } },
+                cabeceras: { 'set-cookie': abierta.setCookie },
+              };
+            }),
+          },
+          {
+            metodo: 'POST',
+            patron: '/cuentas/olvido',
+            manejador: publica(async (base) => {
+              const cuerpo = objetoJson(base.peticion.cuerpo);
+              await cuentas.pedirRestablecimiento(cuerpo['correo'], base.origen);
+              return {
+                estado: 202,
+                datos: {
+                  mensaje:
+                    'Si ese correo tiene cuenta, te hemos mandado un enlace para poner una contraseña nueva. Dura 30 minutos.',
+                },
+              };
+            }),
+          },
+          {
+            metodo: 'POST',
+            patron: '/cuentas/restablecer',
+            manejador: publica(async (base) => {
+              const cuerpo = objetoJson(base.peticion.cuerpo);
+              const abierta = await cuentas.restablecer(
+                cuerpo['token'],
+                cuerpo['clave'],
+                base.origen,
+              );
+              return {
+                estado: 200,
+                datos: { cuenta: { id: abierta.cuenta.id, nombre: abierta.cuenta.nombre } },
+                cabeceras: { 'set-cookie': abierta.setCookie },
+              };
+            }),
+          },
           {
             metodo: 'GET',
             patron: '/cuenta',

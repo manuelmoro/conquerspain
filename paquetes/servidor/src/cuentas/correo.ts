@@ -1,8 +1,13 @@
 // El envio de correo, tras una interfaz (ficha T-063 §4.1): T-064 le pone SMTP; mientras tanto, uno
 // en memoria para desarrollo y pruebas.
+/** Para que es el correo (T-091): entrar, confirmar la cuenta, restablecer o un registro repetido. */
+export type MotivoDeEnlace = 'entrar' | 'confirmar' | 'restablecer' | 'ya-registrado';
+
 export interface MensajeDeEnlace {
   readonly para: string;
   readonly nombre: string | null;
+  /** Por defecto, entrar. */
+  readonly motivo?: MotivoDeEnlace;
   /** La direccion completa a la que tiene que ir el jugador, con el token. */
   readonly enlace: string;
   readonly caducaEnMinutos: number;
@@ -46,7 +51,8 @@ export class CorreoEnMemoria implements EnviadorDeCorreo {
   ultimoToken(correo: string): string | null {
     const mensaje = [...this.enviados].reverse().find((m) => m.para === correo);
     if (mensaje === undefined) return null;
-    return new URL(mensaje.enlace).searchParams.get('token');
+    const parametros = new URL(mensaje.enlace).searchParams;
+    return parametros.get('token') ?? parametros.get('restablecer');
   }
 }
 
@@ -58,7 +64,8 @@ export class CorreoPorConsola implements EnviadorDeCorreo {
   constructor(private readonly escribir: (linea: string) => void = console.log) {}
 
   enviarEnlace(mensaje: MensajeDeEnlace): Promise<void> {
-    this.escribir(`[correo] Enlace para ${mensaje.para}: ${mensaje.enlace}`);
+    const motivo = mensaje.motivo ?? 'entrar';
+    this.escribir(`[correo] Enlace para ${mensaje.para} (${motivo}): ${mensaje.enlace}`);
     return Promise.resolve();
   }
 

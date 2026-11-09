@@ -10,6 +10,22 @@ export interface Cuenta {
   readonly borradaEn: number | null;
 }
 
+/** Lo que hace falta para entrar con contrasenya (T-091). Nunca sale del servidor. */
+export interface CuentaConClave extends Cuenta {
+  /** El hash scrypt, o null si la cuenta solo entra por enlace. */
+  readonly clave: string | null;
+  readonly confirmadaEn: number | null;
+  readonly fallos: number;
+  readonly bloqueadaHasta: number | null;
+}
+
+export interface RestablecimientoNuevo {
+  readonly hash: string;
+  readonly cuenta: string;
+  readonly creadoEn: number;
+  readonly expiraEn: number;
+}
+
 export interface EnlaceNuevo {
   readonly hash: string;
   readonly correo: string;
@@ -46,6 +62,29 @@ export interface RepositorioDeCuentas {
   /** La cuenta de un correo, creandola con `id` y `nombre` si no existia. */
   cuentaDeCorreo(correo: string, id: string, nombre: string, ahora: number): Promise<Cuenta>;
   cuenta(id: string): Promise<Cuenta | null>;
+
+  // ——— Contrasenyas (T-091) ———
+  /** La cuenta viva de un correo, con lo de entrar con contrasenya; null si no hay. */
+  cuentaConClave(correo: string): Promise<CuentaConClave | null>;
+  /** Crea una cuenta sin confirmar con su contrasenya; false si el correo ya tenia cuenta. */
+  crearCuentaConClave(
+    id: string,
+    correo: string,
+    nombre: string,
+    clave: string,
+    ahora: number,
+  ): Promise<boolean>;
+  /** El correo de la cuenta queda confirmado (si no lo estaba ya). */
+  confirmarCuenta(id: string, ahora: number): Promise<void>;
+  /** Un fallo mas; al llegar a `maximo`, la cuenta queda bloqueada hasta `bloqueoHasta`. */
+  anotarFallo(id: string, maximo: number, bloqueoHasta: number): Promise<void>;
+  anotarAcierto(id: string): Promise<void>;
+  /** Contrasenya nueva: sin fallos ni bloqueo, y con el correo confirmado. */
+  ponerClave(id: string, clave: string, ahora: number): Promise<void>;
+  crearRestablecimiento(restablecimiento: RestablecimientoNuevo): Promise<void>;
+  /** Consume **de forma atomica** un restablecimiento vivo; devuelve su cuenta o null. */
+  consumirRestablecimiento(hash: string, ahora: number): Promise<string | null>;
+  restablecimientosPedidos(cuenta: string, desde: number): Promise<number>;
 
   crearSesion(sesion: SesionNueva): Promise<void>;
   sesion(hash: string): Promise<SesionGuardada | null>;

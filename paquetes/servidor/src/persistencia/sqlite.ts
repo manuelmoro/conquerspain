@@ -25,7 +25,9 @@ import { ESTADOS_DE_CONVOCATORIA } from './convocatorias.ts';
 import type { AvisoPendiente, ClaveDeAviso, ModoDeAviso, RepositorioDeAvisos } from './avisos.ts';
 import type {
   Cuenta,
+  CuentaConClave,
   EnlaceNuevo,
+  RestablecimientoNuevo,
   RepositorioDeCuentas,
   SesionGuardada,
   SesionNueva,
@@ -688,11 +690,13 @@ export class RepositorioSqlite
     return this.transaccion(() => {
       const existente = this.uno('SELECT * FROM cuenta WHERE correo = ?', correo);
       if (existente !== null) return this.filaDeCuenta(existente);
+      // Quien entra por un enlace a su correo lo ha confirmado.
       this.ejecutar(
-        'INSERT INTO cuenta (id, correo, nombre, creada_en) VALUES (?, ?, ?, ?)',
+        'INSERT INTO cuenta (id, correo, nombre, creada_en, confirmada_en) VALUES (?, ?, ?, ?, ?)',
         id,
         correo,
         nombre,
+        ahora,
         ahora,
       );
       return { id, correo, nombre, creadaEn: ahora, borradaEn: null };
@@ -702,6 +706,105 @@ export class RepositorioSqlite
   async cuenta(id: string): Promise<Cuenta | null> {
     const fila = this.uno('SELECT * FROM cuenta WHERE id = ?', id);
     return fila === null ? null : this.filaDeCuenta(fila);
+  }
+
+  async cuentaConClave(correo: string): Promise<CuentaConClave | null> {
+    const fila = this.uno('SELECT * FROM cuenta WHERE correo = ? AND borrada_en IS NULL', correo);
+    if (fila === null) return null;
+    return {
+      ...this.filaDeCuenta(fila),
+      clave: textoONulo(fila, 'clave'),
+      confirmadaEn: enteroONulo(fila, 'confirmada_en'),
+      fallos: entero(fila, 'fallos'),
+      bloqueadaHasta: enteroONulo(fila, 'bloqueada_hasta'),
+    };
+  }
+
+  async crearCuentaConClave(
+    id: string,
+    correo: string,
+    nombre: string,
+    clave: string,
+    ahora: number,
+  ): Promise<boolean> {
+    return this.transaccion(() => {
+      if (this.uno('SELECT id FROM cuenta WHERE correo = ?', correo) !== null) return false;
+      this.ejecutar(
+        'INSERT INTO cuenta (id, correo, nombre, creada_en, clave) VALUES (?, ?, ?, ?, ?)',
+        id,
+        correo,
+        nombre,
+        ahora,
+        clave,
+      );
+      return true;
+    });
+  }
+
+  async confirmarCuenta(id: string, ahora: number): Promise<void> {
+    this.ejecutar(
+      'UPDATE cuenta SET confirmada_en = COALESCE(confirmada_en, ?) WHERE id = ?',
+      ahora,
+      id,
+    );
+  }
+
+  async anotarFallo(id: string, maximo: number, bloqueoHasta: number): Promise<void> {
+    this.transaccion(() => {
+      this.ejecutar('UPDATE cuenta SET fallos = fallos + 1 WHERE id = ?', id);
+      this.ejecutar(
+        'UPDATE cuenta SET fallos = 0, bloqueada_hasta = ? WHERE id = ? AND fallos >= ?',
+        bloqueoHasta,
+        id,
+        maximo,
+      );
+    });
+  }
+
+  async anotarAcierto(id: string): Promise<void> {
+    this.ejecutar('UPDATE cuenta SET fallos = 0 WHERE id = ?', id);
+  }
+
+  async ponerClave(id: string, clave: string, ahora: number): Promise<void> {
+    this.ejecutar(
+      'UPDATE cuenta SET clave = ?, fallos = 0, bloqueada_hasta = NULL, confirmada_en = COALESCE(confirmada_en, ?) WHERE id = ?',
+      clave,
+      ahora,
+      id,
+    );
+  }
+
+  async crearRestablecimiento(r: RestablecimientoNuevo): Promise<void> {
+    this.ejecutar(
+      'INSERT INTO restablecimiento (hash, cuenta, creado_en, expira_en) VALUES (?, ?, ?, ?)',
+      r.hash,
+      r.cuenta,
+      r.creadoEn,
+      r.expiraEn,
+    );
+  }
+
+  async consumirRestablecimiento(hash: string, ahora: number): Promise<string | null> {
+    return this.transaccion(() => {
+      const cambios = this.ejecutar(
+        'UPDATE restablecimiento SET usado_en = ? WHERE hash = ? AND usado_en IS NULL AND expira_en > ?',
+        ahora,
+        hash,
+        ahora,
+      );
+      if (cambios === 0) return null;
+      const fila = this.uno('SELECT cuenta FROM restablecimiento WHERE hash = ?', hash);
+      return fila === null ? null : texto(fila, 'cuenta');
+    });
+  }
+
+  async restablecimientosPedidos(cuenta: string, desde: number): Promise<number> {
+    const fila = this.uno(
+      'SELECT COUNT(*) AS n FROM restablecimiento WHERE cuenta = ? AND creado_en >= ?',
+      cuenta,
+      desde,
+    );
+    return fila === null ? 0 : entero(fila, 'n');
   }
 
   async crearSesion(sesion: SesionNueva): Promise<void> {
