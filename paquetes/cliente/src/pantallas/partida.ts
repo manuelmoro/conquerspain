@@ -1,7 +1,7 @@
 // La partida (T-081, T-082, T-088): cabecera con el turno y el corte; el mapa con su conmutador, su
 // explicacion y su leyenda; y el panel con la ficha de la comarca tocada y la bandeja. En escritorio el
 // panel va al lado y fijo; en movil, debajo, y la ficha sube como hoja sobre el mapa.
-import { TABLAS_DEL_JUEGO, estacionDe } from '@conquer/nucleo';
+import { RECURSOS, TABLAS_DEL_JUEGO, estacionDe } from '@conquer/nucleo';
 import type { FichaDeComarca } from '@conquer/nucleo';
 
 import type { Almacen, EstadoDelCliente } from '../almacen.ts';
@@ -11,11 +11,17 @@ import { EXPLICACION_DE_MODO, leyendaDe } from '../atlas/leyenda.ts';
 import { montarAtlas } from '../atlas/svg.ts';
 import type { AtlasMontado } from '../atlas/svg.ts';
 import { colasDe, moverEnLaCola, resumenDeRecursos, tiempoHastaElCorte } from '../bandeja.ts';
-import { NOMBRE_DE_ESTADO } from '../nombres.ts';
+import { MARCA_DE_RECURSO, NOMBRE_DE_ESTADO, NOMBRE_DE_RECURSO } from '../nombres.ts';
 import { describirOrden, fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
 import { tocar } from '../editor-de-ruta.ts';
-import type { AtlasDeJugador, ClasificacionPublica, Cronica } from '@conquer/nucleo';
+import type {
+  AtlasDeJugador,
+  ClasificacionPublica,
+  Cronica,
+  Recurso,
+  Recursos,
+} from '@conquer/nucleo';
 
 import { comarcasEnLista, textoDeLaBarra } from '../accesibilidad.ts';
 import { CacheDeServidor } from '../cache.ts';
@@ -23,8 +29,9 @@ import { EMBLEMA_DE_CASA } from '../arte/index.ts';
 import { PASOS_DEL_TUTORIAL, terminado } from '../tutorial.ts';
 import { enfocar } from './foco.ts';
 
-import type { MercadoRecibido } from '../api.ts';
+import type { MercadoRecibido, TurnoDelHistorial } from '../api.ts';
 import { pantallaDeAyuda } from './ayuda.ts';
+import { dialogoDeHistorial } from './historial.ts';
 import { pantallaDeCasa } from './casa.ts';
 import { pantallaDeCronica } from './cronica.ts';
 import { pantallaDeFicha } from './ficha.ts';
@@ -498,6 +505,29 @@ function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElem
   );
 }
 
+/** El recurso cuyo historico se esta mirando (T-090), o null. */
+let recursoAbierto: Recurso | null = null;
+const historiales = new CacheDeServidor<readonly TurnoDelHistorial[]>();
+
+/** Lo que tienes, como botones: al pulsar uno se abre su historico por turno. */
+function botonesDeRecursos(almacen: Almacen, disponible: Recursos): HTMLElement {
+  const caja = el('span', { class: 'recursos' });
+  for (const r of RECURSOS) {
+    if (disponible[r] === 0 && r !== 'pan') continue;
+    const b = boton(
+      `${MARCA_DE_RECURSO[r]} ${String(disponible[r])} ${NOMBRE_DE_RECURSO[r]}`,
+      () => {
+        recursoAbierto = r;
+        almacen.refrescar();
+      },
+      'chip boton-de-recurso',
+    );
+    b.setAttribute('title', `Ver el histórico de ${NOMBRE_DE_RECURSO[r]}`);
+    caja.append(b);
+  }
+  return caja;
+}
+
 /** Si el administrador esta confirmando el avance del turno: sobrevive a las repintadas. */
 let confirmandoAvance = false;
 
@@ -614,7 +644,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
     'div',
     { class: 'barra-de-recursos', 'aria-label': 'Lo que tienes para gastar' },
     el('strong', {}, 'Tienes:'),
-    fichasDeRecursos(resumenDeRecursos(vista).disponible),
+    botonesDeRecursos(almacen, resumenDeRecursos(vista).disponible),
   );
   const partes: (Node | string)[] = [el('div', { class: 'arriba' }, cabecera, barra)];
   if (partida.desactualizada) {
@@ -692,6 +722,21 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       textoDeLaBarra(dadas, tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())),
     ),
   );
+  if (recursoAbierto !== null) {
+    const turnos = historiales.leer(
+      claveDeVista(estado),
+      () => almacen.pedirHistorial(),
+      () => {
+        almacen.refrescar();
+      },
+    );
+    partes.push(
+      dialogoDeHistorial(recursoAbierto, turnos, historiales.fallo(claveDeVista(estado)), () => {
+        recursoAbierto = null;
+        almacen.refrescar();
+      }),
+    );
+  }
   const tutorial = tarjetaDelTutorial(almacen, estado);
   if (tutorial !== null) partes.push(tutorial);
   // Oscurece lo que no importa y pone la tarjeta junto a lo que hay que mirar (T-090).

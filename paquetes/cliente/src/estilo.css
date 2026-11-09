@@ -980,3 +980,58 @@ button.avanzar {
   padding: 0.15rem 0.8rem;
   font-size: 0.85rem;
 }
+
+/* Los recursos de «Tienes» como botones, y su historico (T-090). */
+button.boton-de-recurso {
+  min-height: auto;
+  padding: 0.15rem 0.7rem;
+  font-weight: 500;
+  font-size: 1rem;
+  border: 1px solid var(--borde);
+  background: white;
+  color: var(--tinta);
+}
+button.boton-de-recurso:hover:not(:disabled) {
+  background: #f6efdd;
+  border-color: var(--cobalto);
+}
+svg.grafico-historial {
+  width: 100%;
+  height: auto;
+  margin: 0.5rem 0;
+}
+.grafico-historial .eje {
+  stroke: var(--borde);
+}
+.grafico-historial .entra {
+  fill: var(--verde);
+}
+.grafico-historial .sale {
+  fill: var(--rojo);
+}
+.grafico-historial .queda {
+  fill: none;
+  stroke: var(--cobalto);
+  stroke-width: 2;
+}
+.tabla-historial {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.tabla-historial th,
+.tabla-historial td {
+  text-align: right;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid #eee3cc;
+}
+.tabla-historial th:first-child,
+.tabla-historial td:first-child {
+  text-align: left;
+}
+.tabla-historial .sube {
+  color: var(--verde);
+}
+.tabla-historial .baja {
+  color: var(--rojo);
+}

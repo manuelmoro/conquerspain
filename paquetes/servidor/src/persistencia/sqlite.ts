@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await -- la interfaz es asincrona (Postgres lo sera); SQLite no */
 // RepositorioSqlite: la unica clase que sabe SQL (ficha T-060). Usa `node:sqlite`, que viene con
 // Node 22 y es experimental: si algun dia cambia, se cambia esta clase y nada mas.
-import { gzipSync } from 'node:zlib';
+import { gunzipSync, gzipSync } from 'node:zlib';
 import { DatabaseSync } from 'node:sqlite';
 import type { SQLInputValue } from 'node:sqlite';
 
@@ -36,6 +36,7 @@ import type {
   AuditoriaDeResolucion,
   EstadoDeOrdenGuardada,
   FilaDePartida,
+  MovimientoDeAlmacen,
   NuevaPartida,
   OpcionesDeLectura,
   OrdenGuardada,
@@ -313,6 +314,48 @@ export class RepositorioSqlite
       casa: texto(f, 'casa'),
       cuenta: textoONulo(f, 'cuenta'),
     }));
+  }
+
+  async movimientosDeAlmacen(
+    id: IdPartida,
+    jugador: IdJugador,
+    desde: number,
+    hasta: number,
+  ): Promise<readonly MovimientoDeAlmacen[]> {
+    const filas = this.todos(
+      'SELECT turno, contenido FROM suceso_turno WHERE partida = ? AND turno BETWEEN ? AND ? ORDER BY turno',
+      id,
+      desde,
+      hasta,
+    );
+    const movimientos: MovimientoDeAlmacen[] = [];
+    for (const fila of filas) {
+      const turno = entero(fila, 'turno');
+      const contenido = fila['contenido'];
+      if (!(contenido instanceof Uint8Array)) continue;
+      const sucesos: unknown = JSON.parse(gunzipSync(contenido).toString('utf8'));
+      if (!Array.isArray(sucesos)) continue;
+      const lista: readonly unknown[] = sucesos;
+      for (const suceso of lista) {
+        if (typeof suceso !== 'object' || suceso === null) continue;
+        const s = new Map<string, unknown>(Object.entries(suceso));
+        if (s.get('tipo') !== 'almacen.cambio' || s.get('jugador') !== jugador) continue;
+        const datos = s.get('datos');
+        if (typeof datos !== 'object' || datos === null) continue;
+        const d = new Map<string, unknown>(Object.entries(datos));
+        const recurso = d.get('recurso');
+        const delta = d.get('delta');
+        const motivo = d.get('motivo');
+        if (typeof recurso !== 'string' || typeof delta !== 'number') continue;
+        movimientos.push({
+          turno,
+          recurso,
+          delta,
+          motivo: typeof motivo === 'string' ? motivo : '',
+        });
+      }
+    }
+    return movimientos;
   }
 
   async administradorDePartida(id: IdPartida): Promise<string | null> {

@@ -29,6 +29,7 @@ import type { Registro } from '../reloj/registro.ts';
 import { ErrorDeApi } from './errores.ts';
 import { preverRutaPedida } from './prevision.ts';
 import { mercadoDelJugador } from './mercado.ts';
+import { historialDeRecursos } from './historial.ts';
 import { encontrar } from './enrutador.ts';
 import type { Ruta } from './enrutador.ts';
 import {
@@ -241,6 +242,14 @@ export function crearApi(
   const verAtlas: Manejador = async (ctx) => {
     const { estado, mundo, vista } = await estadoYVista(ctx);
     return { estado: 200, datos: { turno: estado.turno, atlas: atlasDeJugador(vista, mundo) } };
+  };
+
+  const verHistorial: Manejador = async (ctx) => {
+    const { id, jugador, estado } = await estadoYVista(ctx);
+    return {
+      estado: 200,
+      datos: { turnos: await historialDeRecursos(dep.repo, id, jugador, estado.turno) },
+    };
   };
 
   const verMercado: Manejador = async (ctx) => {
@@ -736,6 +745,11 @@ export function crearApi(
     { metodo: 'POST', patron: '/partidas/:id/avanzar', manejador: privada(avanzarTurno) },
     { metodo: 'POST', patron: '/partidas/:id/prevision-de-ruta', manejador: privada(preverRuta) },
     { metodo: 'GET', patron: '/partidas/:id/mercado', manejador: privada(verMercado) },
+    {
+      metodo: 'GET',
+      patron: '/partidas/:id/historial-de-recursos',
+      manejador: privada(verHistorial),
+    },
     { metodo: 'GET', patron: '/partidas/:id/cronica/:turno', manejador: privada(verCronica) },
     { metodo: 'GET', patron: '/partidas/:id/ordenes', manejador: privada(listarOrdenes) },
     { metodo: 'POST', patron: '/partidas/:id/ordenes', manejador: privada(darOrden) },

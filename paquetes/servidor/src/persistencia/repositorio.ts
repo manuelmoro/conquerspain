@@ -123,6 +123,14 @@ export interface ResolucionDeTurno {
   readonly proximaResolucion: number | null;
 }
 
+/** Un cambio del almacen de un jugador: lo que entro (positivo) o salio (negativo) en un turno. */
+export interface MovimientoDeAlmacen {
+  readonly turno: number;
+  readonly recurso: string;
+  readonly delta: number;
+  readonly motivo: string;
+}
+
 export interface Repositorio {
   /** Aplica las migraciones pendientes y devuelve la version final del esquema. */
   migrar(ahora: number): Promise<number>;
@@ -141,6 +149,16 @@ export interface Repositorio {
    * convocatoria (las de prueba de las herramientas).
    */
   administradorDePartida(id: IdPartida): Promise<string | null>;
+  /**
+   * Los cambios del almacen de un jugador en los turnos `desde`..`hasta` (T-090: el historico de sus
+   * recursos). Solo los suyos: los sucesos guardados tienen los de todos, y aqui se filtran.
+   */
+  movimientosDeAlmacen(
+    id: IdPartida,
+    jugador: IdJugador,
+    desde: number,
+    hasta: number,
+  ): Promise<readonly MovimientoDeAlmacen[]>;
 
   estado(id: IdPartida, turno: number, opciones?: OpcionesDeLectura): Promise<EstadoPartida | null>;
   ultimoEstado(id: IdPartida, opciones?: OpcionesDeLectura): Promise<EstadoPartida | null>;

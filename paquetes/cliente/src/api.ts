@@ -71,6 +71,14 @@ export interface MercadoRecibido {
   >;
 }
 
+/** Un turno del historico de recursos (T-090): lo que entro, salio y quedo de cada uno. */
+export interface TurnoDelHistorial {
+  readonly turno: number;
+  readonly recursos: Readonly<
+    Record<Recurso, { readonly entra: number; readonly sale: number; readonly queda: number }>
+  >;
+}
+
 export interface OrdenEnviada {
   readonly id: string;
   readonly estado: string;
@@ -243,6 +251,13 @@ export class ClienteApi {
     return this.pedir<{ turno: number; publica: ClasificacionPublica }>(
       'GET',
       `/partidas/${encodeURIComponent(partida)}/clasificacion`,
+    );
+  }
+
+  historialDeRecursos(partida: string) {
+    return this.pedir<{ turnos: TurnoDelHistorial[] }>(
+      'GET',
+      `/partidas/${encodeURIComponent(partida)}/historial-de-recursos`,
     );
   }
 

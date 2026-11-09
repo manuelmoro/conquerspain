@@ -141,6 +141,10 @@ prestigio. A **10** queda entre el 103 % y el 165 %.
 El prestigio es **público**: todos ven la clasificación y el desglose por capítulos. Ver quién sube
 por obras y quién por comercio es parte de la información que se juega.
 
+**El anfitrión (T-090).** Quien convoca una partida la administra: puede resolver el turno antes de la hora
+(«Avanzar turno»), como el anfitrión de VGA Planets cuando ya han mandado todos. Corta el tiempo de los demás, así
+que el botón pide confirmarlo; ningún otro jugador lo tiene.
+
 ## 6.4 Equidad: reglas que protegen la competición
 
 1. **Ventana de órdenes.** Las órdenes de un turno se aceptan hasta el corte. Da igual si llegan al

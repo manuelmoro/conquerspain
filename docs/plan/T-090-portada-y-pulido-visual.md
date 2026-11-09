@@ -79,3 +79,22 @@ portada otro poco.
 
 **Pendiente para otra iteración, si el usuario la quiere:** más viñetas propias (hoy cinco entornos); y un vídeo
 de portada, que se descartó porque las herramientas que lo generan son de pago.
+
+## 5. Lo que se añadió tras jugar (09-11-2026)
+
+- **Tutorial:**
+  - oscurece la pantalla y se pone junto a lo que hay que mirar;
+  - empieza por la casa con que se juega (su privilegio y su límite);
+  - el paso de la primera orden señala lo que esa casa puede hacer ya: una obra, o formar una recua si no le
+    queda solar, como a los mercaderes.
+- **Mapa:** la capital lleva una torre.
+- **Ficha de una comarca propia:** tarjetas que dicen qué implica cada dato («Caben 60: ya no crece…»,
+  «Solares llenos…») y los edificios con su nivel en puntos ●●●○.
+- **Ayuda** en el panel: cómo se hace cada cosa, con botones que llevan a hacerla, y un glosario.
+- **Mercado:**
+  - «Mandar una recua aquí» (o «Formar una recua») en cada plaza;
+  - cómo se saben los precios, explicado.
+- **Histórico de cada recurso:** al pulsarlo en «Tienes» se ve un gráfico y una tabla de lo que entró, salió y
+  quedó cada turno (`GET /partidas/:id/historial-de-recursos`, de los movimientos propios del almacén).
+- **Avanzar el turno a mano:** junto al nombre de la partida, para quien la administra (quien la convocó), y en
+  las de prueba. Es un poder del anfitrión: corta el tiempo de los demás, así que pide confirmarlo.
