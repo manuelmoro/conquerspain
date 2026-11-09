@@ -128,6 +128,34 @@ describe('la ficha de una comarca ajena o neutral', () => {
     expect(f?.acciones.find((a) => a.clave === 'regalo')?.bloqueo?.motivo).toBe('regalo-reciente');
   });
 
+  it('un regalo ya pedido, este turno o en espera, bloquea el siguiente al mismo concejo', () => {
+    const estado = escenario();
+    const forma = validarIntencion({ idCliente: 'r', tipo: 'regalo', comarca: 'prueba-vega' });
+    if (!forma.ok) throw new Error('intencion invalida');
+    const hecha = construirOrden(forma.valor, {
+      estado,
+      jugador: UNO,
+      mundo,
+      reglas,
+      id: 'o-r' as IdOrden,
+    });
+    if (!hecha.ok) throw new Error('orden invalida');
+    const motivo = (e: EstadoPartida, pendientes: readonly Orden[] = []): string | undefined =>
+      fichaDeComarca(e, UNO, c('prueba-vega'), mundo, reglas, pendientes)?.acciones.find(
+        (a) => a.clave === 'regalo',
+      )?.bloqueo?.motivo;
+    expect(motivo(estado)).toBeUndefined();
+    expect(motivo(estado, [hecha.valor])).toBe('regalo-pedido');
+    const enEspera: Orden = {
+      ...hecha.valor,
+      estado: 'en espera',
+      motivoEspera: 'regalo-reciente',
+    };
+    expect(motivo({ ...estado, ordenes: [enEspera] })).toBe('regalo-pedido');
+    // El de otra casa no cuenta.
+    expect(motivo(estado, [{ ...hecha.valor, jugador: DOS }])).toBeUndefined();
+  });
+
   it('de lo que no conoce no hay ficha', () => {
     const base = escenario();
     const yo = base.jugadores[UNO];

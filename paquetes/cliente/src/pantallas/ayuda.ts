@@ -24,6 +24,16 @@ const TEMAS: readonly Tema[] = [
     ],
   },
   {
+    titulo: 'Las tres vistas del mapa',
+    pasos: [
+      'Son el mismo mapa: los botones de encima solo cambian lo que se resalta.',
+      '«Qué produce»: el color de cada comarca es lo que más da (labor, monte, pasto, cantera, hierro, sal, pesca). Para decidir dónde construir y adónde ir a por algo.',
+      '«Cómo se viaja»: los caminos con sus jornadas, para planear las rutas de tus recuas. Una vereda es el camino sin hacer, el más lento; una calzada (obra mayor) cuesta la mitad de jornadas y nunca se cierra; por una cañada los rebaños andan más y pastan; y un puerto de montaña con nieve no se pasa hasta la primavera.',
+      'Las jornadas de un tramo dependen del terreno (llano 2, ondulado 3, sierra 5, puerto 7), del camino y de la estación: barro en marzo y noviembre, nieve en invierno, y un verano algo más rápido.',
+      '«De quién es»: el color de cada casa y tu influencia en las neutrales. Para ver a tus vecinos y qué tierra puedes ganar.',
+    ],
+  },
+  {
     titulo: 'Construir y mejorar tu comarca',
     pasos: [
       'Toca una comarca tuya en el mapa: su ficha dice qué tiene y qué puedes hacer.',

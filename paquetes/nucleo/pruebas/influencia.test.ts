@@ -412,7 +412,11 @@ describe('el regalo al concejo', () => {
     expect(pago?.datos).toMatchObject({ recurso: 'maravedis', delta: -50 });
     expect(despues.jugadores[UNO]?.reservado.maravedis).toBe(0);
     expect(comarcaDe(despues, VEGA).ultimoRegalo[UNO]).toBe(estado.turno);
-    expect(sucesos.some((s) => s.tipo === 'influencia.regalo')).toBe(true);
+    // La cronica dice lo que ha subido y hasta donde (T-090).
+    expect(sucesos.find((s) => s.tipo === 'influencia.regalo')?.datos).toMatchObject({
+      influencia: 5,
+      total: 5,
+    });
     expect(despues.ordenes).toHaveLength(0);
   });
 
@@ -495,7 +499,7 @@ describe('las cuentas del concejo en el estado', () => {
       jugador: DOS,
       turnos: 4,
     });
-    aplicar(ctx, { tipo: 'regalo', comarca: c('prueba-llano'), jugador: DOS });
+    aplicar(ctx, { tipo: 'regalo', comarca: c('prueba-llano'), jugador: DOS, influencia: 5 });
     aplicar(ctx, { tipo: 'duenyo', comarca: c('prueba-llano'), jugador: DOS });
     expect(ctx.estado.comarcas['prueba-llano']).toMatchObject({
       exDuenyo: null,
@@ -512,7 +516,7 @@ describe('las cuentas del concejo en el estado', () => {
       aplicar(ctx, { tipo: 'presencia-seguida', comarca: llano, jugador: UNO, turnos: 1 });
     }).toThrow(/neutrales/);
     expect(() => {
-      aplicar(ctx, { tipo: 'regalo', comarca: llano, jugador: UNO });
+      aplicar(ctx, { tipo: 'regalo', comarca: llano, jugador: UNO, influencia: 5 });
     }).toThrow(/duenyo/);
     expect(() => {
       aplicar(ctx, { tipo: 'presencia-seguida', comarca: c(VEGA), jugador: UNO, turnos: -1 });

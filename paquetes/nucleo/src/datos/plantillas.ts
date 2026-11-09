@@ -303,7 +303,9 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
   ),
   'influencia.cambio': null,
   'influencia.fuentes': null,
-  'influencia.regalo': suceso('El concejo de {comarca} recibe el regalo.'),
+  'influencia.regalo': suceso(
+    'El concejo de {comarca} recibe tu regalo: +{influencia} de influencia, con lo que llegas a {total}.',
+  ),
   'incorporar.empieza': suceso(
     'Empieza la incorporación de {comarca}: {turnos} turnos, si nadie la disputa.',
   ),

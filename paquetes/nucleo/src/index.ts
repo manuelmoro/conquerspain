@@ -92,6 +92,7 @@ export { RUMBOS, rumboEntre, vistaDeJugador } from './reglas/vista.ts';
 export { atlasDeJugador } from './reglas/atlas.ts';
 export { fichaDeComarca } from './ficha.ts';
 export { comoGanarLa } from './reglas/ganar-comarca.ts';
+export { regaloYaPedido } from './reglas/regalo.ts';
 export type { ComoGanarLa, PartidaDeInfluencia } from './reglas/ganar-comarca.ts';
 export type {
   AccionDeFicha,

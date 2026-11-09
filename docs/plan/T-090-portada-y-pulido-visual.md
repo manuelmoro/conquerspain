@@ -98,3 +98,11 @@ de portada, que se descartó porque las herramientas que lo generan son de pago.
   quedó cada turno (`GET /partidas/:id/historial-de-recursos`, de los movimientos propios del almacén).
 - **Avanzar el turno a mano:** junto al nombre de la partida, para quien la administra (quien la convocó), y en
   las de prueba. Es un poder del anfitrión: corta el tiempo de los demás, así que pide confirmarlo.
+- **Mapa:** las tres vistas se llaman por lo que enseñan («Qué produce», «Cómo se viaja», «De quién es»), y cada
+  tipo de camino de la leyenda dice lo que implica (vereda lenta, calzada a mitad de jornadas y siempre abierta,
+  cañada de los rebaños, puerto cerrado por la nieve). La Ayuda lo explica en «Las tres vistas del mapa».
+- **Crónica en el primer turno:** en vez de un archivo vacío, dice que aún no hay y cuándo llega.
+- **Regalo al concejo:** un concejo acepta un regalo cada cuatro turnos, pero se podían pedir dos seguidos y el
+  segundo se quedaba en espera. Ahora la ficha bloquea el segundo («Ya tienes un regalo pedido») y el servidor
+  no lo admite (`regaloYaPedido`, una sola cuenta para los dos). La crónica dice lo que ha subido la influencia y
+  hasta dónde llega.

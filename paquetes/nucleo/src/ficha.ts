@@ -17,6 +17,7 @@ import { planDeMision } from './prevision/misiones.ts';
 import type { Mision } from './prevision/misiones.ts';
 import { Tablero } from './prevision/tablero.ts';
 import { impedimentoDeIncorporar } from './reglas/incorporar.ts';
+import { regaloYaPedido } from './reglas/regalo.ts';
 import { impedimentoDeConstruir, solaresOcupados, solaresDe } from './reglas/obras.ts';
 import { capacidadDe } from './reglas/poblar.ts';
 import { explotacionesDe } from './reglas/produccion.ts';
@@ -25,6 +26,7 @@ import { vistaDeJugador } from './reglas/vista.ts';
 import type { EstadoComarca, EstadoPartida, Fuero, CargaFiscal } from './tipos/estado.ts';
 import type { IdComarca, IdJugador } from './tipos/ids.ts';
 import type { Mundo, NivelPotencial, Potencial, Terreno } from './tipos/mundo.ts';
+import type { Orden } from './tipos/ordenes.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS, recursosSegun } from './tipos/recursos.ts';
 import { TIPOS_DE_EDIFICIO } from './tipos/reglas.ts';
@@ -141,6 +143,8 @@ export function fichaDeComarca(
   comarca: IdComarca,
   mundo: Mundo,
   reglas: TablasDeReglas,
+  /** Las ordenes que el jugador ha dado este turno y aun no se han resuelto. */
+  pendientes: readonly Orden[] = [],
 ): FichaDeComarca | null {
   const vista = vistaDeJugador(estado, jugador, mundo);
   const conocida = vista.comarcas[comarca];
@@ -186,6 +190,7 @@ export function fichaDeComarca(
     const t = reglas.influencia;
     const ultimo = real?.ultimoRegalo[yo.id];
     const reciente = ultimo !== undefined && estado.turno - ultimo < t.turnosEntreRegalos;
+    const pedido = regaloYaPedido([...estado.ordenes, ...pendientes], yo.id, comarca);
     const conLoSabido: EstadoComarca | undefined =
       real === undefined
         ? undefined
@@ -197,7 +202,7 @@ export function fichaDeComarca(
         { tipo: 'regalo', comarca },
         1,
         `+${String(t.porRegalo)} de influencia`,
-        reciente ? 'regalo-reciente' : null,
+        pedido ? 'regalo-pedido' : reciente ? 'regalo-reciente' : null,
         real,
       ),
       accion(

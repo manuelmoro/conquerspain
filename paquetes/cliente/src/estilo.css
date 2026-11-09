@@ -1035,3 +1035,8 @@ svg.grafico-historial {
 .tabla-historial .baja {
   color: var(--rojo);
 }
+
+.icono-grande {
+  font-size: 2.2rem;
+  margin: 0;
+}

@@ -147,6 +147,8 @@ export type Cambio =
       readonly tipo: 'regalo';
       readonly comarca: IdComarca;
       readonly jugador: IdJugador;
+      /** Lo que ha subido la influencia, para que la cronica lo diga. */
+      readonly influencia: number;
     }
   | {
       readonly tipo: 'orden-alta';
@@ -1061,7 +1063,11 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         ctx.sucesos,
         ctx.fase,
         'influencia.regalo',
-        { turno: ctx.turno },
+        {
+          turno: ctx.turno,
+          influencia: cambio.influencia,
+          total: comarca.influencias[cambio.jugador] ?? 0,
+        },
         { comarca: cambio.comarca, jugador: cambio.jugador },
       );
       return;

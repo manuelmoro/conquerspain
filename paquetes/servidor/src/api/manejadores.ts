@@ -10,6 +10,7 @@ import {
   canonico,
   construirOrden,
   explicar,
+  regaloYaPedido,
   validarIntencion,
   vistaDeJugador,
 } from '@conquer/nucleo';
@@ -273,12 +274,16 @@ export function crearApi(
     const estado = await dep.repo.ultimoEstado(id);
     if (estado === null) throw new Error(`La partida "${id}" no tiene ningun estado guardado.`);
     const mundo = dep.proveedorDeMundo(fila, estado);
+    const pendientes = (await dep.repo.ordenesPendientes(id))
+      .filter((o) => o.jugador === jugador)
+      .map((o) => o.orden);
     const ficha = fichaDeComarca(
       estado,
       jugador,
       (ctx.parametros['comarca'] ?? '') as IdComarca,
       mundo,
       dep.reglas,
+      pendientes,
     );
     if (ficha === null) {
       throw new ErrorDeApi(
@@ -395,6 +400,16 @@ export function crearApi(
       throw new ErrorDeApi(
         'demasiadas-ordenes',
         `Ya tienes ${String(ORDENES_PENDIENTES_MAXIMAS)} ordenes pendientes este turno: retira alguna o espera a que se resuelva.`,
+      );
+    }
+    // Un segundo regalo al mismo concejo no suma: solo dejaria maravedis comprometidos (T-090).
+    if (
+      orden.tipo === 'regalo' &&
+      regaloYaPedido([...estado.ordenes, ...pendientes.map((o) => o.orden)], jugador, orden.comarca)
+    ) {
+      throw new ErrorDeApi(
+        'orden-invalida',
+        'Ya tienes un regalo pedido para ese concejo: acepta uno cada pocos turnos. Espera a que se entregue el que está pedido.',
       );
     }
     try {

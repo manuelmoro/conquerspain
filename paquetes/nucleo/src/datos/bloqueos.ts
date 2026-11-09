@@ -68,6 +68,11 @@ export const BLOQUEOS: Readonly<Record<string, TextoDeBloqueo>> = {
     causa: 'El concejo recibió un regalo tuyo hace poco.',
     salida: 'Espera unos turnos: los regalos seguidos no valen.',
   },
+  'regalo-pedido': {
+    causa: 'Ya tienes un regalo pedido para este concejo.',
+    salida:
+      'Un concejo acepta un regalo cada pocos turnos: espera a que se entregue el que está pedido.',
+  },
   // Los viajes y las misiones de las recuas (T-083).
   'sin-recua-libre': {
     causa: 'No tienes ninguna recua quieta en casa y sin nada pendiente.',

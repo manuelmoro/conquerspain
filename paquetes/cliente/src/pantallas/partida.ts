@@ -7,7 +7,7 @@ import type { FichaDeComarca } from '@conquer/nucleo';
 import type { Almacen, EstadoDelCliente } from '../almacen.ts';
 import { MODOS_DE_ATLAS, componerAtlas } from '../atlas/componer.ts';
 import type { ModoDeAtlas } from '../atlas/componer.ts';
-import { EXPLICACION_DE_MODO, leyendaDe } from '../atlas/leyenda.ts';
+import { EXPLICACION_DE_MODO, NOMBRE_DE_MODO, leyendaDe } from '../atlas/leyenda.ts';
 import { montarAtlas } from '../atlas/svg.ts';
 import type { AtlasMontado } from '../atlas/svg.ts';
 import { colasDe, moverEnLaCola, resumenDeRecursos, tiempoHastaElCorte } from '../bandeja.ts';
@@ -39,12 +39,6 @@ import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
 import { pantallaDeUnidades } from './unidades.ts';
 import { dialogoDeResumen } from './resumen.ts';
-
-const NOMBRE_DE_MODO: Readonly<Record<ModoDeAtlas, string>> = {
-  economico: 'Economía',
-  logistico: 'Caminos',
-  politico: 'Dominios',
-};
 
 interface EstadoDelAtlas {
   svg: SVGSVGElement | null;
@@ -151,6 +145,7 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const modos = el(
     'nav',
     { class: 'modos', 'aria-label': 'Qué enseña el mapa' },
+    el('span', { class: 'suave' }, 'Ver en el mapa:'),
     ...MODOS_DE_ATLAS.map((modo) => {
       const b = boton(
         NOMBRE_DE_MODO[modo],
@@ -170,7 +165,12 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
     ...leyendaDe(atlas.modo, partida.recibido.vista).map((e) =>
       e.trazo === undefined
         ? el('span', { style: `--color: ${e.color ?? 'transparent'}` }, e.texto)
-        : el('span', { class: `trazo ${e.trazo}` }, e.texto),
+        : el(
+            'span',
+            { class: `trazo ${e.trazo}` },
+            e.texto,
+            ...(e.nota === undefined ? [] : [el('small', { class: 'suave' }, ` (${e.nota})`)]),
+          ),
     ),
   );
   return el(
@@ -279,6 +279,7 @@ function cronicaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | nu
     partida.recibido.turno,
     TABLAS_DEL_JUEGO.estaciones.turnosPorAnyo,
     nombreDeComarcaEn(estado),
+    tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now()),
   );
 }
 

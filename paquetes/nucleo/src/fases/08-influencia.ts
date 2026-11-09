@@ -52,16 +52,17 @@ function regalo(ctx: Contexto, orden: OrdenDe<'regalo'>): void {
     return;
   }
   empezarOrden(ctx, orden, 'terminada');
+  const delta = multiplicarFactores(t.porRegalo, [
+    modificadoresDelJugador(jugador, ctx.reglas).influenciaMil,
+  ]);
   aplicar(ctx, {
     tipo: 'influencia',
     comarca: comarca.id,
     jugador: orden.jugador,
-    delta: multiplicarFactores(t.porRegalo, [
-      modificadoresDelJugador(jugador, ctx.reglas).influenciaMil,
-    ]),
+    delta,
     motivo: 'regalo al concejo',
   });
-  aplicar(ctx, { tipo: 'regalo', comarca: comarca.id, jugador: orden.jugador });
+  aplicar(ctx, { tipo: 'regalo', comarca: comarca.id, jugador: orden.jugador, influencia: delta });
 }
 
 // ——— Influencia de cada turno ————————————————————————————————————————————————

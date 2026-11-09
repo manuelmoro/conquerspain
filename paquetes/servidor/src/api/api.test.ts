@@ -289,6 +289,34 @@ describe('la idempotencia (criterio 3)', () => {
   }, 120_000);
 });
 
+describe('el regalo al concejo', () => {
+  it('un segundo regalo al mismo concejo se rechaza: no sumaria nada', async () => {
+    const e = await apiDePrueba({ turnosJugados: 1 });
+    const estado = await e.repo.ultimoEstado('p1' as IdPartida);
+    const mesta = estado?.jugadores['mesta'];
+    if (estado === null || mesta === undefined) throw new Error('falta la mesta');
+    const neutral = Object.keys(mesta.conocimiento)
+      .sort()
+      .find((id) => estado.comarcas[id]?.duenyo === null);
+    if (neutral === undefined) throw new Error('la mesta no conoce ninguna neutral');
+    const regalo = (idCliente: string) =>
+      e.pedir(MESTA, 'POST', '/partidas/p1/ordenes', {
+        idCliente,
+        tipo: 'regalo',
+        comarca: neutral,
+      });
+    expect((await regalo('regalo-1')).estado).toBe(201);
+    const segundo = await regalo('regalo-2');
+    expect(segundo.estado).toBe(400);
+    expect(codigoDe(segundo)).toBe('orden-invalida');
+    // Repetir la misma orden sigue siendo idempotente.
+    expect((await regalo('regalo-1')).estado).toBe(200);
+    const ficha = await e.pedir(MESTA, 'GET', `/partidas/p1/comarcas/${neutral}`);
+    expect(JSON.stringify(cuerpoDe(ficha))).toContain('regalo-pedido');
+    await e.repo.cerrar();
+  }, 120_000);
+});
+
 describe('los limites (criterio 7)', () => {
   it('un cuerpo de mas de 64 KiB se rechaza', async () => {
     const e = await apiDePrueba({ turnosJugados: 1 });

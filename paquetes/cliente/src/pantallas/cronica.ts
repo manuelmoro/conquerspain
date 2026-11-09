@@ -51,9 +51,29 @@ function archivo(
   turnoQueSeJuega: number,
   turnosPorAnyo: number,
   nombre: (id: string) => string,
+  corte: string,
 ): (Node | string)[] {
   const ultimo = ultimoResuelto(turnoQueSeJuega);
-  if (ultimo === 0) return [el('p', { class: 'suave' }, 'Todavía no se ha resuelto ningún turno.')];
+  // El primer turno aun no tiene cronica: se dice por que y cuando llega (T-090).
+  if (ultimo === 0)
+    return [
+      el(
+        'div',
+        { class: 'tarjeta vacia' },
+        el('p', { class: 'icono-grande', 'aria-hidden': 'true' }, '📜'),
+        el('h3', {}, 'Aún no hay crónica'),
+        el(
+          'p',
+          {},
+          `Estás en el primer turno. La crónica cuenta lo que pasó en cada turno resuelto, y la primera llegará cuando se resuelva este (${corte}).`,
+        ),
+        el(
+          'p',
+          { class: 'suave' },
+          'Mientras tanto, da tus primeras órdenes: toca tu capital en el mapa.',
+        ),
+      ),
+    ];
   const ir = (paso: number): HTMLButtonElement => {
     const destino = moverTurno(turno, paso, ultimo);
     const b = boton(
@@ -188,6 +208,8 @@ export function pantallaDeCronica(
   turnoQueSeJuega: number,
   turnosPorAnyo: number,
   nombre: (id: string) => string,
+  /** Lo que falta para el corte, en palabras: «faltan 5 h». */
+  corte: string,
 ): HTMLElement {
   return el(
     'section',
@@ -202,7 +224,15 @@ export function pantallaDeCronica(
     ),
     pestanyas(almacen, abierta.vista, abierta.turno),
     ...(abierta.vista === 'cronica'
-      ? archivo(almacen, datos.cronica, abierta.turno, turnoQueSeJuega, turnosPorAnyo, nombre)
+      ? archivo(
+          almacen,
+          datos.cronica,
+          abierta.turno,
+          turnoQueSeJuega,
+          turnosPorAnyo,
+          nombre,
+          corte,
+        )
       : clasificacion(datos.clasificacion)),
   );
 }
