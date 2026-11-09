@@ -16,7 +16,7 @@ import type {
   OrdenEnviada,
 } from './api.ts';
 import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
-import { conPrevision, editorDe, intencionesDe } from './editor-de-ruta.ts';
+import { conPrevision, editorDe, intencionesDe, tocar } from './editor-de-ruta.ts';
 import type { Guardado } from './guardado.ts';
 import { alDia, leerProgreso, saltar, siguiente } from './tutorial.ts';
 import type { ProgresoDelTutorial, SituacionDelTutorial } from './tutorial.ts';
@@ -72,6 +72,8 @@ export interface EstadoDelCliente {
   readonly tutorial: ProgresoDelTutorial | null;
   /** «Tu casa» abierta en el panel (T-089). */
   readonly casa: boolean;
+  /** La ayuda abierta en el panel (T-090). */
+  readonly ayuda: boolean;
   /** La cronica abierta en el panel (T-085): el turno del archivo o la clasificacion. */
   readonly cronica: { readonly turno: number; readonly vista: 'cronica' | 'clasificacion' } | null;
 }
@@ -100,6 +102,7 @@ const INICIAL: EstadoDelCliente = {
   mercado: null,
   cronica: null,
   casa: false,
+  ayuda: false,
   tutorial: null,
 };
 
@@ -503,11 +506,33 @@ export class Almacen {
   // ——— Tu casa (T-089 §4.3) ———————————————————————————————————————————————————
 
   abrirCasa(): void {
-    this.cambiar({ casa: true, comarcaAbierta: null, editor: null, mercado: null, cronica: null });
+    this.cambiar({
+      casa: true,
+      ayuda: false,
+      comarcaAbierta: null,
+      editor: null,
+      mercado: null,
+      cronica: null,
+    });
+  }
+
+  abrirAyuda(): void {
+    this.cambiar({
+      ayuda: true,
+      casa: false,
+      comarcaAbierta: null,
+      editor: null,
+      mercado: null,
+      cronica: null,
+    });
+  }
+
+  cerrarAyuda(): void {
+    this.cambiar({ ayuda: false });
   }
 
   cerrarCasa(): void {
-    this.cambiar({ casa: false });
+    this.cambiar({ casa: false, ayuda: false });
   }
 
   // ——— La cronica y la clasificacion (T-085 §4.3) ————————————————————————————————
@@ -523,6 +548,7 @@ export class Almacen {
       editor: null,
       mercado: null,
       casa: false,
+      ayuda: false,
     });
   }
 
@@ -562,6 +588,7 @@ export class Almacen {
       editor: null,
       cronica: null,
       casa: false,
+      ayuda: false,
     });
   }
 
@@ -596,8 +623,29 @@ export class Almacen {
       mercado: null,
       cronica: null,
       casa: false,
+      ayuda: false,
     });
     void this.preverRuta();
+  }
+
+  /**
+   * «Mandar una recua aqui» (T-090): abre el editor de la recua mas a mano —quieta en casa y sin ruta,
+   * si la hay— con `comarca` ya puesta de parada. Devuelve false si no hay ninguna recua.
+   */
+  mandarRecuaA(comarca: string): boolean {
+    const vista = this.estadoActual.partida?.recibido.vista;
+    if (vista === undefined) return false;
+    const enCasa = vista.recuas.find(
+      (r) =>
+        r.situacion.donde === 'comarca' &&
+        r.ruta.length === 0 &&
+        vista.comarcas[r.situacion.comarca]?.nivel === 'propia',
+    );
+    const recua = enCasa ?? vista.recuas[0];
+    if (recua === undefined) return false;
+    this.abrirEditor({ clase: 'recua', id: recua.id });
+    this.editar((e) => tocar(e, comarca));
+    return true;
   }
 
   cerrarEditor(): void {

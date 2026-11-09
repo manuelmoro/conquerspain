@@ -374,6 +374,10 @@ describe('el avance manual', () => {
       proximaResolucion(ANCLA, HORA, 2),
     );
     await expect(e.reloj.avanzarManual(real.id)).rejects.toThrow(/no es de prueba/);
+    // Quien administra la partida (la API lo comprueba) si puede avanzarla (T-090).
+    expect(await e.reloj.avanzarManual(real.id, { porElAdministrador: true })).toMatchObject({
+      tipo: 'resuelto',
+    });
     await expect(e.reloj.avanzarManual('no-existe' as IdPartida)).rejects.toThrow(
       /No hay ninguna partida/,
     );

@@ -24,6 +24,7 @@ import { PASOS_DEL_TUTORIAL, terminado } from '../tutorial.ts';
 import { enfocar } from './foco.ts';
 
 import type { MercadoRecibido } from '../api.ts';
+import { pantallaDeAyuda } from './ayuda.ts';
 import { pantallaDeCasa } from './casa.ts';
 import { pantallaDeCronica } from './cronica.ts';
 import { pantallaDeFicha } from './ficha.ts';
@@ -223,7 +224,12 @@ function fichaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null
         : '',
     );
   }
-  return pantallaDeFicha(almacen, ficha, partida.recibido.turno);
+  return pantallaDeFicha(
+    almacen,
+    ficha,
+    partida.recibido.turno,
+    partida.recibido.vista.jugador.casa,
+  );
 }
 
 function mercadoDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
@@ -445,13 +451,15 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
 
 /** Las pestanyas del panel (T-090): lo que se ve al lado del mapa, con icono y texto. */
 function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
-  const activa = estado.casa
-    ? 'casa'
-    : estado.cronica !== null
-      ? 'cronica'
-      : estado.mercado !== null
-        ? 'mercado'
-        : 'ordenes';
+  const activa = estado.ayuda
+    ? 'ayuda'
+    : estado.casa
+      ? 'casa'
+      : estado.cronica !== null
+        ? 'cronica'
+        : estado.mercado !== null
+          ? 'mercado'
+          : 'ordenes';
   const pestanya = (
     id: string,
     icono: string,
@@ -468,6 +476,7 @@ function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElem
     'nav',
     { class: 'pestanyas', 'aria-label': 'Secciones del panel' },
     pestanya('ordenes', '📋', 'Órdenes', () => {
+      almacen.cerrarAyuda();
       almacen.cerrarCasa();
       almacen.cerrarCronica();
       almacen.cerrarMercado();
@@ -483,15 +492,23 @@ function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElem
     pestanya('casa', '🏰', 'Tu casa', () => {
       almacen.abrirCasa();
     }),
+    pestanya('ayuda', '❓', 'Ayuda', () => {
+      almacen.abrirAyuda();
+    }),
   );
 }
+
+/** Si el administrador esta confirmando el avance del turno: sobrevive a las repintadas. */
+let confirmandoAvance = false;
 
 /** La tarjeta del tutorial, abajo y sin tapar el mapa (T-090 §2.6). */
 function tarjetaDelTutorial(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
   const progreso = estado.tutorial;
   if (progreso === null || terminado(progreso)) return null;
   const paso = PASOS_DEL_TUTORIAL[progreso.paso];
-  if (paso === undefined) return null;
+  if (paso === undefined || estado.partida === null) return null;
+  // El tutorial habla de la casa con la que se juega: su privilegio y su limite.
+  const casa = TABLAS_DEL_JUEGO.casas[estado.partida.recibido.vista.jugador.casa];
   return el(
     'aside',
     { class: 'tutorial', 'aria-live': 'polite', 'aria-label': 'Primeros pasos' },
@@ -500,8 +517,8 @@ function tarjetaDelTutorial(almacen: Almacen, estado: EstadoDelCliente): HTMLEle
       { class: 'antetitulo' },
       `Primeros pasos · ${String(progreso.paso + 1)} de ${String(PASOS_DEL_TUTORIAL.length)}`,
     ),
-    el('h2', {}, paso.titulo),
-    el('p', {}, paso.texto),
+    el('h2', {}, paso.titulo(casa)),
+    el('p', {}, paso.texto(casa)),
     el(
       'p',
       { class: 'fila' },
@@ -556,16 +573,41 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       ),
     ),
   );
-  if (vista.configuracion.esDePrueba) {
-    cabecera.append(
-      boton(
-        'Resolver el turno ya',
-        () => {
-          void almacen.avanzar();
-        },
-        'empuje',
-      ),
-    );
+  // Avanzar el turno a mano (T-090): en partidas de prueba, o quien administra la partida. Corta el
+  // tiempo de las demas casas, asi que pide confirmarlo.
+  if (vista.configuracion.esDePrueba || partida.recibido.esAdministrador === true) {
+    const titulo = cabecera.querySelector('.titulo-de-partida h1');
+    const avanzarYa = (): void => {
+      confirmandoAvance = false;
+      void almacen.avanzar();
+    };
+    const control = confirmandoAvance
+      ? el(
+          'span',
+          { class: 'avanzar confirmando' },
+          el('span', { class: 'suave' }, '¿Resolver ya para todas las casas?'),
+          boton('Sí, avanzar', avanzarYa),
+          boton(
+            'No',
+            () => {
+              confirmandoAvance = false;
+              almacen.refrescar();
+            },
+            'secundario',
+          ),
+        )
+      : boton(
+          '⏭ Avanzar turno',
+          () => {
+            if (vista.configuracion.esDePrueba) avanzarYa();
+            else {
+              confirmandoAvance = true;
+              almacen.refrescar();
+            }
+          },
+          'secundario avanzar',
+        );
+    titulo?.after(control);
   }
   // Lo que tienes para gastar, siempre a la vista arriba (J-01: costaba encontrarlo en el panel).
   const barra = el(
@@ -620,10 +662,12 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
   const ficha =
     editor !== null
       ? pantallaDeRuta(almacen, editor, nombreDeUnidad, nombre)
-      : (mercadoDe(almacen, estado) ??
-        cronicaDe(almacen, estado) ??
-        casaDe(almacen, estado) ??
-        fichaDe(almacen, estado));
+      : estado.ayuda
+        ? pantallaDeAyuda(almacen)
+        : (mercadoDe(almacen, estado) ??
+          cronicaDe(almacen, estado) ??
+          casaDe(almacen, estado) ??
+          fichaDe(almacen, estado));
   partes.push(
     el(
       'div',

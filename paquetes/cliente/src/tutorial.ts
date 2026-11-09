@@ -12,10 +12,17 @@ export interface SituacionDelTutorial {
   readonly ordenes: number;
 }
 
+/** Lo que el tutorial cuenta de la casa con la que se juega (T-090). */
+export interface CasaDelTutorial {
+  readonly nombre: string;
+  readonly privilegio: string;
+  readonly limite: string;
+}
+
 export interface PasoDelTutorial {
   readonly id: string;
-  readonly titulo: string;
-  readonly texto: string;
+  readonly titulo: (casa: CasaDelTutorial) => string;
+  readonly texto: (casa: CasaDelTutorial) => string;
   /**
    * Donde mirar: selectores CSS, en orden de preferencia; el primero que exista se resalta y el resto
    * de la pantalla se oscurece. Vacio si no hay nada que senyalar.
@@ -27,29 +34,40 @@ export interface PasoDelTutorial {
 
 export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
   {
+    id: 'casa',
+    titulo: (c) => `Juegas con ${c.nombre}`,
+    texto: (c) =>
+      `${c.privilegio} Su límite: ${c.limite} Cada casa juega a un juego distinto: lo tuyo es sacarle partido a esto.`,
+    objetivo: () => ['.cabecera .emblema'],
+    hecho: null,
+  },
+  {
     id: 'recursos',
-    titulo: 'Esto es lo que tienes',
-    texto:
+    titulo: () => 'Esto es lo que tienes',
+    texto: () =>
       'Arriba ves tus recursos: pan para comer, madera y piedra para construir, maravedís para pagar. El pan es lo primero: si falta, tu gente pasa hambre.',
     objetivo: () => ['.barra-de-recursos'],
     hecho: null,
   },
   {
     id: 'capital',
-    titulo: 'Toca tu capital',
-    texto:
+    titulo: () => 'Toca tu capital',
+    texto: () =>
       'Tu capital es la de la torre con banderola. Tócala: su ficha te dice qué produce y qué puedes hacer en ella.',
     objetivo: (capital) => [`.capa-comarcas [data-comarca="${capital}"]`, '.contenedor-atlas'],
     hecho: (s) => s.comarcaAbierta === s.capital,
   },
   {
     id: 'obra',
-    titulo: 'Da tu primera orden',
-    texto:
-      'Pulsa «Elegir» en la granja, que da más pan, y luego «Dar la orden». Se paga al empezar, y hasta el corte la puedes retirar desde «Órdenes».',
+    titulo: () => 'Da tu primera orden',
+    texto: () =>
+      'Pulsa «Elegir» en la acción resaltada y después «Dar la orden». Arriba está lo que tu casa puede hacer ya; lo que aún no, va plegado en «Todavía no puedes», con lo que le falta.',
+    // Lo que cada casa puede hacer ya en su capital: una obra si le queda solar; si no (los mercaderes
+    // empiezan sin solares libres), formar una recua, que es su oficio; y si no, lo primero que pueda.
     objetivo: () => [
       '.confirmacion button.dar-la-orden',
-      'li.accion[data-clave="construir-granja"] button',
+      'li.accion:not(.bloqueada)[data-clave^="construir-"] button',
+      'li.accion:not(.bloqueada)[data-clave="formar-recua"] button',
       'li.accion:not(.bloqueada) button',
       '.panel .ficha',
     ],
@@ -57,16 +75,16 @@ export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
   },
   {
     id: 'turno',
-    titulo: 'El turno se resuelve a su hora',
-    texto:
+    titulo: () => 'El turno se resuelve a su hora',
+    texto: () =>
       'Cuando llegue el corte, se resuelven las órdenes de todos a la vez y te llega la crónica de lo que ha pasado. No hace falta estar conectado.',
     objetivo: () => ['.cabecera button.empuje', '.titulo-de-partida'],
     hecho: (s, alEmpezar) => s.turno > alEmpezar,
   },
   {
     id: 'tierra',
-    titulo: 'Gana tierra',
-    texto:
+    titulo: () => 'Gana tierra',
+    texto: () =>
       'Toca una comarca vecina: «Cómo ganarla» te dice cuánta influencia tienes y qué la sube. Una recua presente o un regalo al concejo la acercan.',
     objetivo: () => ['.contenedor-atlas'],
     hecho: (s) => s.comarcaAbierta !== null && !s.abiertaEsPropia,

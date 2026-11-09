@@ -20,7 +20,14 @@ function capa(): HTMLElement {
 
 function colocar(): void {
   const foco = capa();
-  const objetivo = selectores.map((s) => document.querySelector(s)).find((e) => e !== null) ?? null;
+  // Lo primero que exista **y se vea**: lo plegado o lo oculto mide cero y no se puede senyalar.
+  const objetivo =
+    selectores
+      .flatMap((s) => [...document.querySelectorAll(s)])
+      .find((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      }) ?? null;
   if (tarjeta === null || !tarjeta.isConnected || objetivo === null) {
     foco.hidden = true;
     tarjeta?.classList.remove('junto');

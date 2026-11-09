@@ -1,6 +1,8 @@
 // El tutorial (ficha T-090, criterio 5): avanza cuando el jugador hace cada paso, y saltado no vuelve.
 import { describe, expect, it } from 'vitest';
 
+import { TABLAS_DEL_JUEGO } from '@conquer/nucleo';
+
 import {
   PASOS_DEL_TUTORIAL,
   alDia,
@@ -24,8 +26,10 @@ const NADA: SituacionDelTutorial = {
 describe('el tutorial', () => {
   it('no se salta los pasos que piden «Entendido», y avanza solo con lo que el jugador hace', () => {
     let p = progresoInicial(3);
-    // Aunque ya tenga la capital abierta, el primer paso pide «Entendido».
+    // Aunque ya tenga la capital abierta, los dos primeros pasos piden «Entendido».
     p = alDia(p, { ...NADA, comarcaAbierta: 'burgos', abiertaEsPropia: true });
+    expect(PASOS_DEL_TUTORIAL[p.paso]?.id).toBe('casa');
+    p = siguiente(p);
     expect(PASOS_DEL_TUTORIAL[p.paso]?.id).toBe('recursos');
     p = siguiente(p);
     p = alDia(p, NADA);
@@ -72,8 +76,21 @@ describe('dónde va la tarjeta del tutorial', () => {
     expect(p.y).toBeGreaterThanOrEqual(16);
   });
 
-  it('cada paso señala algo de la pantalla', () => {
+  it('cada paso señala algo de la pantalla, y el de la casa habla de la casa con que se juega', () => {
     for (const paso of PASOS_DEL_TUTORIAL)
       expect(paso.objetivo('burgos').length, paso.id).toBeGreaterThan(0);
+    const mercaderes = TABLAS_DEL_JUEGO.casas.mercaderes;
+    const primero = PASOS_DEL_TUTORIAL[0];
+    expect(primero?.titulo(mercaderes)).toBe(`Juegas con ${mercaderes.nombre}`);
+    expect(primero?.texto(mercaderes)).toContain(mercaderes.limite);
+  });
+
+  it('la primera orden prefiere una obra; si no, formar recua (los mercaderes empiezan sin solar)', () => {
+    const obra = PASOS_DEL_TUTORIAL.find((p) => p.id === 'obra');
+    const selectores = obra?.objetivo('burgos') ?? [];
+    const construir = selectores.findIndex((s) => s.includes('construir-'));
+    const recua = selectores.findIndex((s) => s.includes('formar-recua'));
+    expect(construir).toBeGreaterThan(-1);
+    expect(recua).toBeGreaterThan(construir);
   });
 });

@@ -58,7 +58,10 @@ export interface DependenciasDeApi {
   /** Alta de partidas (T-065): convocar, unirse, sortear y elegir. */
   readonly altas?: ServicioDeAltas;
   /** Resuelve un turno ya, solo en partidas de prueba (T-061 §4.7); si falta, no hay esa ruta. */
-  readonly avanzar?: (id: IdPartida) => Promise<{ readonly tipo: string }>;
+  readonly avanzar?: (
+    id: IdPartida,
+    opciones: { readonly porElAdministrador: boolean },
+  ) => Promise<{ readonly tipo: string }>;
   /** Cada cuanto se manda un latido por el flujo de eventos; por defecto, 25 s. */
   readonly latidoMs?: number;
 }
@@ -221,13 +224,15 @@ export function crearApi(
   };
 
   const verEstado: Manejador = async (ctx) => {
-    const { fila, estado, vista } = await estadoYVista(ctx);
+    const { fila, estado, vista, id } = await estadoYVista(ctx);
     return {
       estado: 200,
       datos: {
         turno: estado.turno,
         estadoDeLaPartida: fila.estado,
         proximaResolucion: fila.proximaResolucion,
+        // Quien administra ve el boton de avanzar el turno (T-090).
+        esAdministrador: (await dep.repo.administradorDePartida(id)) === ctx.cuenta,
         vista,
       },
     };
@@ -276,15 +281,19 @@ export function crearApi(
   };
 
   const avanzar = dep.avanzar;
+  // Avanzar el turno a mano (T-090): en una partida de prueba, cualquiera de sus jugadores; en una de
+  // verdad, solo quien la administra (quien la convoco). Corta el tiempo de los demas: es un poder del
+  // anfitrion, como en VGA Planets cuando todos han mandado su turno.
   const avanzarTurno: Manejador = async (ctx) => {
     const { fila, id } = await partidaDelJugador(ctx);
-    if (avanzar === undefined || !fila.esDePrueba) {
+    const administra = (await dep.repo.administradorDePartida(id)) === ctx.cuenta;
+    if (avanzar === undefined || (!fila.esDePrueba && !administra)) {
       throw new ErrorDeApi(
         'solo-en-pruebas',
-        'Solo las partidas de prueba se pueden avanzar a mano.',
+        'Solo quien administra la partida (quien la convocó) puede avanzar el turno a mano.',
       );
     }
-    const resultado = await avanzar(id);
+    const resultado = await avanzar(id, { porElAdministrador: administra });
     return { estado: 200, datos: { resultado: resultado.tipo } };
   };
 

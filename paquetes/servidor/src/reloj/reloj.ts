@@ -86,11 +86,17 @@ export class Reloj {
     return Math.min(this.sondeoMs, Math.max(ESPERA_MINIMA_MS, proxima - this.dep.ahora()));
   }
 
-  /** Resuelve un turno ahora mismo, sin esperar la hora: solo en las partidas de prueba. */
-  async avanzarManual(id: IdPartida): Promise<ResultadoDeUnTurno> {
+  /**
+   * Resuelve un turno ahora mismo, sin esperar la hora: en las partidas de prueba, o cuando lo pide
+   * quien administra la partida (T-090), que la API ya ha comprobado.
+   */
+  async avanzarManual(
+    id: IdPartida,
+    opciones: { readonly porElAdministrador: boolean } = { porElAdministrador: false },
+  ): Promise<ResultadoDeUnTurno> {
     const fila = await this.dep.repo.partida(id);
     if (fila === null) throw new Error(`No hay ninguna partida "${id}".`);
-    if (!fila.esDePrueba) {
+    if (!fila.esDePrueba && !opciones.porElAdministrador) {
       throw new Error(
         `La partida "${id}" no es de prueba: el avance manual solo existe para partidas de prueba, porque en una de verdad el calendario es de todos.`,
       );

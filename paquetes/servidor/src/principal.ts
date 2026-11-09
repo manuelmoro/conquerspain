@@ -71,9 +71,9 @@ const api = crearApi({
   canal,
   avisos: repo,
   altas: new ServicioDeAltas({ repo, mundoCompleto: mundo, reglas: TABLAS_DEL_JUEGO, ahora }),
-  avanzar: (id) => {
+  avanzar: (id, opciones) => {
     if (relojListo === null) throw new Error('El reloj aun no ha arrancado.');
-    return relojListo.avanzarManual(id);
+    return relojListo.avanzarManual(id, opciones);
   },
 });
 // El reloj se crea despues de la API: la ruta de avance manual lo llama por esta referencia.

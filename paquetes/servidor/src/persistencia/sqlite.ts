@@ -315,6 +315,11 @@ export class RepositorioSqlite
     }));
   }
 
+  async administradorDePartida(id: IdPartida): Promise<string | null> {
+    const fila = this.uno('SELECT creador FROM convocatoria WHERE partida = ?', id);
+    return fila === null ? null : texto(fila, 'creador');
+  }
+
   async partidasDeCuenta(cuenta: string): Promise<readonly PartidaDeCuenta[]> {
     const filas = this.todos(
       `SELECT p.*, q.jugador AS jugador_de_la_cuenta, q.casa AS casa_de_la_cuenta

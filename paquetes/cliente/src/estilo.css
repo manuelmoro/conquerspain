@@ -694,7 +694,7 @@ svg.serie polyline {
 }
 .pestanyas {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0.25rem;
   padding: 0.25rem;
   margin-bottom: 0.5rem;
@@ -865,4 +865,118 @@ button.enlace:hover:not(:disabled) {
 .vacia {
   text-align: center;
   padding: 2rem 1rem;
+}
+
+/* El estado de una comarca propia (T-090): cada dato con icono, valor y lo que implica. */
+.datos-de-comarca,
+.edificios {
+  list-style: none;
+  margin: 0.5rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.datos-de-comarca {
+  grid-template-columns: repeat(2, 1fr);
+}
+.datos-de-comarca li,
+.edificios li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 0.4rem;
+  background: white;
+  border: 1px solid #e6dcc3;
+  border-radius: 12px;
+  padding: 0.5rem 0.6rem;
+}
+.datos-de-comarca li.alerta {
+  border-color: #e0a8a3;
+  background: #fdf3f2;
+}
+.icono-de-dato {
+  font-size: 1.15rem;
+}
+.titulo-de-dato {
+  font-size: 0.8rem;
+  color: var(--tinta-suave);
+}
+.nota-de-dato {
+  grid-column: 1 / -1;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--tinta-suave);
+}
+.datos-de-comarca li.alerta .nota-de-dato {
+  color: var(--rojo);
+}
+.puntos {
+  color: var(--cobalto);
+  letter-spacing: 0.1em;
+}
+
+/* La ayuda (T-090). */
+.tema-de-ayuda {
+  background: white;
+  border: 1px solid #e6dcc3;
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  margin: 0.5rem 0;
+}
+.tema-de-ayuda summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+.tema-de-ayuda ol {
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+}
+.tema-de-ayuda li {
+  margin: 0.3rem 0;
+}
+.glosario dt {
+  font-weight: 700;
+  margin-top: 0.6rem;
+}
+.glosario dd {
+  margin: 0.15rem 0 0;
+  color: var(--tinta-suave);
+}
+/* El titulo de una ficha no se monta con el boton de cerrar. */
+.hoja > h2 {
+  padding-right: 2.75rem;
+}
+
+.datos-de-comarca li {
+  grid-template-columns: auto 1fr;
+}
+.datos-de-comarca li strong {
+  grid-column: 1 / -1;
+  font-size: 1.05rem;
+}
+
+/* Avanzar el turno a mano, junto al nombre de la partida (T-090). */
+.titulo-de-partida {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.75rem;
+}
+.titulo-de-partida > p {
+  flex-basis: 100%;
+}
+button.avanzar {
+  min-height: 2rem;
+  padding: 0.15rem 0.8rem;
+  font-size: 0.85rem;
+}
+.avanzar.confirmando {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.avanzar.confirmando button {
+  min-height: 2rem;
+  padding: 0.15rem 0.8rem;
+  font-size: 0.85rem;
 }

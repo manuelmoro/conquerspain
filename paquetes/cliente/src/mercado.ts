@@ -24,7 +24,11 @@ export interface FechaDePrecio {
 /** La fecha y la fuente de los precios de una plaza: nunca un precio sin ellas (criterio 1). */
 export function fechaDePrecio(plaza: PlazaEnPanel, turno: number): FechaDePrecio {
   if (plaza.turnoDelPrecio === null || plaza.fuente === null) {
-    return { texto: 'No sabes sus precios: manda una recua o espera a oír de ella.', viejo: true };
+    return {
+      texto:
+        'Aún no sabes sus precios. Se saben cuando una recua tuya llega a la plaza; también te llegan de oídas (rumores) desde tus ventas, las ferias y el Camino de Santiago.',
+      viejo: true,
+    };
   }
   const hace = Math.max(0, turno - plaza.turnoDelPrecio);
   const cuando =

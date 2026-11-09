@@ -171,6 +171,18 @@ describe('el recorrido completo por la API', () => {
       };
       expect(mias.partidas).toEqual([expect.objectContaining({ id, casa })]);
     }
+    // Quien la convoco la administra, y lo sabe por su estado; los demas no (T-090).
+    expect(await e.repo.administradorDePartida(id as IdPartida)).toBe(creador);
+    const estadoDe = async (cuenta: string): Promise<unknown> =>
+      ((await e.pedir(cuenta, 'GET', `/partidas/${id}/estado`)).cuerpo as Record<string, unknown>)[
+        'esAdministrador'
+      ];
+    expect(await estadoDe(creador)).toBe(true);
+    expect(await estadoDe(otro)).toBe(false);
+    // Sin `avanzar` en la API, nadie avanza; con el, solo quien administra (la partida no es de prueba).
+    expect(codigoDe(await e.pedir(otro, 'POST', `/partidas/${id}/avanzar`))).toBe(
+      'solo-en-pruebas',
+    );
     const estado = await e.repo.ultimoEstado(id as IdPartida);
     expect(estado?.jugadores['mesta']?.capital).toBe(ofertas['mesta']?.[0]?.comarca);
     const resuelto = await resolverUnTurno(

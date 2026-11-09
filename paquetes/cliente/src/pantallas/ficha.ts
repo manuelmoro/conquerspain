@@ -1,11 +1,20 @@
 // La ficha de comarca (T-082, T-088): panel lateral en escritorio y hoja inferior en movil. Cada accion
 // es una tarjeta con su coste y su duracion; al elegirla, la confirmacion se abre ahi mismo con el
 // efecto previsto, o con la causa y la salida si esta bloqueada. Nada se da sin verlo antes.
-import { POTENCIALES } from '@conquer/nucleo';
-import type { AccionDeFicha, FichaDeComarca } from '@conquer/nucleo';
+import { POTENCIALES, TABLAS_DEL_JUEGO } from '@conquer/nucleo';
+import type { AccionDeFicha, Casa, FichaDeComarca } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
 import { NOMBRE_DE_POTENCIAL, NOMBRE_DE_TERRENO } from '../nombres.ts';
+import {
+  ICONO_DE_EDIFICIO,
+  datoDeFuero,
+  datoDeLealtad,
+  datoDeSolares,
+  datoDeVecinos,
+  nivelEnPuntos,
+  notaDeNivel,
+} from '../estado-de-comarca.ts';
 import { textoDeGanar } from '../ganar.ts';
 import { fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
@@ -104,6 +113,7 @@ export function pantallaDeFicha(
   almacen: Almacen,
   ficha: FichaDeComarca,
   turno: number,
+  casaDelJugador: Casa,
 ): HTMLElement {
   const cabecera: (Node | string)[] = [
     el('h2', {}, ficha.nombre),
@@ -136,22 +146,56 @@ export function pantallaDeFicha(
   }
   const p = ficha.propia;
   if (p !== null) {
+    // Cada dato con su icono y lo que implica (T-090: «caben 60» o «Granja 3/4» no se entendian).
+    const porCasas =
+      TABLAS_DEL_JUEGO.poblacion.capacidadPorCasas +
+      TABLAS_DEL_JUEGO.casas[casaDelJugador].modificadores.capacidadPorCasasExtra;
+    const datos = [
+      datoDeVecinos(p.poblacion, p.capacidad, porCasas),
+      datoDeSolares(p.solares.usados, p.solares.total),
+      datoDeLealtad(p.lealtad),
+      datoDeFuero(p.fuero),
+    ];
     partes.push(
       el(
-        'p',
-        {},
-        `${String(p.poblacion)} vecinos (caben ${String(p.capacidad)}) · lealtad ${String(p.lealtad)} · ${p.fuero === 'ninguno' ? 'sin fuero' : p.fuero} · solares ${String(p.solares.usados)} de ${String(p.solares.total)}`,
+        'ul',
+        { class: 'datos-de-comarca' },
+        ...datos.map((d) =>
+          el(
+            'li',
+            { class: d.alerta ? 'alerta' : '' },
+            el('span', { class: 'icono-de-dato', 'aria-hidden': 'true' }, d.icono),
+            el('span', { class: 'titulo-de-dato' }, d.titulo),
+            el('strong', {}, d.valor),
+            el('span', { class: 'nota-de-dato' }, d.nota),
+          ),
+        ),
       ),
-    );
-    partes.push(
-      el(
-        'p',
-        {},
-        el('strong', {}, 'Edificios: '),
-        p.edificios.length === 0
-          ? 'ninguno'
-          : p.edificios.map((e) => `${e.nombre} ${String(e.nivel)}/${String(e.maximo)}`).join(', '),
-      ),
+      el('h3', {}, 'Edificios'),
+      p.edificios.length === 0
+        ? el('p', { class: 'suave' }, 'Ninguno todavía.')
+        : el(
+            'ul',
+            { class: 'edificios' },
+            ...p.edificios.map((e) =>
+              el(
+                'li',
+                { title: notaDeNivel(e.nivel, e.maximo) },
+                el(
+                  'span',
+                  { class: 'icono-de-dato', 'aria-hidden': 'true' },
+                  ICONO_DE_EDIFICIO[e.tipo],
+                ),
+                el('span', {}, e.nombre),
+                el(
+                  'span',
+                  { class: 'puntos', 'aria-hidden': 'true' },
+                  nivelEnPuntos(e.nivel, e.maximo),
+                ),
+                el('span', { class: 'nota-de-dato' }, notaDeNivel(e.nivel, e.maximo)),
+              ),
+            ),
+          ),
     );
     if (p.obras.length > 0) {
       partes.push(

@@ -136,6 +136,11 @@ export interface Repositorio {
   participantes(id: IdPartida): Promise<readonly Participante[]>;
   /** Las partidas en las que juega una cuenta, con el jugador y la casa que lleva en cada una. */
   partidasDeCuenta(cuenta: string): Promise<readonly PartidaDeCuenta[]>;
+  /**
+   * La cuenta que administra una partida: quien la convoco (T-090). Null si no salio de una
+   * convocatoria (las de prueba de las herramientas).
+   */
+  administradorDePartida(id: IdPartida): Promise<string | null>;
 
   estado(id: IdPartida, turno: number, opciones?: OpcionesDeLectura): Promise<EstadoPartida | null>;
   ultimoEstado(id: IdPartida, opciones?: OpcionesDeLectura): Promise<EstadoPartida | null>;

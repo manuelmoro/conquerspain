@@ -70,10 +70,24 @@ function serie(puntos: readonly { turno: number; mil: number }[]): SVGSVGElement
 
 function formularioDeOrden(almacen: Almacen, p: PlazaEnPanel): HTMLElement {
   if (p.recuas.length === 0) {
+    // Sin recua aqui no se comercia: un boton que lleva directo a mandarla (T-090).
+    const sinRecuas = almacen.estado.partida?.recibido.vista.recuas.length === 0;
     return el(
-      'p',
+      'div',
       { class: 'consejo' },
-      'Para comprar o vender aquí hace falta una recua tuya quieta en la plaza: toda la mercancía viaja en recuas. Dale ruta hasta aquí desde «Tus recuas y rebaños».',
+      el(
+        'p',
+        {},
+        'Para comprar o vender aquí hace falta una recua tuya en la plaza: toda la mercancía viaja en recuas.',
+      ),
+      sinRecuas
+        ? boton('Formar una recua en tu capital', () => {
+            const capital = almacen.estado.partida?.recibido.vista.jugador.capital;
+            if (capital !== undefined) almacen.abrirComarca(capital);
+          })
+        : boton('Mandar una recua aquí', () => {
+            almacen.mandarRecuaA(p.comarca);
+          }),
     );
   }
   const recua = el('select', { 'aria-label': 'Recua' });
@@ -187,18 +201,19 @@ function fichaDePlaza(
   return el(
     'section',
     { class: 'ficha tarjeta hoja', 'data-conservar-scroll': 'plaza' },
-    el('h2', {}, p.nombre),
     boton(
-      '← Plazas',
+      '← Todas las plazas',
       () => {
         almacen.abrirMercado(null);
       },
-      'cerrar secundario icono',
+      'enlace',
     ),
+    el('h2', {}, p.nombre),
     el('p', { class: 'suave' }, `En ${nombre(p.comarca)} · ${estadoDePlaza(p)}`),
     el('p', { class: fecha.viejo ? 'aviso' : 'suave' }, fecha.texto),
-    filas,
+    // Lo que se puede hacer va arriba; la lista de precios, debajo.
     formularioDeOrden(almacen, p),
+    filas,
   );
 }
 

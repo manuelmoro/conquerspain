@@ -48,6 +48,8 @@ export interface EstadoRecibido {
   readonly turno: number;
   readonly estadoDeLaPartida: string;
   readonly proximaResolucion: number | null;
+  /** Quien convoco la partida: puede avanzar el turno a mano (T-090). */
+  readonly esAdministrador?: boolean;
   readonly vista: VistaJugador;
 }
 
