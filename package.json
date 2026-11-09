@@ -19,7 +19,7 @@
     "formato:escribir": "prettier --write .",
     "test": "vitest run",
     "cobertura": "vitest run --coverage",
-    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test && npm run atlas:comprobar && npm run cliente:tamano",
+    "verificar": "npm run tipos && npm run lint && npm run formato && npm run test && npm run atlas:comprobar && npm run portada:comprobar && npm run cliente:tamano",
     "partidas": "tsx herramientas/banco/src/regenerar-partidas.ts",
     "banco": "tsx herramientas/banco/src/ejecutar.ts",
     "banco:comparar": "tsx herramientas/banco/src/comparar.ts",
@@ -28,7 +28,9 @@
     "servidor": "tsx paquetes/servidor/src/principal.ts",
     "partida:prueba": "tsx paquetes/servidor/herramientas/partida-de-prueba.ts",
     "dev": "tsx paquetes/cliente/herramientas/dev.ts",
-    "cliente:tamano": "tsx paquetes/cliente/herramientas/tamano.ts"
+    "cliente:tamano": "tsx paquetes/cliente/herramientas/tamano.ts",
+    "portada": "tsx paquetes/cliente/herramientas/portada.ts",
+    "portada:comprobar": "tsx paquetes/cliente/herramientas/portada.ts --comprobar"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

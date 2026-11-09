@@ -1,0 +1,119 @@
+// El tutorial de las primeras acciones (ficha T-090 §2.6), puro: cinco pasos que se dan por hechos
+// cuando el jugador los hace, no al leerlos. Lo que lleva hecho se guarda por partida en el navegador
+// (una preferencia de quien mira: si se pierde, el tutorial vuelve a empezar y no pasa nada).
+
+export interface SituacionDelTutorial {
+  readonly turno: number;
+  readonly capital: string;
+  readonly comarcaAbierta: string | null;
+  /** Si la comarca abierta es propia. */
+  readonly abiertaEsPropia: boolean;
+  /** Ordenes del jugador dadas o en marcha. */
+  readonly ordenes: number;
+}
+
+export interface PasoDelTutorial {
+  readonly id: string;
+  readonly titulo: string;
+  readonly texto: string;
+  /** Se da por hecho al pasar esto; null si el jugador dice «Entendido». */
+  readonly hecho: ((s: SituacionDelTutorial, alEmpezar: number) => boolean) | null;
+}
+
+export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
+  {
+    id: 'recursos',
+    titulo: 'Esto es lo que tienes',
+    texto:
+      'Arriba ves tus recursos: pan para comer, madera y piedra para construir, maravedís para pagar. El pan es lo primero: si falta, tu gente pasa hambre.',
+    hecho: null,
+  },
+  {
+    id: 'capital',
+    titulo: 'Toca tu capital',
+    texto:
+      'Tu capital está marcada en el mapa con borde azul. Tócala: su ficha te dice qué produce y qué puedes hacer en ella.',
+    hecho: (s) => s.comarcaAbierta === s.capital,
+  },
+  {
+    id: 'obra',
+    titulo: 'Da tu primera orden',
+    texto:
+      'En la ficha, elige qué construir (una granja da más pan) y pulsa «Dar la orden». Se paga al empezar, y hasta el corte la puedes retirar.',
+    hecho: (s) => s.ordenes > 0,
+  },
+  {
+    id: 'turno',
+    titulo: 'El turno se resuelve a su hora',
+    texto:
+      'Cuando llegue el corte, se resuelven las órdenes de todos a la vez y te llega la crónica de lo que ha pasado. No hace falta estar conectado.',
+    hecho: (s, alEmpezar) => s.turno > alEmpezar,
+  },
+  {
+    id: 'tierra',
+    titulo: 'Gana tierra',
+    texto:
+      'Toca una comarca vecina: «Cómo ganarla» te dice cuánta influencia tienes y qué la sube. Una recua presente o un regalo al concejo la acercan.',
+    hecho: (s) => s.comarcaAbierta !== null && !s.abiertaEsPropia,
+  },
+];
+
+/** Lo que se guarda: el paso por el que va (o fuera), y el turno en que empezo. */
+export interface ProgresoDelTutorial {
+  readonly paso: number;
+  readonly turnoAlEmpezar: number;
+  readonly saltado: boolean;
+}
+
+export function progresoInicial(turno: number): ProgresoDelTutorial {
+  return { paso: 0, turnoAlEmpezar: turno, saltado: false };
+}
+
+/** Se ha terminado o se ha saltado: ya no se ensenya. */
+export function terminado(p: ProgresoDelTutorial): boolean {
+  return p.saltado || p.paso >= PASOS_DEL_TUTORIAL.length;
+}
+
+/** Avanza todos los pasos que la situacion ya cumple, en orden. */
+export function alDia(p: ProgresoDelTutorial, s: SituacionDelTutorial): ProgresoDelTutorial {
+  let paso = p.paso;
+  for (;;) {
+    const actual = PASOS_DEL_TUTORIAL[paso];
+    const hecho = actual?.hecho ?? null;
+    if (p.saltado || hecho === null || !hecho(s, p.turnoAlEmpezar)) break;
+    paso += 1;
+  }
+  return paso === p.paso ? p : { ...p, paso };
+}
+
+/** «Entendido» en un paso que no se cumple solo, o «Siguiente» si el jugador quiere pasar. */
+export function siguiente(p: ProgresoDelTutorial): ProgresoDelTutorial {
+  return { ...p, paso: Math.min(PASOS_DEL_TUTORIAL.length, p.paso + 1) };
+}
+
+export function saltar(p: ProgresoDelTutorial): ProgresoDelTutorial {
+  return { ...p, saltado: true };
+}
+
+/** Lee lo guardado con cuidado: si no vale, empieza de nuevo. */
+export function leerProgreso(texto: string | null, turno: number): ProgresoDelTutorial {
+  if (texto === null) return progresoInicial(turno);
+  try {
+    const dato: unknown = JSON.parse(texto);
+    if (typeof dato === 'object' && dato !== null && !Array.isArray(dato)) {
+      const campos = new Map<string, unknown>(Object.entries(dato));
+      const paso = campos.get('paso');
+      const turnoAlEmpezar = campos.get('turnoAlEmpezar');
+      const saltado = campos.get('saltado');
+      if (
+        typeof paso === 'number' &&
+        typeof turnoAlEmpezar === 'number' &&
+        typeof saltado === 'boolean'
+      )
+        return { paso, turnoAlEmpezar, saltado };
+    }
+  } catch {
+    // Lo guardado no se entiende: se empieza de nuevo.
+  }
+  return progresoInicial(turno);
+}

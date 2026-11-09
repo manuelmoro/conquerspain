@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+  <defs><linearGradient id="luz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+  <path d="M60 6 L112 18 V68 C112 104 88 124 60 134 C32 124 8 104 8 68 V18 Z" fill="#b07d2a" stroke="#2b2118" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M60 14 L104 24 V68 C104 98 84 116 60 125 C36 116 16 98 16 68 V24 Z" fill="none" stroke="#f4ecd8" stroke-opacity=".55" stroke-width="1.5"/>
+  <g stroke="#2b2118" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M40 104c-10-14-12-36 0-50 10-12 30-12 40 0 12 14 10 36 0 50h-12c8-12 10-28 2-38-6-6-14-6-20 0-8 10-6 26 2 38z" fill="#c9ccd2"/>
+    <circle cx="44" cy="64" r="2.4" fill="#2b2118"/><circle cx="76" cy="64" r="2.4" fill="#2b2118"/>
+    <circle cx="40" cy="80" r="2.4" fill="#2b2118"/><circle cx="80" cy="80" r="2.4" fill="#2b2118"/>
+    <path d="M24 36q36-16 72 0" fill="none" stroke="#f4ecd8" stroke-width="2" stroke-dasharray="5 5"/>
+  </g>
+  <path d="M60 6 L112 18 V68 C112 104 88 124 60 134 C32 124 8 104 8 68 V18 Z" fill="url(#luz)"/>
+</svg>

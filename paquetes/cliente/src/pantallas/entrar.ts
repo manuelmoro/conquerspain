@@ -2,6 +2,7 @@
 // los errores a la vista (un enlace usado o caducado lo dice y deja pedir otro).
 import type { Almacen, EstadoDelCliente } from '../almacen.ts';
 import { el } from './dom.ts';
+import { portada } from './portada.ts';
 
 /** Si ya se mando un enlace en esta visita, para decirlo aunque la pantalla se repinte. */
 let enviadoA: string | null = null;
@@ -47,18 +48,25 @@ export function pantallaDeEntrada(almacen: Almacen, estado: EstadoDelCliente): H
       }
     });
   });
+  // El foco va al correo sin saltar hasta el: la portada se lee primero (T-090).
   requestAnimationFrame(() => {
-    correo.focus();
+    correo.focus({ preventScroll: true });
   });
   const errores = estado.errores.map((e) =>
     el('p', { class: 'mensaje-error', role: 'alert' }, e.mensaje),
   );
-  return el(
-    'section',
-    { class: 'entrada tarjeta' },
-    el('h1', {}, 'ConquerSpain'),
-    el('p', {}, 'Escribe tu correo y te mandamos un enlace para entrar. No hace falta contraseña.'),
-    ...errores,
-    formulario,
+  return portada(
+    el(
+      'section',
+      { class: 'entrada tarjeta' },
+      el('h2', {}, 'Empieza a jugar'),
+      el(
+        'p',
+        {},
+        'Escribe tu correo y te mandamos un enlace para entrar. No hace falta contraseña.',
+      ),
+      ...errores,
+      formulario,
+    ),
   );
 }

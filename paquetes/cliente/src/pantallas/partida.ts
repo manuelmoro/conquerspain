@@ -18,6 +18,9 @@ import { tocar } from '../editor-de-ruta.ts';
 import type { AtlasDeJugador, ClasificacionPublica, Cronica } from '@conquer/nucleo';
 
 import { comarcasEnLista, textoDeLaBarra } from '../accesibilidad.ts';
+import { CacheDeServidor } from '../cache.ts';
+import { EMBLEMA_DE_CASA } from '../arte/index.ts';
+import { PASOS_DEL_TUTORIAL, terminado } from '../tutorial.ts';
 
 import type { MercadoRecibido } from '../api.ts';
 import { pantallaDeCasa } from './casa.ts';
@@ -178,96 +181,82 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   );
 }
 
-/** Las fichas ya traidas, por partida, turno y comarca: cambian solo al resolverse el turno. */
-const fichas = new Map<string, FichaDeComarca | 'cargando'>();
+/**
+ * Lo traido del servidor, por partida, turno e instante de la vista: cambia al resolverse el turno. Un
+ * fallo no se repite en cada repintada (T-090: el bucle topaba con el limite del servidor).
+ */
+const fichas = new CacheDeServidor<FichaDeComarca>();
+const mercados = new CacheDeServidor<MercadoRecibido>();
+const cronicas = new CacheDeServidor<Cronica>();
+const clasificaciones = new CacheDeServidor<ClasificacionPublica>();
+
+function claveDeVista(estado: EstadoDelCliente): string {
+  const partida = estado.partida;
+  return partida === null
+    ? ''
+    : `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`;
+}
 
 function fichaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
   const partida = estado.partida;
   const comarca = estado.comarcaAbierta;
   if (partida === null || comarca === null) return null;
-  const clave = `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}|${comarca}`;
-  const guardada = fichas.get(clave);
-  if (guardada === undefined) {
-    fichas.set(clave, 'cargando');
-    void almacen.pedirFicha(comarca).then((ficha) => {
-      if (ficha === null) fichas.delete(clave);
-      else fichas.set(clave, ficha);
+  const clave = `${claveDeVista(estado)}|${comarca}`;
+  const ficha = fichas.leer(
+    clave,
+    () => almacen.pedirFicha(comarca),
+    () => {
       almacen.refrescar();
-    });
+    },
+  );
+  if (ficha === null) {
+    return el(
+      'section',
+      { class: 'ficha tarjeta hoja' },
+      el('p', {}, fichas.fallo(clave) ? 'No se pudo traer la comarca.' : 'Cargando la comarca…'),
+      fichas.fallo(clave)
+        ? boton('Reintentar', () => {
+            fichas.olvidar(clave);
+            almacen.refrescar();
+          })
+        : '',
+    );
   }
-  if (guardada === undefined || guardada === 'cargando') {
-    return el('section', { class: 'ficha tarjeta hoja' }, el('p', {}, 'Cargando la comarca…'));
-  }
-  return pantallaDeFicha(almacen, guardada, partida.recibido.turno);
+  return pantallaDeFicha(almacen, ficha, partida.recibido.turno);
 }
-
-/** El mercado traido, por partida e instante de la vista: cambia al resolverse el turno. */
-const mercados = new Map<string, MercadoRecibido | 'cargando'>();
 
 function mercadoDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
-  const partida = estado.partida;
-  if (partida === null || estado.mercado === null) return null;
-  const clave = `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`;
-  const guardado = mercados.get(clave);
-  if (guardado === undefined) {
-    mercados.set(clave, 'cargando');
-    void almacen.pedirMercado().then((m) => {
-      if (m === null) mercados.delete(clave);
-      else mercados.set(clave, m);
+  if (estado.partida === null || estado.mercado === null) return null;
+  const m = mercados.leer(
+    claveDeVista(estado),
+    () => almacen.pedirMercado(),
+    () => {
       almacen.refrescar();
-    });
-  }
-  return pantallaDeMercado(
-    almacen,
-    guardado === undefined || guardado === 'cargando' ? null : guardado,
-    estado.mercado.plaza,
-    nombreDeComarcaEn(estado),
+    },
   );
-}
-
-/** Las cronicas traidas, por partida y turno (no cambian), y la clasificacion de cada vista. */
-const cronicas = new Map<string, Cronica | 'cargando'>();
-const clasificaciones = new Map<string, ClasificacionPublica | 'cargando'>();
-
-function traer<T>(
-  cache: Map<string, T | 'cargando'>,
-  clave: string,
-  pedir: () => Promise<T | null>,
-  almacen: Almacen,
-): T | null {
-  const guardado = cache.get(clave);
-  if (guardado === undefined) {
-    cache.set(clave, 'cargando');
-    void pedir().then((valor) => {
-      if (valor === null) cache.delete(clave);
-      else cache.set(clave, valor);
-      almacen.refrescar();
-    });
-  }
-  return guardado === undefined || guardado === 'cargando' ? null : guardado;
+  return pantallaDeMercado(almacen, m, estado.mercado.plaza, nombreDeComarcaEn(estado));
 }
 
 function cronicaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
   const partida = estado.partida;
   const abierta = estado.cronica;
   if (partida === null || abierta === null) return null;
+  const repintar = (): void => {
+    almacen.refrescar();
+  };
+  // En el turno 1 aun no hay ninguna cronica: no se pide nada (antes se pedia y fallaba en bucle).
+  const hayCronica = abierta.turno >= 1 && abierta.turno < partida.recibido.turno;
   const cronica =
-    abierta.vista === 'cronica'
-      ? traer(
-          cronicas,
+    abierta.vista === 'cronica' && hayCronica
+      ? cronicas.leer(
           `${partida.id}|${String(abierta.turno)}`,
           () => almacen.pedirCronica(abierta.turno),
-          almacen,
+          repintar,
         )
       : null;
   const clasificacion =
     abierta.vista === 'clasificacion'
-      ? traer(
-          clasificaciones,
-          `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`,
-          () => almacen.pedirClasificacion(),
-          almacen,
-        )
+      ? clasificaciones.leer(claveDeVista(estado), () => almacen.pedirClasificacion(), repintar)
       : null;
   return pantallaDeCronica(
     almacen,
@@ -285,11 +274,12 @@ function casaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null 
   const vista = partida.recibido.vista;
   const nombre = nombreDeComarcaEn(estado);
   // Las plazas, con su nombre, salen del mercado: el atlas no las nombra.
-  const mercado = traer(
-    mercados,
-    `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`,
+  const mercado = mercados.leer(
+    claveDeVista(estado),
     () => almacen.pedirMercado(),
-    almacen,
+    () => {
+      almacen.refrescar();
+    },
   );
   const plazas = (mercado?.panel.plazas ?? []).map((p) => ({ id: p.id, nombre: p.nombre }));
   const comarcas = (partida.atlas?.comarcas ?? []).map((c) => ({ id: c.id, nombre: c.nombre }));
@@ -452,44 +442,117 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   return el('section', { class: 'bandeja tarjeta', id: 'bandeja' }, ...partes);
 }
 
+/** Las pestanyas del panel (T-090): lo que se ve al lado del mapa, con icono y texto. */
+function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
+  const activa = estado.casa
+    ? 'casa'
+    : estado.cronica !== null
+      ? 'cronica'
+      : estado.mercado !== null
+        ? 'mercado'
+        : 'ordenes';
+  const pestanya = (
+    id: string,
+    icono: string,
+    texto: string,
+    abrir: () => void,
+  ): HTMLButtonElement => {
+    const b = boton(texto, abrir, id === activa ? 'pestanya activa' : 'pestanya');
+    // El icono encima del texto: caben las cuatro en el panel y en un movil.
+    b.prepend(el('span', { class: 'icono-de-pestanya', 'aria-hidden': 'true' }, icono), el('br'));
+    b.setAttribute('aria-pressed', id === activa ? 'true' : 'false');
+    return b;
+  };
+  return el(
+    'nav',
+    { class: 'pestanyas', 'aria-label': 'Secciones del panel' },
+    pestanya('ordenes', '📋', 'Órdenes', () => {
+      almacen.cerrarCasa();
+      almacen.cerrarCronica();
+      almacen.cerrarMercado();
+      almacen.cerrarEditor();
+      almacen.abrirComarca(null);
+    }),
+    pestanya('cronica', '📜', 'Crónica', () => {
+      almacen.abrirCronica();
+    }),
+    pestanya('mercado', '⚖️', 'Mercado', () => {
+      almacen.abrirMercado();
+    }),
+    pestanya('casa', '🏰', 'Tu casa', () => {
+      almacen.abrirCasa();
+    }),
+  );
+}
+
+/** La tarjeta del tutorial, abajo y sin tapar el mapa (T-090 §2.6). */
+function tarjetaDelTutorial(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
+  const progreso = estado.tutorial;
+  if (progreso === null || terminado(progreso)) return null;
+  const paso = PASOS_DEL_TUTORIAL[progreso.paso];
+  if (paso === undefined) return null;
+  return el(
+    'aside',
+    { class: 'tutorial', 'aria-live': 'polite', 'aria-label': 'Primeros pasos' },
+    el(
+      'p',
+      { class: 'antetitulo' },
+      `Primeros pasos · ${String(progreso.paso + 1)} de ${String(PASOS_DEL_TUTORIAL.length)}`,
+    ),
+    el('h2', {}, paso.titulo),
+    el('p', {}, paso.texto),
+    el(
+      'p',
+      { class: 'fila' },
+      paso.hecho === null
+        ? boton('Entendido', () => {
+            almacen.tutorialSiguiente();
+          })
+        : el('span', { class: 'suave' }, 'Hazlo y seguimos.'),
+      boton(
+        paso.hecho === null ? 'Saltar el tutorial' : 'Saltar este paso',
+        () => {
+          if (paso.hecho === null) almacen.saltarTutorial();
+          else almacen.tutorialSiguiente();
+        },
+        'secundario empuje',
+      ),
+    ),
+  );
+}
+
 export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const partida = estado.partida;
   if (partida === null) return el('p', {}, 'Cargando la partida…');
   const { vista } = partida.recibido;
+  const abierta = estado.comarcaAbierta;
+  almacen.tutorialAlDia({
+    turno: vista.turno,
+    capital: vista.jugador.capital,
+    comarcaAbierta: abierta,
+    abiertaEsPropia: abierta !== null && vista.comarcas[abierta]?.nivel === 'propia',
+    ordenes: estado.enviadas.length + estado.pendientes.length + vista.ordenes.length,
+  });
   const cabecera = el(
     'header',
     { class: 'cabecera' },
-    el('h1', {}, `${vista.configuracion.nombre} · turno ${String(vista.turno)}`),
+    el('a', { class: 'volver', href: './', 'aria-label': 'Volver a mis partidas' }, '←'),
+    el('img', {
+      class: 'emblema',
+      src: EMBLEMA_DE_CASA[vista.jugador.casa],
+      alt: '',
+      width: '40',
+      height: '47',
+    }),
     el(
-      'span',
-      { class: 'etiqueta' },
-      `corte: ${tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())}`,
-    ),
-  );
-  cabecera.append(
-    boton(
-      'Tu casa',
-      () => {
-        if (almacen.estado.casa) almacen.cerrarCasa();
-        else almacen.abrirCasa();
-      },
-      'secundario empuje',
-    ),
-    boton(
-      'Crónica',
-      () => {
-        if (almacen.estado.cronica === null) almacen.abrirCronica();
-        else almacen.cerrarCronica();
-      },
-      'secundario',
-    ),
-    boton(
-      'Mercado',
-      () => {
-        if (almacen.estado.mercado === null) almacen.abrirMercado();
-        else almacen.cerrarMercado();
-      },
-      'secundario',
+      'div',
+      { class: 'titulo-de-partida' },
+      el('h1', {}, vista.configuracion.nombre),
+      el(
+        'p',
+        { class: 'suave' },
+        `${TABLAS_DEL_JUEGO.casas[vista.jugador.casa].nombre} · turno ${String(vista.turno)} · corte: ${tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())}`,
+      ),
     ),
   );
   if (vista.configuracion.esDePrueba) {
@@ -499,7 +562,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         () => {
           void almacen.avanzar();
         },
-        '',
+        'empuje',
       ),
     );
   }
@@ -530,8 +593,22 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       ),
     );
   }
-  for (const e of estado.errores)
-    partes.push(el('p', { class: 'mensaje-error', role: 'alert' }, e.mensaje));
+  if (estado.errores.length > 0) {
+    partes.push(
+      el(
+        'div',
+        { class: 'mensaje-error fila', role: 'alert' },
+        el('div', {}, ...estado.errores.map((e) => el('p', {}, e.mensaje))),
+        boton(
+          '✕',
+          () => {
+            almacen.limpiarErrores();
+          },
+          'secundario icono empuje',
+        ),
+      ),
+    );
+  }
   const nombre = nombreDeComarcaEn(estado);
   const editor = estado.editor;
   const nombreDeUnidad =
@@ -554,6 +631,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       el(
         'aside',
         { class: 'panel', 'data-conservar-scroll': 'panel' },
+        pestanyasDelPanel(almacen, estado),
         ...(ficha === null ? [] : [ficha]),
         pantallaDeUnidades(almacen, vista.recuas, vista.rebanyos, nombre),
         bandejaDe(almacen, estado),
@@ -569,6 +647,8 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       textoDeLaBarra(dadas, tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())),
     ),
   );
+  const tutorial = tarjetaDelTutorial(almacen, estado);
+  if (tutorial !== null) partes.push(tutorial);
   if (estado.resumen !== null && estado.resumenAbierto) {
     partes.push(dialogoDeResumen(almacen, estado.resumen, nombreDeComarcaEn(estado)));
   }

@@ -186,6 +186,16 @@ No se usan emojis en la crónica. Los iconos son dibujo, no tipografía.
 
 ## 8.7 Dirección de arte
 
+**Desde T-090.**
+- Tipografía: Plus Jakarta Sans para el texto y Fraunces para los títulos, las dos libres y alojadas en el
+  cliente. La de Instagram es propietaria.
+- Cada casa tiene su emblema: un escudo con la pieza de su oficio. Cada origen, su viñeta de entorno.
+- La portada enseña la península, generada desde los datos, con las cañadas reales y recuas que las recorren,
+  tres pasos de cómo se juega y las ocho casas.
+- Al entrar en una partida, un tutorial de cinco pasos acompaña las primeras acciones.
+- El panel se recorre con pestañas: órdenes, crónica, mercado y tu casa.
+
+
 - Paleta y tipografía de la maqueta (papel cálido, tinta sepia, cobalto de Talavera, agua verdosa).
 - Ilustración propia por tipo de terreno y por edificio, dibujada como grabado de atlas.
 - Progreso visible: la capital cambia de aldea a villa y a ciudad; aparecen molinos, canteras,

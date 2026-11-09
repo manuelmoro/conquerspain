@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <rect width="320" height="180" fill="#f2dfae"/>
+  <circle cx="252" cy="44" r="20" fill="#f6c768" opacity=".85"/>
+  <path d="M0 96 Q80 84 160 92 T320 88 V180 H0z" fill="#e3c26d"/>
+  <g stroke="#33241a" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M86 92V62h14v-8h8v8h26v-8h8v8h14v30z" fill="#d8a46a"/>
+    <path d="M116 62V36h18v26" fill="#c98f55"/>
+    <path d="M116 36v-6h4v6h5v-6h4v6h5v-6" fill="none"/>
+    <path d="M86 62v-6h4v6M152 62v-6h4v6" fill="none"/>
+    <path d="M122 92v-12a3 3 0 0 1 6 0v12z" fill="#5c4331"/>
+  </g>
+  <path d="M0 112 Q90 100 170 110 T320 104 V180 H0z" fill="#d9ad4c"/>
+  <g stroke="#a47f26" stroke-width="1.4" fill="none" opacity=".75">
+    <path d="M-10 132 Q80 118 170 128 T330 120"/><path d="M-10 146 Q80 132 170 142 T330 134"/>
+    <path d="M-10 160 Q80 146 170 156 T330 148"/><path d="M-10 174 Q80 160 170 170 T330 162"/>
+  </g>
+  <g stroke="#33241a" stroke-width="1.3" fill="#e9c46a">
+    <path d="M30 150v-22M30 132c-4-1-6-4-6-8 4 1 6 4 6 8zM30 132c4-1 6-4 6-8-4 1-6 4-6 8zM30 124c-3-1-5-3-5-7 3 1 5 3 5 7zM30 124c3-1 5-3 5-7-3 1-5 3-5 7z"/>
+    <path d="M290 146v-22M290 128c-4-1-6-4-6-8 4 1 6 4 6 8zM290 128c4-1 6-4 6-8-4 1-6 4-6 8zM290 120c-3-1-5-3-5-7 3 1 5 3 5 7zM290 120c3-1 5-3 5-7-3 1-5 3-5 7z"/>
+  </g>
+  <g fill="none" stroke="#33241a" stroke-width="1.3" opacity=".5"><path d="M200 50q5-5 10 0q5-5 10 0M222 62q4-4 8 0q4-4 8 0"/></g>
+</svg>

@@ -8,13 +8,29 @@ import type { ClienteApi, ConvocatoriaRecibida, PartidaDeLaLista } from '../api.
 import { tiempoHastaElCorte } from '../bandeja.ts';
 import { RITMOS, abastecimiento, esperaOrdenes, pasoDe, ritmoEnPalabras } from '../inicio.ts';
 import { NOMBRE_DE_POTENCIAL } from '../nombres.ts';
+import { EMBLEMA_DE_CASA, VINYETA_DE_PERFIL } from '../arte/index.ts';
 import { boton, el } from './dom.ts';
+import { portada } from './portada.ts';
 
 type Modo = 'lista' | 'convocar' | 'unirse';
 
 function nombreDeCasa(id: string): string {
   const casa = CASAS.find((c) => c === id);
   return casa === undefined ? id : TABLAS_DEL_JUEGO.casas[casa].nombre;
+}
+
+/** El emblema de una casa como imagen; el nombre lo dice el texto de al lado. */
+function emblema(id: string, tamanyo: number): HTMLElement {
+  const casa = CASAS.find((c) => c === id);
+  return casa === undefined
+    ? el('span')
+    : el('img', {
+        class: 'emblema',
+        src: EMBLEMA_DE_CASA[casa],
+        alt: '',
+        width: String(tamanyo),
+        height: String(Math.round(tamanyo * 1.17)),
+      });
 }
 
 function nombreDePerfil(id: string): string {
@@ -65,7 +81,8 @@ function tarjetaDePartida(p: PartidaDeLaLista, abrir: (id: string) => void): HTM
   const r = p.resumen;
   return el(
     'li',
-    {},
+    { class: 'con-emblema' },
+    emblema(p.casa, 48),
     el(
       'div',
       { class: 'fila' },
@@ -164,10 +181,14 @@ function tarjetaDeConvocatoria(
       );
       const ofertas = el('ul', { class: 'lista' });
       for (const o of c.misOfertas) {
+        const perfil = POTENCIALES.find((x) => x === o.perfil);
         ofertas.append(
           el(
             'li',
-            {},
+            { class: 'oferta' },
+            perfil === undefined
+              ? ''
+              : el('img', { class: 'vinyeta', src: VINYETA_DE_PERFIL[perfil], alt: '' }),
             el(
               'div',
               { class: 'fila' },
@@ -205,7 +226,8 @@ function eleccionDeCasa(almacen: Almacen): HTMLElement {
     const elegida = casa === estado.casa;
     const tarjeta = el(
       'li',
-      { class: elegida ? 'casa elegida' : 'casa' },
+      { class: elegida ? 'casa elegida con-emblema' : 'casa con-emblema' },
+      emblema(casa, 64),
       el(
         'div',
         { class: 'fila' },
@@ -339,15 +361,22 @@ export function pantallaDePartidas(
 
   const partidas = estado.partidas;
   if (partidas === null) partes.push(el('p', { class: 'suave' }, 'Cargando…'));
-  else if (partidas.length === 0 && (estado.convocatorias ?? []).length === 0)
-    partes.push(
+  else if (partidas.length === 0 && (estado.convocatorias ?? []).length === 0) {
+    // Sin partidas, la portada entera: de que va el juego y por donde empezar (T-090).
+    return portada(
       el(
-        'p',
-        { class: 'suave' },
-        'Todavía no juegas ninguna partida: convoca una o únete con un código.',
+        'div',
+        { class: 'entrada tarjeta' },
+        el('h2', {}, 'Tu primera partida'),
+        el(
+          'p',
+          {},
+          'Convoca una partida, elige tu casa y comparte el código con quien quieras. También puedes jugarla tú solo.',
+        ),
+        ...botonesDeEmpezar(almacen),
       ),
     );
-  else {
+  } else {
     // Primero las que esperan algo de ti.
     const orden = [...partidas].sort((a, b) => Number(esperaOrdenes(b)) - Number(esperaOrdenes(a)));
     partes.push(el('ul', { class: 'lista' }, ...orden.map((p) => tarjetaDePartida(p, abrir))));
@@ -363,7 +392,12 @@ export function pantallaDePartidas(
       ),
     );
   }
-  partes.push(
+  partes.push(...botonesDeEmpezar(almacen));
+  return el('section', { class: 'mis-partidas' }, ...partes);
+}
+
+function botonesDeEmpezar(almacen: Almacen): HTMLElement[] {
+  return [
     el(
       'p',
       { class: 'fila' },
@@ -380,6 +414,5 @@ export function pantallaDePartidas(
         'secundario',
       ),
     ),
-  );
-  return el('section', {}, ...partes);
+  ];
 }

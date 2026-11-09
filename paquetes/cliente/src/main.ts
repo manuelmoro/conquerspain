@@ -1,4 +1,7 @@
 // Arranque del cliente (ficha T-080): enlaza la capa de datos con las pantallas y los eventos.
+// Las fuentes van con el cliente (T-090): ninguna peticion a terceros.
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/fraunces';
 import './estilo.css';
 import './atlas/atlas.css';
 

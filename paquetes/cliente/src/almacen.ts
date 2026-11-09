@@ -18,6 +18,8 @@ import type {
 import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
 import { conPrevision, editorDe, intencionesDe } from './editor-de-ruta.ts';
 import type { Guardado } from './guardado.ts';
+import { alDia, leerProgreso, saltar, siguiente } from './tutorial.ts';
+import type { ProgresoDelTutorial, SituacionDelTutorial } from './tutorial.ts';
 import { preverBandeja } from './prevision.ts';
 import { resumirTurno } from './resumen.ts';
 import type { ResumenDeTurno } from './resumen.ts';
@@ -60,6 +62,8 @@ export interface EstadoDelCliente {
   readonly editor: EditorDeRuta | null;
   /** El mercado abierto en el panel (T-084), con la plaza que se mira, o null si esta cerrado. */
   readonly mercado: { readonly plaza: string | null } | null;
+  /** El tutorial de las primeras acciones de la partida abierta (T-090). */
+  readonly tutorial: ProgresoDelTutorial | null;
   /** «Tu casa» abierta en el panel (T-089). */
   readonly casa: boolean;
   /** La cronica abierta en el panel (T-085): el turno del archivo o la clasificacion. */
@@ -90,6 +94,7 @@ const INICIAL: EstadoDelCliente = {
   mercado: null,
   cronica: null,
   casa: false,
+  tutorial: null,
 };
 
 function claveDeVista(partida: string): string {
@@ -169,8 +174,10 @@ export class Almacen {
     for (const oyente of [...this.oyentes]) oyente(this.estadoActual);
   }
 
+  /** Un error a la vista; el mismo dos veces no se repite en pantalla (T-090), y se guardan 3. */
   private anotarError(codigo: string, mensaje: string): void {
-    this.cambiar({ errores: [...this.estadoActual.errores, { codigo, mensaje }].slice(-5) });
+    const otros = this.estadoActual.errores.filter((e) => e.mensaje !== mensaje);
+    this.cambiar({ errores: [...otros, { codigo, mensaje }].slice(-3) });
   }
 
   /** Vuelve a avisar a quien escucha con el mismo estado: lo usa la interfaz al cambiar algo suyo. */
@@ -240,7 +247,11 @@ export class Almacen {
         claveDeVista(id),
         JSON.stringify({ recibido: r.datos, atlas: partida.atlas, recibidaEn: partida.recibidaEn }),
       );
-      this.cambiar({ partida, pendientes, conexion: 'conectado', turnoNuevo: null });
+      const tutorial = leerProgreso(
+        this.dep.guardado.leer(`conquer:tutorial:${id}`),
+        r.datos.vista.turno,
+      );
+      this.cambiar({ partida, pendientes, conexion: 'conectado', turnoNuevo: null, tutorial });
       return;
     }
     if (r.tipo === 'error') {
@@ -413,6 +424,33 @@ export class Almacen {
       resumen: resumirTurno(antes, ahora.recibido.vista, cronicas),
       resumenAbierto: true,
     });
+  }
+
+  // ——— El tutorial (T-090 §2.6) ———————————————————————————————————————————————
+
+  private guardarTutorial(progreso: ProgresoDelTutorial): void {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    this.dep.guardado.escribir(`conquer:tutorial:${partida.id}`, JSON.stringify(progreso));
+    this.cambiar({ tutorial: progreso });
+  }
+
+  /** Avanza los pasos que el jugador ya ha hecho; solo cambia algo si hay que avanzar. */
+  tutorialAlDia(situacion: SituacionDelTutorial): void {
+    const actual = this.estadoActual.tutorial;
+    if (actual === null) return;
+    const nuevo = alDia(actual, situacion);
+    if (nuevo !== actual) this.guardarTutorial(nuevo);
+  }
+
+  tutorialSiguiente(): void {
+    const actual = this.estadoActual.tutorial;
+    if (actual !== null) this.guardarTutorial(siguiente(actual));
+  }
+
+  saltarTutorial(): void {
+    const actual = this.estadoActual.tutorial;
+    if (actual !== null) this.guardarTutorial(saltar(actual));
   }
 
   // ——— Tu casa (T-089 §4.3) ———————————————————————————————————————————————————
