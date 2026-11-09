@@ -1,6 +1,8 @@
-// Las rutas de la API (ficha T-062 §4.3). Toda respuesta de estado pasa por `vistaDeJugador`: ninguna
-// ruta devuelve el estado completo ni los sucesos crudos.
+// Las rutas de la API (ficha T-062 §4.3). Toda respuesta de estado pasa por `vistaDeJugador` o por una
+// funcion del nucleo que solo da lo publico (la clasificacion, T-085) o lo que el jugador supo (la serie
+// de precios, T-084): ninguna ruta devuelve el estado completo ni los sucesos crudos.
 import {
+  clasificacionPublica,
   VERSION_REGLAS,
   atlasDeJugador,
   fichaDeComarca,
@@ -272,8 +274,16 @@ export function crearApi(
   };
 
   const clasificacion: Manejador = async (ctx) => {
-    const { estado, vista } = await estadoYVista(ctx);
-    return { estado: 200, datos: { turno: estado.turno, clasificacion: vista.clasificacion } };
+    const { estado, vista, jugador, mundo } = await estadoYVista(ctx);
+    return {
+      estado: 200,
+      datos: {
+        turno: estado.turno,
+        clasificacion: vista.clasificacion,
+        // El prestigio y su desglose son publicos; los hitos con fecha, solo los propios (T-085).
+        publica: clasificacionPublica(estado, jugador, mundo, dep.reglas),
+      },
+    };
   };
 
   const verCronica: Manejador = async (ctx) => {

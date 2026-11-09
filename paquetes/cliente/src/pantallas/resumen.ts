@@ -1,20 +1,11 @@
 // El resumen del turno (T-088): que ha cambiado en tus recursos y en tu gente, y la cronica del turno
 // por secciones, avisos primero, con la accion sugerida y un boton para ver la comarca.
-import { SECCIONES_DE_CRONICA } from '@conquer/nucleo';
-import type { SeccionDeCronica } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
 import type { ResumenDeTurno } from '../resumen.ts';
-import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO, queHacer } from '../nombres.ts';
+import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO } from '../nombres.ts';
 import { boton, el } from './dom.ts';
-
-const TITULO: Readonly<Record<SeccionDeCronica, string>> = {
-  avisos: 'Lo que pide tu atención',
-  sucesos: 'Lo que ha pasado',
-  economia: 'Cuentas',
-  rumores: 'Rumores',
-  hitos: 'Hitos',
-};
+import { seccionesDeCronica } from './entradas.ts';
 
 function conSigno(n: number): string {
   return n > 0 ? `+${String(n)}` : String(n);
@@ -106,48 +97,11 @@ export function dialogoDeResumen(
       ),
     ),
   ];
-  for (const seccion of SECCIONES_DE_CRONICA) {
-    const entradas = resumen.cronicas.flatMap((c) =>
-      c.entradas.filter((e) => e.seccion === seccion),
-    );
-    if (entradas.length === 0) continue;
-    const lista = el('ul', { class: `lista seccion-${seccion}` });
-    for (const entrada of entradas) {
-      const item = el('li', {}, entrada.texto);
-      const sugerida = queHacer(entrada.accionSugerida);
-      if (sugerida !== null) {
-        const cuando = sugerida.llega === null ? '' : ` (desde aquí todavía no: ${sugerida.llega})`;
-        item.append(el('p', { class: 'suave' }, `Qué hacer: ${sugerida.texto}${cuando}`));
-      }
-      const unidad = entrada.unidad;
-      if (unidad !== null && entrada.accionSugerida === 'ruta') {
-        item.append(
-          boton(
-            unidad.clase === 'rebanyo' ? 'Darle ruta al rebaño' : 'Darle ruta a la recua',
-            () => {
-              almacen.abrirEditor(unidad);
-            },
-            'secundario icono',
-          ),
-        );
-      }
-      const comarca = entrada.comarca;
-      if (comarca !== null) {
-        item.append(
-          boton(
-            `Ver ${nombreDeComarca(comarca)}`,
-            () => {
-              almacen.cerrarResumen();
-              almacen.abrirComarca(comarca);
-            },
-            'secundario icono',
-          ),
-        );
-      }
-      lista.append(item);
-    }
-    partes.push(el('section', {}, el('h3', {}, TITULO[seccion]), lista));
-  }
+  partes.push(
+    ...seccionesDeCronica(almacen, resumen.cronicas, nombreDeComarca, () => {
+      almacen.cerrarResumen();
+    }),
+  );
   partes.push(
     el(
       'p',

@@ -412,3 +412,17 @@ svg.serie polyline {
   stroke: var(--cobalto);
   stroke-width: 1.5;
 }
+
+/* La clasificacion (T-085): el desglose por capitulos en barras, con su cifra al lado. */
+.barra-de-capitulo {
+  gap: 0.5rem;
+}
+.barra-de-capitulo > span:first-child {
+  min-width: 6.5rem;
+}
+.barra {
+  flex: 1;
+  height: 0.6rem;
+  background: linear-gradient(to right, var(--cobalto) var(--ancho), var(--borde) var(--ancho));
+  border-radius: 3px;
+}

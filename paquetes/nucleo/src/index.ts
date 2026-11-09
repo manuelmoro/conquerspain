@@ -79,6 +79,13 @@ export {
 export type { MotivoSinTradicion } from './reglas/tradiciones.ts';
 export { CAPITULOS_DE_PRESTIGIO, prestigioDe } from './reglas/prestigio.ts';
 export type { CapituloDePrestigio, Prestigio } from './reglas/prestigio.ts';
+export { clasificacionPublica } from './reglas/clasificacion-publica.ts';
+export type {
+  ClasificacionPublica,
+  FilaDeClasificacion,
+  HitoLogrado,
+  HitoPorLograr,
+} from './reglas/clasificacion-publica.ts';
 export { clasificacion } from './reglas/clasificacion.ts';
 export type { LineaDeClasificacion } from './reglas/clasificacion.ts';
 export { RUMBOS, rumboEntre, vistaDeJugador } from './reglas/vista.ts';

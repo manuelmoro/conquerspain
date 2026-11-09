@@ -15,7 +15,10 @@ import { NOMBRE_DE_ESTADO } from '../nombres.ts';
 import { describirOrden, fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
 import { tocar } from '../editor-de-ruta.ts';
+import type { ClasificacionPublica, Cronica } from '@conquer/nucleo';
+
 import type { MercadoRecibido } from '../api.ts';
+import { pantallaDeCronica } from './cronica.ts';
 import { pantallaDeFicha } from './ficha.ts';
 import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
@@ -182,6 +185,60 @@ function mercadoDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | nu
   );
 }
 
+/** Las cronicas traidas, por partida y turno (no cambian), y la clasificacion de cada vista. */
+const cronicas = new Map<string, Cronica | 'cargando'>();
+const clasificaciones = new Map<string, ClasificacionPublica | 'cargando'>();
+
+function traer<T>(
+  cache: Map<string, T | 'cargando'>,
+  clave: string,
+  pedir: () => Promise<T | null>,
+  almacen: Almacen,
+): T | null {
+  const guardado = cache.get(clave);
+  if (guardado === undefined) {
+    cache.set(clave, 'cargando');
+    void pedir().then((valor) => {
+      if (valor === null) cache.delete(clave);
+      else cache.set(clave, valor);
+      almacen.refrescar();
+    });
+  }
+  return guardado === undefined || guardado === 'cargando' ? null : guardado;
+}
+
+function cronicaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null {
+  const partida = estado.partida;
+  const abierta = estado.cronica;
+  if (partida === null || abierta === null) return null;
+  const cronica =
+    abierta.vista === 'cronica'
+      ? traer(
+          cronicas,
+          `${partida.id}|${String(abierta.turno)}`,
+          () => almacen.pedirCronica(abierta.turno),
+          almacen,
+        )
+      : null;
+  const clasificacion =
+    abierta.vista === 'clasificacion'
+      ? traer(
+          clasificaciones,
+          `${partida.id}|${String(partida.recibido.turno)}|${String(partida.recibidaEn)}`,
+          () => almacen.pedirClasificacion(),
+          almacen,
+        )
+      : null;
+  return pantallaDeCronica(
+    almacen,
+    abierta,
+    { cronica, clasificacion },
+    partida.recibido.turno,
+    TABLAS_DEL_JUEGO.estaciones.turnosPorAnyo,
+    nombreDeComarcaEn(estado),
+  );
+}
+
 function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const partida = estado.partida;
   if (partida === null) return el('div');
@@ -217,6 +274,13 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
           'Ver resumen',
           () => {
             almacen.abrirResumen();
+          },
+          'secundario icono',
+        ),
+        boton(
+          'Ver la crónica',
+          () => {
+            almacen.abrirCronica();
           },
           'secundario icono',
         ),
@@ -336,12 +400,20 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
   );
   cabecera.append(
     boton(
+      'Crónica',
+      () => {
+        if (almacen.estado.cronica === null) almacen.abrirCronica();
+        else almacen.cerrarCronica();
+      },
+      'secundario empuje',
+    ),
+    boton(
       'Mercado',
       () => {
         if (almacen.estado.mercado === null) almacen.abrirMercado();
         else almacen.cerrarMercado();
       },
-      'secundario empuje',
+      'secundario',
     ),
   );
   if (vista.configuracion.esDePrueba) {
@@ -394,7 +466,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
   const ficha =
     editor !== null
       ? pantallaDeRuta(almacen, editor, nombreDeUnidad, nombre)
-      : (mercadoDe(almacen, estado) ?? fichaDe(almacen, estado));
+      : (mercadoDe(almacen, estado) ?? cronicaDe(almacen, estado) ?? fichaDe(almacen, estado));
   partes.push(
     el(
       'div',

@@ -101,6 +101,12 @@ tratar a la recua si hace falta. En las paradas de una ruta se vende y se compra
 El parte del turno, el archivo de turnos anteriores, los hitos conseguidos y la clasificación
 pública con desglose por capítulos.
 
+**Hecho en T-085.** «Crónica», en la cabecera, abre en el panel el último turno resuelto, con ← → y un selector
+de año. Las entradas van por secciones, avisos primero y con su acción, con el mismo pintado que el resumen.
+La pestaña «Clasificación» trae cada casa con su puesto y si sube o baja, y en «Por qué» el desglose por
+capítulos en barras (es público) y sus primicias. Debajo van tus hitos con su fecha y los que te quedan, con lo
+que da cada uno.
+
 **Resumen del turno (T-088).** Al ver un turno nuevo sale un diálogo: por recurso, lo que tenías, lo producido
 por tus comarcas, lo demás (comida, obras, insumos, comercio), lo que tienes y el cambio en verde o rojo; los
 vecinos; y la crónica del turno por secciones, avisos primero, con qué hacer y un botón para ver la comarca.

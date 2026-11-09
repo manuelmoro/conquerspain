@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 9 de noviembre de 2026 (T-083 y T-084 hechas; T-088 a falta de repetir J-01; sigue T-085)
+**Última actualización:** 9 de noviembre de 2026 (T-083, T-084 y T-085 hechas; T-088 a falta de J-01; sigue T-089)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -25,9 +25,9 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 ## Siguiente tarea
 
-**T-085 · Crónica, hitos y clasificación** (primero, detallar su ficha). Después, T-089 (gobierno) y T-086.
-Cuando el usuario pueda, que cierre el checkpoint **J-01 · Entender y ordenar** para dar por cerrada T-088. Con
-T-083 y T-084 hechas, ya puede probar también la expansión y el comercio. J-02 llega tras T-085.
+**T-089 · Gobierno en el cliente** (fuero y carga, obra mayor, tradiciones, mayordomo, corte y letra de
+cambio; primero, detallar su ficha), y después T-086. **Checkpoints pendientes del usuario:** J-01 (para cerrar
+T-088) y **J-02 · ciclo completo, casas y ausencia**, que ya se puede hacer: T-083, T-084 y T-085 están hechas.
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
 ```bash
@@ -125,6 +125,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-085 hecha: crónica, hitos y clasificación.** «Crónica» abre el archivo de turnos (← →, por año), con avisos primero y su acción, con el mismo pintado que el resumen (`pantallas/entradas.ts`). La clasificación pública (`clasificacionPublica`, sobre `prestigioDe`, la cuenta de la fase 11) trae el desglose por capítulos de cada casa, que es público, y las primicias. Los hitos con fecha, solo los propios, con los que quedan por lograr. **J-02 ya se puede hacer.** 1273 pruebas en verde; 47,5 KB gzip |
 | 09-11-2026 | **T-084 hecha: el mercado.** El panel de plazas conocidas se compone en el núcleo (`panelDeMercado`) desde el tablero del jugador, y la API (`GET /partidas/:id/mercado`) le añade la serie de precios que supo, leída de sus estados guardados. En el cliente, cada precio va **con su fecha y su fuente** (apagado si pasa de seis turnos), ↓ barato o ↑ caro frente al base de la comarca, la serie pequeña por recurso y la orden con precio límite explicada, que pone a tratar a la recua si hace falta (probado: el motor la casa). Las paradas de una ruta venden y compran con precio límite. La letra de cambio va a T-089. 1268 pruebas en verde; 46,2 KB gzip |
 | 09-11-2026 | **T-083 hecha: recuas y rebaños sobre el mapa; la expansión ya se juega.** La previsión de viajes vive en el núcleo (`prevision/`) y la comparten robots, servidor y cliente. La ficha de una neutral manda una recua **a estar presente** o **a explorar** de una vez (cargar, ir, encargo y vuelta), con su llegada y su influencia previstas y probadas resolviendo turnos. Editor de ruta tocando el mapa, con previsión del servidor (`POST /partidas/:id/prevision-de-ruta`): tramos, llegada a cada parada, bastimento y avisos de puerto o de calor. Hay circular, carga por parada y la ruta propuesta dibujada. «Tus recuas y rebaños» en el panel y «Darle ruta» desde los avisos de la crónica (`EntradaDeCronica.unidad`). **Regla nueva:** una ruta releva a una circular sin pararla. **Fallo encontrado en el navegador y arreglado:** las órdenes de una misión entraban en la cola en cualquier orden porque el cliente daba claves al azar; ahora van ordenadas. 1260 pruebas en verde; 43,9 KB gzip |
 | 09-11-2026 | **T-083 (en curso): ficha detallada y primeros pasos.** La previsión de viajes de los robots (`Tablero`, `preverViaje`, `provisionPara`…) pasa al núcleo (`prevision/`) para que el cliente vea el mismo turno de llegada que el motor; el banco no cambia. **Regla nueva** (docs/02 §2.5.2): una orden `ruta` releva a una ruta circular sin pararla antes; antes la ruta nueva se quedaba esperando para siempre. Comprar y vender con precio límite en las paradas se lleva a T-084. 1246 pruebas en verde |

@@ -115,7 +115,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-088](T-088-arreglos-de-j01.md) | Arreglos de J-01: entrar, pinchar el mapa, ficha a mano y resumen del turno | en curso | T-082 |
 | [T-083](T-083-recuas-en-mapa.md) | Recuas y rebaños: rutas sobre el mapa | **hecha** | T-082 |
 | [T-084](T-084-mercado-cliente.md) | Mercado, ferias y precios | **hecha** | T-082 |
-| [T-085](T-085-cronica-cliente.md) | Crónica, hitos y clasificación | pendiente | T-082 |
+| [T-085](T-085-cronica-cliente.md) | Crónica, hitos y clasificación | **hecha** | T-082 |
 | [T-089](T-089-gobierno-cliente.md) | Gobierno: fuero y carga, obra mayor, tradiciones, mayordomo y corte | pendiente | T-082 |
 | [T-086](T-086-alta-y-origen-cliente.md) | Mis partidas, crear partida, elegir casa y origen | pendiente | T-085, T-089 |
 | [T-087](T-087-movil-y-rendimiento.md) | Móvil, accesibilidad y rendimiento | pendiente | T-086 |

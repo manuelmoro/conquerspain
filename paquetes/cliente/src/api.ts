@@ -4,6 +4,7 @@
 import { VERSION_REGLAS } from '@conquer/nucleo';
 import type {
   AtlasDeJugador,
+  ClasificacionPublica,
   Cronica,
   FichaDeComarca,
   Orden,
@@ -205,6 +206,13 @@ export class ClienteApi {
     return this.pedir<{ turno: number; ficha: FichaDeComarca }>(
       'GET',
       `/partidas/${encodeURIComponent(partida)}/comarcas/${encodeURIComponent(comarca)}`,
+    );
+  }
+
+  clasificacion(partida: string) {
+    return this.pedir<{ turno: number; publica: ClasificacionPublica }>(
+      'GET',
+      `/partidas/${encodeURIComponent(partida)}/clasificacion`,
     );
   }
 

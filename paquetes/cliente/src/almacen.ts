@@ -1,6 +1,12 @@
 // El estado del cliente y sus acciones (ficha T-080 §4.2 a §4.5). Las pantallas solo leen y llaman
 // acciones; nada de aqui toca el DOM.
-import type { AtlasDeJugador, FichaDeComarca, TablasDeReglas } from '@conquer/nucleo';
+import type {
+  AtlasDeJugador,
+  ClasificacionPublica,
+  Cronica,
+  FichaDeComarca,
+  TablasDeReglas,
+} from '@conquer/nucleo';
 
 import type {
   ClienteApi,
@@ -54,6 +60,8 @@ export interface EstadoDelCliente {
   readonly editor: EditorDeRuta | null;
   /** El mercado abierto en el panel (T-084), con la plaza que se mira, o null si esta cerrado. */
   readonly mercado: { readonly plaza: string | null } | null;
+  /** La cronica abierta en el panel (T-085): el turno del archivo o la clasificacion. */
+  readonly cronica: { readonly turno: number; readonly vista: 'cronica' | 'clasificacion' } | null;
 }
 
 export interface DependenciasDelAlmacen {
@@ -78,6 +86,7 @@ const INICIAL: EstadoDelCliente = {
   errores: [],
   editor: null,
   mercado: null,
+  cronica: null,
 };
 
 function claveDeVista(partida: string): string {
@@ -403,11 +412,52 @@ export class Almacen {
     });
   }
 
+  // ——— La cronica y la clasificacion (T-085 §4.3) ————————————————————————————————
+
+  /** Abre el archivo en un turno (por defecto, el ultimo resuelto) o la clasificacion. */
+  abrirCronica(turno: number | null = null, vista: 'cronica' | 'clasificacion' = 'cronica'): void {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    const elegido = turno ?? Math.max(1, partida.recibido.vista.turno - 1);
+    this.cambiar({
+      cronica: { turno: elegido, vista },
+      comarcaAbierta: null,
+      editor: null,
+      mercado: null,
+    });
+  }
+
+  cerrarCronica(): void {
+    this.cambiar({ cronica: null });
+  }
+
+  async pedirCronica(turno: number): Promise<Cronica | null> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return null;
+    const r = await this.dep.api.cronica(partida.id, turno);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return null;
+    }
+    return r.datos.cronica;
+  }
+
+  async pedirClasificacion(): Promise<ClasificacionPublica | null> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return null;
+    const r = await this.dep.api.clasificacion(partida.id);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return null;
+    }
+    return r.datos.publica;
+  }
+
   // ——— El mercado (T-084 §4.3) —————————————————————————————————————————————————
 
   /** Abre el mercado en el panel (en una plaza, si se dice); cierra la ficha y el editor. */
   abrirMercado(plaza: string | null = null): void {
-    this.cambiar({ mercado: { plaza }, comarcaAbierta: null, editor: null });
+    this.cambiar({ mercado: { plaza }, comarcaAbierta: null, editor: null, cronica: null });
   }
 
   cerrarMercado(): void {
@@ -439,6 +489,7 @@ export class Almacen {
       comarcaAbierta: null,
       resumenAbierto: false,
       mercado: null,
+      cronica: null,
     });
     void this.preverRuta();
   }
