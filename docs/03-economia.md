@@ -205,7 +205,7 @@ Monte, piedra, hierro y sal se agotan si se explotan a tope:
   negativa), se marca escasez y: se detiene el crecimiento, no se pueden iniciar expediciones ni
   obras nuevas, y la lealtad baja 5 puntos. Las órdenes ya empezadas continúan. Una ruta corriente
   sí sale: es como se va a comprar el pan que falta (T-092; antes también se frenaba, y el hambre
-  impedía curarse).
+  impedía curarse). Tampoco impide incorporar comarcas: más tierra es otra salida.
 - **Hambre prolongada**: a la tercera escasez consecutiva, la comarca pierde un 3 % de vecinos por
   turno (emigran, no mueren: el juego no hace morir gente en pantalla; al menos un vecino si queda
   alguno) y la lealtad cae 10 por turno en lugar de 5. Se avisa en las dos escaseces anteriores.

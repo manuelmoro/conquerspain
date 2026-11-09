@@ -129,6 +129,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **Más arreglos tras jugar.** **Fallo grave:** al abrir una partida no se traían las órdenes ya dadas en ese turno, y el jugador las repetía; ya se traen, y hay una prueba de «recargar». El plano enseña lo pedido: la obra que espera, en transparencia y con ⏳; el derribo, con una ✕. El hambre ya no impide incorporar (era otra trampa sin salida), y «Cómo ganarla» dice si ya puedes incorporar o por qué no. |
 | 09-11-2026 | **Salir del hambre (tras jugar).** En la partida del usuario, el hambre había dejado su recua en cola, y sin ella no podía comprar pan. Ahora la escasez solo frena las expediciones (docs/03); una ruta corriente sale. Nueva orden **`anular`** para quitar una orden que espera sin remedio (docs/02 §2.3.2). La bandeja da cada motivo de espera en castellano (con una prueba que lo vigila) y explica las flechas de la cola («↑ Antes», «↓ Después»). |
 | 09-11-2026 | **El mercado propio, a mano (tras jugar).** Desde el mercado o la venta del plano, «Comprar o vender aquí» abre su plaza. Los precios de las plazas de tus comarcas se saben cada turno sin recua allí (docs/02 §2.6.1); para tratar sigue haciendo falta una recua. |
 | 09-11-2026 | **Aviso de pan más claro (tras jugar).** Ya no dice «se acaba en 0 turnos»: dice si falta pan el turno que viene, cuánto gastas de más y las tres salidas (granja o huerta, comprar en una plaza, roturar monte). |

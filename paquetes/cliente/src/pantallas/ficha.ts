@@ -165,6 +165,19 @@ export function pantallaDeFicha(
       el('p', {}, t.cabecera),
       el('p', {}, el('strong', {}, t.ritmo)),
     );
+    // Si ya se puede, decirlo; si no, por que, sin esconderlo en «Todavia no puedes» (T-092).
+    const incorporar = ficha.acciones.find((a) => a.clave === 'incorporar');
+    if (incorporar !== undefined && ficha.comoGanarLa.actual >= ficha.comoGanarLa.necesaria) {
+      bloque.append(
+        el(
+          'p',
+          { class: incorporar.bloqueo === null ? 'aviso' : 'mensaje-error' },
+          incorporar.bloqueo === null
+            ? '✅ Ya puedes incorporarla: «Incorporar la comarca», abajo.'
+            : `Aún no puedes incorporarla: ${incorporar.bloqueo.causa} ${incorporar.bloqueo.salida}`,
+        ),
+      );
+    }
     if (t.motivos.length > 0) {
       const lista = el('ul', { class: 'suave' });
       for (const m of t.motivos) lista.append(el('li', {}, m));

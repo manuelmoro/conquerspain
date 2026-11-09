@@ -304,6 +304,25 @@ export function dibujoDeObra(avance: number): string {
   );
 }
 
+/** Lo pedido que aun no empieza: el edificio en transparencia sobre el solar, con un reloj de arena. */
+export function dibujoPedido(tipo: TipoEdificio): string {
+  return (
+    losa('#e6dcc3', ' stroke="#1f4e9c" stroke-width="1.4" stroke-dasharray="5 4"') +
+    `<g opacity=".45">${DIBUJOS[tipo]()}</g>` +
+    '<circle cy="-4" r="11" fill="#faf5e8" stroke="#1f4e9c" stroke-width="1.5"/>' +
+    '<text y="1" text-anchor="middle" font-size="13">⏳</text>'
+  );
+}
+
+/** Un nivel que se va a derribar: tachado con un aspa roja. */
+export function tachado(): string {
+  return (
+    // En pantalla, no sobre el rombo: sobre el rombo, la perspectiva la convertia en una cruz.
+    raya('-18,-14', '18,14', '#b3261e', 5, ' opacity=".9"') +
+    raya('18,-14', '-18,14', '#b3261e', 5, ' opacity=".9"')
+  );
+}
+
 /** Un solar libre: tierra con el contorno a trazos y una cruz de «aqui cabe algo». */
 export function dibujoLibre(): string {
   return (

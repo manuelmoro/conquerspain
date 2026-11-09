@@ -4,7 +4,14 @@ import { describe, expect, it } from 'vitest';
 import { PARA_QUE_SIRVE, TIPOS_DE_EDIFICIO } from '@conquer/nucleo';
 import type { AccionDeFicha, DetalleDePropia } from '@conquer/nucleo';
 
-import { dibujoDeEdificio, dibujoDeObra, dibujoDePlaza, dibujoLibre } from './arte/edificios.ts';
+import {
+  dibujoDeEdificio,
+  dibujoDeObra,
+  dibujoDePlaza,
+  dibujoLibre,
+  dibujoPedido,
+  tachado,
+} from './arte/edificios.ts';
 import { accionesDeParcela, explicarParcela, parcelasDe, rejillaDelPlano } from './plano.ts';
 
 const NADA = { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 };
@@ -47,6 +54,30 @@ describe('las parcelas de una comarca', () => {
       'libre',
     ]);
     expect(p[4]).toMatchObject({ clase: 'obra', avance: 33 });
+  });
+
+  it('lo pedido va en un solar libre y el derribo pedido tacha el último nivel', () => {
+    const p = parcelasDe(comarca(), [
+      { tipo: 'construir', edificio: 'granja', espera: null },
+      { tipo: 'derribar', edificio: 'granja', espera: null },
+    ]);
+    expect(p[5]).toMatchObject({ clase: 'pedida', edificio: 'granja', nombre: 'Granja' });
+    expect(p[6]).toEqual({ clase: 'libre' });
+    const granjas = p.filter((x) => x.clase === 'edificio' && x.edificio === 'granja');
+    expect(granjas.map((x) => x.clase === 'edificio' && x.derribo)).toEqual([false, false, true]);
+    const pedida = p[5];
+    if (pedida === undefined) throw new Error('falta');
+    expect(explicarParcela(pedida, comarca()).lineas[0]).toMatch(/empezará al resolverse el turno/);
+    expect(accionesDeParcela(pedida, [])).toEqual([]);
+  });
+
+  it('lo pedido sin solar libre no se inventa una parcela', () => {
+    const llena = comarca({ solares: { usados: 5, total: 5 } });
+    const p = parcelasDe(llena, [
+      { tipo: 'construir', edificio: 'huerta', espera: 'no queda solar' },
+    ]);
+    expect(p).toHaveLength(5);
+    expect(p.some((x) => x.clase === 'pedida')).toBe(false);
   });
 
   it('si hay mas ocupado que solares, no se esconde nada', () => {
@@ -135,6 +166,8 @@ describe('el arte del plano', () => {
     expect(dibujos.size).toBe(TIPOS_DE_EDIFICIO.length);
     expect(dibujoDeObra(50)).not.toBe(dibujoDeObra(100));
     expect(dibujoLibre()).toMatch(/stroke-dasharray/);
+    expect(dibujoPedido('granja')).toContain('opacity=".45"');
+    expect(tachado()).toContain('#b3261e');
     // La capital lleva su pendón; un pueblo, no.
     expect(dibujoDePlaza(true)).toContain('#b3261e');
     expect(dibujoDePlaza(false)).not.toContain('#b3261e');

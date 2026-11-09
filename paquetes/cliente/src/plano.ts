@@ -15,6 +15,16 @@ export type Parcela =
       readonly orden: number;
       readonly nivel: number;
       readonly maximo: number;
+      /** Has pedido derribar este nivel (T-092): se pinta tachado. */
+      readonly derribo: boolean;
+    }
+  | {
+      /** Lo pedido que aun no ha empezado, en el solar libre donde ira (T-092). */
+      readonly clase: 'pedida';
+      readonly edificio: TipoEdificio;
+      readonly nombre: string;
+      /** El motivo por el que espera, ya en palabras; null si empieza al resolverse el turno. */
+      readonly espera: string | null;
     }
   | {
       readonly clase: 'obra';
@@ -24,8 +34,24 @@ export type Parcela =
     }
   | { readonly clase: 'libre' };
 
-/** Las parcelas de la comarca: primero las casas, despues los edificios en su orden, las obras y lo libre. */
-export function parcelasDe(propia: DetalleDePropia): readonly Parcela[] {
+/** Una orden de construir o derribar en esta comarca que aun no ha empezado. */
+export interface ObraPedida {
+  readonly tipo: 'construir' | 'derribar';
+  readonly edificio: TipoEdificio;
+  readonly espera: string | null;
+}
+
+/**
+ * Las parcelas de la comarca: primero las casas, despues los edificios en su orden, las obras, lo
+ * pedido (en los solares libres que queden) y lo libre. Un derribo pedido tacha el ultimo nivel.
+ */
+export function parcelasDe(
+  propia: DetalleDePropia,
+  pedidas: readonly ObraPedida[] = [],
+): readonly Parcela[] {
+  const derribos = new Map<TipoEdificio, number>();
+  for (const p of pedidas)
+    if (p.tipo === 'derribar') derribos.set(p.edificio, (derribos.get(p.edificio) ?? 0) + 1);
   const edificios = [...propia.edificios].sort(
     (a, b) => Number(b.tipo === 'casas') - Number(a.tipo === 'casas'),
   );
@@ -39,6 +65,7 @@ export function parcelasDe(propia: DetalleDePropia): readonly Parcela[] {
         orden,
         nivel: e.nivel,
         maximo: e.maximo,
+        derribo: orden > e.nivel - (derribos.get(e.tipo) ?? 0),
       });
     }
   }
@@ -49,6 +76,15 @@ export function parcelasDe(propia: DetalleDePropia): readonly Parcela[] {
       edificio: o.edificio,
       nombre: o.que,
       avance: Math.min(100, Math.floor((100 * o.avanceMil) / Math.max(1, o.necesarioMil))),
+    });
+  }
+  for (const p of pedidas) {
+    if (p.tipo !== 'construir' || parcelas.length >= propia.solares.total) continue;
+    parcelas.push({
+      clase: 'pedida',
+      edificio: p.edificio,
+      nombre: TABLAS_DEL_JUEGO.edificios[p.edificio].nombre,
+      espera: p.espera,
     });
   }
   while (parcelas.length < propia.solares.total) parcelas.push({ clase: 'libre' });
@@ -94,6 +130,17 @@ export function explicarParcela(
       ],
     };
   }
+  if (parcela.clase === 'pedida') {
+    return {
+      titulo: `${parcela.nombre}: pedida`,
+      lineas: [
+        parcela.espera === null
+          ? 'La has pedido: empezará al resolverse el turno, si hay con qué pagarla.'
+          : `La has pedido, pero espera: ${parcela.espera}.`,
+        'Irá en este solar. Si te arrepientes, la puedes retirar o anular en «Tus órdenes».',
+      ],
+    };
+  }
   if (parcela.clase === 'obra') {
     return {
       titulo: `${parcela.nombre} en obras (${String(parcela.avance)} %)`,
@@ -117,6 +164,8 @@ export function explicarParcela(
     .filter((par): par is [Recurso, number] => par[1] > 0)
     .map(([r, n]) => `${String(n * parcela.nivel)} de ${NOMBRE_DE_RECURSO[r]}`);
   if (consumo.length > 0) lineas.push(`Gasta ${consumo.join(' y ')} por turno; sin eso, se para.`);
+  if (parcela.derribo)
+    lineas.push('Has pedido derribar este nivel: el solar quedará libre y te devuelven la mitad.');
   return { titulo: parcela.nombre, lineas };
 }
 
@@ -128,7 +177,7 @@ export function accionesDeParcela(
   parcela: Parcela,
   acciones: readonly AccionDeFicha[],
 ): readonly AccionDeFicha[] {
-  if (parcela.clase === 'obra') return [];
+  if (parcela.clase === 'obra' || parcela.clase === 'pedida') return [];
   if (parcela.clase === 'edificio') {
     const propias = [`construir-${parcela.edificio}`, `derribar-${parcela.edificio}`];
     return acciones.filter((a) => propias.includes(a.clave));

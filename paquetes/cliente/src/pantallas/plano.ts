@@ -1,6 +1,7 @@
 // El plano de una comarca propia (ficha T-092): al abrir una comarca tuya, el mapa deja sitio a su
 // plano en perspectiva, con cada solar dibujado como lo que lo ocupa. Tocar una parcela dice que es,
 // por que ocupa el solar y que da; «Volver al mapa» devuelve el atlas sin cerrar la ficha.
+import { MOTIVOS } from '@conquer/nucleo';
 import type { DetalleDePropia, FichaDeComarca } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
@@ -12,9 +13,11 @@ import {
   dibujoDeObra,
   dibujoDePlaza,
   dibujoLibre,
+  dibujoPedido,
+  tachado,
 } from '../arte/edificios.ts';
 import { ICONO_DE_EDIFICIO } from '../estado-de-comarca.ts';
-import type { Parcela } from '../plano.ts';
+import type { ObraPedida, Parcela } from '../plano.ts';
 import {
   COLUMNAS_DEL_PLANO,
   accionesDeParcela,
@@ -35,13 +38,41 @@ let elegida: { readonly comarca: string; readonly indice: number } | null = null
 function dibujo(parcela: Parcela): string {
   if (parcela.clase === 'libre') return dibujoLibre();
   if (parcela.clase === 'obra') return dibujoDeObra(parcela.avance);
-  return dibujoDeEdificio(parcela.edificio);
+  if (parcela.clase === 'pedida') return dibujoPedido(parcela.edificio);
+  return dibujoDeEdificio(parcela.edificio) + (parcela.derribo ? tachado() : '');
 }
 
 function etiqueta(parcela: Parcela): string {
   if (parcela.clase === 'libre') return 'Solar libre';
   if (parcela.clase === 'obra') return `${parcela.nombre}, en obras al ${String(parcela.avance)} %`;
-  return `${parcela.nombre}, nivel ${String(parcela.orden)} de ${String(parcela.nivel)}`;
+  if (parcela.clase === 'pedida') return `${parcela.nombre}, pedida`;
+  return `${parcela.nombre}, nivel ${String(parcela.orden)} de ${String(parcela.nivel)}${parcela.derribo ? ', se va a derribar' : ''}`;
+}
+
+/**
+ * Lo pedido en esta comarca que aun no ha empezado: lo dado este turno y lo que espera en su cola.
+ * Lo que ya esta en obras sale de la ficha; una orden que se esta anulando ya no cuenta.
+ */
+function pedidasEn(almacen: Almacen, comarca: string): readonly ObraPedida[] {
+  const anuladas = new Set(
+    almacen.estado.enviadas.flatMap((o) => (o.orden.tipo === 'anular' ? [o.orden.orden] : [])),
+  );
+  const vivas = almacen.estado.partida?.recibido.vista.ordenes ?? [];
+  const ordenes = [
+    ...almacen.estado.enviadas.map((o) => o.orden),
+    ...vivas.filter((o) => o.estado !== 'en curso' && !anuladas.has(o.id)),
+  ];
+  return ordenes.flatMap((o): ObraPedida[] =>
+    (o.tipo === 'construir' || o.tipo === 'derribar') && o.comarca === comarca
+      ? [
+          {
+            tipo: o.tipo,
+            edificio: o.edificio,
+            espera: o.motivoEspera === null ? null : (MOTIVOS[o.motivoEspera] ?? o.motivoEspera),
+          },
+        ]
+      : [],
+  );
 }
 
 function grupo(x: number, y: number, marcado: string): SVGGElement {
@@ -169,7 +200,7 @@ function planoYDetalle(
   almacen: Almacen,
   turno: number,
 ): HTMLElement[] {
-  const parcelas = parcelasDe(propia);
+  const parcelas = parcelasDe(propia, pedidasEn(almacen, ficha.id));
   if (elegida !== null && elegida.comarca !== ficha.id) elegida = null;
   const svg = lienzo(ficha.id, parcelas, capital, (indice) => {
     elegida = { comarca: ficha.id, indice };

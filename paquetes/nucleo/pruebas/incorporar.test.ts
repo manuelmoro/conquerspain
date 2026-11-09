@@ -144,13 +144,13 @@ describe('los requisitos de incorporar', () => {
     expect(impedimento(base, { comarca: 'prueba-costa' })).toBeNull();
   });
 
-  it('no se puede incorporar en escasez', () => {
+  it('con hambre también se puede incorporar: más tierra es una salida del hambre', () => {
     const estado = conInfluencia({ [UNO]: 70 });
     const enEscasez: EstadoPartida = {
       ...estado,
       jugadores: { ...estado.jugadores, [UNO]: { ...jugadorDe(estado, UNO), escasez: true } },
     };
-    expect(impedimento(enEscasez)).toBe('escasez');
+    expect(impedimento(enEscasez)).toBeNull();
   });
 
   it('se dice el primero que falla, en el orden de la ficha', () => {

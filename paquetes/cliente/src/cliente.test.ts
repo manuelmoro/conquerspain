@@ -110,6 +110,23 @@ describe('sin perdidas (criterio 2)', () => {
     await m.cerrar();
   }, 120_000);
 
+  it('al abrir la partida otra vez se ven las órdenes ya dadas este turno', async () => {
+    const m = await montar();
+    await m.almacen.abrirPartida('p1');
+    await m.almacen.anyadir({ tipo: 'roturar', comarca: m.capital });
+    // Otro dispositivo, o la misma página recargada: no hay nada guardado, todo viene del servidor.
+    const recargada = new Almacen({
+      api: m.api,
+      guardado: new GuardadoEnMemoria(),
+      reglas: TABLAS_DEL_JUEGO,
+      ahora: () => AHORA,
+      nuevaClave: () => 'r',
+    });
+    await recargada.abrirPartida('p1');
+    expect(recargada.estado.enviadas.map((o) => o.orden.tipo)).toEqual(['roturar']);
+    await m.cerrar();
+  }, 120_000);
+
   it('una orden que el servidor rechaza se queda marcada con su mensaje', async () => {
     const m = await montar();
     await m.almacen.abrirPartida('p1');

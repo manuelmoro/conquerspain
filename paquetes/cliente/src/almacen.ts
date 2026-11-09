@@ -302,7 +302,17 @@ export class Almacen {
         this.dep.guardado.leer(`conquer:tutorial:${id}`),
         r.datos.vista.turno,
       );
-      this.cambiar({ partida, pendientes, conexion: 'conectado', turnoNuevo: null, tutorial });
+      // Las de otra partida no valen aqui; las dadas este turno se traen siempre al abrir (T-092: al
+      // recargar no salian, y el jugador volvia a darlas).
+      this.cambiar({
+        partida,
+        pendientes,
+        enviadas: [],
+        conexion: 'conectado',
+        turnoNuevo: null,
+        tutorial,
+      });
+      await this.cargarEnviadas();
       return;
     }
     if (r.tipo === 'error') {

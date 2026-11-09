@@ -45,6 +45,7 @@ export async function montar(opciones: { turnosJugados?: number; nuevaClave?: ()
   const capital = (await e.repo.ultimoEstado('p1' as IdPartida))?.jugadores['mesta']?.capital ?? '';
   return {
     e,
+    api,
     almacen,
     guardado,
     red,

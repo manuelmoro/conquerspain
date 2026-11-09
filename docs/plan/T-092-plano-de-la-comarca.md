@@ -54,6 +54,13 @@ corregido el texto.
   - En la bandeja, cada motivo de espera sale en castellano, y una prueba vigila que ninguno se quede sin
     texto.
   - Las flechas de la cola dicen «↑ Antes» y «↓ Después», con una frase que explica cómo va una cola.
+- **Lo pedido se ve en el plano.** Una obra pedida que aún no ha empezado (dada este turno o esperando en su
+  cola) aparece en un solar libre, con el edificio en transparencia y un ⏳. Un derribo pedido tacha el último
+  nivel con una ✕ roja. Lo que ya está en obras sale con andamios, como antes.
+- **Al abrir una partida se traen las órdenes ya dadas** en ese turno. Antes, al recargar no salían en «Dadas
+  este turno», y el jugador las volvía a dar: dos regalos, ocho compras de pan.
+- **Incorporar con hambre.** La escasez ya no impide incorporar: no es obra ni expedición, y sumar tierra es
+  una salida del hambre. «Cómo ganarla» dice si ya se puede incorporar o por qué no, sin esconderlo.
 - **Núcleo:** cada obra de la ficha dice qué edificio levanta (`edificio`, null en las obras mayores).
 
 ## 3. Criterios de aceptación

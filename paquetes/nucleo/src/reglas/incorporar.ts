@@ -22,7 +22,7 @@ import { comarcasDe, panDeLasCuadrillas, turnosDeReserva } from './consumo.ts';
 import { comarcasTransitables } from './ruta.ts';
 
 export type MotivoSinIncorporar =
-  'comarca-con-duenyo' | 'influencia-baja' | 'sin-ventaja' | 'muy-lejos' | 'escasez';
+  'comarca-con-duenyo' | 'influencia-baja' | 'sin-ventaja' | 'muy-lejos';
 
 /**
  * Jornadas, en milesimas, desde la comarca propia mas cercana hasta esta, por camino conocido y en
@@ -74,7 +74,8 @@ export function impedimentoDeIncorporar(
   if (propia - mejorRival < t.ventajaSobreElSegundo) return 'sin-ventaja';
   const lejania = jornadasHastaElDominio(estado, jugador, comarca, mundo, reglas);
   if (lejania === null || lejania > t.jornadasMaximasDesdeElDominio * MIL) return 'muy-lejos';
-  if (jugador.escasez) return 'escasez';
+  // El hambre no impide incorporar (T-092, tras jugar): no es obra ni expedicion (docs/03 §3.4), y
+  // sumar tierra de labor es justo una salida del hambre. Bloquearlo hundia mas al hambriento.
   return null;
 }
 
