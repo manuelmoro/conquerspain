@@ -15,7 +15,9 @@ import { NOMBRE_DE_ESTADO } from '../nombres.ts';
 import { describirOrden, fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
 import { tocar } from '../editor-de-ruta.ts';
-import type { ClasificacionPublica, Cronica } from '@conquer/nucleo';
+import type { AtlasDeJugador, ClasificacionPublica, Cronica } from '@conquer/nucleo';
+
+import { comarcasEnLista, textoDeLaBarra } from '../accesibilidad.ts';
 
 import type { MercadoRecibido } from '../api.ts';
 import { pantallaDeCasa } from './casa.ts';
@@ -63,6 +65,42 @@ function rutaPropuesta(estado: EstadoDelCliente): string[] {
   const desde = situacion.donde === 'comarca' ? situacion.comarca : situacion.desde;
   const tramos = e.prevision?.tramos ?? [];
   return tramos.length > 0 ? [desde, ...tramos.map((t) => t.hasta)] : [desde, ...e.paradas];
+}
+
+/**
+ * Todo lo que se hace tocando el mapa, sin el mapa (T-087): cada comarca conocida con un boton que
+ * hace lo mismo que tocarla, abrir su ficha o, con el editor abierto, anyadirla como parada.
+ */
+function listaDeComarcas(almacen: Almacen, atlas_: AtlasDeJugador): HTMLElement {
+  const plegable = el(
+    'details',
+    { class: 'comarcas-en-lista' },
+    el('summary', {}, 'Las comarcas en lista'),
+  );
+  const lista = el('ul', { class: 'lista' });
+  for (const c of comarcasEnLista(atlas_)) {
+    lista.append(
+      el(
+        'li',
+        { class: 'fila' },
+        el('span', {}, c.nombre),
+        el(
+          'span',
+          { class: 'etiqueta' },
+          c.nivel === 'propia' ? 'tuya' : c.nivel === 'oida' ? 'de oídas' : 'explorada',
+        ),
+        boton(
+          almacen.estado.editor === null ? 'Ver ficha' : 'Añadir parada',
+          () => {
+            alTocarComarca(c.id);
+          },
+          'secundario icono empuje',
+        ),
+      ),
+    );
+  }
+  plegable.append(lista);
+  return plegable;
 }
 
 function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
@@ -136,6 +174,7 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
     ),
     el('div', { class: 'contenedor-atlas' }, atlas.svg),
     leyenda,
+    listaDeComarcas(almacen, partida.atlas),
   );
 }
 
@@ -410,7 +449,7 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       ? el('p', { class: 'suave' }, 'Nada en marcha.')
       : el('ul', { class: 'lista' }, ...enMarcha),
   );
-  return el('section', { class: 'bandeja tarjeta' }, ...partes);
+  return el('section', { class: 'bandeja tarjeta', id: 'bandeja' }, ...partes);
 }
 
 export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
@@ -519,6 +558,15 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         pantallaDeUnidades(almacen, vista.recuas, vista.rebanyos, nombre),
         bandejaDe(almacen, estado),
       ),
+    ),
+  );
+  // En movil, la bandeja queda abajo del todo: una barra fija dice cuantas ordenes hay y el corte.
+  const dadas = estado.enviadas.length + estado.pendientes.length;
+  partes.push(
+    el(
+      'a',
+      { class: 'barra-inferior', href: '#bandeja' },
+      textoDeLaBarra(dadas, tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())),
     ),
   );
   if (estado.resumen !== null && estado.resumenAbierto) {

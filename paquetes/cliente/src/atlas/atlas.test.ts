@@ -238,4 +238,14 @@ describe('el presupuesto (criterio 5)', () => {
     expect(todo.comarcas.length).toBeGreaterThan(150);
     expect(d.figuras.length).toBeLessThan(2000);
   });
+
+  it('y se compone en menos de 250 ms, tambien con los rotulos colocados (T-087)', () => {
+    const { atlas: todo, vista: v } = atlasCompleto();
+    componerAtlas(todo, v, { modo: 'politico', estacion: 'verano' });
+    const inicio = performance.now();
+    for (const modo of ['economico', 'logistico', 'politico'] as const) {
+      componerAtlas(todo, v, { modo, estacion: 'invierno' });
+    }
+    expect((performance.now() - inicio) / 3).toBeLessThan(250);
+  });
 });

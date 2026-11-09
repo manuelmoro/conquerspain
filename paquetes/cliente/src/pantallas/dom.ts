@@ -1,4 +1,6 @@
 // Ayudas minimas para montar el DOM sin `innerHTML`: todo el texto entra como texto, nunca como HTML.
+import { etiquetaDeIcono } from '../accesibilidad.ts';
+
 export function el<K extends keyof HTMLElementTagNameMap>(
   etiqueta: K,
   atributos: Readonly<Record<string, string>> = {},
@@ -16,6 +18,9 @@ export function boton(texto: string, alPulsar: () => void, clase = ''): HTMLButt
     clase === '' ? { type: 'button' } : { type: 'button', class: clase },
     texto,
   );
+  // Un boton de solo icono lleva su nombre para quien no lo ve (T-087).
+  const etiqueta = etiquetaDeIcono(texto);
+  if (etiqueta !== null) b.setAttribute('aria-label', etiqueta);
   b.addEventListener('click', alPulsar);
   return b;
 }

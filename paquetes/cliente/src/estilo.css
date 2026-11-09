@@ -59,7 +59,10 @@ button {
   cursor: pointer;
 }
 button:disabled {
-  opacity: 0.45;
+  /* Apagado pero legible (T-087): tinta suave sobre el fondo de etiqueta, 4,8:1. */
+  background: #e8dfc9;
+  border-color: var(--borde);
+  color: var(--tinta-suave);
   cursor: not-allowed;
 }
 button.secundario {
@@ -401,7 +404,7 @@ details.bloqueadas > summary {
   color: var(--rojo);
 }
 .plaza.vieja {
-  opacity: 0.7;
+  border-style: dashed;
 }
 svg.serie {
   width: 120px;
@@ -430,4 +433,42 @@ svg.serie polyline {
 /* La eleccion de casa (T-086): la elegida se marca con borde y etiqueta. */
 .casa.elegida {
   border: 2px solid var(--cobalto);
+}
+
+/* Accesibilidad (T-087): foco visible en todo lo que se pulsa, y nada se mueve con «menos movimiento». */
+:focus-visible {
+  outline: 3px solid var(--cobalto);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* La barra de abajo en movil: cuantas ordenes hay y cuanto falta para el corte. */
+.barra-inferior {
+  display: none;
+}
+@media (max-width: 899px) {
+  .barra-inferior {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    padding: 0.75rem 1rem;
+    background: var(--cobalto);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  main {
+    padding-bottom: 3.5rem;
+  }
 }

@@ -154,6 +154,9 @@ La bandeja conserva la fila del cambio y deja reabrir el resumen.
   queda para el corte.
 - Objetivo: poder leer la crónica y dar tres órdenes en el autobús, con una mano.
 
+**Hecho en T-087.** Por debajo de 900 px, una barra fija abajo dice cuántas órdenes hay y lo que falta para el
+corte, y lleva a la bandeja.
+
 ## 8.5 Accesibilidad
 
 - Contraste AA en todos los textos y estados.
@@ -161,6 +164,15 @@ La bandeja conserva la fila del cambio y deja reabrir el resumen.
 - Respeto a `prefers-reduced-motion` (sin animaciones de camino ni de niebla).
 - Textos alternativos para los iconos, y el mapa con una vista de lista equivalente para todo lo que
   se pueda hacer en él.
+
+**Hecho en T-087.**
+- Una prueba lee la hoja de estilos y exige AA (4,5:1) a cada par de texto y fondo.
+- Nada se apaga con `opacity`: lo viejo va con borde discontinuo y lo desactivado con sus propios colores.
+- El foco se ve (contorno cobalto de 3 px).
+- Con «menos movimiento» no hay animaciones.
+- Los botones de icono llevan su nombre.
+- Bajo el mapa, «Las comarcas en lista» hace sin mapa lo mismo que tocarlo: ver la ficha o, con el editor
+  abierto, añadir una parada.
 
 ## 8.6 La voz
 
