@@ -46,8 +46,13 @@ export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
     id: 'obra',
     titulo: 'Da tu primera orden',
     texto:
-      'En la ficha, elige qué construir (una granja da más pan) y pulsa «Dar la orden». Se paga al empezar, y hasta el corte la puedes retirar.',
-    objetivo: () => ['.panel .ficha'],
+      'Pulsa «Elegir» en la granja, que da más pan, y luego «Dar la orden». Se paga al empezar, y hasta el corte la puedes retirar desde «Órdenes».',
+    objetivo: () => [
+      '.confirmacion button.dar-la-orden',
+      'li.accion[data-clave="construir-granja"] button',
+      'li.accion:not(.bloqueada) button',
+      '.panel .ficha',
+    ],
     hecho: (s) => s.ordenes > 0,
   },
   {

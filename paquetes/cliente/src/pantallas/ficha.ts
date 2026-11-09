@@ -78,12 +78,16 @@ function confirmacion(almacen: Almacen, accion: AccionDeFicha, turno: number): H
       { class: 'fila' },
       el('label', { class: 'suave' }, 'Cuándo'),
       cuando,
-      boton('Dar la orden', () => {
-        const programado = cuando.value === '' ? {} : { turnoProgramado: Number(cuando.value) };
-        dada = accion.clave;
-        abierta = null;
-        void almacen.anyadir({ ...accion.intencion, ...programado });
-      }),
+      boton(
+        'Dar la orden',
+        () => {
+          const programado = cuando.value === '' ? {} : { turnoProgramado: Number(cuando.value) };
+          dada = accion.clave;
+          abierta = null;
+          void almacen.anyadir({ ...accion.intencion, ...programado });
+        },
+        'dar-la-orden',
+      ),
       boton(
         'Cancelar',
         () => {
@@ -261,7 +265,10 @@ function tarjetaDeAccion(
   turno: number,
 ): HTMLElement {
   const clave = `${comarca}|${accion.clave}`;
-  const item = el('li', { class: accion.bloqueo === null ? 'accion' : 'accion bloqueada' });
+  const item = el('li', {
+    class: accion.bloqueo === null ? 'accion' : 'accion bloqueada',
+    'data-clave': accion.clave,
+  });
   item.append(
     el(
       'div',
