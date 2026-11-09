@@ -30,7 +30,7 @@ export type Capa = (typeof CAPAS)[number];
 
 export interface Figura {
   readonly capa: Capa;
-  readonly forma: 'poligono' | 'linea' | 'circulo' | 'texto' | 'torre';
+  readonly forma: 'poligono' | 'linea' | 'circulo' | 'texto' | 'torre' | 'ficha';
   readonly puntos: readonly Punto[];
   readonly clase: string;
   /** Color de relleno, de la paleta (`paleta.ts`). */
@@ -40,6 +40,10 @@ export interface Figura {
   readonly prioridad?: number;
   /** A que comarca se refiere, para seleccionarla al tocar. */
   readonly comarca?: IdComarca;
+  /** Lo que dice al pasar por encima: el nombre de una recua y lo que hace (T-093). */
+  readonly titulo?: string;
+  /** Solo las fichas: cuanto se apartan de su punto, en pixeles, para no taparse entre ellas. */
+  readonly desplazamiento?: readonly [number, number];
 }
 
 export interface Dibujo {
@@ -149,6 +153,8 @@ export interface OpcionesDeComposicion {
   readonly propuesta?: readonly string[];
   /** Las comarcas que ya se pueden incorporar: se resaltan en todas las vistas (T-092). */
   readonly incorporables?: readonly string[];
+  /** La recua o el rebanyo que se ha pedido ver en el mapa: late (T-093). */
+  readonly destacada?: string | null;
 }
 
 export function componerAtlas(
@@ -218,14 +224,38 @@ export function componerAtlas(
     }
   }
 
+  // Cada recua y cada rebanyo, como una ficha que se ve a cualquier zoom, con su ruta y su destino
+  // (T-093: un punto de cinco pixeles no se encontraba).
   const moviles = [
-    ...vista.recuas.map((r) => ({ clase: 'recua', situacion: r.situacion, ruta: r.ruta })),
-    ...vista.rebanyos.map((r) => ({ clase: 'rebanyo', situacion: r.situacion, ruta: r.ruta })),
+    ...vista.recuas.map((r) => ({
+      id: r.id,
+      nombre: r.nombre,
+      clase: 'recua',
+      marca: '🐴',
+      situacion: r.situacion,
+      ruta: r.ruta,
+    })),
+    ...vista.rebanyos.map((r) => ({
+      id: r.id,
+      nombre: r.nombre,
+      clase: 'rebanyo',
+      marca: '🐑',
+      situacion: r.situacion,
+      ruta: r.ruta,
+    })),
   ];
+  const fichas: Figura[] = [];
   for (const m of moviles) {
     const aqui = posicion(m.situacion, centros, jornadas);
     if (aqui === null) continue;
-    figuras.push({ capa: 'movimiento', forma: 'circulo', puntos: [aqui], clase: m.clase });
+    fichas.push({
+      capa: 'movimiento',
+      forma: 'ficha',
+      puntos: [aqui],
+      clase: `ficha-unidad ${m.clase}${opciones.destacada === m.id ? ' destacada' : ''}`,
+      texto: m.marca,
+      titulo: m.nombre,
+    });
     if (m.ruta.length === 0) continue;
     const trazo: Punto[] = [aqui];
     let restante = 0;
@@ -243,9 +273,15 @@ export function componerAtlas(
       capa: 'movimiento',
       forma: 'linea',
       puntos: trazo,
-      clase: `ruta ruta-${m.clase}`,
+      clase: `ruta ruta-${m.clase}${opciones.destacada === m.id ? ' destacada' : ''}`,
     });
     const destino = trazo.at(-1) ?? aqui;
+    figuras.push({
+      capa: 'movimiento',
+      forma: 'circulo',
+      puntos: [destino],
+      clase: 'destino-de-ruta',
+    });
     figuras.push({
       capa: 'rotulos',
       forma: 'texto',
@@ -275,6 +311,24 @@ export function componerAtlas(
       texto: '¡Incorporable!',
       prioridad: PRIORIDAD.incorporable,
     });
+  }
+
+  // Las que coinciden en un sitio se ponen en fila por encima del rotulo, sin taparse (T-093).
+  const porSitio = new Map<string, number>();
+  for (const f of fichas) {
+    const clave = f.puntos[0]?.join(',') ?? '';
+    porSitio.set(clave, (porSitio.get(clave) ?? 0) + 1);
+  }
+  const colocadas = new Map<string, number>();
+  for (const f of fichas) {
+    const clave = f.puntos[0]?.join(',') ?? '';
+    const i = colocadas.get(clave) ?? 0;
+    colocadas.set(clave, i + 1);
+    const total = porSitio.get(clave) ?? 1;
+    // Recuas a la izquierda y rebanyos a la derecha: una recua de camino cerca de un rebanyo quieto
+    // tampoco se tapa con el.
+    const lado = f.clase.includes('rebanyo') ? 16 : -16;
+    figuras.push({ ...f, desplazamiento: [lado + Math.round((i - (total - 1) / 2) * 30), -26] });
   }
 
   const propuesta = (opciones.propuesta ?? []).flatMap((id) => {

@@ -180,7 +180,11 @@ describe('el movimiento (criterio 6)', () => {
       { ...vista, recuas: [recua] },
       { modo: 'economico', estacion: 'verano' },
     );
-    const punto = de(d, 'movimiento').find((f) => f.forma === 'circulo')?.puntos[0];
+    const ficha = de(d, 'movimiento').find((f) => f.forma === 'ficha');
+    expect(ficha).toMatchObject({ texto: '🐴', titulo: 'Recua de prueba' });
+    const punto = ficha?.puntos[0];
+    // La ruta acaba en una marca de destino (T-093).
+    expect(de(d, 'movimiento').some((f) => f.clase === 'destino-de-ruta')).toBe(true);
     const a = atlas.comarcas.find((c) => c.id === tramo.desde)?.centro;
     const b = atlas.comarcas.find((c) => c.id === tramo.hasta)?.centro;
     if (punto === undefined || a === undefined || b === undefined)

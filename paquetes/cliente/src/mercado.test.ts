@@ -22,10 +22,13 @@ import type {
 } from '@conquer/nucleo';
 
 import {
+  avisosDeCompraventa,
   enMaravedis,
   fechaDePrecio,
+  intencionesDeCompraventa,
   intencionesDeMercado,
   limitePorDefecto,
+  maravedisParaComprar,
   valorar,
 } from './mercado.ts';
 import { montar } from './prueba-comun.ts';
@@ -138,6 +141,139 @@ describe('la orden de mercado desde la ficha de la plaza (criterio 4)', () => {
     );
     expect(sucesos.some((s) => s.tipo === 'mercado.trato' && s.jugador === 'mesta')).toBe(true);
     expect(despues.recuas[recua.id]?.carga.lana).toBeLessThan(10);
+    await m.cerrar();
+  }, 120_000);
+});
+
+describe('comprar y vender en pocos toques (T-093)', () => {
+  const vacia = {
+    enCasa: true,
+    carga: { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 },
+    sitioLibre: 10,
+  };
+  const pedido = {
+    plaza: 'local-x',
+    recua: 'recua-1',
+    trata: false,
+    operacion: 'comprar' as const,
+    recurso: 'pan' as const,
+    cantidad: 10,
+    precioLimiteMil: 3300,
+    turnos: 4,
+  };
+
+  it('los maravedís para comprar cuentan el precio límite y la comisión', () => {
+    expect(maravedisParaComprar(10, 3300, 20)).toBe(34);
+    expect(maravedisParaComprar(10, 3000, 0)).toBe(30);
+  });
+
+  it('en casa carga antes lo que falta; fuera, solo trata con lo que lleva y lo avisa', () => {
+    expect(intencionesDeCompraventa(pedido, vacia, 20).map((i) => i['tipo'])).toEqual([
+      'carga',
+      'cometido',
+      'mercado',
+    ]);
+    expect(intencionesDeCompraventa(pedido, vacia, 20)[0]).toMatchObject({
+      cargar: { maravedis: 34 },
+    });
+    const fuera = { ...vacia, enCasa: false };
+    expect(intencionesDeCompraventa(pedido, fuera, 20).map((i) => i['tipo'])).toEqual([
+      'cometido',
+      'mercado',
+    ]);
+    expect(avisosDeCompraventa(pedido, fuera, 20).join(' ')).toMatch(/harían falta 34/);
+    const venta = { ...pedido, operacion: 'vender' as const, recurso: 'lana' as const };
+    expect(intencionesDeCompraventa(venta, vacia, 20)[0]).toMatchObject({
+      cargar: { lana: 10 },
+    });
+  });
+
+  it('de punta a punta: la recua en casa y sin dinero compra pan, y al descargarlo va al almacén', async () => {
+    const m = await montar();
+    const hoy = await m.e.repo.ultimoEstado('p1' as IdPartida);
+    const capital = m.capital as IdComarca;
+    const comarca = hoy?.comarcas[capital];
+    if (hoy === null || comarca === undefined) throw new Error('sin estado');
+    const recua: Recua = {
+      id: 'recua-panera' as IdRecua,
+      jugador: 'mesta' as IdJugador,
+      nombre: 'Recua panera',
+      situacion: { donde: 'comarca', comarca: capital },
+      ruta: [],
+      rutaCircular: false,
+      paradas: [],
+      siguienteParada: 0,
+      enParada: null,
+      acemilas: 10,
+      porte: 10,
+      carga: recursosSegun(() => 0),
+      vecinos: 0,
+      cometido: null,
+      turnosDeCometido: 0,
+      avisadaSinBastimento: false,
+      enExpedicion: false,
+      fallosDePrecio: 0,
+    };
+    const estado: EstadoPartida = {
+      ...hoy,
+      comarcas: {
+        ...hoy.comarcas,
+        [capital]: { ...comarca, edificios: { ...comarca.edificios, mercado: 1 } },
+      },
+      recuas: { ...hoy.recuas, [recua.id]: recua },
+    };
+    const construir = (
+      e: EstadoPartida,
+      intenciones: readonly Readonly<Record<string, unknown>>[],
+      prefijo: string,
+    ) =>
+      intenciones.map((intencion, i) => {
+        const forma = validarIntencion({ ...intencion, idCliente: `${prefijo}${String(i)}` });
+        if (!forma.ok) throw new Error(JSON.stringify(forma.errores));
+        const orden = construirOrden(forma.valor, {
+          estado: e,
+          jugador: 'mesta' as IdJugador,
+          mundo: m.e.mundo,
+          reglas: TABLAS_DEL_JUEGO,
+          id: `o-${prefijo}${String(i)}` as IdOrden,
+        });
+        if (!orden.ok) throw new Error(JSON.stringify(orden.errores));
+        return orden.valor;
+      });
+    const compra = construir(
+      estado,
+      intencionesDeCompraventa(
+        {
+          plaza: idDeMercadoLocal(capital),
+          recua: recua.id,
+          trata: false,
+          operacion: 'comprar',
+          recurso: 'pan',
+          cantidad: 5,
+          precioLimiteMil: 20_000,
+          turnos: 2,
+        },
+        { enCasa: true, carga: recua.carga, sitioLibre: 10 },
+        20,
+      ),
+      'c',
+    );
+    const tras = resolverTurno(estado, compra, m.e.mundo, TABLAS_DEL_JUEGO).estado;
+    const pan = tras.recuas[recua.id]?.carga.pan ?? 0;
+    expect(pan).toBeGreaterThan(0);
+    const descarga = construir(
+      tras,
+      [{ tipo: 'carga', recua: recua.id, cargar: {}, descargar: { pan }, vecinosCargados: 0 }],
+      'd',
+    );
+    const luego = resolverTurno(tras, descarga, m.e.mundo, TABLAS_DEL_JUEGO).estado;
+    expect(luego.recuas[recua.id]?.carga.pan).toBe(0);
+    // Lo descargado entra antes de que la gente coma: el almacén lo nota frente a no descargarlo.
+    const sinDescargar = resolverTurno(tras, [], m.e.mundo, TABLAS_DEL_JUEGO).estado;
+    expect(
+      (luego.jugadores['mesta']?.almacen.pan ?? 0) -
+        (sinDescargar.jugadores['mesta']?.almacen.pan ?? 0),
+    ).toBe(pan);
     await m.cerrar();
   }, 120_000);
 });

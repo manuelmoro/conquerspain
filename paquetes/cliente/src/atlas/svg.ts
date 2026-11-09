@@ -61,6 +61,25 @@ function figuraSvg(f: Figura, escala: number): SVGElement {
       );
       return g;
     }
+    case 'ficha': {
+      // Una ficha redonda con su marca, del mismo tamanyo en pantalla a cualquier zoom (T-093).
+      const [dx, dy] = f.desplazamiento ?? [0, 0];
+      const g = nodo('g', {
+        class: f.clase,
+        transform: `translate(${String(x)} ${String(y)}) scale(${String(1 / escala)}) translate(${String(dx)} ${String(dy)})`,
+      });
+      const marca = nodo('text', {
+        class: 'ficha-marca',
+        'font-size': '15',
+        'text-anchor': 'middle',
+        'dominant-baseline': 'central',
+      });
+      marca.textContent = f.texto ?? '';
+      const titulo = nodo('title', {});
+      titulo.textContent = f.titulo ?? '';
+      g.append(nodo('circle', { class: 'ficha-fondo', r: '13' }), marca, titulo);
+      return g;
+    }
     case 'texto': {
       const t = nodo('text', {
         x: String(x),
@@ -80,6 +99,8 @@ export interface AtlasMontado {
   pintar(dibujo: Dibujo): void;
   /** Resalta la comarca abierta en la ficha (null: ninguna). */
   seleccionar(comarca: string | null): void;
+  /** Acerca el mapa y lo centra en un punto: para encontrar una recua (T-093). */
+  centrarEn(punto: readonly [number, number]): void;
   destruir(): void;
 }
 
@@ -221,7 +242,20 @@ export function montarAtlas(
     }
   };
 
-  return {
+  const atlasMontado: AtlasMontado = {
+    centrarEn: (punto) => {
+      if (dibujo === null) return;
+      const ancho = Math.min(encuadre.ancho, dibujo.caja.ancho / 5);
+      const alto = (ancho * encuadre.alto) / Math.max(1, encuadre.ancho);
+      encuadre = desplazar(
+        { x: punto[0] - ancho / 2, y: punto[1] - alto / 2, ancho, alto },
+        0,
+        0,
+        limites,
+      );
+      // Las fichas y la torre se dibujan al tamanyo de la escala: se repinta todo con la nueva.
+      atlasMontado.pintar(dibujo);
+    },
     pintar: (nuevo) => {
       const primeraVez = dibujo === null;
       dibujo = nuevo;
@@ -253,4 +287,5 @@ export function montarAtlas(
       svg.replaceChildren();
     },
   };
+  return atlasMontado;
 }

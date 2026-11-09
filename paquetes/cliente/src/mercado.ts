@@ -99,3 +99,85 @@ export function intencionesDeMercado(
   };
   return p.trata ? [orden] : [{ tipo: 'cometido', recua: p.recua, cometido: 'tratar' }, orden];
 }
+
+/** Lo que el formulario sencillo sabe de la recua que va a tratar (ficha T-093). */
+export interface RecuaQueTrata {
+  /** Esta en una comarca propia: puede cargar del almacen antes de tratar. */
+  readonly enCasa: boolean;
+  readonly carga: Readonly<Record<Recurso, number>>;
+  /** Lo que le cabe aun, sin contar los maravedis, que no ocupan. */
+  readonly sitioLibre: number;
+}
+
+/** Los maravedis que hacen falta para comprar al precio limite, con la comision. */
+export function maravedisParaComprar(
+  cantidad: number,
+  precioLimiteMil: number,
+  comisionMil: number,
+): number {
+  const importeMil = Math.max(1, Math.floor(cantidad)) * precioLimiteMil;
+  return Math.ceil((importeMil * (1000 + comisionMil)) / 1_000_000);
+}
+
+/**
+ * Lo que se manda para comprar o vender con una recua, en orden: si esta en casa, cargar antes lo
+ * que le falte (los maravedis para pagar, o la mercancia para vender); despues, el cometido y la
+ * orden de mercado. Fuera de casa no se puede cargar: solo trata con lo que lleva.
+ */
+export function intencionesDeCompraventa(
+  p: PedidoDeMercado,
+  recua: RecuaQueTrata,
+  comisionMil: number,
+): readonly Readonly<Record<string, unknown>>[] {
+  const falta =
+    p.operacion === 'comprar'
+      ? Math.max(
+          0,
+          maravedisParaComprar(p.cantidad, p.precioLimiteMil, comisionMil) - recua.carga.maravedis,
+        )
+      : Math.max(0, Math.floor(p.cantidad) - recua.carga[p.recurso]);
+  const cargar =
+    recua.enCasa && falta > 0
+      ? [
+          {
+            tipo: 'carga',
+            recua: p.recua,
+            cargar: { [p.operacion === 'comprar' ? 'maravedis' : p.recurso]: falta },
+            descargar: {},
+            vecinosCargados: 0,
+          },
+        ]
+      : [];
+  return [...cargar, ...intencionesDeMercado(p)];
+}
+
+/** Lo que conviene saber antes de dar la orden: si no le alcanza o no le cabe. Vacio si va bien. */
+export function avisosDeCompraventa(
+  p: PedidoDeMercado,
+  recua: RecuaQueTrata,
+  comisionMil: number,
+): readonly string[] {
+  const avisos: string[] = [];
+  const cantidad = Math.max(1, Math.floor(p.cantidad));
+  if (p.operacion === 'comprar') {
+    const hace = maravedisParaComprar(cantidad, p.precioLimiteMil, comisionMil);
+    if (recua.enCasa)
+      avisos.push(
+        `Se le cargarán del almacén los maravedís que falten para pagar (hasta ${String(hace)}).`,
+      );
+    else if (recua.carga.maravedis < hace)
+      avisos.push(
+        `Lleva ${String(recua.carga.maravedis)} maravedís y harían falta ${String(hace)}: fuera de casa no puede cargar más.`,
+      );
+    if (recua.sitioLibre < cantidad)
+      avisos.push(`Solo le caben ${String(recua.sitioLibre)} más: comprará como mucho eso.`);
+    avisos.push('Lo comprado se queda en la recua: descárgalo en casa para que vaya al almacén.');
+  } else if (recua.carga[p.recurso] < cantidad) {
+    avisos.push(
+      recua.enCasa
+        ? 'Se le cargará del almacén lo que falte para vender.'
+        : `Lleva ${String(recua.carga[p.recurso])} y quieres vender ${String(cantidad)}: venderá lo que lleve.`,
+    );
+  }
+  return avisos;
+}

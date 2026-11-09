@@ -25,7 +25,7 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 ## Siguiente tarea
 
-**Lo que toca ahora es del usuario: los checkpoints J-01, J-02 y J-03** (preparación abajo y en
+**Decisión pendiente del usuario: [T-094](docs/plan/T-094-crecer-hacia-dentro.md)** (niveles sin solar, villas y alfoz), que va antes de seguir jugando. **Después, lo que toca es del usuario: los checkpoints J-01, J-02 y J-03** (preparación abajo y en
 [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md)). Cierran T-088 (J-01) y **T-087**, cuyo
 trabajo está hecho a falta de medir con personas los 60 fps, el arranque y el recorrido con una mano (ficha §8).
 Mientras tanto, una IA puede seguir con la **fase 5: T-100 · Varias plazas por partida** (depende de T-087;
@@ -129,6 +129,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-093 hecha (a petición del usuario): mercado sencillo, órdenes claras y recuas en el mapa.** Recuas y rebaños como fichas 🐴 y 🐑 con su ruta; «Ver en el mapa» acerca y señala. «Tus órdenes» en tres grupos (para este turno, esperando con su porqué y «Anular», en marcha), cada orden en una frase. El mercado se usa en pocos toques: comprar o vender, qué, cuánto y el total. Con la recua en casa, la compra **le carga sola los maravedís** (en la partida del usuario la recua iba vacía y por eso nunca compraba), y «📥 Descargar al almacén» mete lo comprado en el almacén. Ciclo comprar → descargar probado de punta a punta. **Pendiente de decisión del usuario:** [T-094](docs/plan/T-094-crecer-hacia-dentro.md) (niveles sin solar, villas y el alfoz). |
 | 09-11-2026 | **Lo incorporable, a la vista.** Las comarcas que ya puedes incorporar llevan en el mapa un contorno dorado que late, y encima sale «✨ Ya puedes incorporar:» con un botón para cada una. Es la misma cuenta que la ficha. |
 | 09-11-2026 | **Más arreglos tras jugar.** **Fallo grave:** al abrir una partida no se traían las órdenes ya dadas en ese turno, y el jugador las repetía; ya se traen, y hay una prueba de «recargar». El plano enseña lo pedido: la obra que espera, en transparencia y con ⏳; el derribo, con una ✕. El hambre ya no impide incorporar (era otra trampa sin salida), y «Cómo ganarla» dice si ya puedes incorporar o por qué no. |
 | 09-11-2026 | **Salir del hambre (tras jugar).** En la partida del usuario, el hambre había dejado su recua en cola, y sin ella no podía comprar pan. Ahora la escasez solo frena las expediciones (docs/03); una ruta corriente sale. Nueva orden **`anular`** para quitar una orden que espera sin remedio (docs/02 §2.3.2). La bandeja da cada motivo de espera en castellano (con una prueba que lo vigila) y explica las flechas de la cola («↑ Antes», «↓ Después»). |

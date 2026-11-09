@@ -1089,3 +1089,72 @@ svg.grafico-historial {
   margin: 0.15rem 0 0;
   font-size: 0.85rem;
 }
+
+/* T-093: mercado sencillo, órdenes en palabras y recuas claras. */
+.comerciar h3 {
+  margin-top: 0;
+}
+.conmutador,
+.eleccion-de-recurso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+button.chip {
+  cursor: pointer;
+  font: inherit;
+  color: var(--tinta);
+}
+button.chip.elegido {
+  background: var(--cobalto);
+  border-color: var(--cobalto);
+  color: #fff;
+}
+.cantidad {
+  gap: 0.4rem;
+}
+.total-de-orden {
+  font-weight: 600;
+}
+.mas-opciones summary {
+  cursor: pointer;
+  color: var(--tinta-suave);
+}
+.desplazable {
+  overflow-x: auto;
+}
+.tabla-de-precios {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+.tabla-de-precios th,
+.tabla-de-precios td {
+  padding: 0.3rem 0.35rem;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
+}
+.tabla-de-precios tr.vieja {
+  opacity: 0.6;
+}
+.orden-en-palabras .frase-de-orden {
+  margin: 0 0 0.3rem;
+  font-weight: 500;
+}
+.motivo-de-espera {
+  margin: 0.2rem 0;
+  color: #8a4b00;
+}
+.lineas-de-unidad {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0;
+}
+.lineas-de-unidad li {
+  margin: 0.15rem 0;
+}
+.unidad.destacada {
+  outline: 3px solid #c98a00;
+  outline-offset: 2px;
+}

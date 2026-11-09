@@ -1,14 +1,8 @@
 // La partida (T-081, T-082, T-088): cabecera con el turno y el corte; el mapa con su conmutador, su
 // explicacion y su leyenda; y el panel con la ficha de la comarca tocada y la bandeja. En escritorio el
 // panel va al lado y fijo; en movil, debajo, y la ficha sube como hoja sobre el mapa.
-import {
-  ESTADOS_ANULABLES,
-  MOTIVOS,
-  RECURSOS,
-  TABLAS_DEL_JUEGO,
-  estacionDe,
-} from '@conquer/nucleo';
-import type { FichaDeComarca } from '@conquer/nucleo';
+import { RECURSOS, TABLAS_DEL_JUEGO, estacionDe } from '@conquer/nucleo';
+import type { FichaDeComarca, VistaJugador } from '@conquer/nucleo';
 
 import type { Almacen, EstadoDelCliente } from '../almacen.ts';
 import { MODOS_DE_ATLAS, componerAtlas } from '../atlas/componer.ts';
@@ -17,7 +11,7 @@ import { EXPLICACION_DE_MODO, NOMBRE_DE_MODO, leyendaDe } from '../atlas/leyenda
 import { montarAtlas } from '../atlas/svg.ts';
 import type { AtlasMontado } from '../atlas/svg.ts';
 import { colasDe, moverEnLaCola, resumenDeRecursos, tiempoHastaElCorte } from '../bandeja.ts';
-import { MARCA_DE_RECURSO, NOMBRE_DE_ESTADO, NOMBRE_DE_RECURSO } from '../nombres.ts';
+import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO } from '../nombres.ts';
 import { describirOrden, fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
 import { tocar } from '../editor-de-ruta.ts';
@@ -42,6 +36,9 @@ import { pantallaDeCasa } from './casa.ts';
 import { pantallaDeCronica } from './cronica.ts';
 import { pantallaDeFicha } from './ficha.ts';
 import { pantallaDePlano } from './plano.ts';
+import { hayQueCentrar, unidadDestacada } from '../destacada.ts';
+import { agruparOrdenes } from '../ordenes-en-palabras.ts';
+import type { OrdenEnPalabras } from '../ordenes-en-palabras.ts';
 import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
 import { pantallaDeUnidades } from './unidades.ts';
@@ -135,19 +132,25 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
     });
   }
   const propuesta = rutaPropuesta(estado);
-  const clave = `${partida.id}|${String(partida.recibido.turno)}|${atlas.modo}|${String(partida.recibidaEn)}|${propuesta.join(',')}`;
+  const clave = `${partida.id}|${String(partida.recibido.turno)}|${atlas.modo}|${String(partida.recibidaEn)}|${propuesta.join(',')}|${unidadDestacada() ?? ''}`;
   if (clave !== atlas.pintado) {
     const dibujo = componerAtlas(partida.atlas, partida.recibido.vista, {
       modo: atlas.modo,
       estacion: estacionDe(partida.recibido.turno, TABLAS_DEL_JUEGO),
       propuesta,
       incorporables: partida.recibido.incorporables ?? [],
+      destacada: unidadDestacada(),
     });
     atlas.pintado = clave;
     // Se pinta cuando el <svg> ya esta en el documento, para que tenga tamanyo.
+    const centrar = hayQueCentrar();
     requestAnimationFrame(() => {
       atlas.montado?.pintar(dibujo);
       atlas.montado?.seleccionar(almacen.estado.comarcaAbierta);
+      // «Ver en el mapa» de una recua: se acerca a ella (T-093).
+      const ficha = dibujo.figuras.find((f) => f.forma === 'ficha' && f.clase.includes('destacada'))
+        ?.puntos[0];
+      if (centrar && ficha !== undefined) atlas.montado?.centrarEn(ficha);
     });
   } else {
     atlas.montado?.seleccionar(estado.comarcaAbierta);
@@ -388,6 +391,49 @@ function casaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null 
   );
 }
 
+/** «↑ Antes», «↓ Después» y «Anular» de una orden que espera (T-092, T-093). */
+function botonesDeCola(
+  almacen: Almacen,
+  vista: VistaJugador,
+  id: string,
+  anulandose: ReadonlySet<string>,
+): HTMLElement | string {
+  const o = vista.ordenes.find((x) => x.id === id);
+  if (o === undefined) return '';
+  const botones = el('div', { class: 'fila' });
+  const colas = colasDe(vista);
+  if (o.cola !== null && (colas.get(o.cola)?.length ?? 0) > 1) {
+    for (const hacia of ['arriba', 'abajo'] as const) {
+      const intencion = moverEnLaCola(vista, o.cola, o.id, hacia);
+      if (intencion === null) continue;
+      const b = boton(
+        hacia === 'arriba' ? '↑ Antes' : '↓ Después',
+        () => {
+          void almacen.anyadir(intencion);
+        },
+        'secundario icono',
+      );
+      b.title =
+        hacia === 'arriba'
+          ? 'Que se intente antes que la de encima en su cola'
+          : 'Que se intente después que la de debajo en su cola';
+      botones.append(b);
+    }
+  }
+  botones.append(
+    anulandose.has(o.id)
+      ? el('span', { class: 'etiqueta' }, '✖️ se anulará al resolverse el turno')
+      : boton(
+          'Anular',
+          () => {
+            void almacen.anyadir({ tipo: 'anular', orden: o.id });
+          },
+          'secundario icono',
+        ),
+  );
+  return botones;
+}
+
 function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const partida = estado.partida;
   if (partida === null) return el('div');
@@ -457,25 +503,50 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       p.error === null ? '' : el('p', { class: 'error' }, p.error.mensaje),
     ),
   );
-  // Una anulacion dice que orden anula, no solo «Anular una orden».
-  const textoDeEnviada = (orden: (typeof estado.enviadas)[number]['orden']): string => {
-    if (orden.tipo !== 'anular') return describirOrden(orden, nombre);
-    const objetivo = vista.ordenes.find((v) => v.id === orden.orden);
-    return objetivo === undefined
-      ? 'Anular una orden'
-      : `Anular: ${describirOrden(objetivo, nombre)}`;
-  };
-  const enviadas = estado.enviadas.map((o) =>
+  // Tus ordenes en tres grupos, cada una en una frase (T-093: no se entendia que estaba dado, que
+  // esperaba y por que).
+  const enviadasPorId = new Map<string, (typeof estado.enviadas)[number]>(
+    estado.enviadas.map((o) => [o.orden.id, o]),
+  );
+  const anulandose = new Set(
+    estado.enviadas.flatMap((o) => (o.orden.tipo === 'anular' ? [o.orden.orden] : [])),
+  );
+  const unidades = [...vista.recuas, ...vista.rebanyos];
+  const grupos = agruparOrdenes(
+    estado.enviadas.map((o) => o.orden),
+    vista.ordenes,
+    {
+      comarca: nombre,
+      unidad: (id) => unidades.find((u) => u.id === id)?.nombre ?? 'una recua',
+      orden: (id) => vista.ordenes.find((o) => o.id === id),
+    },
+  );
+  const tarjeta = (o: OrdenEnPalabras, ...extra: (Node | string)[]): HTMLElement =>
     el(
       'li',
-      {},
+      { class: 'orden-en-palabras' },
+      el(
+        'p',
+        { class: 'frase-de-orden' },
+        el('span', { 'aria-hidden': 'true' }, o.icono),
+        ` ${o.frase}`,
+      ),
+      ...extra,
+    );
+  const paraEsteTurno = grupos.paraEsteTurno.map((o) => {
+    const enviada = enviadasPorId.get(o.id);
+    const programada = enviada?.orden.turnoProgramado ?? null;
+    return tarjeta(
+      o,
       el(
         'div',
         { class: 'fila' },
-        textoDeEnviada(o.orden),
-        o.orden.turnoProgramado === null
+        programada === null
+          ? el('span', { class: 'etiqueta' }, 'se hará al resolverse el turno')
+          : el('span', { class: 'etiqueta' }, `para el turno ${String(programada)}`),
+        enviada === undefined || Object.values(enviada.orden.coste).every((n) => n === 0)
           ? ''
-          : el('span', { class: 'etiqueta' }, `para el turno ${String(o.orden.turnoProgramado)}`),
+          : fichasDeRecursos(enviada.orden.coste),
         boton(
           'Retirar',
           () => {
@@ -484,90 +555,51 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
           'secundario icono empuje',
         ),
       ),
-      el('div', { class: 'fila suave' }, 'Apartará:', fichasDeRecursos(o.orden.coste)),
-    ),
-  );
-  const colas = colasDe(vista);
-  // Las que ya se ha pedido anular este turno (T-092): no se ofrecen otra vez.
-  const anulandose = new Set(
-    estado.enviadas.flatMap((o) => (o.orden.tipo === 'anular' ? [o.orden.orden] : [])),
-  );
-  const enMarcha = vista.ordenes.map((o) => {
-    const fila = el(
-      'div',
-      { class: 'fila' },
-      describirOrden(o, nombre),
-      el('span', { class: 'etiqueta' }, NOMBRE_DE_ESTADO[o.estado]),
-    );
-    const botones = el('div', { class: 'fila' });
-    if (o.cola !== null && (colas.get(o.cola)?.length ?? 0) > 1) {
-      for (const hacia of ['arriba', 'abajo'] as const) {
-        const intencion = moverEnLaCola(vista, o.cola, o.id, hacia);
-        if (intencion !== null) {
-          const b = boton(
-            hacia === 'arriba' ? '↑ Antes' : '↓ Después',
-            () => {
-              void almacen.anyadir(intencion);
-            },
-            'secundario icono',
-          );
-          b.title =
-            hacia === 'arriba'
-              ? 'Que se intente antes que la de encima en su cola'
-              : 'Que se intente después que la de debajo en su cola';
-          botones.append(b);
-        }
-      }
-    }
-    if (anulandose.has(o.id)) {
-      botones.append(el('span', { class: 'etiqueta' }, 'se anulará al resolverse el turno'));
-    } else if (ESTADOS_ANULABLES.includes(o.estado)) {
-      botones.append(
-        boton(
-          'Anular',
-          () => {
-            void almacen.anyadir({ tipo: 'anular', orden: o.id });
-          },
-          'secundario icono',
-        ),
-      );
-    }
-    return el(
-      'li',
-      {},
-      fila,
-      o.motivoEspera === null
-        ? ''
-        : el('p', { class: 'suave' }, `Espera: ${MOTIVOS[o.motivoEspera] ?? o.motivoEspera}.`),
-      botones.childElementCount === 0 ? '' : botones,
     );
   });
-  partes.push(
-    el('h2', {}, 'Tus órdenes'),
-    el(
-      'p',
-      { class: 'suave' },
-      `Se resuelven dentro de ${tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now()).replace('faltan ', '')}. Hasta entonces puedes retirarlas.`,
+  const esperando = grupos.esperando.map((o) =>
+    tarjeta(
+      o,
+      o.espera === null ? '' : el('p', { class: 'motivo-de-espera' }, `Espera: ${o.espera}.`),
+      o.queHacer === null ? '' : el('p', { class: 'suave' }, o.queHacer),
+      botonesDeCola(almacen, vista, o.id, anulandose),
     ),
   );
-  if (locales.length > 0)
-    partes.push(el('h3', {}, 'Enviándose'), el('ul', { class: 'lista' }, ...locales));
-  partes.push(
-    el('h3', {}, 'Dadas este turno'),
-    enviadas.length === 0
-      ? el('p', { class: 'suave' }, 'Ninguna todavía: toca una comarca en el mapa para dar una.')
-      : el('ul', { class: 'lista' }, ...enviadas),
-    el('h3', {}, 'En marcha'),
-    vista.ordenes.some((o) => o.cola !== null)
-      ? el(
-          'p',
-          { class: 'suave' },
-          'Las obras de una comarca y los encargos de una recua van en cola: se intentan de una en una, en este orden, y la primera que puede, empieza. Con «↑ Antes» y «↓ Después» cambias el orden; con «Anular» quitas la que se ha quedado esperando y te devuelve lo apartado.',
-        )
-      : '',
-    enMarcha.length === 0
-      ? el('p', { class: 'suave' }, 'Nada en marcha.')
-      : el('ul', { class: 'lista' }, ...enMarcha),
+  const enMarcha = grupos.enMarcha.map((o) => tarjeta(o));
+  const seccion = (
+    titulo: string,
+    vacia: string,
+    explicacion: string,
+    items: readonly HTMLElement[],
+  ): (Node | string)[] => [
+    el('h3', {}, `${titulo} (${String(items.length)})`),
+    items.length === 0
+      ? el('p', { class: 'suave' }, vacia)
+      : el(
+          'div',
+          {},
+          el('p', { class: 'suave' }, explicacion),
+          el('ul', { class: 'lista' }, ...items),
+        ),
+  ];
+  partes.unshift(
+    el('h2', {}, 'Tus órdenes'),
+    ...(locales.length > 0
+      ? [el('h3', {}, 'Enviándose'), el('ul', { class: 'lista' }, ...locales)]
+      : []),
+    ...seccion(
+      '📝 Para este turno',
+      'Ninguna todavía: toca una comarca en el mapa para dar una.',
+      `Se harán al resolverse el turno (${tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())}). Hasta entonces puedes retirarlas.`,
+      paraEsteTurno,
+    ),
+    ...seccion(
+      '⏳ Esperando',
+      'Nada esperando.',
+      'De turnos pasados: no han podido empezar todavía. Cada una dice por qué; si ya no la quieres, anúlala.',
+      esperando,
+    ),
+    ...seccion('🔨 En marcha', 'Nada en marcha.', 'Empezadas: siguen su curso solas.', enMarcha),
   );
   return el('section', { class: 'bandeja tarjeta', id: 'bandeja' }, ...partes);
 }
@@ -824,7 +856,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         { class: 'panel', 'data-conservar-scroll': 'panel' },
         pestanyasDelPanel(almacen, estado),
         ...(ficha === null ? [] : [ficha]),
-        pantallaDeUnidades(almacen, vista.recuas, vista.rebanyos, nombre),
+        pantallaDeUnidades(almacen, vista.recuas, vista.rebanyos, vista.ordenes, nombre),
         bandejaDe(almacen, estado),
       ),
     ),
