@@ -290,3 +290,56 @@ describe('mandar una recua desde la ficha (T-083 §4.2, criterio 4)', () => {
     });
   });
 });
+
+describe('el gobierno en la ficha de una comarca propia (T-089 §4.2)', () => {
+  it('ofrece fuero, carga, dehesa, obras mayores y traslado, con efecto y bloqueo con salida', () => {
+    let estado = escenario();
+    estado = conComarca(estado, 'prueba-vega', { duenyo: UNO });
+    const f = fichaDeComarca(estado, UNO, c('prueba-vega'), mundo, reglas);
+    const claves = f?.acciones.map((a) => a.clave) ?? [];
+    for (const clave of [
+      'fuero-carta-puebla',
+      'fuero-fuero',
+      'carga-ligera',
+      'carga-dura',
+      'acotar-dehesa',
+      'obra-muralla',
+      'obra-monasterio',
+      'trasladar-corte',
+    ])
+      expect(claves, clave).toContain(clave);
+    for (const a of f?.acciones ?? []) comprobarAccion(a);
+    expect(f?.acciones.find((a) => a.clave === 'trasladar-corte')?.coste).toEqual(
+      reglas.territorio.costeTraslado,
+    );
+    // En la capital no se ofrece trasladar la corte.
+    const capital = fichaDeComarca(estado, UNO, c('prueba-llano'), mundo, reglas);
+    expect(capital?.acciones.some((a) => a.clave === 'trasladar-corte')).toBe(false);
+  });
+
+  it('el fuero recién cambiado queda bloqueado en la ficha y en espera en la fase (criterio 1)', () => {
+    const estado = conComarca(escenario(), 'prueba-llano', {
+      fuero: 'carta puebla',
+      turnoFuero: escenario().turno - 1,
+    });
+    const f = fichaDeComarca(estado, UNO, c('prueba-llano'), mundo, reglas);
+    const darFuero = f?.acciones.find((a) => a.clave === 'fuero-fuero');
+    expect(darFuero?.bloqueo?.motivo).toBe('fuero-reciente');
+    const libre = f?.acciones.find((a) => a.clave === 'carga-ligera');
+    expect(libre?.bloqueo).toBeNull();
+    if (darFuero === undefined || libre === undefined) throw new Error('faltan acciones');
+    const [ordenFuero, ordenCarga] = ordenesDe([darFuero.intencion, libre.intencion], estado);
+    if (ordenFuero === undefined || ordenCarga === undefined) throw new Error('sin órdenes');
+    const r = resolverTurno(
+      estado,
+      [ordenFuero, { ...ordenCarga, id: 'o-z' as IdOrden }],
+      mundo,
+      reglas,
+    );
+    expect(r.estado.ordenes.find((o) => o.id === ordenFuero.id)).toMatchObject({
+      estado: 'en espera',
+      motivoEspera: 'fuero-reciente',
+    });
+    expect(r.estado.comarcas['prueba-llano']?.cargaFiscal).toBe('ligera');
+  });
+});

@@ -322,6 +322,8 @@ export function costeDeIntencion(
       return { ...NADA, maravedis: reglas.influencia.costeRegalo };
     case 'incorporar':
       return reglas.influencia.costeIncorporar;
+    case 'trasladar-corte':
+      return reglas.territorio.costeTraslado;
     default:
       return NADA;
   }
@@ -445,10 +447,11 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
       });
     case 'letra-de-cambio':
       return invalidos([error('tipo', 'las letras de cambio aun no existen (llegan con T-103)')]);
+    case 'trasladar-corte':
+      return valido({ ...o, ...fijos, ...sinCola, coste });
     case 'politica':
     case 'tradicion':
     case 'mayordomo':
-    case 'trasladar-corte':
     case 'cola':
       return valido({ ...o, ...fijos, ...sinCola });
   }

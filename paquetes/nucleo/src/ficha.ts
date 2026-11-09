@@ -2,6 +2,7 @@
 // darle, cada una con su coste, su duracion, su efecto previsto y, si esta bloqueada, su causa y su
 // salida. Pura; la compone el servidor con el estado, pero solo ensenya lo que el jugador puede saber.
 import { crearContexto } from './contexto.ts';
+import { accionesDeGobierno } from './ficha-gobierno.ts';
 import { BLOQUEOS } from './datos/bloqueos.ts';
 import { datosDeProduccion } from './fases/02-produccion.ts';
 import { costeDeIntencion } from './ordenes/intencion.ts';
@@ -413,6 +414,17 @@ export function fichaDeComarca(
       `Un rebaño de ${String(reglas.ganaderia.cabezasPorRebanyo)} cabezas`,
       yo.escasez ? 'escasez' : null,
       propia,
+    ),
+  );
+  acciones.push(
+    ...accionesDeGobierno(
+      propia,
+      estado.jugadores[yo.id] ?? yo,
+      estado,
+      mundo,
+      reglas,
+      (clave, titulo, intencion, turnos, efecto, motivo) =>
+        accion(clave, titulo, intencion, turnos, efecto, motivo, propia),
     ),
   );
 

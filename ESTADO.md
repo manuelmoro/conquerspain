@@ -25,8 +25,8 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 ## Siguiente tarea
 
-**T-089 · Gobierno en el cliente** (fuero y carga, obra mayor, tradiciones, mayordomo, corte y letra de
-cambio; primero, detallar su ficha), y después T-086. **Checkpoints pendientes del usuario:** J-01 (para cerrar
+**T-089 · Gobierno en el cliente** (en curso: hecha la ficha de gobierno de la comarca; falta «Tu casa». Dónde
+va, en la ficha §8), y después T-086. **Checkpoints pendientes del usuario:** J-01 (para cerrar
 T-088) y **J-02 · ciclo completo, casas y ausencia**, que ya se puede hacer: T-083, T-084 y T-085 están hechas.
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
@@ -125,6 +125,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 09-11-2026 | **T-089 (en curso): el gobierno de la comarca en su ficha.** Fuero, carga fiscal, dehesa, obras mayores (puente y calzada por tramo) y traslado de la corte, cada uno con su efecto y con el bloqueo que pondría la fase (`impedimentoDePolitica`, extraída de la fase 8 sin cambiar huellas). **Fallo de T-036 arreglado:** trasladar la corte no cobraba sus 200 mrs y 50 de piedra. La letra de cambio no entra: el servidor la rechaza hasta T-103. 1276 pruebas en verde |
 | 09-11-2026 | **T-085 hecha: crónica, hitos y clasificación.** «Crónica» abre el archivo de turnos (← →, por año), con avisos primero y su acción, con el mismo pintado que el resumen (`pantallas/entradas.ts`). La clasificación pública (`clasificacionPublica`, sobre `prestigioDe`, la cuenta de la fase 11) trae el desglose por capítulos de cada casa, que es público, y las primicias. Los hitos con fecha, solo los propios, con los que quedan por lograr. **J-02 ya se puede hacer.** 1273 pruebas en verde; 47,5 KB gzip |
 | 09-11-2026 | **T-084 hecha: el mercado.** El panel de plazas conocidas se compone en el núcleo (`panelDeMercado`) desde el tablero del jugador, y la API (`GET /partidas/:id/mercado`) le añade la serie de precios que supo, leída de sus estados guardados. En el cliente, cada precio va **con su fecha y su fuente** (apagado si pasa de seis turnos), ↓ barato o ↑ caro frente al base de la comarca, la serie pequeña por recurso y la orden con precio límite explicada, que pone a tratar a la recua si hace falta (probado: el motor la casa). Las paradas de una ruta venden y compran con precio límite. La letra de cambio va a T-089. 1268 pruebas en verde; 46,2 KB gzip |
 | 09-11-2026 | **T-083 hecha: recuas y rebaños sobre el mapa; la expansión ya se juega.** La previsión de viajes vive en el núcleo (`prevision/`) y la comparten robots, servidor y cliente. La ficha de una neutral manda una recua **a estar presente** o **a explorar** de una vez (cargar, ir, encargo y vuelta), con su llegada y su influencia previstas y probadas resolviendo turnos. Editor de ruta tocando el mapa, con previsión del servidor (`POST /partidas/:id/prevision-de-ruta`): tramos, llegada a cada parada, bastimento y avisos de puerto o de calor. Hay circular, carga por parada y la ruta propuesta dibujada. «Tus recuas y rebaños» en el panel y «Darle ruta» desde los avisos de la crónica (`EntradaDeCronica.unidad`). **Regla nueva:** una ruta releva a una circular sin pararla. **Fallo encontrado en el navegador y arreglado:** las órdenes de una misión entraban en la cola en cualquier orden porque el cliente daba claves al azar; ahora van ordenadas. 1260 pruebas en verde; 43,9 KB gzip |

@@ -148,6 +148,15 @@ describe('validarIntencion: la forma', () => {
 });
 
 describe('construirOrden: lo que fija el servidor', () => {
+  it('el traslado de la corte cobra lo que dicen las tablas (estaba gratis hasta T-089)', () => {
+    const estado = conComarca(escenario(), 'prueba-vega', { duenyo: UNO });
+    const orden = construir(
+      { tipo: 'trasladar-corte', comarca: 'prueba-vega', idCliente: 't' },
+      estado,
+    );
+    expect(orden.coste).toEqual(reglas.territorio.costeTraslado);
+  });
+
   it('pone autor, turno, estado, identificador y marcas propias, no las del cliente', () => {
     const estado = escenario({ turno: 7 });
     const orden = construir({ ...CLAVE, tipo: 'roturar', comarca: 'prueba-llano' }, estado);

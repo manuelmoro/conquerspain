@@ -9,7 +9,8 @@ import type { Contexto } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { comarcasPorCercania } from '../reglas/administracion.ts';
-import { PROHIBIDO_POR_LA_CASA, prohibicionesDe } from '../reglas/casas/index.ts';
+import { prohibicionesDe } from '../reglas/casas/index.ts';
+import { impedimentoDePolitica } from '../reglas/politica.ts';
 import { impedimentoDeTraslado } from '../reglas/capital.ts';
 import { comarcasDe } from '../reglas/consumo.ts';
 import { datosConocidosDe } from '../reglas/explorar.ts';
@@ -39,29 +40,25 @@ export function faseTerritorio(ctx: Contexto): void {
  */
 function politica(ctx: Contexto, orden: OrdenDe<'politica'>): void {
   const comarca = ctx.estado.comarcas[orden.comarca];
-  if (comarca === undefined || comarca.duenyo !== orden.jugador) {
-    cancelarOrden(ctx, orden, 'comarca-ajena');
+  const impedimento = impedimentoDePolitica(
+    comarca,
+    orden.jugador,
+    orden,
+    ctx.turno,
+    prohibicionesDe(ctx.estado, orden.jugador, ctx.reglas),
+    ctx.reglas,
+  );
+  if (impedimento === 'fuero-reciente' || impedimento === 'fuero-irreversible') {
+    dejarEnEspera(ctx, orden, impedimento);
     return;
   }
-  if (
-    orden.cargaFiscal === 'dura' &&
-    prohibicionesDe(ctx.estado, orden.jugador, ctx.reglas).cargaFiscalDura
-  ) {
-    cancelarOrden(ctx, orden, PROHIBIDO_POR_LA_CASA);
+  if (impedimento !== null || comarca === undefined) {
+    cancelarOrden(ctx, orden, impedimento ?? 'comarca-ajena');
     return;
   }
   const t = ctx.reglas.territorio;
   const cambiaFuero = orden.fuero !== null && orden.fuero !== comarca.fuero;
   const quitaFuero = cambiaFuero && comarca.fuero === 'fuero';
-  const desde = ctx.turno - comarca.turnoFuero;
-  if (cambiaFuero && comarca.turnoFuero > 0 && desde < t.turnosEntreCambiosDeFuero) {
-    dejarEnEspera(ctx, orden, 'fuero-reciente');
-    return;
-  }
-  if (quitaFuero && comarca.turnoFuero > 0 && desde < t.turnosFueroIrreversible) {
-    dejarEnEspera(ctx, orden, 'fuero-irreversible');
-    return;
-  }
 
   empezarOrden(ctx, orden, 'terminada');
   if (cambiaFuero) {

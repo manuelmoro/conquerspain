@@ -97,4 +97,69 @@ export const BLOQUEOS: Readonly<Record<string, TextoDeBloqueo>> = {
     causa: 'No tienes pan bastante en el almacén para lo que se come el camino.',
     salida: 'Junta pan antes: una granja más o comprarlo en una plaza.',
   },
+  // El gobierno de las comarcas propias (T-089).
+  'comarca-ajena': {
+    causa: 'La comarca no es de tu dominio.',
+    salida: 'Gánala primero: influencia e incorporación.',
+  },
+  'fuero-reciente': {
+    causa: 'El fuero de esta comarca cambió hace poco: solo se cambia una vez cada 10 turnos.',
+    salida: 'Espera a que pasen los turnos; la orden puede quedar dada y se cumple sola.',
+  },
+  'fuero-irreversible': {
+    causa: 'Un fuero pleno no se puede quitar en sus primeros 20 turnos.',
+    salida: 'Espera a que pasen; quitarlo después costará 20 de lealtad.',
+  },
+  'ya-construida': {
+    causa: 'Esa obra ya está hecha aquí.',
+    salida: 'Elige otra obra u otro lugar.',
+  },
+  'ya-en-obra': {
+    causa: 'Esa obra ya está empezada aquí.',
+    salida: 'Sigue la que hay en marcha.',
+  },
+  'sin-tramo': {
+    causa: 'No hay camino entre estas dos comarcas.',
+    salida: 'Elige un tramo que exista, hacia una vecina.',
+  },
+  'sin-vado': {
+    causa: 'El tramo no tiene vado: no hay río que salvar.',
+    salida: 'Los puentes van en los tramos con vado.',
+  },
+  'sin-camino-carretero': {
+    causa: 'Una calzada se hace sobre un camino carretero.',
+    salida: 'Mejora antes el tramo a camino carretero.',
+  },
+  'poca-lealtad': {
+    causa: 'La comarca no es bastante leal para un monasterio (hace falta 60).',
+    salida: 'Sube su lealtad: fuero, carga ligera, mercado u obras.',
+  },
+  'no-es-ciudad': {
+    causa: 'La catedral pide una ciudad: 200 vecinos y muralla.',
+    salida: 'Haz crecer la comarca y levanta la muralla.',
+  },
+  'sin-sede-episcopal': {
+    causa: 'Esta comarca no es sede de obispado.',
+    salida: 'La catedral solo se levanta en una ciudad episcopal.',
+  },
+  'sin-cantera': {
+    causa: 'Hace falta una cantera propia en la comarca.',
+    salida: 'Construye antes la cantera.',
+  },
+  'no-es-costa': {
+    causa: 'La atarazana solo se levanta en la costa.',
+    salida: 'Elige una comarca costera.',
+  },
+  'sin-vega-fluvial': {
+    causa: 'La acequia mayor pide una vega con río.',
+    salida: 'Elige una vega fluvial.',
+  },
+  'ya-es-capital': {
+    causa: 'Tu corte ya está aquí.',
+    salida: 'El traslado se da hacia otra comarca tuya.',
+  },
+  'traslado-en-marcha': {
+    causa: 'Ya hay un traslado de la corte en marcha.',
+    salida: 'Espera a que termine.',
+  },
 };
