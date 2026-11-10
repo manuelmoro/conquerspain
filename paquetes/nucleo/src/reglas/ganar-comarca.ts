@@ -47,7 +47,8 @@ export function comoGanarLa(
 ): ComoGanarLa {
   const t = reglas.influencia;
   const actividad = { importe: new Map<string, number>(), vaciaronElPan: new Set<string>() };
-  const f = fuentesDeInfluencia({ comarca, jugador, actividad }, estado, mundo, reglas);
+  // Sin gente propia alli no se sabe si otra casa esta presente: la prevision no lo cuenta (T-101).
+  const f = fuentesDeInfluencia({ comarca, jugador, actividad }, estado, mundo, reglas, false);
   const actual = comarca.influencias[jugador.id] ?? 0;
   const cambio = cambioRecortado(actual, f.neto);
 
@@ -57,6 +58,10 @@ export function comoGanarLa(
     { texto: 'un mercado tuyo en una vecina', puntos: f.mercado },
     { texto: 'el monasterio que levantaste', puntos: f.monasterio },
     { texto: 'un camino mejorado hasta tu tierra', puntos: f.camino },
+    {
+      texto: 'el concejo, dividido con otra casa presente, se queda la mitad',
+      puntos: -f.concejoDividido,
+    },
     { texto: 'nadie tuyo está ni comercia allí', puntos: -f.desgaste },
   ].filter((m) => m.puntos !== 0);
 

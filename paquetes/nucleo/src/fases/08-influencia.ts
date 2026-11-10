@@ -15,15 +15,20 @@ import {
 } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { modificadoresDelJugador } from '../reglas/casas/index.ts';
-import { actividadDeMercado, fuentesDeInfluencia } from '../reglas/influencia.ts';
+import {
+  actividadDeMercado,
+  fuentesDeInfluencia,
+  hayOtraCasaPresente,
+} from '../reglas/influencia.ts';
 import type { CandidatoAIncorporar } from '../reglas/incorporar.ts';
 import { ganadorDeIncorporacion, impedimentoDeIncorporar } from '../reglas/incorporar.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import type { EstadoPartida } from '../tipos/estado.ts';
-import type { IdComarca } from '../tipos/ids.ts';
+import type { IdComarca, IdJugador } from '../tipos/ids.ts';
+import type { Mundo } from '../tipos/mundo.ts';
 import { RECURSOS } from '../tipos/recursos.ts';
 import { clonar } from '../utiles/clonar.ts';
-import { multiplicarFactores } from '../utiles/enteros.ts';
+import { MIL, multiplicarFactores } from '../utiles/enteros.ts';
 import { comparar, idsEnOrden } from '../utiles/orden.ts';
 
 // ——— Regalos ————————————————————————————————————————————————————————————————
@@ -52,8 +57,13 @@ function regalo(ctx: Contexto, orden: OrdenDe<'regalo'>): void {
     return;
   }
   empezarOrden(ctx, orden, 'terminada');
+  // Con otra casa presente, el concejo dividido tambien se hace de rogar con los regalos (T-101).
+  const dividido = hayOtraCasaPresente(ctx.estado, comarca, orden.jugador)
+    ? t.concejoDivididoMil
+    : MIL;
   const delta = multiplicarFactores(t.porRegalo, [
     modificadoresDelJugador(jugador, ctx.reglas).influenciaMil,
+    dividido,
   ]);
   aplicar(ctx, {
     tipo: 'influencia',
@@ -91,6 +101,18 @@ export function influenciaDelTurno(ctx: Contexto): void {
       const antes = comarca.influencias[idJugador] ?? 0;
       const seguida = comarca.presenciaSeguida[idJugador] ?? 0;
       if (fuentes.presente) {
+        // Empieza a cortejar: los que tienen la comarca cerca se enteran (T-101).
+        if (seguida === 0) {
+          for (const otro of quienesLaTienenCerca(foto, ctx.mundo, comarca.id, jugador.id)) {
+            registrarSuceso(
+              ctx.sucesos,
+              ctx.fase,
+              'influencia.cortejo',
+              { de: jugador.id },
+              { jugador: otro, comarca: comarca.id },
+            );
+          }
+        }
         aplicar(ctx, {
           tipo: 'presencia-seguida',
           comarca: comarca.id,
@@ -125,6 +147,7 @@ export function influenciaDelTurno(ctx: Contexto): void {
           comercio: fuentes.comercio,
           monasterio: fuentes.monasterio,
           camino: fuentes.camino,
+          concejoDividido: fuentes.concejoDividido,
           desgaste: fuentes.desgaste,
           escasez: fuentes.escasez,
           neto: fuentes.neto,
@@ -194,6 +217,40 @@ function empezar(ctx: Contexto, orden: OrdenDe<'incorporar'>): void {
     { turnos: orden.turnosTotales },
     { jugador: orden.jugador, comarca: comarca.id },
   );
+  // Los que la tienen cerca se enteran: el concejo lo anuncia (T-101).
+  for (const otro of quienesLaTienenCerca(ctx.estado, ctx.mundo, comarca.id, orden.jugador)) {
+    registrarSuceso(
+      ctx.sucesos,
+      ctx.fase,
+      'incorporar.de-otro',
+      { de: orden.jugador, turnos: orden.turnosTotales },
+      { jugador: otro, comarca: comarca.id },
+    );
+  }
+}
+
+/**
+ * Las otras casas que tienen una comarca neutral a la vista (T-101): con gente propia alli o con una
+ * comarca suya al lado. Son las que se enteran de que alguien la corteja o la incorpora.
+ */
+function quienesLaTienenCerca(
+  estado: EstadoPartida,
+  mundo: Mundo,
+  comarca: IdComarca,
+  salvo: string,
+): IdJugador[] {
+  const vecinas = mundo.vecinos[comarca] ?? [];
+  return Object.values(estado.jugadores)
+    .map((j) => j.id)
+    .filter((id) => {
+      if (id === salvo) return false;
+      const conGente = Object.values(estado.recuas).some(
+        (r) =>
+          r.jugador === id && r.situacion.donde === 'comarca' && r.situacion.comarca === comarca,
+      );
+      return conGente || vecinas.some((v) => estado.comarcas[v]?.duenyo === id);
+    })
+    .sort(comparar);
 }
 
 /** Suma un turno a una orden en curso; si le llega el ultimo, entra en la disputa de su comarca. */

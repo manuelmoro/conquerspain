@@ -603,6 +603,11 @@ export interface DatosInfluencia {
   readonly turnosIncorporar: number;
   /** La influencia con que empieza cada casa en las neutrales vecinas de su capital, su alfoz (T-094). */
   readonly influenciaDelAlfoz: number;
+  /**
+   * El concejo dividido se hace de rogar (T-101): con otra casa presente el mismo turno, lo que gana
+   * cada una (fuentes y regalo) vale esto. 500 es la mitad; el desgaste no cambia.
+   */
+  readonly concejoDivididoMil: Milesimas;
 }
 
 /** Los limites de jugar sin estar (docs/02 §2.5; ficha T-045). */

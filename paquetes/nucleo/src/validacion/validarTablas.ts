@@ -389,6 +389,7 @@ const validarInfluencia: Validador<DatosInfluencia> = objeto<DatosInfluencia>({
   costeIncorporar: recursos(),
   turnosIncorporar: entero({ minimo: 1, maximo: 20 }),
   influenciaDelAlfoz: entero({ minimo: 0, maximo: 100 }),
+  concejoDivididoMil: milesimas(0, 1000),
 });
 
 const validarDuracion = porTipo<DuracionDeAcontecimiento>({

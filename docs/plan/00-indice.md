@@ -130,7 +130,7 @@ mapa completo; ESTADO.md es la aguja.
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
 | [T-100](T-100-varias-plazas.md) | Varias plazas por partida y reparto del mapa | en curso (terminada; se cierra con T-087) | T-087 |
-| [T-101](T-101-influencia-disputada.md) | Influencia disputada y comarcas que vuelven a neutral | pendiente | T-100 |
+| [T-101](T-101-influencia-disputada.md) | Influencia disputada y comarcas que vuelven a neutral | en curso (terminada; se cierra con T-100) | T-100 |
 | [T-102](T-102-mercado-comun.md) | Mercado común, rumores e información entre jugadores | pendiente | T-100 |
 | [T-103](T-103-contratos-y-portazgos.md) | Contratos, portazgos y crédito | pendiente | T-102 |
 | [T-104](T-104-temporadas.md) | Clasificación pública y temporadas | pendiente | T-101 |

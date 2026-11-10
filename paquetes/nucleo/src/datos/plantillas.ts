@@ -328,6 +328,14 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     'Empieza la incorporación de {comarca}: {turnos} turnos, si nadie la disputa.',
   ),
   'incorporar.completa': null,
+  'incorporar.de-otro': aviso(
+    '{de} ha empezado a incorporar {comarca}: en {turnos} turnos será suya, si nadie le gana con más influencia.',
+    'incorporar',
+  ),
+  'influencia.cortejo': aviso(
+    '{de} empieza a cortejar al concejo de {comarca}. Mientras los dos tengáis gente allí, el concejo dividido da la mitad a cada uno.',
+    'cometido',
+  ),
   'incorporar.perdida': aviso(
     '{comarca} se incorpora a {ganador}: se devuelve lo que costaba intentarlo.',
   ),

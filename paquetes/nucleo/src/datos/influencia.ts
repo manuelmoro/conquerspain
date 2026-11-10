@@ -29,4 +29,7 @@ export const INFLUENCIA: DatosInfluencia = {
   // El alfoz (T-094): las neutrales pegadas a la capital empiezan por encima de lo que pide incorporar,
   // con margen para unos turnos de desgaste. Se ganan en cuanto se pide: tres turnos.
   influenciaDelAlfoz: 65,
+  // Disputa (T-101): con dos casas presentes, el concejo da la mitad a cada una. Asi una comarca
+  // disputada cuesta el doble de turnos que una libre al mismo esfuerzo (T-101 §5).
+  concejoDivididoMil: 500,
 };

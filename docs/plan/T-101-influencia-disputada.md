@@ -1,59 +1,75 @@
 # T-101 · Influencia disputada y comarcas que vuelven a neutral
 
-**Fase:** 5 · Multijugador · **Depende de:** T-100 · **Estado:** pendiente (ficha **esbozada**)
-
-> Esta ficha está esbozada a propósito. **Detallarla es la primera mitad de la tarea**: antes de
-> escribir código, complétala al nivel de las fichas de las fases 0 a 2 (diseño detallado con
-> firmas, fórmulas y casos límite) y anota en `ESTADO.md` que ya está detallada.
+**Fase:** 5 · Multijugador · **Depende de:** T-100 · **Estado:** en curso: trabajo terminado y verificado; se
+cierra cuando se cierre T-100, que espera a T-087
 
 ## 1. Contexto
 
-La competición por la tierra, ya con rivales de verdad. El motor ya sabe calcular influencia
-(T-038); ahora hay que probarla en disputa y darle su lectura en la interfaz.
+La competición por la tierra, ya con rivales de verdad.
 
-Lee antes: [docs/06-competicion.md](../06-competicion.md) §6.2.
+**Heredado de T-038:**
 
-## 2. Objetivo
+- el cálculo de la influencia, la orden `incorporar` y la disputa por tres criterios: influencia, racha de
+  presencia y huella;
+- el perdedor recupera su coste íntegro y sabe quién ganó;
+- la influencia ajena solo se ve con gente propia allí y en tramos de 10 (T-044).
 
-Que dos jugadores puedan cortejar la misma comarca durante turnos, con información parcial,
-y que el desenlace sea justo y legible.
+## 2. Lo que faltaba, medido
 
-## 3. Alcance
+**Una comarca disputada no costaba más que una libre.** El que corteja llegaba a los 60 de influencia al mismo
+ritmo, y los 15 de ventaja los sacaba antes de llegar a ese umbral. Hacía falta una regla.
 
-**Entra:** disputa real, información parcial de la influencia ajena, avisos de cortejo, comarcas que se van por deslealtad y quién las recoge.
+## 3. Diseño
 
-**No entra:** conflicto armado (fase 6).
+### 3.1 El concejo dividido se hace de rogar
 
-**Heredado de T-038.** Ya están hechos el cálculo de influencia, la orden `incorporar` y la disputa
-por tres criterios (`reglas/incorporar.ts`, `fases/08-influencia.ts`). Con el requisito de 15 puntos
-de ventaja dos jugadores no pueden *empezar* a la vez sobre una comarca, así que la disputa solo se
-da si las órdenes terminan el mismo turno tras empezar en turnos distintos; esta tarea decide si eso
-basta o si hay que permitir ofertas simultáneas. La racha de presencia
-(`EstadoComarca.presenciaSeguida`) y el regalo (`ultimoRegalo`) ya viven en el estado.
+- **La regla:** si otra casa tiene una recua presente en la comarca el mismo turno, el concejo se queda la
+  mitad de lo que aporta cada una (`concejoDivididoMil`, 500).
+- **Cómo se parte:** el total del turno, no fuente a fuente, para que un punto suelto no se pierda entero al
+  redondear. Va en el desglose como `concejoDividido`. El desgaste no cambia.
+- **El regalo** también vale la mitad con el concejo dividido.
+- **El efecto:** con el mismo esfuerzo, una comarca disputada tarda al menos el doble. Con una recua presente
+  y una comarca vecina: 20 turnos libre y 60 disputada.
+- **Si el rival abandona,** su presencia deja de dividir el concejo desde ese turno, y su influencia baja un
+  punto por turno sin actividad: el que sigue se acelera solo.
 
-## 4. Puntos que hay que resolver al detallar
+### 3.2 Lo que se ve
 
-- Cuánta influencia ajena se ve y con qué precisión (propuesta de T-044: tramos de 10, solo con presencia).
-- Avisos: cuándo se entera un jugador de que le están cortejando una comarca vecina.
-- Equilibrio del ritmo: cuántos turnos cuesta ganar una comarca disputada frente a una libre.
-- Qué pasa si el segundo abandona: ¿se acelera la incorporación del primero?
+- **La influencia ajena** sigue como en T-044: solo con gente propia allí y en tramos de 10.
+- **La previsión de «Cómo ganarla»** se calcula con el estado entero. Por eso no cuenta la disputa salvo que
+  el jugador tenga gente allí (`fuentesDeInfluencia(..., rivalesVisibles)`): si no, delataría a un rival
+  invisible.
+- **Con gente allí**, el motivo «el concejo, dividido con otra casa presente, se queda la mitad» sale en la
+  ficha.
 
-## 5. Criterios de aceptación provisionales
+### 3.3 Los avisos
 
-1. Una comarca disputada tarda al menos el doble en incorporarse que una libre.
-2. El perdedor de una disputa recupera su coste íntegro y conserva influencia.
-3. Ningún jugador ve la influencia exacta de otro sin presencia.
-4. Una comarca abandonada por deslealtad puede ser recogida por un vecino atento.
+Se enteran las otras casas que tienen la comarca **a la vista**: con una recua allí o con una comarca suya al
+lado (`quienesLaTienenCerca`).
 
-## 6. Verificación
+- **`influencia.cortejo`:** otra casa empieza a cortejar el concejo (su primera presencia de una racha).
+- **`incorporar.de-otro`:** otra casa empieza a incorporarla («en 3 turnos será suya, si nadie le gana»).
 
-```bash
-npm run verificar
-```
+### 3.4 El perdedor de la disputa
 
-Más las comprobaciones propias que se añadan al detallar la ficha.
+- **Recupera su coste íntegro** (T-038, probado).
+- **Su influencia no se conserva:** al tener dueño, el concejo deja de repartir favores y el motor borra
+  todas las influencias de la comarca (T-038). Si algún día vuelve a ser neutral, el cortejo empieza de cero,
+  salvo el monasterio de quien la tuvo.
 
-## 7. Al terminar
+### 3.5 La comarca que se va
 
-Marca la tarea como `hecha` en `00-indice.md`, actualiza `ESTADO.md` (siguiente tarea y bitácora) y
-haz commit con `T-101: <resumen>`.
+Una comarca que se va por deslealtad vuelve a neutral sin favores de nadie, apunta a su antiguo dueño
+(`exDuenyo`), y un vecino con influencia la puede incorporar.
+
+## 4. Criterios de aceptación
+
+1. Una comarca disputada tarda al menos el doble en incorporarse que una libre. ✔
+2. El perdedor de una disputa recupera su coste íntegro. ✔ Su influencia no se conserva (§3.4).
+3. Ningún jugador ve la influencia exacta de otro, ni sabe de su presencia, sin gente propia allí. ✔
+4. Una comarca abandonada por deslealtad puede ser recogida por un vecino atento. ✔
+
+## 5. Verificación
+
+`npm run verificar`, con `paquetes/nucleo/pruebas/disputa.test.ts`: concejo dividido, ritmo, regalo,
+previsión sin delatar, tramos de 10, los dos avisos y la comarca abandonada.

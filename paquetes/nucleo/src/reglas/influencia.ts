@@ -48,12 +48,16 @@ export function actividadDeMercado(sucesos: readonly Suceso[]): ActividadDeMerca
 export interface FuentesDeInfluencia {
   /** Hay una recua presente: cuenta como actividad y para el desempate. */
   readonly presente: boolean;
+  /** Otra casa tiene tambien presencia: el concejo dividido da la mitad (T-101). */
+  readonly disputada: boolean;
   readonly presencia: number;
   readonly vecinas: number;
   readonly mercado: number;
   readonly comercio: number;
   readonly monasterio: number;
   readonly camino: number;
+  /** Lo que se queda el concejo dividido de lo aportado (T-101); 0 sin disputa. */
+  readonly concejoDividido: number;
   /** Lo que se resta: por turno sin actividad y por vaciar el pan. */
   readonly desgaste: number;
   readonly escasez: number;
@@ -67,12 +71,32 @@ export interface SituacionDeInfluencia {
   readonly actividad: ActividadDeMercado;
 }
 
+/** Otra casa tiene una recua presente en la comarca: el concejo esta dividido (T-101). */
+export function hayOtraCasaPresente(
+  foto: EstadoPartida,
+  comarca: EstadoComarca,
+  jugador: string,
+): boolean {
+  return Object.values(foto.recuas).some(
+    (recua) =>
+      recua.jugador !== jugador &&
+      recua.situacion.donde === 'comarca' &&
+      recua.situacion.comarca === comarca.id &&
+      estaPresente(recua, comarca),
+  );
+}
+
 /** Las seis fuentes de un turno y el desgaste, sobre una foto del estado (el regalo va aparte). */
 export function fuentesDeInfluencia(
   situacion: SituacionDeInfluencia,
   foto: EstadoPartida,
   mundo: Mundo,
   reglas: TablasDeReglas,
+  /**
+   * Si se cuenta la presencia de otras casas. La fase si; la prevision de la ficha solo cuando el
+   * jugador tiene gente alli, que es cuando la ve (la ficha se calcula con el estado entero).
+   */
+  rivalesVisibles = true,
 ): FuentesDeInfluencia {
   const { comarca, jugador, actividad } = situacion;
   const t = reglas.influencia;
@@ -85,6 +109,8 @@ export function fuentesDeInfluencia(
       recua.situacion.comarca === comarca.id &&
       estaPresente(recua, comarca),
   );
+
+  const disputada = (rivalesVisibles || presente) && hayOtraCasaPresente(foto, comarca, jugador.id);
 
   const vecinasPropias = (mundo.vecinos[comarca.id] ?? []).filter(
     (vecina) => foto.comarcas[vecina]?.duenyo === jugador.id,
@@ -126,11 +152,18 @@ export function fuentesDeInfluencia(
     camino: escalar(camino),
   };
   const aportes = Object.values(fuentes).reduce((total, puntos) => total + puntos, 0);
+  // El concejo dividido se queda con parte de lo aportado: se parte el total, no cada fuente, para que
+  // un punto suelto no se pierda entero al redondear.
+  const concejoDividido = disputada
+    ? aportes - multiplicarFactores(aportes, [t.concejoDivididoMil])
+    : 0;
   return {
     presente,
+    disputada,
     ...fuentes,
+    concejoDividido,
     desgaste,
     escasez,
-    neto: aportes - desgaste - escasez,
+    neto: aportes - concejoDividido - desgaste - escasez,
   };
 }

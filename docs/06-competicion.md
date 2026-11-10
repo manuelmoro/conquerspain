@@ -41,6 +41,14 @@ comarca neutral que conoce.
 | Regalo al concejo (orden `regalo`, 50 mrs) | +5 inmediato, una vez cada 4 turnos |
 | Camino mejorado que la une a una comarca propia | +1 |
 
+**El concejo dividido se hace de rogar (T-101):**
+
+- si otra casa tiene también una recua presente el mismo turno, el concejo se queda la mitad de lo que aporta
+  cada una (y del regalo);
+- así, una comarca disputada cuesta el doble que una libre;
+- quien tiene la comarca a la vista (gente allí o una comarca suya al lado) se entera cuando otra casa empieza
+  a cortejarla o a incorporarla.
+
 Y se pierde influencia: −1 por turno sin presencia ni comercio, y −5 si el jugador provoca escasez
 ahí. Provocar escasez es **vaciar el mercado de pan**: una compra suya de pan en una plaza de la
 comarca que se queda sin casar porque la plaza no da más volumen. Todo se suma y se resta a la vez
@@ -56,7 +64,8 @@ a la comarca y le da a su antiguo dueño un empujón para recuperarla.
 2. ser el jugador con más influencia, con al menos **15 puntos de ventaja** sobre el segundo;
 3. tener una comarca propia a una distancia razonable (≤ 6 jornadas por camino **conocido**, en
    verano y con las obras hechas);
-4. no estar en escasez, y llevar el coste reservado (40 de pan y 30 mrs).
+4. llevar el coste reservado (40 de pan y 30 mrs). El hambre no lo impide (T-092): sumar tierra es
+   una salida del hambre.
 
 Si algo falla, la orden espera diciendo qué; si la comarca ya tiene dueño, se cancela. Al empezar
 paga y trabaja **tres turnos** (el primero cuenta). Si mientras tanto otro se queda la comarca, se
