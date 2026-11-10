@@ -132,7 +132,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-100](T-100-varias-plazas.md) | Varias plazas por partida y reparto del mapa | en curso (terminada; se cierra con T-087) | T-087 |
 | [T-101](T-101-influencia-disputada.md) | Influencia disputada y comarcas que vuelven a neutral | en curso (terminada; se cierra con T-100) | T-100 |
 | [T-102](T-102-mercado-comun.md) | Mercado común, rumores e información entre jugadores | en curso (terminada; se cierra con T-100) | T-100 |
-| [T-103](T-103-contratos-y-portazgos.md) | Contratos, portazgos y crédito | pendiente | T-102 |
+| [T-103](T-103-contratos-y-portazgos.md) | Contratos, portazgos y crédito | en curso (ficha detallada) | T-102 |
 | [T-104](T-104-temporadas.md) | Clasificación pública y temporadas | pendiente | T-101 |
 | [T-105](T-105-amparo-y-ausencia.md) | Amparo del novato, ausencia y administración del concejo | pendiente | T-101 |
 | [T-106](T-106-equilibrio-multijugador.md) | Equilibrio multijugador y métricas de salud | pendiente | T-104 |
