@@ -456,6 +456,11 @@ export interface DatosObras {
   readonly deterioroAbandonoMil: number;
   readonly lealtadParaMonasterio: number;
   readonly vecinosDeCiudad: number;
+  /** Rango de villa: desde estos vecinos la comarca gana solares (T-094). La ciudad, `vecinosDeCiudad`. */
+  readonly vecinosDeVilla: number;
+  /** Solares de mas por ser villa y por ser ciudad (T-094). */
+  readonly solaresDeVilla: number;
+  readonly solaresDeCiudad: number;
   readonly lealtadPorMuralla: number;
   readonly lealtadRegionalPorCatedral: number;
   readonly maravedisPorPeregrinos: number;
@@ -596,6 +601,8 @@ export interface DatosInfluencia {
   readonly jornadasMaximasDesdeElDominio: number;
   readonly costeIncorporar: Recursos;
   readonly turnosIncorporar: number;
+  /** La influencia con que empieza cada casa en las neutrales vecinas de su capital, su alfoz (T-094). */
+  readonly influenciaDelAlfoz: number;
 }
 
 /** Los limites de jugar sin estar (docs/02 §2.5; ficha T-045). */

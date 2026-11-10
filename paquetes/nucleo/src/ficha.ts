@@ -375,7 +375,7 @@ export function fichaDeComarca(
           `Derribar un nivel de ${datos.nombre.toLowerCase()}`,
           { tipo: 'derribar', comarca, edificio: tipo },
           reglas.obras.turnosDerribo,
-          `Libera un solar${perdida === '' ? '' : `; ${perdida}`}`,
+          `${nivel === 1 ? 'Libera un solar' : 'Le quita un nivel'}${perdida === '' ? '' : `; ${perdida}`}`,
           null,
           propia,
         ),
@@ -458,7 +458,7 @@ export function fichaDeComarca(
       aperos: propia.aperos,
       solares: {
         usados: solaresOcupados(propia, vista.obras),
-        total: solaresDe(geografia.solares, casa),
+        total: solaresDe(geografia.solares, casa, propia.poblacion, reglas),
       },
       edificios: TIPOS_DE_EDIFICIO.filter((t) => (propia.edificios[t] ?? 0) > 0).map((t) => ({
         tipo: t,

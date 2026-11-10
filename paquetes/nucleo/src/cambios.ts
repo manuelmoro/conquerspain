@@ -39,6 +39,7 @@ import type { Hito, RondaDeTradicion, TipoObraMayor, Tradicion } from './tipos/r
 import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
+import { rangoDe } from './reglas/obras.ts';
 import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
 import { factorAlcanzadoDe } from './contexto.ts';
 import { precioBaseLocalMil } from './reglas/precios.ts';
@@ -682,6 +683,7 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
           { comarca: cambio.comarca, delta: cambio.delta },
         );
       }
+      const rangoAntes = rangoDe(comarca.poblacion, ctx.reglas);
       comarca.poblacion = despues;
       registrarSuceso(
         ctx.sucesos,
@@ -690,6 +692,17 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         { delta: cambio.delta, total: despues, motivo: cambio.motivo },
         { comarca: cambio.comarca, jugador: comarca.duenyo },
       );
+      // Aldea, villa o ciudad (T-094): el cambio de rango da o quita solares, y se cuenta.
+      const rango = rangoDe(despues, ctx.reglas);
+      if (rango !== rangoAntes && comarca.duenyo !== null) {
+        registrarSuceso(
+          ctx.sucesos,
+          ctx.fase,
+          'comarca.rango',
+          { rango, sube: cambio.delta > 0 ? 1 : 0 },
+          { comarca: cambio.comarca, jugador: comarca.duenyo },
+        );
+      }
       return;
     }
 

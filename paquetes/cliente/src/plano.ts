@@ -1,6 +1,6 @@
-// El plano de una comarca propia (ficha T-092): cada solar es una parcela, y se ve que la ocupa y por
-// que. Cada nivel de cada edificio ocupa una, cada obra de edificio la suya, y el resto quedan libres.
-// Puro: la pantalla solo dibuja lo que esto decide.
+// El plano de una comarca propia (fichas T-092 y T-094): cada solar es una parcela, y se ve que la
+// ocupa y por que. Cada edificio distinto ocupa una, con su nivel a la vista; un edificio nuevo en
+// obras, la suya; el resto quedan libres. Puro: la pantalla solo dibuja lo que esto decide.
 import { PARA_QUE_SIRVE, TABLAS_DEL_JUEGO } from '@conquer/nucleo';
 import type { AccionDeFicha, DetalleDePropia, Recurso, TipoEdificio } from '@conquer/nucleo';
 
@@ -11,15 +11,17 @@ export type Parcela =
       readonly clase: 'edificio';
       readonly edificio: TipoEdificio;
       readonly nombre: string;
-      /** Que nivel de ese edificio es esta parcela (1..nivel). */
-      readonly orden: number;
       readonly nivel: number;
       readonly maximo: number;
-      /** Has pedido derribar este nivel (T-092): se pinta tachado. */
+      /** Su ampliacion en obras, con su avance en %; null si no se amplia (T-094). */
+      readonly ampliando: number | null;
+      /** Has pedido ampliarlo y aun no ha empezado (T-094). */
+      readonly ampliacionPedida: boolean;
+      /** Has pedido derribar un nivel (T-092): se pinta tachado. */
       readonly derribo: boolean;
     }
   | {
-      /** Lo pedido que aun no ha empezado, en el solar libre donde ira (T-092). */
+      /** Un edificio nuevo pedido que aun no ha empezado, en el solar libre donde ira (T-092). */
       readonly clase: 'pedida';
       readonly edificio: TipoEdificio;
       readonly nombre: string;
@@ -27,6 +29,7 @@ export type Parcela =
       readonly espera: string | null;
     }
   | {
+      /** Un edificio nuevo en obras: ya ocupa su solar. */
       readonly clase: 'obra';
       readonly edificio: TipoEdificio;
       readonly nombre: string;
@@ -41,45 +44,52 @@ export interface ObraPedida {
   readonly espera: string | null;
 }
 
+function porcentaje(avanceMil: number, necesarioMil: number): number {
+  return Math.min(100, Math.floor((100 * avanceMil) / Math.max(1, necesarioMil)));
+}
+
 /**
- * Las parcelas de la comarca: primero las casas, despues los edificios en su orden, las obras, lo
- * pedido (en los solares libres que queden) y lo libre. Un derribo pedido tacha el ultimo nivel.
+ * Las parcelas de la comarca (T-094): una por edificio distinto, sea cual sea su nivel —ampliar no
+ * gasta solar—, primero las casas; despues los edificios nuevos en obras, los nuevos pedidos (en los
+ * solares libres que queden) y lo libre. Una ampliacion o un derribo se marcan en su parcela.
  */
 export function parcelasDe(
   propia: DetalleDePropia,
   pedidas: readonly ObraPedida[] = [],
 ): readonly Parcela[] {
-  const derribos = new Map<TipoEdificio, number>();
-  for (const p of pedidas)
-    if (p.tipo === 'derribar') derribos.set(p.edificio, (derribos.get(p.edificio) ?? 0) + 1);
+  const presentes = new Set(propia.edificios.map((e) => e.tipo));
   const edificios = [...propia.edificios].sort(
     (a, b) => Number(b.tipo === 'casas') - Number(a.tipo === 'casas'),
   );
-  const parcelas: Parcela[] = [];
-  for (const e of edificios) {
-    for (let orden = 1; orden <= e.nivel; orden += 1) {
-      parcelas.push({
-        clase: 'edificio',
-        edificio: e.tipo,
-        nombre: e.nombre,
-        orden,
-        nivel: e.nivel,
-        maximo: e.maximo,
-        derribo: orden > e.nivel - (derribos.get(e.tipo) ?? 0),
-      });
-    }
-  }
+  const parcelas: Parcela[] = edificios.map((e) => {
+    const obra = propia.obras.find((o) => o.edificio === e.tipo);
+    return {
+      clase: 'edificio',
+      edificio: e.tipo,
+      nombre: e.nombre,
+      nivel: e.nivel,
+      maximo: e.maximo,
+      ampliando: obra === undefined ? null : porcentaje(obra.avanceMil, obra.necesarioMil),
+      ampliacionPedida: pedidas.some((p) => p.tipo === 'construir' && p.edificio === e.tipo),
+      derribo: pedidas.some((p) => p.tipo === 'derribar' && p.edificio === e.tipo),
+    };
+  });
+  const enObra = new Set<TipoEdificio>();
   for (const o of propia.obras) {
-    if (o.edificio === null) continue;
+    if (o.edificio === null || presentes.has(o.edificio) || enObra.has(o.edificio)) continue;
+    enObra.add(o.edificio);
     parcelas.push({
       clase: 'obra',
       edificio: o.edificio,
       nombre: o.que,
-      avance: Math.min(100, Math.floor((100 * o.avanceMil) / Math.max(1, o.necesarioMil))),
+      avance: porcentaje(o.avanceMil, o.necesarioMil),
     });
   }
+  const pedidosNuevos = new Set<TipoEdificio>();
   for (const p of pedidas) {
-    if (p.tipo !== 'construir' || parcelas.length >= propia.solares.total) continue;
+    if (p.tipo !== 'construir' || presentes.has(p.edificio) || enObra.has(p.edificio)) continue;
+    if (pedidosNuevos.has(p.edificio) || parcelas.length >= propia.solares.total) continue;
+    pedidosNuevos.add(p.edificio);
     parcelas.push({
       clase: 'pedida',
       edificio: p.edificio,
@@ -125,7 +135,7 @@ export function explicarParcela(
     return {
       titulo: 'Solar libre',
       lineas: [
-        'Aquí cabe un edificio nuevo o un nivel más de uno que ya tienes.',
+        'Aquí cabe un edificio nuevo. Para ampliar uno que ya tienes no hace falta solar: tócalo.',
         'Debajo tienes lo que puedes levantar ya, con lo que cuesta y lo que da cada turno.',
       ],
     };
@@ -152,20 +162,25 @@ export function explicarParcela(
     .map((p) => `${String(p.resultado)} de ${NOMBRE_DE_RECURSO[p.recurso]}`);
   const lineas = [
     PARA_QUE_SIRVE[parcela.edificio],
-    parcela.nivel === 1
-      ? `Nivel 1 de ${String(parcela.maximo)}: ocupa este solar.`
-      : `Nivel ${String(parcela.nivel)} de ${String(parcela.maximo)}: cada nivel ocupa un solar, y este es el ${String(parcela.orden)}.º de ${String(parcela.nivel)}.`,
+    parcela.nivel < parcela.maximo
+      ? `Nivel ${String(parcela.nivel)} de ${String(parcela.maximo)}. Ampliarlo no ocupa otro solar, pero cada nivel pide sus brazos: sin gente, todo rinde menos.`
+      : `Nivel ${String(parcela.nivel)} de ${String(parcela.maximo)}: al máximo.`,
   ];
-  if (produce.length > 0)
-    lineas.push(
-      `Cada turno: ${parcela.nivel === 1 ? 'da' : 'entre sus niveles da'} ${produce.join(' y ')}.`,
-    );
+  if (produce.length > 0) lineas.push(`Cada turno da ${produce.join(' y ')}.`);
   const consumo = Object.entries(TABLAS_DEL_JUEGO.edificios[parcela.edificio].consumo)
     .filter((par): par is [Recurso, number] => par[1] > 0)
     .map(([r, n]) => `${String(n * parcela.nivel)} de ${NOMBRE_DE_RECURSO[r]}`);
   if (consumo.length > 0) lineas.push(`Gasta ${consumo.join(' y ')} por turno; sin eso, se para.`);
+  if (parcela.ampliando !== null)
+    lineas.push(`Se está ampliando: va por el ${String(parcela.ampliando)} %.`);
+  else if (parcela.ampliacionPedida)
+    lineas.push('Has pedido ampliarlo: empezará al resolverse el turno, si hay con qué pagarlo.');
   if (parcela.derribo)
-    lineas.push('Has pedido derribar este nivel: el solar quedará libre y te devuelven la mitad.');
+    lineas.push(
+      parcela.nivel === 1
+        ? 'Has pedido derribarlo: el solar quedará libre y te devuelven la mitad.'
+        : 'Has pedido derribar un nivel: te devuelven la mitad de lo que costó.',
+    );
   return { titulo: parcela.nombre, lineas };
 }
 
@@ -176,11 +191,26 @@ export function explicarParcela(
 export function accionesDeParcela(
   parcela: Parcela,
   acciones: readonly AccionDeFicha[],
+  /** Los edificios que ya tiene: en un solar libre solo va uno nuevo (T-094). */
+  presentes: readonly TipoEdificio[] = [],
 ): readonly AccionDeFicha[] {
   if (parcela.clase === 'obra' || parcela.clase === 'pedida') return [];
   if (parcela.clase === 'edificio') {
     const propias = [`construir-${parcela.edificio}`, `derribar-${parcela.edificio}`];
     return acciones.filter((a) => propias.includes(a.clave));
   }
-  return acciones.filter((a) => a.clave.startsWith('construir-') && a.bloqueo === null);
+  const ya = new Set(presentes.map((t) => `construir-${t}`));
+  return acciones.filter(
+    (a) => a.clave.startsWith('construir-') && a.bloqueo === null && !ya.has(a.clave),
+  );
+}
+
+/** El rango de la comarca y lo que le falta para el siguiente (T-094): crece solo, con su gente. */
+export function textoDeRango(poblacion: number): string {
+  const o = TABLAS_DEL_JUEGO.obras;
+  if (poblacion >= o.vecinosDeCiudad)
+    return `Ciudad de ${String(poblacion)} vecinos: el rango más alto, con ${String(o.solaresDeCiudad)} solares de más.`;
+  if (poblacion >= o.vecinosDeVilla)
+    return `Villa de ${String(poblacion)} vecinos: a los ${String(o.vecinosDeCiudad)} será ciudad y tendrá ${String(o.solaresDeCiudad - o.solaresDeVilla)} solar más.`;
+  return `Aldea de ${String(poblacion)} vecinos: a los ${String(o.vecinosDeVilla)} será villa y ganará ${String(o.solaresDeVilla)} solar. Para que crezca hacen falta casas y pan.`;
 }

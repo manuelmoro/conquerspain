@@ -24,6 +24,11 @@ export const OBRAS: DatosObras = {
   deterioroAbandonoMil: 10,
   lealtadParaMonasterio: 60,
   vecinosDeCiudad: 200,
+  // Crecer hacia dentro (T-094): una villa gana un solar y una ciudad dos, sin orden. Ampliar no
+  // gasta solar: el limite de los niveles es la gente que los trabaja (`vecinosPorNivel`).
+  vecinosDeVilla: 120,
+  solaresDeVilla: 1,
+  solaresDeCiudad: 2,
   lealtadPorMuralla: 15,
   lealtadRegionalPorCatedral: 2,
   maravedisPorPeregrinos: 12,

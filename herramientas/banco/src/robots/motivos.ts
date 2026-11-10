@@ -48,6 +48,15 @@ export const MOTIVOS = {
     categoria: 'plan',
     texto: 'tiene una obra mayor en marcha y aún no la ha terminado',
   },
+  'sin-brazos': {
+    categoria: 'recursos',
+    texto: 'no levanta otro nivel: no tiene gente para trabajarlo y todo rendiría menos',
+  },
+  'ahorra-para-obra-mayor': {
+    categoria: 'plan',
+    texto:
+      'solo levanta lo esencial, y lo de comer si falta pan: ahorra el material de su próxima obra mayor',
+  },
   'obra-mayor-sin-recursos': {
     categoria: 'recursos',
     texto: 'junta el material y los maravedís de su próxima obra mayor',

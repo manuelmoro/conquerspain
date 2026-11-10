@@ -414,6 +414,47 @@ describe('la fundación', () => {
     }
   });
 
+  it('cada casa empieza con su alfoz: influencia de sobra en las neutrales pegadas a su capital (T-094)', () => {
+    const preparada = preparar(DOS);
+    const elecciones: Record<string, IdComarca> = {};
+    for (const p of DOS) {
+      const suya = preparada.ofertas[p.id]?.[0]?.comarca;
+      if (suya !== undefined) elecciones[p.id] = suya;
+    }
+    const estado = fundarPartida({
+      preparada,
+      reglas: REGLAS,
+      semilla: 'prueba',
+      participantes: DOS,
+      elecciones,
+      configuracion: CONFIGURACION,
+      id: 'prueba' as IdPartida,
+    });
+    if (!estado.ok) throw new Error(explicar(estado.errores));
+    for (const p of DOS) {
+      const capital = estado.valor.jugadores[p.id]?.capital ?? '';
+      const vecinas = preparada.mundo.vecinos[capital] ?? [];
+      expect(vecinas.length).toBeGreaterThan(0);
+      for (const v of vecinas) {
+        const comarca = estado.valor.comarcas[v];
+        if (comarca?.duenyo !== null) continue;
+        expect(comarca.influencias[p.id]).toBe(REGLAS.influencia.influenciaDelAlfoz);
+        expect(REGLAS.influencia.influenciaDelAlfoz).toBeGreaterThan(
+          REGLAS.influencia.minimaParaIncorporar,
+        );
+      }
+    }
+    // Fuera de algun alfoz, ninguna casa empieza con influencia.
+    const alfoces = new Set(
+      DOS.flatMap(
+        (p) => preparada.mundo.vecinos[estado.valor.jugadores[p.id]?.capital ?? ''] ?? [],
+      ),
+    );
+    for (const [id, c] of Object.entries(estado.valor.comarcas)) {
+      if (c.duenyo === null && !alfoces.has(id as IdComarca)) expect(c.influencias).toEqual({});
+    }
+  });
+
   it('con la misma entrada, el mismo estado byte a byte', () => {
     const preparada = preparar(DOS);
     const elecciones: Record<string, IdComarca> = {};

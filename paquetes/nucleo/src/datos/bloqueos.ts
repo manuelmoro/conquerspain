@@ -12,8 +12,9 @@ export const BLOQUEOS: Readonly<Record<string, TextoDeBloqueo>> = {
     salida: 'Levanta otro edificio, o el mismo en otra comarca tuya.',
   },
   'sin-solar': {
-    causa: 'No quedan solares libres en la comarca.',
-    salida: 'Derriba un edificio que no rinda, o construye en otra comarca.',
+    causa: 'No quedan solares libres para un edificio nuevo en la comarca.',
+    salida:
+      'Amplía los que ya tienes (no gastan solar), espera a que sea villa o ciudad, o derriba uno que no rinda.',
   },
   'potencial-insuficiente': {
     causa: 'La tierra de esta comarca no da para este edificio.',

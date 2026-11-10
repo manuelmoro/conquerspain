@@ -2,14 +2,21 @@
 // plazos con su parada y su abandono, roturar, derribar y los efectos de las siete obras mayores.
 import { describe, expect, it } from 'vitest';
 
+import { aplicar } from '../src/cambios.ts';
+import { crearContexto } from '../src/contexto.ts';
 import { costeDeTramoMil } from '../src/reglas/ruta.ts';
 import { estadoEstacionalDe } from '../src/reglas/calendario.ts';
 import { cuadrillasDe } from '../src/reglas/cuadrillas.ts';
 import {
   factorCrecimientoPorObrasMil,
   habilitaComercioMaritimo,
+  impedimentoDeConstruir,
   protegeDelBandidaje,
+  rangoDe,
+  solaresDe,
+  solaresOcupados,
 } from '../src/reglas/obras.ts';
+import { modificadoresDe, permisosDe } from '../src/reglas/casas/index.ts';
 import { explotacionesDe } from '../src/reglas/produccion.ts';
 import { costeDeRoturar } from '../src/reglas/roturar.ts';
 import type { EstadoComarca, EstadoPartida, Obra } from '../src/tipos/estado.ts';
@@ -183,6 +190,60 @@ describe('cuadrillas, solares y niveles', () => {
     expect(cuadrillasDe({ ...comarca, poblacion: 400 }, reglas)).toBe(4);
   });
 
+  it('crecer hacia dentro (T-094): el rango da solares y ampliar no gasta solar', () => {
+    const o = reglas.obras;
+    expect(rangoDe(o.vecinosDeVilla - 1, reglas)).toBe('aldea');
+    expect(rangoDe(o.vecinosDeVilla, reglas)).toBe('villa');
+    expect(rangoDe(o.vecinosDeCiudad, reglas)).toBe('ciudad');
+    const neutra = modificadoresDe(escenario(), null, reglas);
+    expect(solaresDe(6, neutra, 50, reglas)).toBe(6);
+    expect(solaresDe(6, neutra, o.vecinosDeVilla, reglas)).toBe(6 + o.solaresDeVilla);
+    expect(solaresDe(6, neutra, o.vecinosDeCiudad, reglas)).toBe(6 + o.solaresDeCiudad);
+
+    // Una aldea de seis solares con seis edificios distintos: lo nuevo no cabe, ampliar si.
+    const seis = Object.fromEntries(TIPOS_DE_EDIFICIO.slice(0, 6).map((t) => [t, 1]));
+    const llena: EstadoComarca = {
+      ...llano(escenario()),
+      poblacion: 50,
+      edificios: seis,
+      potenciales: { labor: 5, monte: 5, pasto: 5, piedra: 5, hierro: 5, sal: 5, pesca: 5 },
+    };
+    expect(solaresOcupados(llena, [])).toBe(6);
+    const permisos = permisosDe(escenario(), UNO, reglas);
+    const nuevo = TIPOS_DE_EDIFICIO[7];
+    expect(impedimentoDeConstruir(llena, nuevo, [], 6, neutra, reglas, permisos)).toBe('sin-solar');
+    expect(impedimentoDeConstruir(llena, 'granja', [], 6, neutra, reglas, permisos)).toBeNull();
+    // Al hacerse villa gana el solar que le faltaba.
+    expect(
+      impedimentoDeConstruir(
+        { ...llena, poblacion: o.vecinosDeVilla },
+        nuevo,
+        [],
+        6,
+        neutra,
+        reglas,
+        permisos,
+      ),
+    ).toBeNull();
+  });
+
+  it('subir o bajar de rango se cuenta en la crónica', () => {
+    const ctx = crearContexto(escenario(), [], mundo, reglas);
+    const comarca = ctx.estado.comarcas[LLANO];
+    if (comarca === undefined) throw new Error('falta el llano');
+    const hastaVilla = reglas.obras.vecinosDeVilla - comarca.poblacion;
+    aplicar(ctx, { tipo: 'poblacion', comarca: c(LLANO), delta: hastaVilla, motivo: 'prueba' });
+    aplicar(ctx, { tipo: 'poblacion', comarca: c(LLANO), delta: -1, motivo: 'prueba' });
+    expect(
+      ctx.sucesos
+        .filter((s) => s.tipo === 'comarca.rango')
+        .map((s) => [s.datos['rango'], s.datos['sube']]),
+    ).toEqual([
+      ['villa', 1],
+      ['aldea', 0],
+    ]);
+  });
+
   it('propiedad: nunca se pasa del nivel maximo ni de los solares', () => {
     const azar = azarDeTexto('obras-propiedad');
     for (let partida = 0; partida < 30; partida += 1) {
@@ -196,9 +257,17 @@ describe('cuadrillas, solares y niveles', () => {
         );
         estado = turno(estado, ordenes).estado;
         const comarca = llano(estado);
-        const niveles = Object.values(comarca.edificios).reduce((a, b) => a + b, 0);
-        const enObra = Object.values(estado.obras).filter((o) => o.tipo === 'edificio').length;
-        expect(niveles + enObra).toBeLessThanOrEqual(6);
+        // Cada edificio distinto, levantado o en obra, ocupa un solar; ampliar no (T-094). Con 400
+        // vecinos es ciudad: los seis del mapa y dos mas.
+        const distintos = new Set([
+          ...Object.entries(comarca.edificios)
+            .filter(([, nivel]) => nivel > 0)
+            .map(([tipo]) => tipo),
+          ...Object.values(estado.obras)
+            .filter((o) => o.tipo === 'edificio')
+            .map((o) => o.que),
+        ]);
+        expect(distintos.size).toBeLessThanOrEqual(6 + reglas.obras.solaresDeCiudad);
         for (const [edificio, nivel] of Object.entries(comarca.edificios)) {
           expect(nivel).toBeLessThanOrEqual(reglas.edificios[edificio as TipoEdificio].nivelMaximo);
         }

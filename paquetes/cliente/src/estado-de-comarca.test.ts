@@ -23,11 +23,11 @@ describe('el estado de una comarca, en palabras', () => {
     });
   });
 
-  it('los solares llenos se avisan, y ampliar también gasta uno', () => {
+  it('los solares llenos se avisan, y ampliar no gasta solar (T-094)', () => {
     expect(datoDeSolares(4, 4)).toMatchObject({ alerta: true, valor: '4 de 4 ocupados' });
-    expect(datoDeSolares(4, 4).nota).toMatch(/para construir o ampliar hay que derribar/);
+    expect(datoDeSolares(4, 4).nota).toMatch(/ampliar los que tienes no gasta solar/);
     expect(datoDeSolares(2, 4).nota).toBe(
-      'Quedan 2: cada nivel nuevo, construido o ampliado, ocupa uno.',
+      'Quedan 2 para edificios nuevos; ampliar no gasta solar.',
     );
   });
 

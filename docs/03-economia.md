@@ -89,10 +89,28 @@ Un potencial de 0 impide construir esa explotación. El potencial actúa como mu
 
 ### 3.2.1 Solares: por qué no se puede tener todo
 
-Cada comarca tiene entre **4 y 8 solares** según su tamaño y su población. Cada nivel de edificio
-ocupa un solar. No caben todas las explotaciones en la misma comarca: hay que elegir a qué se
-dedica cada una y, si quieres hacerlo todo, expandirte. Es la regla que crea la especialización y,
-con ella, el comercio.
+Cada comarca tiene entre **4 y 8 solares** según su tamaño y su población. **Cada edificio distinto
+ocupa un solar**, y su obra lo ocupa desde que empieza. No caben todas las explotaciones en la misma
+comarca: hay que elegir a qué se dedica cada una y, si quieres hacerlo todo, expandirte. Es la regla
+que crea la especialización y, con ella, el comercio.
+
+**Crecer hacia dentro (T-094).** Ampliar un edificio que ya tienes no gasta otro solar. El límite es
+la gente: cada nivel pide sus vecinos (`vecinosPorNivel`), y sin brazos todo rinde menos (§3.4). Se
+probó también a encarecer cada nivel (un 50 % y un 25 % más), pero el banco lo descartó: ahogaba a las
+casas que viven de construir (canteros −25 % de prestigio) sin que nadie lo pidiera.
+
+Además, la comarca sube de rango sola con su gente, sin dar ninguna orden. La crónica avisa cuando sube
+o baja de rango.
+
+| Rango | Vecinos | Solares de más |
+|---|---|---|
+| Aldea | menos de 120 | — |
+| Villa | 120 o más | +1 |
+| Ciudad | 200 o más (`vecinosDeCiudad`) | +2 |
+
+Si una comarca baja de rango, lo levantado sigue en pie, pero no cabe nada nuevo hasta que vuelva a
+haber solar. Así una comarca grande y poblada se distingue de una despoblada, y hacerse fuerte en la
+propia tierra antes de ir a por los vecinos es una estrategia tan válida como expandirse.
 
 ## 3.3 Edificios
 
@@ -120,7 +138,8 @@ Reglas comunes:
   disponibles: `1 + floor(vecinos / 40)`, máximo 4; una más con fuero y otra con monasterio. Si no
   hay cuadrilla libre, la orden espera y dice cuándo quedará una.
 - En invierno las obras de piedra tardan el doble (heladas). Las de madera, un 50 % más.
-- El edificio se paga entero al empezar. Un edificio en obra ya ocupa su solar.
+- El edificio se paga entero al empezar. Un edificio nuevo en obra ya ocupa su solar; una ampliación
+  no ocupa otro (§3.2.1).
 - Derribar devuelve la mitad del material, redondeando a la baja, y libera el solar en 1 turno.
 - Roturar pasa un punto de monte a labor en 3 turnos (10 pan y 20 mrs); en dehesa cuesta el doble
   y la comarca pierde 5 de lealtad; con monasterio es gratis.

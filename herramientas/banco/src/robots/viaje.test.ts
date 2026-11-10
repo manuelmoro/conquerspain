@@ -31,10 +31,16 @@ let base: EstadoPartida;
 
 beforeAll(() => {
   // Los hortelanos en la Vega de Granada, doce turnos jugados: ya tienen recuas y tierra explorada.
+  // Sin alfoz (T-094): con el, a los doce turnos ya son suyas todas las vecinas y no queda destino
+  // cercano para probar la cuenta de un viaje, que es lo que se prueba aqui.
+  const sinAlfoz: TablasDeReglas = {
+    ...REGLAS,
+    influencia: { ...REGLAS.influencia, influenciaDelAlfoz: 0 },
+  };
   const alta = altaDelBanco({
     semilla: '1492',
     casas: ['hortelanos'],
-    reglas: REGLAS,
+    reglas: sinAlfoz,
     mundo: mundoPeninsula(),
     recortar: false,
     origenesFijos: { hortelanos: 'vega-de-granada' as IdComarca },
@@ -42,7 +48,7 @@ beforeAll(() => {
   mundo = alta.mundo;
   let estado = alta.estado;
   const robots = [robotDe('hortelanos')];
-  for (let i = 0; i < 12; i += 1) estado = jugarTurno(estado, robots, mundo, REGLAS).estado;
+  for (let i = 0; i < 12; i += 1) estado = jugarTurno(estado, robots, mundo, sinAlfoz).estado;
   base = estado;
 }, 60_000);
 
@@ -75,6 +81,9 @@ function preparar(
     enParada: null,
     cometido: null,
     carga: { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 },
+    // Entera, sea cual sea la historia de la partida: lo que se prueba es la cuenta del viaje.
+    acemilas: REGLAS.movimiento.acemilasPorRecua,
+    porte: REGLAS.movimiento.acemilasPorRecua * REGLAS.movimiento.portePorAcemila,
     ...recua,
   };
   const estado: EstadoPartida = {
@@ -184,13 +193,14 @@ describe('la prevision de un viaje usa las reglas del nucleo', () => {
   it('sal de verano: sin sal en el almacén no se sale, con sal se carga la que pide el camino', () => {
     const sinSal = preparar(VERANO, { sal: 0 });
     const t = tablero(sinSal.estado);
-    const destino = destinos(t)[0];
+    const conSal = preparar(VERANO, { sal: 20 });
+    const t2 = tablero(conSal.estado);
+    // El destino mas cercano al que, con sal, se puede ir y volver: lejos, la provision no cabe.
+    const destino = destinos(t2).find((d) => provisionPara(t2, conSal.recua, idaYVuelta(t2, d)).ok);
     if (destino === undefined) throw new Error('no hay adonde ir');
     const falla = provisionPara(t, sinSal.recua, idaYVuelta(t, destino));
     expect(falla).toEqual({ ok: false, motivo: 'sin-sal' });
 
-    const conSal = preparar(VERANO, { sal: 20 });
-    const t2 = tablero(conSal.estado);
     const bien = provisionPara(t2, conSal.recua, idaYVuelta(t2, destino));
     if (!bien.ok) throw new Error(`con sal tendria que poder salir: ${bien.motivo}`);
     expect(bien.valor.sal + bien.valor.prevision.salDeCasa).toBeGreaterThan(0);
@@ -270,7 +280,8 @@ describe('las recuas no salen a malvivir y se rehacen', () => {
       { comarca: destino, detiene: true },
       { comarca: t.casaMasCercana(destino), detiene: false },
     ];
-    const prevision = preverViaje(t, recua, vuelta, {
+    // La exploradora va de expedicion y come lo de una expedicion: la cuenta tiene que ser esa.
+    const prevision = preverViaje(t, { ...recua, enExpedicion: ruta.expedicion }, vuelta, {
       ...recua.carga,
       pan: carga.cargar.pan ?? 0,
       sal: carga.cargar.sal ?? 0,

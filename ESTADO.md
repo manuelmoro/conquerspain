@@ -25,7 +25,7 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 
 ## Siguiente tarea
 
-**Decisión pendiente del usuario: [T-094](docs/plan/T-094-crecer-hacia-dentro.md)** (niveles sin solar, villas y alfoz), que va antes de seguir jugando. **Después, lo que toca es del usuario: los checkpoints J-01, J-02 y J-03** (preparación abajo y en
+**Lo que toca es del usuario: los checkpoints J-01, J-02 y J-03** (preparación abajo y en
 [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md)). Cierran T-088 (J-01) y **T-087**, cuyo
 trabajo está hecho a falta de medir con personas los 60 fps, el arranque y el recorrido con una mano (ficha §8).
 Mientras tanto, una IA puede seguir con la **fase 5: T-100 · Varias plazas por partida** (depende de T-087;
@@ -129,6 +129,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 10-11-2026 | **T-094 hecha (decisión del usuario: «hazlo así»): crecer hacia dentro.** Ampliar un edificio ya no gasta solar: un solar es un edificio distinto, y el límite de los niveles es la gente que los trabaja. La comarca pasa de aldea a **villa** (120 vecinos, +1 solar) y a **ciudad** (200, +2) sola, y la crónica lo cuenta. El **alfoz**: las neutrales vecinas de la capital empiezan con 65 de influencia y se pueden incorporar desde el primer turno. El plano da una parcela por edificio, con su nivel en una insignia, y dibuja la plaza según el rango. Se probó también a encarecer cada nivel y el banco lo descartó (canteros −25 %). Los robots se adaptaron: miran los brazos, ahorran para su obra mayor y eligen la obra que pueden pagar. Banco (1492, frente a la misma partida sin alfoz ni rangos): canteros +51 %, hortelanos +12 %, arrieros y monjes −10 %; el primer dominio llega en T13 en vez de T43, y su vara pasa a T8–T40. |
 | 09-11-2026 | **T-093 hecha (a petición del usuario): mercado sencillo, órdenes claras y recuas en el mapa.** Recuas y rebaños como fichas 🐴 y 🐑 con su ruta; «Ver en el mapa» acerca y señala. «Tus órdenes» en tres grupos (para este turno, esperando con su porqué y «Anular», en marcha), cada orden en una frase. El mercado se usa en pocos toques: comprar o vender, qué, cuánto y el total. Con la recua en casa, la compra **le carga sola los maravedís** (en la partida del usuario la recua iba vacía y por eso nunca compraba), y «📥 Descargar al almacén» mete lo comprado en el almacén. Ciclo comprar → descargar probado de punta a punta. **Pendiente de decisión del usuario:** [T-094](docs/plan/T-094-crecer-hacia-dentro.md) (niveles sin solar, villas y el alfoz). |
 | 09-11-2026 | **Lo incorporable, a la vista.** Las comarcas que ya puedes incorporar llevan en el mapa un contorno dorado que late, y encima sale «✨ Ya puedes incorporar:» con un botón para cada una. Es la misma cuenta que la ficha. |
 | 09-11-2026 | **Más arreglos tras jugar.** **Fallo grave:** al abrir una partida no se traían las órdenes ya dadas en ese turno, y el jugador las repetía; ya se traen, y hay una prueba de «recargar». El plano enseña lo pedido: la obra que espera, en transparencia y con ⏳; el derribo, con una ✕. El hambre ya no impide incorporar (era otra trampa sin salida), y «Cómo ganarla» dice si ya puedes incorporar o por qué no. |

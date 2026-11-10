@@ -38,7 +38,8 @@ const TEMAS: readonly Tema[] = [
     pasos: [
       'Toca una comarca tuya en el mapa: su ficha dice qué tiene y qué puedes hacer.',
       'Pulsa «Elegir» en una acción y después «Dar la orden». Se paga al empezar.',
-      'Cada nivel de cada edificio ocupa un solar: una granja de nivel 3 ocupa tres. Lo ves en el plano de la comarca.',
+      'Cada edificio distinto ocupa un solar; ampliarlo no gasta otro, pero cada nivel pide sus brazos: si no hay gente para todos, todo rinde menos. Lo ves en el plano de la comarca.',
+      'Una comarca crece de rango sola con su gente: a los 120 vecinos es villa (+1 solar) y a los 200, ciudad (+2). Para crecer hacen falta casas y pan.',
     ],
     ir: {
       texto: 'Ver tu capital',
@@ -119,9 +120,16 @@ const GLOSARIO: readonly (readonly [string, string])[] = [
   ],
   [
     'Solares',
-    'Las parcelas de la comarca. Cada nivel de cada edificio ocupa una, y cada obra en marcha la suya.',
+    'Las parcelas de la comarca. Cada edificio distinto ocupa una, y uno nuevo en obras la suya; ampliar no gasta solar. Una villa tiene uno más y una ciudad, dos.',
   ],
-  ['Nivel de un edificio', 'Los puntos ●●●○ son el nivel que tiene frente al máximo que admite.'],
+  [
+    'Nivel de un edificio',
+    'Los puntos ●●●○ son el nivel que tiene frente al máximo que admite. Cada nivel pide su gente para trabajarlo.',
+  ],
+  [
+    'Alfoz',
+    'Las comarcas pegadas a tu capital. Empiezan con mucha influencia tuya: puedes incorporarlas desde el primer turno.',
+  ],
   [
     'Lealtad',
     'Lo contenta que está la comarca. Por debajo de 40 produce menos; por debajo de 20, se acaba yendo.',

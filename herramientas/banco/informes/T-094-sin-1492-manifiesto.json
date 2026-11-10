@@ -1,0 +1,85 @@
+{
+  "versiones": {
+    "banco": "0.1.0",
+    "metricas": 5,
+    "robots": 11,
+    "reglas": 1
+  },
+  "revision": "d73d7fc1517d2292380bd278dfca92d131dccfc1",
+  "etiqueta": "T-094-sin-1492",
+  "cambios": "base: alfoz y solares por rango a cero (ampliar sin solar, igual en las dos)",
+  "campanya": {
+    "semilla": "1492",
+    "semillas": [
+      "1492",
+      "1492-2",
+      "1492-3"
+    ],
+    "turnos": 200,
+    "repeticiones": 3,
+    "casas": [
+      "mesta",
+      "ferrones",
+      "canteros",
+      "mercaderes",
+      "monjes",
+      "salineros",
+      "arrieros",
+      "hortelanos"
+    ],
+    "escenario": "normal",
+    "cadencias": [
+      1,
+      6
+    ]
+  },
+  "mundo": {
+    "version": "v1",
+    "comarcas": 403,
+    "huella": "aaa0ece9063c47538dde5acc7961bec0eb150d5516805b08c2c4e7960f4b5550"
+  },
+  "reglas": {
+    "huella": "df1caed4dc685426f29d8926e5193dd0d2389fac650491dbf185f617c614c7d5"
+  },
+  "objetivos": {
+    "huella": "534f0cfdeb4085a7dff3b0269fc93f80a8866c1c3d1ed3ea6385b5aa1bf7a989"
+  },
+  "partidas": [
+    {
+      "semilla": "1492",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "fd8498e0b76a5c66c774b49e06eafd98e26ea1b0551fd21dc9b373d678092b14"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "3daabedbd033acd75aff11472980b96f9ed54d845c8a476b6a698c60dd809e52"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 1,
+      "comarcas": 208,
+      "huellaFinal": "699db6b6e1e1615c431c38f2dafec49b19cca5f3643160ad4f9b189f851b6523"
+    },
+    {
+      "semilla": "1492",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "8c0725e0d6918855ab66889f6311dddd23798913c9d0b853a556a276a8fc7014"
+    },
+    {
+      "semilla": "1492-2",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "04fd6bf205145bc52ab5f651e9e5ae5675627bbc1d17b920ffbcd040a8812638"
+    },
+    {
+      "semilla": "1492-3",
+      "cadencia": 6,
+      "comarcas": 208,
+      "huellaFinal": "1789fe5dd2bf68433cfeadf15224804b0e3ed511cf541b5c83fa501fad0362ff"
+    }
+  ]
+}

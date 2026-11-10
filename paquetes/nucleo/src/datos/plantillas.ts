@@ -297,6 +297,15 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
       fuero: suceso('{comarca} recibe fuero propio.'),
     },
   },
+  'comarca.rango': {
+    segun: 'sube',
+    casos: {
+      '1': suceso('{comarca} es ya {rango}: tiene más solares para edificios.'),
+      '0': suceso(
+        '{comarca} vuelve a ser {rango}: pierde solares, aunque lo levantado sigue en pie.',
+      ),
+    },
+  },
   'comarca.carga-fiscal': suceso('En {comarca} rige desde ahora una carga fiscal {carga}.'),
   'comarca.dehesa': {
     segun: 'dehesa',

@@ -314,6 +314,30 @@ export function dibujoPedido(tipo: TipoEdificio): string {
   );
 }
 
+/** El nivel de un edificio, en una insignia arriba a la derecha de su parcela (T-094). */
+export function insigniaDeNivel(nivel: number, maximo: number): string {
+  const lleno = nivel >= maximo;
+  return (
+    `<circle cx="34" cy="-20" r="10" fill="${lleno ? '#c98a00' : '#1f4e9c'}" stroke="#faf5e8" stroke-width="2"/>` +
+    `<text x="34" y="-16" text-anchor="middle" font-size="12" font-weight="700" fill="#faf5e8">${String(nivel)}</text>`
+  );
+}
+
+/** Una ampliacion en obras o pedida: andamios a un lado del edificio, o el reloj de arena. */
+export function marcaDeAmpliacion(enObras: boolean): string {
+  if (!enObras)
+    return (
+      '<circle cx="-34" cy="-20" r="10" fill="#faf5e8" stroke="#1f4e9c" stroke-width="1.5"/>' +
+      '<text x="-34" y="-15" text-anchor="middle" font-size="12">⏳</text>'
+    );
+  return [
+    raya('-44,-4', '-44,-34', '#7a5230', 2),
+    raya('-30,2', '-30,-28', '#7a5230', 2),
+    raya('-44,-26', '-30,-20', '#7a5230', 1.6),
+    raya('-44,-14', '-30,-8', '#7a5230', 1.6),
+  ].join('');
+}
+
 /** Un nivel que se va a derribar: tachado con un aspa roja. */
 export function tachado(): string {
   return (
@@ -334,10 +358,20 @@ export function dibujoLibre(): string {
 }
 
 /** La plaza del pueblo, que no es un solar: la iglesia, y en la capital una torre con su pendon. */
-export function dibujoDePlaza(capital: boolean): string {
+export function dibujoDePlaza(
+  capital: boolean,
+  rango: 'aldea' | 'villa' | 'ciudad' = 'aldea',
+): string {
   const torre = capital ? 46 : 32;
+  // El rango se ve (T-094): la villa tiene mas casas en la plaza, y la ciudad, ademas, su muralla.
+  const muralla =
+    rango === 'ciudad'
+      ? caja(-0.98, -0.98, 0.98, -0.86, 9, PIEDRA) + caja(-0.98, -0.86, -0.86, 0.98, 9, PIEDRA)
+      : '';
+  const casas = rango === 'aldea' ? '' : casita(-0.8, 0.5, -0.4, 0.85, 9);
   return (
     losa('#d8cdb5') +
+    muralla +
     caja(-0.55, -0.15, 0.25, 0.4, 15, PIEDRA) +
     tejado(-0.55, -0.15, 0.25, 0.4, 15, 9) +
     caja(0.25, -0.3, 0.6, 0.05, torre, PIEDRA) +
@@ -352,6 +386,10 @@ export function dibujoDePlaza(capital: boolean): string {
           [p(0.42, -0.12, torre + 30), p(0.42, 0.25, torre + 26), p(0.42, -0.12, torre + 22)],
           '#b3261e',
         )
+      : '') +
+    casas +
+    (rango === 'ciudad'
+      ? caja(0.86, -0.86, 0.98, 0.98, 9, PIEDRA) + caja(-0.86, 0.86, 0.98, 0.98, 9, PIEDRA)
       : '')
   );
 }

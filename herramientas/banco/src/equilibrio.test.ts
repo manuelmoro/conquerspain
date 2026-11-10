@@ -199,16 +199,16 @@ describe('los bordes de cada umbral', () => {
     expect(ausencia?.detalle).toContain('falta la medida');
   });
 
-  it('el ritmo incluye los extremos: T60 y T100 valen para el dominio', () => {
+  it('el ritmo incluye los extremos: T8 y T40 valen para el dominio (T-094)', () => {
     const conDominio = (turno: number): string =>
       estadoDe(
         evaluarEquilibrio(unaPartida(MEDIANA_100.map((j) => ({ ...j, dominio: turno })))),
         'dominio',
       );
-    expect(conDominio(60)).toBe('cumple');
-    expect(conDominio(100)).toBe('cumple');
-    expect(conDominio(59)).toBe('incumple');
-    expect(conDominio(101)).toBe('incumple');
+    expect(conDominio(8)).toBe('cumple');
+    expect(conDominio(40)).toBe('cumple');
+    expect(conDominio(7)).toBe('incumple');
+    expect(conDominio(41)).toBe('incumple');
   });
 });
 
@@ -232,7 +232,7 @@ describe('lo que no se puede esconder', () => {
   it('un hito que no llega es «incumple» si dio tiempo, y «no evaluable» si la partida es corta', () => {
     const sinDominio = MEDIANA_100.map((j) => ({ ...j, dominio: null }));
     expect(estadoDe(evaluarEquilibrio(unaPartida(sinDominio)), 'dominio')).toBe('incumple');
-    const corta = resultado([partida(sinDominio, { turnos: 40 })]);
+    const corta = resultado([partida(sinDominio, { turnos: 30 })]);
     expect(estadoDe(evaluarEquilibrio(corta), 'dominio')).toBe('no evaluable');
   });
 

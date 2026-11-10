@@ -57,8 +57,16 @@ describe('la prevision es exacta (criterio 1)', () => {
     // Y la funcion de coste es una sola: el nucleo la usa con los datos de la vista.
     const forma = validarIntencion(intenciones[0]);
     if (!forma.ok) throw new Error('no valida');
+    // Con la comarca propia de la vista: el coste de un nivel mas depende del que ya tiene (T-094).
+    const orden = forma.valor.bosquejo;
+    const citada = 'comarca' in orden ? vista.comarcas[orden.comarca] : undefined;
     expect(
-      costeDeIntencion(forma.valor.bosquejo, vista.jugador, undefined, TABLAS_DEL_JUEGO),
+      costeDeIntencion(
+        orden,
+        vista.jugador,
+        citada?.nivel === 'propia' ? citada.comarca : undefined,
+        TABLAS_DEL_JUEGO,
+      ),
     ).toEqual(prevista.lineas[0]?.coste);
     await m.cerrar();
   }, 120_000);

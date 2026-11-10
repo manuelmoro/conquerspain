@@ -1,7 +1,7 @@
 // El plano de una comarca propia (ficha T-092): al abrir una comarca tuya, el mapa deja sitio a su
 // plano en perspectiva, con cada solar dibujado como lo que lo ocupa. Tocar una parcela dice que es,
 // por que ocupa el solar y que da; «Volver al mapa» devuelve el atlas sin cerrar la ficha.
-import { MOTIVOS } from '@conquer/nucleo';
+import { MOTIVOS, TABLAS_DEL_JUEGO, rangoDe } from '@conquer/nucleo';
 import type { DetalleDePropia, FichaDeComarca } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
@@ -14,6 +14,8 @@ import {
   dibujoDePlaza,
   dibujoLibre,
   dibujoPedido,
+  insigniaDeNivel,
+  marcaDeAmpliacion,
   tachado,
 } from '../arte/edificios.ts';
 import { ICONO_DE_EDIFICIO } from '../estado-de-comarca.ts';
@@ -21,6 +23,7 @@ import type { ObraPedida, Parcela } from '../plano.ts';
 import {
   COLUMNAS_DEL_PLANO,
   accionesDeParcela,
+  textoDeRango,
   explicarParcela,
   parcelasDe,
   rejillaDelPlano,
@@ -39,14 +42,23 @@ function dibujo(parcela: Parcela): string {
   if (parcela.clase === 'libre') return dibujoLibre();
   if (parcela.clase === 'obra') return dibujoDeObra(parcela.avance);
   if (parcela.clase === 'pedida') return dibujoPedido(parcela.edificio);
-  return dibujoDeEdificio(parcela.edificio) + (parcela.derribo ? tachado() : '');
+  return (
+    dibujoDeEdificio(parcela.edificio) +
+    insigniaDeNivel(parcela.nivel, parcela.maximo) +
+    (parcela.ampliando !== null
+      ? marcaDeAmpliacion(true)
+      : parcela.ampliacionPedida
+        ? marcaDeAmpliacion(false)
+        : '') +
+    (parcela.derribo ? tachado() : '')
+  );
 }
 
 function etiqueta(parcela: Parcela): string {
   if (parcela.clase === 'libre') return 'Solar libre';
   if (parcela.clase === 'obra') return `${parcela.nombre}, en obras al ${String(parcela.avance)} %`;
   if (parcela.clase === 'pedida') return `${parcela.nombre}, pedida`;
-  return `${parcela.nombre}, nivel ${String(parcela.orden)} de ${String(parcela.nivel)}${parcela.derribo ? ', se va a derribar' : ''}`;
+  return `${parcela.nombre}, nivel ${String(parcela.nivel)} de ${String(parcela.maximo)}${parcela.ampliando === null ? '' : ', ampliándose'}${parcela.derribo ? ', se va a derribar' : ''}`;
 }
 
 /**
@@ -88,6 +100,8 @@ function lienzo(
   comarca: string,
   parcelas: readonly Parcela[],
   capital: boolean,
+  /** Los vecinos de la comarca: la plaza se dibuja segun su rango (T-094). */
+  poblacion: number,
   tocar: (indice: number) => void,
 ): SVGSVGElement {
   const rejilla = rejillaDelPlano(parcelas.length);
@@ -112,7 +126,7 @@ function lienzo(
   // Se pinta de atras adelante (por fila + columna) para que lo de delante tape lo de detras.
   const piezas: { orden: number; nodo: SVGGElement }[] = [];
   const [px, py] = centro(rejilla.plaza);
-  const plaza = grupo(px, py, dibujoDePlaza(capital));
+  const plaza = grupo(px, py, dibujoDePlaza(capital, rangoDe(poblacion, TABLAS_DEL_JUEGO)));
   plaza.setAttribute('class', 'plaza-del-plano');
   piezas.push({ orden: rejilla.plaza.fila + rejilla.plaza.columna, nodo: plaza });
   parcelas.forEach((parcela, i) => {
@@ -153,7 +167,11 @@ function detalle(
 ): HTMLElement {
   const texto = explicarParcela(parcela, propia);
   const icono = parcela.clase === 'libre' ? '➕' : ICONO_DE_EDIFICIO[parcela.edificio];
-  const acciones = accionesDeParcela(parcela, ficha.acciones);
+  const acciones = accionesDeParcela(
+    parcela,
+    ficha.acciones,
+    propia.edificios.map((e) => e.tipo),
+  );
   const caja = el(
     'div',
     { class: 'tarjeta detalle-de-parcela', role: 'status' },
@@ -202,7 +220,7 @@ function planoYDetalle(
 ): HTMLElement[] {
   const parcelas = parcelasDe(propia, pedidasEn(almacen, ficha.id));
   if (elegida !== null && elegida.comarca !== ficha.id) elegida = null;
-  const svg = lienzo(ficha.id, parcelas, capital, (indice) => {
+  const svg = lienzo(ficha.id, parcelas, capital, propia.poblacion, (indice) => {
     elegida = { comarca: ficha.id, indice };
     almacen.refrescar();
   });
@@ -217,7 +235,7 @@ function planoYDetalle(
 
 function resumen(propia: DetalleDePropia, capital: boolean): string {
   const libres = parcelasDe(propia).filter((p) => p.clase === 'libre').length;
-  return `${String(propia.solares.total - libres)} de ${String(propia.solares.total)} solares ocupados. Cada nivel de cada edificio ocupa una parcela; en el centro, la plaza del pueblo${capital ? ' con la torre de tu corte' : ''}. Toca una parcela para ver qué es.`;
+  return `${textoDeRango(propia.poblacion)} ${String(propia.solares.total - libres)} de ${String(propia.solares.total)} solares ocupados: cada edificio ocupa uno, y ampliarlo no gasta otro. En el centro, la plaza del pueblo${capital ? ' con la torre de tu corte' : ''}. Toca una parcela para ver qué es.`;
 }
 
 /** El plano de la comarca abierta en el sitio del mapa, o null si no es tuya. */

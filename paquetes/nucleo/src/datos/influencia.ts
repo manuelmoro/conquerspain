@@ -26,4 +26,7 @@ export const INFLUENCIA: DatosInfluencia = {
   jornadasMaximasDesdeElDominio: 6,
   costeIncorporar: { pan: 40, madera: 0, piedra: 0, maravedis: 30, sal: 0, hierro: 0, lana: 0 },
   turnosIncorporar: 3,
+  // El alfoz (T-094): las neutrales pegadas a la capital empiezan por encima de lo que pide incorporar,
+  // con margen para unos turnos de desgaste. Se ganan en cuanto se pide: tres turnos.
+  influenciaDelAlfoz: 65,
 };

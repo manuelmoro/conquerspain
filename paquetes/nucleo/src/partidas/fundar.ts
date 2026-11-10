@@ -166,6 +166,7 @@ export function fundarPartida(peticion: PeticionDeFundacion): Resultado<EstadoPa
     const jugador = jugadores[id];
     if (jugador !== undefined) jugadores[id] = conSuCanyada(jugador, mundo, comarcas, reglas);
   }
+  darleSuAlfoz(jugadores, comarcas, mundo, reglas);
 
   const estado: EstadoPartida = {
     version: VERSION_REGLAS,
@@ -188,6 +189,31 @@ export function fundarPartida(peticion: PeticionDeFundacion): Resultado<EstadoPa
     clasificacion: [],
   };
   return validarEstado(estado, mundo);
+}
+
+/**
+ * El alfoz (T-094): las comarcas sin duenyo pegadas a cada capital empiezan con la influencia de esa
+ * casa por encima de lo que pide incorporar, para que la primera expansion sea cosa de pocos turnos.
+ * Si dos capitales comparten vecina, las dos la tienen igual y ninguna saca ventaja: se la disputan.
+ */
+function darleSuAlfoz(
+  jugadores: Readonly<Record<string, EstadoJugador>>,
+  comarcas: Record<string, EstadoComarca>,
+  mundo: Mundo,
+  reglas: TablasDeReglas,
+): void {
+  for (const id of Object.keys(jugadores).sort(comparar)) {
+    const capital = jugadores[id]?.capital;
+    if (capital === undefined) continue;
+    for (const vecina of [...(mundo.vecinos[capital] ?? [])].sort(comparar)) {
+      const comarca = comarcas[vecina];
+      if (comarca === undefined || comarca.duenyo !== null) continue;
+      comarcas[vecina] = {
+        ...comarca,
+        influencias: { ...comarca.influencias, [id]: reglas.influencia.influenciaDelAlfoz },
+      };
+    }
+  }
 }
 
 /**

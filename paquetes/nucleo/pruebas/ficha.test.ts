@@ -11,6 +11,7 @@ import type { IdOrden } from '../src/tipos/ids.ts';
 import type { Orden } from '../src/tipos/ordenes.ts';
 import type { EstadoPartida } from '../src/tipos/estado.ts';
 import { RECURSOS } from '../src/tipos/recursos.ts';
+import { TIPOS_DE_EDIFICIO } from '../src/tipos/reglas.ts';
 import { DOS, UNO, c, conComarca, escenario, mundo, recua, recursos, reglas } from './recuas.ts';
 
 function comprobarAccion(a: AccionDeFicha): void {
@@ -56,13 +57,21 @@ describe('la ficha de una comarca propia', () => {
   });
 
   it('sin solares libres, construir queda bloqueado con su causa, y derribar libera uno', () => {
-    const llena = conComarca(estado, 'prueba-llano', { edificios: { granja: 99 } });
+    // Doce edificios distintos llenan cualquier aldea; lo nuevo no cabe, ampliar si (T-094).
+    const doce = Object.fromEntries(TIPOS_DE_EDIFICIO.slice(0, 12).map((t) => [t, 1]));
+    const llena = conComarca(estado, 'prueba-llano', { edificios: doce });
     const f = fichaDeComarca(llena, UNO, c('prueba-llano'), mundo, reglas);
     const bloqueadas =
       f?.acciones.filter(
         (a) => a.clave.startsWith('construir-') && a.bloqueo?.motivo === 'sin-solar',
       ) ?? [];
     expect(bloqueadas.length).toBeGreaterThan(0);
+    expect(bloqueadas.every((a) => !Object.hasOwn(doce, a.clave.slice('construir-'.length)))).toBe(
+      true,
+    );
+    expect(f?.acciones.find((a) => a.clave === 'construir-granja')?.bloqueo?.motivo).not.toBe(
+      'sin-solar',
+    );
     expect(f?.acciones.find((a) => a.clave === 'derribar-granja')?.efecto).toContain(
       'Libera un solar',
     );

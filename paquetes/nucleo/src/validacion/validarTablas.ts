@@ -273,6 +273,9 @@ const validarObras: Validador<DatosObras> = objeto<DatosObras>({
   deterioroAbandonoMil: milesimas(0, 1000),
   lealtadParaMonasterio: entero({ minimo: 0, maximo: 100 }),
   vecinosDeCiudad: entero({ minimo: 1, maximo: 10000 }),
+  vecinosDeVilla: entero({ minimo: 1, maximo: 10000 }),
+  solaresDeVilla: enteroNoNegativo(10),
+  solaresDeCiudad: enteroNoNegativo(10),
   lealtadPorMuralla: enteroNoNegativo(100),
   lealtadRegionalPorCatedral: enteroNoNegativo(20),
   maravedisPorPeregrinos: enteroNoNegativo(200),
@@ -385,6 +388,7 @@ const validarInfluencia: Validador<DatosInfluencia> = objeto<DatosInfluencia>({
   jornadasMaximasDesdeElDominio: entero({ minimo: 1, maximo: 60 }),
   costeIncorporar: recursos(),
   turnosIncorporar: entero({ minimo: 1, maximo: 20 }),
+  influenciaDelAlfoz: entero({ minimo: 0, maximo: 100 }),
 });
 
 const validarDuracion = porTipo<DuracionDeAcontecimiento>({

@@ -63,6 +63,12 @@ del turno; el otro recupera su coste íntegro y sabe quién ganó. No hay carrer
 carrera de meses de presencia, visible para todos los implicados en la crónica («los canteros llevan
 seis quincenas cortejando al concejo de Berlanga»).
 
+**El alfoz (T-094).** Las comarcas sin dueño pegadas a la capital de cada casa empiezan la partida con
+**65 de influencia** suya (`influenciaDelAlfoz`), por encima de los 60 que pide incorporar. Puedes
+incorporarlas desde el primer turno, y en los tres turnos que tarda la orden son tuyas. Así la primera
+expansión no es una espera de decenas de turnos. Si una vecina toca a dos capitales, las dos casas
+empiezan con lo mismo y ninguna saca ventaja: hay que ganársela. Más allá del alfoz, todo sigue igual.
+
 ### 6.2.1 Comarcas que se van
 
 Una comarca propia con lealtad < 20 durante seis turnos vuelve a neutral conservando la influencia

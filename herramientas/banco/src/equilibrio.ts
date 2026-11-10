@@ -28,8 +28,11 @@ export const OBJETIVOS = {
   tierraPct: 5,
   /** Diferencia de prestigio entre entrar cada turno y entrar cada seis. */
   ausenciaPct: 5,
-  /** Turno del primer «Un pequeño dominio» de la partida. */
-  dominioTurnos: [60, 100],
+  /**
+   * Turno del primer «Un pequeño dominio» de la partida. Era T60–T100; con el alfoz (T-094) el usuario
+   * pidio que la primera expansion fuera cosa de pocos turnos, y la vara se adelanta a T8–T40.
+   */
+  dominioTurnos: [8, 40],
   /** Turno de la primera obra mayor terminada de la partida. */
   obraTurnos: [80, 130],
   /** Turnos en los que se compara la ausencia. */

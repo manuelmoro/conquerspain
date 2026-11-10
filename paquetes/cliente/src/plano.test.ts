@@ -12,7 +12,13 @@ import {
   dibujoPedido,
   tachado,
 } from './arte/edificios.ts';
-import { accionesDeParcela, explicarParcela, parcelasDe, rejillaDelPlano } from './plano.ts';
+import {
+  accionesDeParcela,
+  explicarParcela,
+  parcelasDe,
+  rejillaDelPlano,
+  textoDeRango,
+} from './plano.ts';
 
 const NADA = { pan: 0, madera: 0, piedra: 0, maravedis: 0, sal: 0, hierro: 0, lana: 0 };
 
@@ -42,48 +48,67 @@ function comarca(cambios: Partial<DetalleDePropia> = {}): DetalleDePropia {
 }
 
 describe('las parcelas de una comarca', () => {
-  it('una por nivel de edificio, una por obra de edificio y el resto libres; las casas primero', () => {
+  it('una por edificio distinto, sea cual sea su nivel; una por edificio nuevo en obras; el resto libres (T-094)', () => {
     const p = parcelasDe(comarca());
     expect(p.map((x) => (x.clase === 'libre' ? 'libre' : `${x.clase}:${x.edificio}`))).toEqual([
       'edificio:casas',
       'edificio:granja',
-      'edificio:granja',
-      'edificio:granja',
       'obra:mercado',
       'libre',
       'libre',
+      'libre',
+      'libre',
     ]);
-    expect(p[4]).toMatchObject({ clase: 'obra', avance: 33 });
+    expect(p[1]).toMatchObject({ nivel: 3, maximo: 4, ampliando: null });
+    expect(p[2]).toMatchObject({ clase: 'obra', avance: 33 });
   });
 
-  it('lo pedido va en un solar libre y el derribo pedido tacha el último nivel', () => {
+  it('la ampliación de un edificio va en su parcela, no en otra', () => {
+    const c = comarca({
+      obras: [{ que: 'Granja', edificio: 'granja', avanceMil: 500, necesarioMil: 2000 }],
+    });
+    const p = parcelasDe(c);
+    expect(p.filter((x) => x.clase !== 'libre')).toHaveLength(2);
+    expect(p[1]).toMatchObject({ clase: 'edificio', edificio: 'granja', ampliando: 25 });
+    if (p[1] === undefined) throw new Error('falta');
+    expect(explicarParcela(p[1], c).lineas.join(' ')).toMatch(/Se está ampliando: va por el 25 %/);
+  });
+
+  it('un edificio nuevo pedido va en un solar libre; ampliar o derribar uno que ya está se marca en el suyo', () => {
     const p = parcelasDe(comarca(), [
+      { tipo: 'construir', edificio: 'huerta', espera: null },
       { tipo: 'construir', edificio: 'granja', espera: null },
-      { tipo: 'derribar', edificio: 'granja', espera: null },
+      { tipo: 'derribar', edificio: 'casas', espera: null },
     ]);
-    expect(p[5]).toMatchObject({ clase: 'pedida', edificio: 'granja', nombre: 'Granja' });
-    expect(p[6]).toEqual({ clase: 'libre' });
-    const granjas = p.filter((x) => x.clase === 'edificio' && x.edificio === 'granja');
-    expect(granjas.map((x) => x.clase === 'edificio' && x.derribo)).toEqual([false, false, true]);
-    const pedida = p[5];
+    expect(p[3]).toMatchObject({ clase: 'pedida', edificio: 'huerta', nombre: 'Huerta' });
+    expect(p[4]).toEqual({ clase: 'libre' });
+    expect(p[1]).toMatchObject({ edificio: 'granja', ampliacionPedida: true, derribo: false });
+    expect(p[0]).toMatchObject({ edificio: 'casas', derribo: true });
+    const pedida = p[3];
     if (pedida === undefined) throw new Error('falta');
     expect(explicarParcela(pedida, comarca()).lineas[0]).toMatch(/empezará al resolverse el turno/);
     expect(accionesDeParcela(pedida, [])).toEqual([]);
   });
 
   it('lo pedido sin solar libre no se inventa una parcela', () => {
-    const llena = comarca({ solares: { usados: 5, total: 5 } });
+    const llena = comarca({ solares: { usados: 3, total: 3 } });
     const p = parcelasDe(llena, [
       { tipo: 'construir', edificio: 'huerta', espera: 'no queda solar' },
     ]);
-    expect(p).toHaveLength(5);
+    expect(p).toHaveLength(3);
     expect(p.some((x) => x.clase === 'pedida')).toBe(false);
   });
 
   it('si hay mas ocupado que solares, no se esconde nada', () => {
-    const p = parcelasDe(comarca({ solares: { usados: 5, total: 3 } }));
-    expect(p).toHaveLength(5);
+    const p = parcelasDe(comarca({ solares: { usados: 3, total: 2 } }));
+    expect(p).toHaveLength(3);
     expect(p.some((x) => x.clase === 'libre')).toBe(false);
+  });
+
+  it('el rango dice lo que es y lo que le falta para el siguiente', () => {
+    expect(textoDeRango(56)).toMatch(/^Aldea de 56 vecinos: a los 120 será villa/);
+    expect(textoDeRango(150)).toMatch(/^Villa de 150 vecinos: a los 200 será ciudad/);
+    expect(textoDeRango(250)).toMatch(/^Ciudad de 250 vecinos: el rango más alto/);
   });
 
   it('la plaza va en el centro y ninguna parcela la pisa ni se repite', () => {
@@ -100,13 +125,13 @@ describe('las parcelas de una comarca', () => {
 
   it('cada parcela dice qué es, por qué ocupa el solar y qué da', () => {
     const c = comarca();
-    const [, granja, , , obra, libre] = parcelasDe(c);
+    const [, granja, obra, libre] = parcelasDe(c);
     if (granja === undefined || obra === undefined || libre === undefined)
       throw new Error('faltan');
     const g = explicarParcela(granja, c);
     expect(g.titulo).toBe('Granja');
-    expect(g.lineas.join(' ')).toMatch(/cada nivel ocupa un solar, y este es el 1\.º de 3/);
-    expect(g.lineas.join(' ')).toMatch(/Cada turno: entre sus niveles da 27 de pan/);
+    expect(g.lineas.join(' ')).toMatch(/Nivel 3 de 4\. Ampliarlo no ocupa otro solar/);
+    expect(g.lineas.join(' ')).toMatch(/Cada turno da 27 de pan/);
     expect(explicarParcela(obra, c).lineas.join(' ')).toMatch(/ya ocupa su solar/);
     expect(explicarParcela(libre, c).titulo).toBe('Solar libre');
   });
@@ -132,15 +157,15 @@ describe('lo que se hace desde una parcela', () => {
   ];
 
   it('en un edificio: ampliarlo o derribar un nivel; en lo libre, lo que se puede levantar ya', () => {
-    const [, granja, , , obra, libre] = parcelasDe(comarca());
+    const [, granja, obra, libre] = parcelasDe(comarca());
     if (granja === undefined || obra === undefined || libre === undefined)
       throw new Error('faltan');
     expect(accionesDeParcela(granja, acciones).map((a) => a.clave)).toEqual([
       'construir-granja',
       'derribar-granja',
     ]);
-    expect(accionesDeParcela(libre, acciones).map((a) => a.clave)).toEqual([
-      'construir-granja',
+    // En un solar libre solo va un edificio nuevo: ampliar la granja se hace desde la suya.
+    expect(accionesDeParcela(libre, acciones, ['granja', 'casas']).map((a) => a.clave)).toEqual([
       'construir-mercado',
     ]);
     expect(accionesDeParcela(obra, acciones)).toEqual([]);

@@ -87,7 +87,7 @@ Nunca se cambian cinco cosas a la vez: entonces no se sabe qué funcionó.
 | Precios pegados al suelo o al techo | < 10 turnos seguidos |
 | Comarcas nunca usadas por ningún robot | < 5 % del mapa |
 | Diferencia entre jugar cada turno y jugar cada seis (T-045 §4.5) | < 5 % |
-| Duración de una partida hasta «Un pequeño dominio» | entre 60 y 100 turnos |
+| Duración de una partida hasta «Un pequeño dominio» | entre 8 y 40 turnos (era 60–100; cambia en T-094 por decisión del usuario: la primera expansión, con el alfoz, en pocos turnos) |
 | Tiempo hasta la primera obra mayor terminada | entre 80 y 130 turnos |
 
 Además, dos comprobaciones cualitativas, hechas leyendo una partida completa:

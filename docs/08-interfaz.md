@@ -194,6 +194,8 @@ No se usan emojis en la crónica. Los iconos son dibujo, no tipografía.
   tres pasos de cómo se juega y las ocho casas.
 - Al entrar en una partida, un tutorial de cinco pasos acompaña las primeras acciones.
 - El panel se recorre con pestañas: órdenes, crónica, mercado y tu casa.
+- **Desde T-094:** cada edificio ocupa una parcela, con su nivel en una insignia, y la plaza crece con el rango
+  (aldea, villa con más casas, ciudad con muralla).
 - **Desde T-092:** al abrir una comarca propia se ve su plano en perspectiva isométrica. Cada solar es una
   parcela dibujada con lo que la ocupa, y cada edificio tiene un dibujo propio de caras planas y colores de la
   paleta. En el centro va la plaza del pueblo, con torre y pendón si es la capital.

@@ -298,8 +298,8 @@ describe('los canteros', () => {
   });
 
   it('su límite duele: un solar menos en cada comarca', () => {
-    expect(solaresDe(6, modificadores('canteros'))).toBe(5);
-    expect(solaresDe(6, modificadores('mesta'))).toBe(6);
+    expect(solaresDe(6, modificadores('canteros'), 0, reglas)).toBe(5);
+    expect(solaresDe(6, modificadores('mesta'), 0, reglas)).toBe(6);
     const comarca = {
       ...comarcaDe(escenario(), 'prueba-llano'),
       edificios: { granja: 1, casas: 1, cerca: 1, granero: 1, aserradero: 1 },
@@ -413,7 +413,7 @@ describe('los mercaderes', () => {
   });
 
   it('su límite duele: un solar menos y un 25 % menos de pan propio', () => {
-    expect(solaresDe(6, modificadores('mercaderes'))).toBe(5);
+    expect(solaresDe(6, modificadores('mercaderes'), 0, reglas)).toBe(5);
     expect(modificadores('mercaderes').produccionMil['pan']).toBe(750);
   });
 });

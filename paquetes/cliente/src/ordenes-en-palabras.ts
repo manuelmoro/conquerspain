@@ -105,7 +105,7 @@ export function iconoDeOrden(o: Orden): string {
 const QUE_HACER_SI_ESPERA: Readonly<Record<string, string>> = {
   'sin-recursos': 'Consigue lo que falta, o anúlala si ya no la quieres.',
   escasez: 'Con hambre no se empieza nada: consigue pan (granja, huerta o comprarlo).',
-  'sin-solar': 'Libera un solar derribando algo, o anúlala.',
+  'sin-solar': 'No queda solar para un edificio nuevo: amplía uno que ya tengas, o anúlala.',
   'detras-en-la-cola':
     'Va detrás de otra orden de su cola: si la de delante no puede, súbela con «↑ Antes» o anula la otra.',
   'recua-lejos': 'La recua tiene que llegar a esa plaza: dale ruta hasta allí.',

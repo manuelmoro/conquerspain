@@ -32,16 +32,49 @@ export function avanceDelTurnoMil(
   return Math.ceil((MIL * MIL) / factor);
 }
 
-/** Solares de la comarca: los del mapa mas los que de la casa. */
-export function solaresDe(solaresDelMapa: number, casa: Modificadores): number {
-  return solaresDelMapa + casa.solaresExtra;
+export type Rango = 'aldea' | 'villa' | 'ciudad';
+
+/** El rango de una comarca por sus vecinos (T-094): aldea, villa o ciudad. Sube y baja solo. */
+export function rangoDe(poblacion: number, reglas: TablasDeReglas): Rango {
+  if (poblacion >= reglas.obras.vecinosDeCiudad) return 'ciudad';
+  if (poblacion >= reglas.obras.vecinosDeVilla) return 'villa';
+  return 'aldea';
 }
 
-/** Cada nivel de edificio ocupa un solar, y cada edificio en obra, el suyo. */
+/** Solares de la comarca: los del mapa, los de la casa y los de su rango (T-094). */
+export function solaresDe(
+  solaresDelMapa: number,
+  casa: Modificadores,
+  poblacion: number,
+  reglas: TablasDeReglas,
+): number {
+  const rango = rangoDe(poblacion, reglas);
+  const porRango =
+    rango === 'ciudad'
+      ? reglas.obras.solaresDeCiudad
+      : rango === 'villa'
+        ? reglas.obras.solaresDeVilla
+        : 0;
+  return solaresDelMapa + casa.solaresExtra + porRango;
+}
+
+/** Los edificios que ocupan solar: cada uno distinto, ya levantado o en obra. */
+function edificiosConSolar(comarca: EstadoComarca, obras: readonly Obra[]): Set<string> {
+  const tipos = new Set<string>(
+    Object.entries(comarca.edificios)
+      .filter(([, nivel]) => nivel > 0)
+      .map(([tipo]) => tipo),
+  );
+  for (const o of obras) if (o.comarca === comarca.id && o.tipo === 'edificio') tipos.add(o.que);
+  return tipos;
+}
+
+/**
+ * Cada edificio distinto ocupa un solar, y su obra lo ocupa desde que empieza; ampliarlo no gasta
+ * otro (T-094: antes cada nivel ocupaba uno y una comarca no podia crecer hacia dentro).
+ */
 export function solaresOcupados(comarca: EstadoComarca, obras: readonly Obra[]): number {
-  const niveles = Object.values(comarca.edificios).reduce((total, nivel) => total + nivel, 0);
-  const enObra = obras.filter((o) => o.comarca === comarca.id && o.tipo === 'edificio').length;
-  return niveles + enObra;
+  return edificiosConSolar(comarca, obras).size;
 }
 
 export type MotivoSinConstruir =
@@ -69,7 +102,12 @@ export function impedimentoDeConstruir(
   ).length;
   const maximo = casa.nivelMaximoEdificio[edificio] ?? datos.nivelMaximo;
   if ((comarca.edificios[edificio] ?? 0) + enObra >= maximo) return 'nivel-maximo';
-  if (solaresOcupados(comarca, obras) >= solaresDe(solaresDelMapa, casa)) return 'sin-solar';
+  const nuevo = !edificiosConSolar(comarca, obras).has(edificio);
+  if (
+    nuevo &&
+    solaresOcupados(comarca, obras) >= solaresDe(solaresDelMapa, casa, comarca.poblacion, reglas)
+  )
+    return 'sin-solar';
   const minimo = casa.potencialMinimoEdificio[edificio] ?? datos.potencialMinimo;
   if (datos.potencial !== null && comarca.potenciales[datos.potencial] < minimo) {
     return 'potencial-insuficiente';

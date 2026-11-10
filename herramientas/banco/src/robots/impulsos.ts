@@ -13,7 +13,7 @@ import {
   impedimentoDeConstruir,
   opcionesDeTradicion,
 } from '@conquer/nucleo';
-import { RECURSOS, RONDAS_DE_TRADICION } from '@conquer/nucleo';
+import { RECURSOS, RONDAS_DE_TRADICION, TIPOS_DE_EDIFICIO } from '@conquer/nucleo';
 import type {
   Casa,
   ComarcaMundo,
@@ -182,8 +182,26 @@ function enCola(d: Decision, comarca: IdComarca): number {
   return d.t.obrasEnCola(comarca) + nuevas;
 }
 
+/**
+ * Hay brazos para un nivel mas: lo que piden los niveles ya levantados o pedidos, mas este, cabe en
+ * la gente de la comarca. Sin ellos, todo rinde menos, el pan tambien (T-094: ampliar ya no gasta
+ * solar, y el limite de lo que se levanta pasa a ser la gente).
+ */
+function hayBrazos(t: Tablero, comarca: EstadoComarca, edificio: TipoEdificio): boolean {
+  const piden = TIPOS_DE_EDIFICIO.reduce(
+    (total, tipo) =>
+      total + t.nivelPrevisto(comarca, tipo) * t.reglas.edificios[tipo].vecinosPorNivel,
+    0,
+  );
+  return piden + t.reglas.edificios[edificio].vecinosPorNivel <= comarca.poblacion;
+}
+
 function pedirSiCabe(d: Decision, comarca: EstadoComarca, edificio: TipoEdificio): boolean {
   if (impedimentoPrevisto(d.t, comarca, edificio, d.p.ordenes) !== null) return false;
+  if (!hayBrazos(d.t, comarca, edificio)) {
+    d.m.anotar('sin-brazos');
+    return false;
+  }
   if (edificio === 'casas' && !hayPanParaMas(d.t)) return false;
   d.p.construir(comarca.id, edificio);
   return true;
@@ -272,9 +290,30 @@ function unaDeCasas(d: Decision, comarca: EstadoComarca): boolean {
 }
 
 /** El plan de edificios de la casa, comarca a comarca, sin llenar las colas de mas. */
+/**
+ * La casa que vive de obras mayores, con su capital ya hecha, ahorra para la siguiente: mientras no le
+ * alcance solo levanta lo esencial, y lo de comer si falta pan (T-094: con el alfoz y sin limite de solar para
+ * ampliar, sus comarcas se comian la madera de la obra).
+ */
+function ahorraParaObraMayor(d: Decision): boolean {
+  const { t, perfil } = d;
+  if (perfil.obrasMayores.length === 0 || !planCumplido(t, perfil)) return false;
+  const aMedias =
+    t.vista.obras.some((o) => o.tipo === 'obra mayor' && !o.abandonada) ||
+    t.ordenes.some((o) => o.tipo === 'obra-mayor');
+  if (aMedias) return false;
+  const siguiente = siguienteObraMayor(d);
+  return siguiente !== null && siguiente.falta > 0;
+}
+
 export function edificar(d: Decision): void {
   const { t, perfil } = d;
   if (t.yo.escasez) d.m.anotar('escasez');
+  // Ahorrando para la obra mayor solo se levanta lo esencial de la via, y lo de comer si falta pan.
+  const ahorra = ahorraParaObraMayor(d);
+  if (ahorra) d.m.anotar('ahorra-para-obra-mayor');
+  // Ahorrando, lo de comer solo se levanta si la despensa no llega a su colchon.
+  const faltaPan = t.disponible('pan') < t.consumoDePan() * TURNOS_DE_DESPENSA;
   const sede = t.sede;
   const esencialPendiente =
     sede !== null &&
@@ -290,6 +329,12 @@ export function edificar(d: Decision): void {
       for (const [edificio, nivel, condicion] of plan) {
         if (nivelPedido(d, comarca, edificio) >= nivel) continue;
         if (condicion !== undefined && !condicion(t)) break;
+        if (
+          ahorra &&
+          !perfil.esenciales.includes(edificio) &&
+          !(DE_COMER.includes(edificio) && faltaPan)
+        )
+          break;
         if (pedirSiCabe(d, comarca, edificio)) pedida = true;
         break;
       }
@@ -338,9 +383,41 @@ export function hacerSitio(d: Decision): void {
   if (inutil !== null) p.derribar(sede.id, inutil);
 }
 
-/** La siguiente obra mayor de la casa, en la capital, si no hay otra a medias. */
+/** Lo que le falta a la casa para pagar algo: la suma de lo que no tiene, de todos los recursos. */
+function faltaPara(d: Decision, coste: Recursos): number {
+  return (Object.keys(coste) as Recurso[]).reduce(
+    (total, r) => total + Math.max(0, coste[r] - (d.t.disponible(r) - d.p.reservado(r))),
+    0,
+  );
+}
+
+/**
+ * La obra mayor que toca: de las que se pueden levantar, la primera de su lista que ya puede pagar; si
+ * no paga ninguna, la que menos le falta. Antes era siempre la primera de la lista, y un monasterio que
+ * pide madera bloqueaba la muralla de piedra a quien no tiene monte (T-094, Toledo).
+ */
+function siguienteObraMayor(d: Decision): {
+  readonly comarca: EstadoComarca;
+  readonly obra: TipoObraMayor;
+  readonly falta: number;
+} | null {
+  const { t, perfil } = d;
+  let mejor: { comarca: EstadoComarca; obra: TipoObraMayor; falta: number } | null = null;
+  for (const obra of perfil.obrasMayores) {
+    for (const comarca of t.propias) {
+      if (comarca.obrasMayores.includes(obra) || !puedeLevantar(t, comarca, obra)) continue;
+      const falta = faltaPara(d, costeDeObraMayor(obra, t.casa, t.reglas));
+      if (falta === 0) return { comarca, obra, falta };
+      if (mejor === null || falta < mejor.falta) mejor = { comarca, obra, falta };
+      break;
+    }
+  }
+  return mejor;
+}
+
+/** La siguiente obra mayor de la casa, si no hay otra a medias. */
 export function obraMayor(d: Decision): void {
-  const { t, p, perfil } = d;
+  const { t, p } = d;
   const sede = t.sede;
   if (sede === null) return;
   const aMedias =
@@ -350,19 +427,14 @@ export function obraMayor(d: Decision): void {
     d.m.anotar('obra-mayor-en-marcha');
     return;
   }
-  for (const obra of perfil.obrasMayores) {
-    for (const comarca of t.propias) {
-      if (comarca.obrasMayores.includes(obra)) continue;
-      if (!puedeLevantar(t, comarca, obra)) continue;
-      // Se pide cuando se puede pagar: esperando en la cola no hace nada y confunde al que la lee.
-      if (!p.alcanza(costeDeObraMayor(obra, t.casa, t.reglas))) {
-        d.m.anotar('obra-mayor-sin-recursos');
-        return;
-      }
-      p.obraMayor(comarca.id, obra);
-      return;
-    }
+  const siguiente = siguienteObraMayor(d);
+  if (siguiente === null) return;
+  // Se pide cuando se puede pagar: esperando en la cola no hace nada y confunde al que la lee.
+  if (siguiente.falta > 0) {
+    d.m.anotar('obra-mayor-sin-recursos');
+    return;
   }
+  p.obraMayor(siguiente.comarca.id, siguiente.obra);
 }
 
 /** Lo que el robot sabe de si una obra mayor cabe en una comarca propia (el motor lo confirma). */
@@ -1107,9 +1179,14 @@ function compras(t: Tablero, perfil: Perfil): [Recurso, number][] {
   const salDeLonjas = deSuPlan ? t.consumoDe('sal') * TURNOS_DE_URGENCIA - t.disponible('sal') : 0;
   if (salDeLonjas > 0) falta.push(['sal', salDeLonjas]);
   const despensa = consumo * TURNOS_DE_DESPENSA - t.disponible('pan') - Math.max(0, urgente);
-  if (despensa > 0) falta.push(['pan', despensa]);
   const material = materialQueFalta(t, perfil);
-  if (material !== null && material[0] !== esencial?.[0]) falta.push(material);
+  const conMaterial = material !== null && material[0] !== esencial?.[0];
+  // Con la capital hecha, el material de la obra va antes que llenar la despensa: con el alfoz hay
+  // mas bocas y la despensa no se llena nunca, y la obra mayor no llegaba (T-094).
+  const obraPrimero = conMaterial && planCumplido(t, perfil);
+  if (obraPrimero) falta.push(material);
+  if (despensa > 0) falta.push(['pan', despensa]);
+  if (conMaterial && !obraPrimero) falta.push(material);
   // La sal solo la piden los caminos de verano: se compra en primavera y verano, y lo ultimo.
   const estacion = t.calendario.estacion;
   const sal = SAL_DE_VIAJE - t.disponible('sal');

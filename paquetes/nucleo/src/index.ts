@@ -132,7 +132,8 @@ export {
   prohibicionesDe,
   prohibicionesDelJugador,
 } from './reglas/casas/index.ts';
-export { impedimentoDeConstruir, solaresDe, solaresOcupados } from './reglas/obras.ts';
+export { impedimentoDeConstruir, rangoDe, solaresDe, solaresOcupados } from './reglas/obras.ts';
+export type { Rango } from './reglas/obras.ts';
 export type { MotivoSinConstruir } from './reglas/obras.ts';
 export { cuadrillasDe } from './reglas/cuadrillas.ts';
 export { capacidadDe } from './reglas/poblar.ts';

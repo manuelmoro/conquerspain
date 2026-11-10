@@ -122,7 +122,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-091](T-091-cuentas-con-contrasenya.md) | Cuentas con contraseña: registro, entrar, recordarme y restablecer | **hecha** | T-063, T-090 |
 | [T-092](T-092-plano-de-la-comarca.md) | El plano de la comarca: los solares a la vista | **hecha** | T-082, T-090 |
 | [T-093](T-093-mercado-ordenes-y-recuas-claros.md) | Mercado sencillo, órdenes claras y recuas en el mapa | **hecha** | T-084, T-092 |
-| [T-094](T-094-crecer-hacia-dentro.md) | Crecer hacia dentro: niveles sin solar, villas y el alfoz | propuesta (decide el usuario) | T-092, T-093 |
+| [T-094](T-094-crecer-hacia-dentro.md) | Crecer hacia dentro: niveles sin solar, villas y el alfoz | **hecha** | T-092, T-093 |
 | [T-087](T-087-movil-y-rendimiento.md) | Móvil, accesibilidad y rendimiento | en curso | T-086 |
 
 ## Fase 5 · Multijugador
