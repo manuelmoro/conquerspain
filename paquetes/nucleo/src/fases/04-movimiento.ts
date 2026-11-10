@@ -51,6 +51,7 @@ import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS, recursosSegun } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
 import { movimientoDeRebanyos } from './04-rebanyos.ts';
+import { movimientoDeMesnadas } from './04-mesnadas.ts';
 import { cobrarPortazgos, maravedisLibres } from './04-portazgos.ts';
 import { mejorasDelViaje, puedeCobrarPortazgo } from '../reglas/portazgos.ts';
 
@@ -76,6 +77,7 @@ export function faseMovimiento(ctx: Contexto): void {
   }
   for (const id of idsEnOrden(ctx.estado.recuas)) moverRecua(ctx, id);
   movimientoDeRebanyos(ctx);
+  movimientoDeMesnadas(ctx);
 }
 
 /** Los cometidos que no terminan solos: una orden nueva de la cola los releva. */

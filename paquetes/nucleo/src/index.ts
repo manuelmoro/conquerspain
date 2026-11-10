@@ -166,6 +166,13 @@ export {
 } from './reglas/ausencia.ts';
 export type { SituacionDeAusencia } from './reglas/ausencia.ts';
 export {
+  claveDeHostilidad,
+  costeDeMesnada,
+  fuerzaDe,
+  puedeEntrarLaMesnada,
+  sonHostiles,
+} from './reglas/milicia.ts';
+export {
   elegirOrigenes,
   origenesPosibles,
   perfilDe,

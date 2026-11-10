@@ -852,6 +852,7 @@ export interface TablasDeReglas {
   readonly influencia: DatosInfluencia;
   readonly prestigio: DatosPrestigio;
   readonly ausencia: DatosAusencia;
+  readonly milicia: DatosMilicia;
   readonly hitos: Readonly<Record<Hito, DatosHito>>;
   readonly rumores: DatosRumores;
   readonly mayordomo: DatosMayordomo;
@@ -859,6 +860,26 @@ export interface TablasDeReglas {
   readonly acontecimientos: DatosAcontecimientos;
   readonly ganaderia: DatosGanaderia;
   readonly contratos: DatosContratos;
+}
+
+/** Milicia y hostilidad (docs/06 §6.6; ficha T-120). */
+export interface DatosMilicia {
+  /** Como mucho, esta parte de la poblacion de una comarca, en milesimas. */
+  readonly levaMaximaMil: number;
+  readonly lealtadPorLeva: number;
+  readonly panPorCadaDiezHombres: number;
+  readonly soldadaPorCadaDiezHombres: number;
+  /** Recargo de la soldada por cada turno seguido fuera de tierra propia, y su tope. */
+  readonly recargoLejosPorTurnoMil: number;
+  readonly recargoLejosMaximoMil: number;
+  /** Lo que deserta cada turno sin paga, en milesimas de los hombres. */
+  readonly desercionSinPagaMil: number;
+  /** Jornadas que anda una mesnada por turno, en milesimas. */
+  readonly pasoMil: number;
+  readonly ventajaEnCasaMil: number;
+  readonly ventajaMurallaMil: number;
+  /** Los que se van a casa tras perder un enfrentamiento, en milesimas de los hombres. */
+  readonly bajasDerrotaMil: number;
 }
 
 /** Ausencia y amparo (docs/06 §6.4; ficha T-105), en turnos. */

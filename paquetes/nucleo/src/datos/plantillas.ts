@@ -469,6 +469,28 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     '{de} entra en la partida en {comarca}, con amparo hasta {amparoHasta:fecha}: ni portazgo ni cortejo mientras dure.',
     { publica: true },
   ),
+  // ——— Milicia y hostilidad (T-120) ———
+  'hostilidad.declarada': p(
+    'avisos',
+    '{de} declara la hostilidad a {contra}: vale desde {desde:fecha}. Desde entonces sus milicias pueden entrar en tierra de la otra y enfrentarse.',
+    { publica: true },
+  ),
+  'hostilidad.retirada': p('sucesos', '{de} retira la hostilidad a {contra}.', { publica: true }),
+  'milicia.leva': suceso('Se leva la {nombre}: {hombres} hombres dejan el trabajo.'),
+  'milicia.licencia': suceso('Se licencia la {nombre}: {hombres} hombres vuelven a casa.'),
+  'milicia.marcha': suceso('La {nombre} marcha hacia {hacia}: {turnos} turnos.'),
+  'milicia.llega': suceso('La {nombre} llega a {comarca}.'),
+  'milicia.no-entra': aviso(
+    'La {nombre} no puede entrar en {hacia}: ya no hay hostilidad o esa casa está amparada. Vuelve a {comarca}.',
+  ),
+  'milicia.desercion': aviso(
+    'No hay pan o soldada para la {nombre}: {hombres} hombres se vuelven a casa.',
+  ),
+  'milicia.enfrentamiento': p(
+    'avisos',
+    'En {comarca} se enfrentan las milicias de {ganador} y de {de}: gana {ganador}. La de {de} se retira y {bajas} de sus hombres vuelven a casa.',
+    { publica: true },
+  ),
   // ——— Ausencia (T-105) ———
   'ausencia.aviso': aviso(
     'Llevas {turnos} turnos sin dar órdenes: el mayordomo lleva la casa. Si pasan {ausente} más, contarás como ausente y la lealtad de tus comarcas empezará a bajar.',
@@ -532,6 +554,12 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'sin-respuesta': 'nadie respondió',
   'tramo-ajeno': 'ese tramo no lo mejoró tu casa',
   'ya-en-la-partida': 'esa casa ya está en la partida',
+  'hostilidad-imposible': 'no hay hostilidad que declarar o retirar con esa casa',
+  amparada: 'esa casa está amparada: acaba de entrar en la partida',
+  'demasiados-hombres': 'son más hombres de los que la comarca puede dar',
+  'mesnada-desconocida': 'esa mesnada ya no existe',
+  'mesnada-en-marcha': 'la mesnada sigue de marcha',
+  'tierra-vedada': 'no hay hostilidad con esa casa, o está amparada',
   'temporada-cerrada': 'la temporada ya se cerró',
   'origen-no-ofrecido': 'ese origen ya no está libre o lejos de los demás',
   'comarca-desleal': 'la comarca está descontenta',
@@ -668,6 +696,10 @@ export const NOMBRES_DE_ORDEN: Readonly<Record<string, string>> = {
   'responder-contrato': 'respuesta a un contrato',
   portazgo: 'portazgo',
   entrar: 'entrada en la partida',
+  levar: 'leva',
+  licenciar: 'licencia de milicia',
+  marchar: 'marcha',
+  hostilidad: 'hostilidad',
 };
 
 /** Palabras sueltas de los sucesos, por campo y valor. */

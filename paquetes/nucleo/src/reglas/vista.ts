@@ -9,6 +9,8 @@ import type { Casa } from '../tipos/reglas.ts';
 import type {
   Acontecimiento,
   CierreDeTemporada,
+  Hostilidad,
+  Mesnada,
   ConfiguracionPartida,
   Conocimiento,
   DatosConocidos,
@@ -111,6 +113,18 @@ export interface VistaJugador {
   readonly contratos: readonly Contrato[];
   /** La temporada cerrada, publica: clasificacion final y reconocimientos (T-104). */
   readonly cierre: CierreDeTemporada | null;
+  /** Sus mesnadas (T-120). */
+  readonly mesnadas: readonly Mesnada[];
+  /** Las mesnadas ajenas en comarcas donde tiene tierra o gente, con los hombres en tramos de 10. */
+  readonly mesnadasAjenas: readonly MesnadaAjena[];
+  /** Todas las hostilidades: son publicas (T-120). */
+  readonly hostilidades: readonly Hostilidad[];
+}
+
+export interface MesnadaAjena {
+  readonly jugador: IdJugador;
+  readonly comarca: IdComarca;
+  readonly hombres: number;
 }
 
 /** El rumbo de una comarca a otra, en ocho puntos, por sus centros [longitud, latitud]. */
@@ -278,5 +292,41 @@ export function vistaDeJugador(
       .filter((c) => c.propone === jugador || c.recibe === jugador)
       .sort((a, b) => comparar(a.id, b.id)),
     cierre: estado.cierre ?? null,
+    mesnadas: Object.values(estado.mesnadas ?? {})
+      .filter((m) => m.jugador === jugador)
+      .sort((a, b) => comparar(a.id, b.id)),
+    mesnadasAjenas: mesnadasAjenasDe(estado, jugador),
+    hostilidades: Object.keys(estado.hostilidades ?? {})
+      .sort(comparar)
+      .flatMap((clave) => {
+        const h = estado.hostilidades?.[clave];
+        return h === undefined ? [] : [h];
+      }),
   };
+}
+
+/** Las mesnadas ajenas que se ven: donde el jugador tiene tierra o una recua (T-120). */
+function mesnadasAjenasDe(estado: EstadoPartida, jugador: IdJugador): MesnadaAjena[] {
+  const vigila = new Set<string>();
+  for (const c of Object.values(estado.comarcas)) if (c.duenyo === jugador) vigila.add(c.id);
+  for (const r of Object.values(estado.recuas)) {
+    if (r.jugador === jugador && r.situacion.donde === 'comarca') vigila.add(r.situacion.comarca);
+  }
+  return Object.values(estado.mesnadas ?? {})
+    .filter(
+      (m) =>
+        m.jugador !== jugador && m.situacion.donde === 'comarca' && vigila.has(m.situacion.comarca),
+    )
+    .sort((a, b) => comparar(a.id, b.id))
+    .flatMap((m) =>
+      m.situacion.donde === 'comarca'
+        ? [
+            {
+              jugador: m.jugador,
+              comarca: m.situacion.comarca,
+              hombres: Math.max(10, Math.round(m.hombres / 10) * 10),
+            },
+          ]
+        : [],
+    );
 }

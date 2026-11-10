@@ -6,6 +6,7 @@ import type {
   IdComarca,
   IdContrato,
   IdJugador,
+  IdMesnada,
   IdMercado,
   IdObra,
   IdOrden,
@@ -53,6 +54,10 @@ export const TIPOS_DE_ORDEN = [
   'responder-contrato',
   'portazgo',
   'entrar',
+  'levar',
+  'licenciar',
+  'marchar',
+  'hostilidad',
 ] as const;
 export type TipoDeOrden = (typeof TIPOS_DE_ORDEN)[number];
 
@@ -359,6 +364,33 @@ export interface OrdenEntrar extends OrdenBase {
   readonly comarca: IdComarca;
 }
 
+/** Leva una mesnada en una comarca propia (T-120). */
+export interface OrdenLevar extends OrdenBase {
+  readonly tipo: 'levar';
+  readonly comarca: IdComarca;
+  readonly hombres: number;
+}
+
+/** Los hombres de una mesnada vuelven a casa (T-120). */
+export interface OrdenLicenciar extends OrdenBase {
+  readonly tipo: 'licenciar';
+  readonly mesnada: IdMesnada;
+}
+
+/** Una mesnada marcha hacia una comarca (T-120). */
+export interface OrdenMarchar extends OrdenBase {
+  readonly tipo: 'marchar';
+  readonly mesnada: IdMesnada;
+  readonly destino: IdComarca;
+}
+
+/** Declara la hostilidad a otra casa, o la retira (T-120). */
+export interface OrdenHostilidad extends OrdenBase {
+  readonly tipo: 'hostilidad';
+  readonly contra: IdJugador;
+  readonly declarar: boolean;
+}
+
 /** Fija el portazgo de un tramo que el jugador mejoro (T-103). */
 export interface OrdenPortazgo extends OrdenBase {
   readonly tipo: 'portazgo';
@@ -396,4 +428,8 @@ export type Orden =
   | OrdenContrato
   | OrdenResponderContrato
   | OrdenPortazgo
-  | OrdenEntrar;
+  | OrdenEntrar
+  | OrdenLevar
+  | OrdenLicenciar
+  | OrdenMarchar
+  | OrdenHostilidad;

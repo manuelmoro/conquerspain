@@ -170,9 +170,11 @@ function valorDe(
     case 'hasta':
     case 'sobre':
     case 'destino':
+    case 'hacia':
       return nombreDeComarca(dato, fuentes);
     case 'ganador':
     case 'de':
+    case 'contra':
       return nombreDeJugador(dato, fuentes);
     // Si ya no existe (disuelta, perdida), el suceso trae su nombre.
     case 'recua':

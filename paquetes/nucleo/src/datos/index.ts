@@ -13,6 +13,7 @@ import { EDIFICIOS } from './edificios.ts';
 import { ESTACIONES } from './estaciones.ts';
 import { GANADERIA } from './ganaderia.ts';
 import { AUSENCIA } from './ausencia.ts';
+import { MILICIA } from './milicia.ts';
 import { CONTRATOS } from './contratos.ts';
 import { INFLUENCIA } from './influencia.ts';
 import { MAYORDOMO } from './mayordomo.ts';
@@ -54,4 +55,5 @@ export const TABLAS_DEL_JUEGO: TablasDeReglas = {
   ganaderia: GANADERIA,
   contratos: CONTRATOS,
   ausencia: AUSENCIA,
+  milicia: MILICIA,
 };

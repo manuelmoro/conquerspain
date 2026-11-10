@@ -2,6 +2,9 @@
 import type {
   Acontecimiento,
   CierreDeTemporada,
+  Hostilidad,
+  Mesnada,
+  SituacionDeMesnada,
   ConfiguracionPartida,
   Conocimiento,
   DatosConocidos,
@@ -37,6 +40,7 @@ import type {
   IdComarca,
   IdContrato,
   IdJugador,
+  IdMesnada,
   IdMercado,
   IdObra,
   IdOrden,
@@ -232,6 +236,44 @@ const validarSituacion: Validador<SituacionMovil> = (dato, ruta) => {
   return invalido(`${ruta}.donde`, 'una unidad movil esta en una comarca o en un camino');
 };
 
+const validarSituacionDeMesnada: Validador<SituacionDeMesnada> = (dato, ruta) => {
+  if (typeof dato !== 'object' || dato === null || Array.isArray(dato)) {
+    return invalido(ruta, 'se esperaba la situacion de una mesnada');
+  }
+  const donde = (dato as Record<string, unknown>)['donde'];
+  if (donde === 'comarca') {
+    return objeto<{ donde: 'comarca'; comarca: IdComarca }>({
+      donde: unoDe(['comarca'] as const),
+      comarca: identificador<IdComarca>(),
+    })(dato, ruta);
+  }
+  if (donde === 'marcha') {
+    return objeto<{ donde: 'marcha'; hacia: IdComarca; turnosQueFaltan: number }>({
+      donde: unoDe(['marcha'] as const),
+      hacia: identificador<IdComarca>(),
+      turnosQueFaltan: entero({ minimo: 1 }),
+    })(dato, ruta);
+  }
+  return invalido(`${ruta}.donde`, 'una mesnada esta en una comarca o de marcha');
+};
+
+const validarMesnada: Validador<Mesnada> = objeto<Mesnada>({
+  id: identificador<IdMesnada>(),
+  jugador: identificador<IdJugador>(),
+  nombre: texto({ minimo: 1, maximo: 80 }),
+  origen: identificador<IdComarca>(),
+  hombres: entero({ minimo: 1 }),
+  situacion: validarSituacionDeMesnada,
+  turnosFuera: enteroNoNegativo(),
+});
+
+const validarHostilidad: Validador<Hostilidad> = objeto<Hostilidad>({
+  de: identificador<IdJugador>(),
+  contra: identificador<IdJugador>(),
+  declaradaEn: entero({ minimo: 1 }),
+  vigenteDesde: entero({ minimo: 1 }),
+});
+
 const validarRecua: Validador<Recua> = objeto<Recua>({
   id: identificador<IdRecua>(),
   jugador: identificador<IdJugador>(),
@@ -399,6 +441,8 @@ const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
   contratos: opcional(registro(validarContrato, identificador())),
   clasificacion: lista(validarPuesto),
   cierre: opcional(validarCierre),
+  mesnadas: opcional(registro(validarMesnada, identificador())),
+  hostilidades: opcional(registro(validarHostilidad, texto({ minimo: 1, maximo: 200 }))),
 });
 
 /**

@@ -8,7 +8,8 @@
 // Esto comprueba la **forma** y la **propiedad** (lo que cita es del jugador y lo conoce); no
 // comprueba que haya recursos o cuadrillas: eso es ejecucion legal y lo decide el motor al darla
 // de alta, que la cancela con su motivo y lo cuenta en la cronica.
-import { cortejable } from '../reglas/ausencia.ts';
+import { claveDeHostilidad } from '../reglas/milicia.ts';
+import { cortejable, estaAmparado } from '../reglas/ausencia.ts';
 import {
   costeDeAperos,
   costeDeEdificio,
@@ -326,6 +327,39 @@ function comprobarPropiedad(
         errores.push(error('contrato', 'ese contrato ya no espera respuesta'));
       break;
     }
+    case 'levar': {
+      propia('comarca', o.comarca);
+      const comarca = estado.comarcas[o.comarca];
+      const maximo =
+        comarca === undefined
+          ? 0
+          : Math.floor((comarca.poblacion * reglas.milicia.levaMaximaMil) / 1000);
+      if (o.hombres > maximo)
+        errores.push(
+          error('hombres', `de esa comarca se pueden levar como mucho ${String(maximo)} hombres`),
+        );
+      break;
+    }
+    case 'licenciar':
+    case 'marchar': {
+      if (estado.mesnadas?.[o.mesnada]?.jugador !== ctx.jugador)
+        errores.push(error('mesnada', `la mesnada "${o.mesnada}" no es tuya`));
+      if (o.tipo === 'marchar') conocida('destino', o.destino);
+      break;
+    }
+    case 'hostilidad': {
+      const otra = estado.jugadores[o.contra];
+      if (o.contra === ctx.jugador || otra === undefined)
+        errores.push(error('contra', 'la hostilidad es contra otra casa de la partida'));
+      const existente = estado.hostilidades?.[claveDeHostilidad(ctx.jugador, o.contra)];
+      if (o.declarar && existente !== undefined)
+        errores.push(error('contra', 'ya hay hostilidad con esa casa'));
+      if (!o.declarar && existente?.de !== ctx.jugador)
+        errores.push(error('contra', 'solo retira la hostilidad quien la declaro'));
+      if (o.declarar && otra !== undefined && estaAmparado(otra, estado.turno))
+        errores.push(error('contra', 'esa casa esta amparada: acaba de entrar en la partida'));
+      break;
+    }
     case 'portazgo': {
       const tramo = estado.caminos[claveDeTramo(o.desde, o.hasta)];
       if (tramo?.duenyo !== ctx.jugador)
@@ -517,6 +551,11 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
     case 'contrato':
     case 'responder-contrato':
     case 'portazgo':
+      return valido({ ...o, ...fijos, ...sinCola });
+    case 'levar':
+    case 'licenciar':
+    case 'marchar':
+    case 'hostilidad':
       return valido({ ...o, ...fijos, ...sinCola });
     case 'entrar':
       // Ya esta en la partida: entrar es cosa de la convocatoria, no una orden que se pueda dar.

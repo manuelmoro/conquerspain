@@ -55,6 +55,10 @@ export const NOMBRE_DE_ORDEN: Readonly<Record<TipoDeOrden, string>> = {
   'responder-contrato': 'Responder a un contrato',
   portazgo: 'Fijar un portazgo',
   entrar: 'Entrar en la partida',
+  levar: 'Levar milicia',
+  licenciar: 'Licenciar una mesnada',
+  marchar: 'Marchar con una mesnada',
+  hostilidad: 'Hostilidad',
 };
 
 export const NOMBRE_DE_COMETIDO: Readonly<Record<Cometido, string>> = {
@@ -162,6 +166,10 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
     donde: 'casa',
     llega: null,
   },
+  levar: { texto: 'Leva milicia en «Tu casa», sección Milicia.', donde: 'casa', llega: null },
+  licenciar: { texto: 'Licencia tus mesnadas en «Tu casa».', donde: 'casa', llega: null },
+  marchar: { texto: 'Manda marchar tus mesnadas en «Tu casa».', donde: 'casa', llega: null },
+  hostilidad: { texto: 'Declara o retira la hostilidad en «Tu casa».', donde: 'casa', llega: null },
   ruta: {
     texto: 'Dale otro camino a la recua o al rebaño desde «Tus recuas y rebaños».',
     donde: 'unidades',

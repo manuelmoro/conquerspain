@@ -9,6 +9,7 @@ import type {
   IdAcontecimiento,
   IdComarca,
   IdContrato,
+  IdMesnada,
   IdJugador,
   IdMercado,
   IdObra,
@@ -28,6 +29,8 @@ import type {
   Fuero,
   CargaFiscal,
   CierreDeTemporada,
+  Hostilidad,
+  Mesnada,
   Obra,
   PreciosConocidos,
   PuestoEnLaClasificacion,
@@ -63,6 +66,27 @@ export type Cambio =
       /** Un contrato cerrado sale del estado: ya se vio un turno y queda en la cronica (T-103). */
       readonly tipo: 'contrato-baja';
       readonly contrato: IdContrato;
+    }
+  | {
+      /** Una mesnada nueva o con su estado al dia (T-120). */
+      readonly tipo: 'mesnada';
+      readonly mesnada: Mesnada;
+    }
+  | {
+      /** La mesnada se disuelve: sus hombres ya volvieron a casa (T-120). */
+      readonly tipo: 'mesnada-baja';
+      readonly mesnada: IdMesnada;
+    }
+  | {
+      /** Se declara una hostilidad (T-120). */
+      readonly tipo: 'hostilidad';
+      readonly clave: string;
+      readonly hostilidad: Hostilidad;
+    }
+  | {
+      /** Se retira una hostilidad (T-120). */
+      readonly tipo: 'hostilidad-baja';
+      readonly clave: string;
     }
   | {
       /** Entra un jugador en la partida empezada (T-107). */
@@ -1704,6 +1728,41 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
     case 'contrato-baja': {
       const { [cambio.contrato]: _fuera, ...quedan } = ctx.estado.contratos ?? {};
       ctx.estado.contratos = quedan;
+      return;
+    }
+
+    case 'mesnada': {
+      if (ctx.estado.jugadores[cambio.mesnada.jugador] === undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `La mesnada "${cambio.mesnada.id}" es de un jugador que no esta en la partida.`,
+          { mesnada: cambio.mesnada.id },
+        );
+      }
+      ctx.estado.mesnadas = {
+        ...(ctx.estado.mesnadas ?? {}),
+        [cambio.mesnada.id]: comoBorrador(cambio.mesnada),
+      };
+      return;
+    }
+
+    case 'mesnada-baja': {
+      const { [cambio.mesnada]: _fuera, ...quedan } = ctx.estado.mesnadas ?? {};
+      ctx.estado.mesnadas = quedan;
+      return;
+    }
+
+    case 'hostilidad': {
+      ctx.estado.hostilidades = {
+        ...(ctx.estado.hostilidades ?? {}),
+        [cambio.clave]: { ...cambio.hostilidad },
+      };
+      return;
+    }
+
+    case 'hostilidad-baja': {
+      const { [cambio.clave]: _fuera, ...quedan } = ctx.estado.hostilidades ?? {};
+      ctx.estado.hostilidades = quedan;
       return;
     }
 

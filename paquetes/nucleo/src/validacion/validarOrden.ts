@@ -6,6 +6,7 @@ import type {
   IdContrato,
   IdJugador,
   IdMercado,
+  IdMesnada,
   IdObra,
   IdOrden,
   IdRebanyo,
@@ -39,6 +40,10 @@ import type {
   OrdenContrato,
   OrdenPortazgo,
   OrdenEntrar,
+  OrdenLevar,
+  OrdenLicenciar,
+  OrdenMarchar,
+  OrdenHostilidad,
   OrdenResponderContrato,
   ParadaDeRuta,
   ReglaDeMayordomo,
@@ -381,6 +386,33 @@ const entrar: Validador<OrdenEntrar> = objeto<OrdenEntrar>({
   comarca: identificador<IdComarca>(),
 });
 
+const levar: Validador<OrdenLevar> = objeto<OrdenLevar>({
+  ...camposBase,
+  tipo: unoDe(['levar'] as const),
+  comarca: identificador<IdComarca>(),
+  hombres: entero({ minimo: 1, maximo: 100_000 }),
+});
+
+const licenciar: Validador<OrdenLicenciar> = objeto<OrdenLicenciar>({
+  ...camposBase,
+  tipo: unoDe(['licenciar'] as const),
+  mesnada: identificador<IdMesnada>(),
+});
+
+const marchar: Validador<OrdenMarchar> = objeto<OrdenMarchar>({
+  ...camposBase,
+  tipo: unoDe(['marchar'] as const),
+  mesnada: identificador<IdMesnada>(),
+  destino: identificador<IdComarca>(),
+});
+
+const hostilidad: Validador<OrdenHostilidad> = objeto<OrdenHostilidad>({
+  ...camposBase,
+  tipo: unoDe(['hostilidad'] as const),
+  contra: identificador<IdJugador>(),
+  declarar: booleano(),
+});
+
 const portazgo: Validador<OrdenPortazgo> = objeto<OrdenPortazgo>({
   ...camposBase,
   tipo: unoDe(['portazgo'] as const),
@@ -420,6 +452,10 @@ const validarForma = porTipo<Orden>({
   'responder-contrato': responderContrato,
   portazgo,
   entrar,
+  levar,
+  licenciar,
+  marchar,
+  hostilidad,
 });
 
 /** Valida la forma de una orden que llega de fuera. No comprueba si sus referencias existen. */
@@ -472,7 +508,10 @@ function comarcasCitadas(orden: Orden): string[] {
     case 'portazgo':
       return [orden.desde, orden.hasta];
     case 'entrar':
+    case 'levar':
       return [orden.comarca];
+    case 'marchar':
+      return [orden.destino];
     case 'contrato': {
       const c = orden.condiciones;
       if (c.tipo === 'obra') return c.hacia === null ? [c.comarca] : [c.comarca, c.hacia];

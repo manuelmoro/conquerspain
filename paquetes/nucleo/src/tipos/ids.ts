@@ -16,6 +16,7 @@ export type IdMercado = Id<'mercado'>;
 export type IdFeria = Id<'feria'>;
 export type IdAcontecimiento = Id<'acontecimiento'>;
 export type IdContrato = Id<'contrato'>;
+export type IdMesnada = Id<'mesnada'>;
 
 /**
  * Unico sitio donde un texto se convierte en identificador: al crear una entidad nueva en el

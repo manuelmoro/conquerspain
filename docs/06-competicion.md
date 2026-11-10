@@ -259,6 +259,13 @@ No entra hasta que las fases anteriores estén equilibradas. Cuando entre, así:
   objetivo; el coste de mantener tropas lejos crece rápido.
 - **Bandidaje** como riesgo ambiental (no entre jugadores) en caminos sin ventas ni cercas.
 
+**Cómo está hecha la milicia (T-120).** Se leva hasta el 20 % de una comarca propia (−5 de lealtad); cada 10
+hombres comen 1 de pan y cobran 6 maravedís por turno, con un 10 % más por turno lejos de casa, hasta el
+triple; sin paga deserta el 10 % por turno. La hostilidad se declara con un turno de preaviso público y vale
+para las dos casas; nunca contra quien está amparado. Dos mesnadas hostiles en la misma comarca se enfrentan
+sin azar (hombres × 1,5 si defiende su tierra × 2 con muralla); la que pierde vuelve a casa y el 10 % de sus
+hombres se va con los suyos. Los hombres nunca mueren y nada se destruye.
+
 Regla de oro: **un jugador que pierde una guerra debe seguir teniendo una partida que jugar**.
 
 ## 6.7 Temporadas y clasificación

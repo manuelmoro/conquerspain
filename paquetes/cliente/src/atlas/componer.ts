@@ -250,6 +250,18 @@ export function componerAtlas(
       situacion: r.situacion,
       ruta: r.ruta,
     })),
+    // Las mesnadas propias (T-120): en su comarca, o en la de destino si van de marcha.
+    ...vista.mesnadas.map((m) => ({
+      id: m.id,
+      nombre: m.nombre,
+      clase: 'mesnada',
+      marca: '🛡️',
+      situacion: {
+        donde: 'comarca' as const,
+        comarca: m.situacion.donde === 'comarca' ? m.situacion.comarca : m.situacion.hacia,
+      },
+      ruta: [],
+    })),
   ];
   const fichas: Figura[] = [];
   for (const m of moviles) {

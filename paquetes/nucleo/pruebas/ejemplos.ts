@@ -9,6 +9,7 @@ import { MODIFICADORES_NEUTROS } from '../src/datos/casas.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
 import { AUSENCIA } from '../src/datos/ausencia.ts';
+import { MILICIA } from '../src/datos/milicia.ts';
 import { CONTRATOS } from '../src/datos/contratos.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
 import { ESTACIONES } from '../src/datos/estaciones.ts';
@@ -294,5 +295,6 @@ export function tablasDeEjemplo(): Registro {
     ganaderia: JSON.parse(JSON.stringify(GANADERIA)) as Registro,
     contratos: JSON.parse(JSON.stringify(CONTRATOS)) as Registro,
     ausencia: JSON.parse(JSON.stringify(AUSENCIA)) as Registro,
+    milicia: JSON.parse(JSON.stringify(MILICIA)) as Registro,
   };
 }

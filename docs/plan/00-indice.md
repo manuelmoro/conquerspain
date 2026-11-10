@@ -143,7 +143,7 @@ mapa completo; ESTADO.md es la aguja.
 
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
-| [T-120](T-120-milicia.md) | Milicia concejil y coste económico de la guerra | pendiente | T-106 |
+| [T-120](T-120-milicia.md) | Milicia concejil y coste económico de la guerra | **hecha** | T-106 |
 | [T-121](T-121-pasos-y-asedios.md) | Disputa de pasos y asedios negociables | pendiente | T-120 |
 | [T-122](T-122-bandidaje.md) | Bandidaje y seguridad de caminos | pendiente | T-120 |
 | [T-123](T-123-diplomacia.md) | Acuerdos, rupturas y reputación | pendiente | T-121 |

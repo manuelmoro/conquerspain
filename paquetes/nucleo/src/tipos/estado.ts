@@ -5,6 +5,7 @@ import type {
   IdComarca,
   IdJugador,
   IdMercado,
+  IdMesnada,
   IdObra,
   IdOrden,
   IdPartida,
@@ -406,6 +407,37 @@ export interface EstadoPartida {
   readonly clasificacion: readonly PuestoEnLaClasificacion[];
   /** La temporada cerrada (T-104). Sin poner, sigue abierta. */
   readonly cierre?: CierreDeTemporada;
+  /** Mesnadas levadas (T-120), por identificador. Sin poner, ninguna. */
+  readonly mesnadas?: Readonly<Record<string, Mesnada>>;
+  /** Hostilidades declaradas (T-120), por la clave de las dos casas. Sin poner, ninguna. */
+  readonly hostilidades?: Readonly<Record<string, Hostilidad>>;
+}
+
+// ——— Milicia y hostilidad (T-120) ——————————————————————————————————————————————
+
+/** Donde esta una mesnada: en una comarca, o de marcha hacia otra. */
+export type SituacionDeMesnada =
+  | { readonly donde: 'comarca'; readonly comarca: IdComarca }
+  | { readonly donde: 'marcha'; readonly hacia: IdComarca; readonly turnosQueFaltan: number };
+
+/** Milicia levada en una comarca propia: sus hombres salen de alli y alli vuelven (T-120). */
+export interface Mesnada {
+  readonly id: IdMesnada;
+  readonly jugador: IdJugador;
+  readonly nombre: string;
+  readonly origen: IdComarca;
+  readonly hombres: number;
+  readonly situacion: SituacionDeMesnada;
+  /** Turnos seguidos fuera de tierra propia: el recargo de la soldada. */
+  readonly turnosFuera: number;
+}
+
+/** Una casa declara la hostilidad a otra: vale para las dos desde `vigenteDesde` (T-120). */
+export interface Hostilidad {
+  readonly de: IdJugador;
+  readonly contra: IdJugador;
+  readonly declaradaEn: number;
+  readonly vigenteDesde: number;
 }
 
 /** Lo que se reconoce al cerrar una temporada: el primero de cada capitulo (ficha T-104 §2.2). */
