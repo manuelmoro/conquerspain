@@ -2,6 +2,7 @@
 // rebanyos. En este orden: hostilidades, levas, licencias y marchas (cada clase en orden de
 // identificador); despues cada mesnada anda, paga su pan y su soldada o deserta; y al final, los
 // enfrentamientos entre casas con hostilidad vigente. Los hombres nunca mueren: van y vuelven.
+import { hayNoAgresion } from '../reglas/contratos.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { cancelarOrden, dejarEnEspera, empezarOrden, ordenesVivas } from '../ordenes.ts';
@@ -51,6 +52,10 @@ function hostilidad(ctx: Contexto, orden: OrdenDe<'hostilidad'>): void {
     }
     if (estaAmparado(otra, ctx.turno)) {
       cancelarOrden(ctx, orden, 'amparada');
+      return;
+    }
+    if (hayNoAgresion(ctx.estado, orden.jugador, orden.contra)) {
+      cancelarOrden(ctx, orden, 'acuerdo-de-no-agresion');
       return;
     }
     empezarOrden(ctx, orden, 'terminada');

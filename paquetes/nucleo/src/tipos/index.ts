@@ -16,11 +16,14 @@ export type {
   IdRecua,
 } from './ids.ts';
 export { idDeMercadoDeFeria, idDeMercadoLocal } from './ids.ts';
-export { ESTADOS_DE_CONTRATO, TIPOS_DE_CONTRATO } from './contratos.ts';
+export { ESTADOS_DE_CONTRATO, TIPOS_DE_ACUERDO, TIPOS_DE_CONTRATO } from './contratos.ts';
 export type {
   Contrato,
   ContratoAperos,
   ContratoEntrega,
+  ContratoExclusiva,
+  ContratoNoAgresion,
+  ContratoNoCortejo,
   ContratoObra,
   ContratoPaso,
   ContratoPrestamo,

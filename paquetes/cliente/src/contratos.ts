@@ -5,6 +5,7 @@ import {
   OBRAS_MAYORES_DE_TRAMO,
   RECURSOS_DE_MERCADO,
   TABLAS_DEL_JUEGO,
+  TIPOS_DE_ACUERDO,
   TIPOS_DE_OBRA_MAYOR,
 } from '@conquer/nucleo';
 import type {
@@ -29,6 +30,9 @@ export const NOMBRE_DE_CONTRATO: Readonly<Record<TipoDeContrato, string>> = {
   aperos: 'Aperos instalados',
   obra: 'Obra por encargo',
   paso: 'Paso de ganado',
+  'no-agresion': 'No agresión',
+  'no-cortejo': 'No cortejar comarcas',
+  exclusiva: 'Exclusiva de venta',
 };
 
 export const ESTADO_DE_CONTRATO: Readonly<Record<EstadoDeContrato, string>> = {
@@ -38,6 +42,7 @@ export const ESTADO_DE_CONTRATO: Readonly<Record<EstadoDeContrato, string>> = {
   incumplido: 'Incumplido',
   rechazado: 'No firmado',
   caducado: 'Caducado',
+  roto: 'Roto',
 };
 
 const ARTICULO: Readonly<Record<TipoObraMayor, 'un' | 'una'>> = {
@@ -83,7 +88,35 @@ export function frasesDeContrato(contrato: Contrato, yo: string, n: NombresDeCon
       const tierras = contrato.concede === yo ? 'tus tierras' : 'sus tierras';
       return `${sujeto(contrato.concede, 'dejas', 'deja')} pasar los rebaños de ${de(pasa)} por ${tierras}, por cualquier camino, por ${mrs(contrato.precio)}.`;
     }
+    case 'no-agresion': {
+      const precio = contrato.precio > 0 ? `, por ${mrs(contrato.precio)}` : '';
+      return `${de(contrato.propone)} y ${de(contrato.recibe)} no se declaran la hostilidad hasta el plazo${precio}.`;
+    }
+    case 'no-cortejo': {
+      const comarcas = contrato.comarcas.map((c) => n.comarca(c)).join(', ');
+      return `${sujeto(contrato.compromete, 'no cortejas', 'no corteja')} ${comarcas} hasta el plazo, por ${mrs(contrato.precio)}.`;
+    }
+    case 'exclusiva': {
+      const recurso = NOMBRE_DE_RECURSO[contrato.recurso].toLowerCase();
+      const otra = pasiva(contrato.compromete);
+      return `${sujeto(contrato.compromete, 'no vendes', 'no vende')} ${recurso} en ninguna plaza hasta el plazo: solo ${a(otra)}, por contrato. Por ${mrs(contrato.precio)}.`;
+    }
   }
+}
+
+/** Es un acuerdo que se puede romper: vigente y de los que duran hasta su plazo (T-123). */
+export function sePuedeRomper(contrato: Contrato): boolean {
+  return contrato.estado === 'vigente' && TIPOS_DE_ACUERDO.includes(contrato.tipo);
+}
+
+/** Lo que cuesta romper un acuerdo, en una frase. */
+export function costeDeRomper(): string {
+  const t = TABLAS_DEL_JUEGO.contratos;
+  return `Romperlo cuesta ${String(t.creditoPorRomper)} de crédito y ${String(t.prestigioPorRomper)} de prestigio, y lo saben todos.`;
+}
+
+export function romperAcuerdo(contrato: string): Readonly<Record<string, unknown>> {
+  return { tipo: 'romper-acuerdo', contrato };
 }
 
 /** Plazo y penalizacion, dichos como se leen. */
@@ -174,6 +207,9 @@ export interface FormularioDeContrato {
   readonly cantidad: string;
   readonly comarca: string;
   readonly hacia: string;
+  /** La segunda y tercera comarca de un acuerdo de no cortejar (T-123). */
+  readonly comarca2: string;
+  readonly comarca3: string;
   readonly obra: string;
   readonly niveles: string;
   readonly precio: string;
@@ -190,6 +226,9 @@ export const QUIEN_HACE: Readonly<Record<TipoDeContrato, string>> = {
   aperos: 'Quién instala los aperos (un ferrón)',
   obra: 'Quién levanta la obra (un cantero)',
   paso: 'Quién deja pasar por sus tierras',
+  'no-agresion': 'Quién la propone (vale para las dos)',
+  'no-cortejo': 'Quién se compromete a no cortejarlas',
+  exclusiva: 'Quién vende solo a la otra',
 };
 
 /** Los campos de cada tipo, en orden. */
@@ -201,6 +240,9 @@ export const CAMPOS_DE_CONTRATO: Readonly<
   aperos: ['comarca', 'niveles', 'precio'],
   obra: ['obra', 'comarca', 'hacia', 'precio'],
   paso: ['precio'],
+  'no-agresion': ['precio'],
+  'no-cortejo': ['comarca', 'comarca2', 'comarca3', 'precio'],
+  exclusiva: ['recurso', 'precio'],
 };
 
 function entero(texto: string, minimo: number): number | null {
@@ -256,6 +298,18 @@ function condicionesDe(
     }
     case 'paso':
       return { tipo: 'paso', activa, precio };
+    case 'no-agresion':
+      return { tipo: 'no-agresion', activa, precio };
+    case 'no-cortejo': {
+      const comarcas = [...new Set([f.comarca, f.comarca2, f.comarca3].filter((c) => c !== ''))];
+      if (comarcas.length === 0) return null;
+      return { tipo: 'no-cortejo', activa, comarcas, precio };
+    }
+    case 'exclusiva': {
+      const recurso = recursoDe(f.recurso);
+      if (recurso === null) return null;
+      return { tipo: 'exclusiva', activa, recurso, precio };
+    }
   }
 }
 

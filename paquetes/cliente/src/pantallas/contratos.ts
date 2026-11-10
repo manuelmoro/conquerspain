@@ -17,6 +17,9 @@ import {
   QUIEN_HACE,
   cierreDeContrato,
   contratosEnOrden,
+  costeDeRomper,
+  romperAcuerdo,
+  sePuedeRomper,
   estadoDeCasa,
   famaDeCredito,
   fijarPortazgo,
@@ -46,6 +49,8 @@ let formulario: FormularioDeContrato = {
   cantidad: '',
   comarca: '',
   hacia: '',
+  comarca2: '',
+  comarca3: '',
   obra: 'puente',
   niveles: '1',
   precio: '',
@@ -59,6 +64,8 @@ const ETIQUETA: Readonly<Partial<Record<keyof FormularioDeContrato, string>>> = 
   cantidad: 'Cantidad',
   comarca: 'Comarca',
   hacia: 'Hacia',
+  comarca2: 'Otra comarca',
+  comarca3: 'Y otra',
   obra: 'Obra',
   niveles: 'Niveles',
   precio: 'Precio (mrs)',
@@ -130,7 +137,15 @@ function campoDe(
           .map(([id, nombre]) => ({ id, nombre })),
       );
     case 'comarca':
-      return selector(almacen, campo, etiqueta, comarcasDelOtroLado(o));
+      return selector(
+        almacen,
+        campo,
+        etiqueta,
+        formulario.tipo === 'no-cortejo' ? o.comarcas : comarcasDelOtroLado(o),
+      );
+    case 'comarca2':
+    case 'comarca3':
+      return selector(almacen, campo, etiqueta, o.comarcas);
     case 'hacia': {
       const obra = TIPOS_DE_OBRA_MAYOR.find((t) => t === formulario.obra);
       if (obra === undefined || !OBRAS_MAYORES_DE_TRAMO.includes(obra)) return null;
@@ -249,6 +264,17 @@ function lista(almacen: Almacen, vista: VistaJugador, o: OpcionesDeContratos): H
       );
     } else if (espera) {
       acciones.push(el('p', { class: 'suave' }, `Esperando la respuesta de ${jugador(otra)}.`));
+    } else if (sePuedeRomper(contrato)) {
+      acciones.push(
+        el('p', { class: 'suave' }, costeDeRomper()),
+        boton(
+          'Romper el acuerdo',
+          () => {
+            void almacen.anyadir(romperAcuerdo(contrato.id));
+          },
+          'secundario',
+        ),
+      );
     }
     ul.append(
       el(

@@ -242,8 +242,10 @@ abrir otra ruta: el mercado corrige al que se pasa de listo.
 
 ### 6.5.4 Diplomacia ligera
 
-Acuerdos con efecto mecánico y duración pactada: paso franco, exclusiva de compra, no cortejar
-comarcas concretas. Romper un acuerdo antes de tiempo cuesta crédito y prestigio.
+Acuerdos con efecto mecánico y duración pactada (T-123), firmados como contratos: **paso de ganado**, **no
+agresión** (retira la hostilidad y la impide; como mucho tres por casa), **no cortejar** hasta tres comarcas y
+**exclusiva de venta** de un recurso (no se vende en las plazas). Romper uno antes de tiempo se anuncia a todos
+y cuesta 25 de crédito y 30 de prestigio, que quedan para siempre entre las penalizaciones.
 
 ## 6.6 El conflicto, cuando llegue
 

@@ -5,7 +5,16 @@ import type { IdComarca, IdContrato, IdJugador, IdObra } from './ids.ts';
 import type { Recurso } from './recursos.ts';
 import type { TipoObraMayor } from './reglas.ts';
 
-export const TIPOS_DE_CONTRATO = ['entrega', 'prestamo', 'aperos', 'obra', 'paso'] as const;
+export const TIPOS_DE_CONTRATO = [
+  'entrega',
+  'prestamo',
+  'aperos',
+  'obra',
+  'paso',
+  'no-agresion',
+  'no-cortejo',
+  'exclusiva',
+] as const;
 export type TipoDeContrato = (typeof TIPOS_DE_CONTRATO)[number];
 
 export const ESTADOS_DE_CONTRATO = [
@@ -15,6 +24,8 @@ export const ESTADOS_DE_CONTRATO = [
   'incumplido',
   'rechazado',
   'caducado',
+  /** Un acuerdo que una parte rompio antes de su plazo (T-123). */
+  'roto',
 ] as const;
 export type EstadoDeContrato = (typeof ESTADOS_DE_CONTRATO)[number];
 
@@ -86,5 +97,44 @@ export interface ContratoPaso extends BaseDeContrato {
   readonly precio: number;
 }
 
+/** Ninguna de las dos casas declara la hostilidad a la otra hasta el plazo (T-123). */
+export interface ContratoNoAgresion extends BaseDeContrato {
+  readonly tipo: 'no-agresion';
+  /** Quien la propone comprometiendose; el efecto es para las dos. */
+  readonly compromete: IdJugador;
+  readonly precio: number;
+}
+
+/** La parte que se compromete no corteja esas comarcas hasta el plazo (T-123). */
+export interface ContratoNoCortejo extends BaseDeContrato {
+  readonly tipo: 'no-cortejo';
+  readonly compromete: IdJugador;
+  readonly comarcas: readonly IdComarca[];
+  readonly precio: number;
+}
+
+/** La parte que se compromete no vende ese recurso en ninguna plaza hasta el plazo (T-123). */
+export interface ContratoExclusiva extends BaseDeContrato {
+  readonly tipo: 'exclusiva';
+  readonly compromete: IdJugador;
+  readonly recurso: Recurso;
+  readonly precio: number;
+}
+
 export type Contrato =
-  ContratoEntrega | ContratoPrestamo | ContratoAperos | ContratoObra | ContratoPaso;
+  | ContratoEntrega
+  | ContratoPrestamo
+  | ContratoAperos
+  | ContratoObra
+  | ContratoPaso
+  | ContratoNoAgresion
+  | ContratoNoCortejo
+  | ContratoExclusiva;
+
+/** Los contratos que son acuerdos: duran hasta su plazo y se pueden romper (T-123). */
+export const TIPOS_DE_ACUERDO: readonly TipoDeContrato[] = [
+  'paso',
+  'no-agresion',
+  'no-cortejo',
+  'exclusiva',
+];

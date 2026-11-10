@@ -62,6 +62,7 @@ export const TIPOS_DE_ORDEN = [
   'asediar',
   'tregua',
   'aceptar-tregua',
+  'romper-acuerdo',
 ] as const;
 export type TipoDeOrden = (typeof TIPOS_DE_ORDEN)[number];
 
@@ -339,7 +340,20 @@ export type CondicionesDeContrato =
       readonly hacia: IdComarca | null;
       readonly precio: number;
     }
-  | { readonly tipo: 'paso'; readonly activa: ParteActiva; readonly precio: number };
+  | { readonly tipo: 'paso'; readonly activa: ParteActiva; readonly precio: number }
+  | { readonly tipo: 'no-agresion'; readonly activa: ParteActiva; readonly precio: number }
+  | {
+      readonly tipo: 'no-cortejo';
+      readonly activa: ParteActiva;
+      readonly comarcas: readonly IdComarca[];
+      readonly precio: number;
+    }
+  | {
+      readonly tipo: 'exclusiva';
+      readonly activa: ParteActiva;
+      readonly recurso: Recurso;
+      readonly precio: number;
+    };
 
 /** Propone un contrato a otra casa (T-103). */
 export interface OrdenContrato extends OrdenBase {
@@ -414,6 +428,12 @@ export interface OrdenAceptarTregua extends OrdenBase {
   readonly asedio: IdAsedio;
 }
 
+/** Rompe un acuerdo vigente antes de su plazo (T-123): publico, y cuesta credito y prestigio. */
+export interface OrdenRomperAcuerdo extends OrdenBase {
+  readonly tipo: 'romper-acuerdo';
+  readonly contrato: IdContrato;
+}
+
 /** Fija el portazgo de un tramo que el jugador mejoro (T-103). */
 export interface OrdenPortazgo extends OrdenBase {
   readonly tipo: 'portazgo';
@@ -458,4 +478,5 @@ export type Orden =
   | OrdenHostilidad
   | OrdenAsediar
   | OrdenTregua
-  | OrdenAceptarTregua;
+  | OrdenAceptarTregua
+  | OrdenRomperAcuerdo;

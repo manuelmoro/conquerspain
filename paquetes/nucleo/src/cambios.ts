@@ -1732,7 +1732,7 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'contrato': {
       const contratos = { ...(ctx.estado.contratos ?? {}) };
-      contratos[cambio.contrato.id] = cambio.contrato;
+      contratos[cambio.contrato.id] = comoBorrador(cambio.contrato);
       ctx.estado.contratos = contratos;
       return;
     }

@@ -48,6 +48,7 @@ import type {
   OrdenAsediar,
   OrdenTregua,
   OrdenAceptarTregua,
+  OrdenRomperAcuerdo,
   OrdenResponderContrato,
   ParadaDeRuta,
   ReglaDeMayordomo,
@@ -364,6 +365,23 @@ const condiciones: Validador<CondicionesDeContrato> = porTipo<CondicionesDeContr
     activa,
     precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
   }),
+  'no-agresion': objeto({
+    tipo: unoDe(['no-agresion'] as const),
+    activa,
+    precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
+  'no-cortejo': objeto({
+    tipo: unoDe(['no-cortejo'] as const),
+    activa,
+    comarcas: lista(identificador<IdComarca>(), { minimo: 1, maximo: 10 }),
+    precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
+  exclusiva: objeto({
+    tipo: unoDe(['exclusiva'] as const),
+    activa,
+    recurso: unoDe(RECURSOS_COMERCIABLES),
+    precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
 });
 
 const contrato: Validador<OrdenContrato> = objeto<OrdenContrato>({
@@ -436,6 +454,12 @@ const aceptarTregua: Validador<OrdenAceptarTregua> = objeto<OrdenAceptarTregua>(
   asedio: identificador<IdAsedio>(),
 });
 
+const romperAcuerdo: Validador<OrdenRomperAcuerdo> = objeto<OrdenRomperAcuerdo>({
+  ...camposBase,
+  tipo: unoDe(['romper-acuerdo'] as const),
+  contrato: identificador<IdContrato>(),
+});
+
 const portazgo: Validador<OrdenPortazgo> = objeto<OrdenPortazgo>({
   ...camposBase,
   tipo: unoDe(['portazgo'] as const),
@@ -482,6 +506,7 @@ const validarForma = porTipo<Orden>({
   asediar,
   tregua,
   'aceptar-tregua': aceptarTregua,
+  'romper-acuerdo': romperAcuerdo,
 });
 
 /** Valida la forma de una orden que llega de fuera. No comprueba si sus referencias existen. */
@@ -541,6 +566,7 @@ function comarcasCitadas(orden: Orden): string[] {
     case 'contrato': {
       const c = orden.condiciones;
       if (c.tipo === 'obra') return c.hacia === null ? [c.comarca] : [c.comarca, c.hacia];
+      if (c.tipo === 'no-cortejo') return [...c.comarcas];
       return c.tipo === 'entrega' || c.tipo === 'aperos' ? [c.comarca] : [];
     }
     default:

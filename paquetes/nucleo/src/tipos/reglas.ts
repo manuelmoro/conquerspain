@@ -930,4 +930,10 @@ export interface DatosContratos {
   readonly turnosParaResponder: number;
   readonly plazoMaximo: number;
   readonly portazgoMaximo: number;
+  /** Lo que cuesta romper un acuerdo antes de su plazo (T-123). */
+  readonly creditoPorRomper: number;
+  readonly prestigioPorRomper: number;
+  /** Limites para que ningun conjunto de acuerdos deje a nadie sin juego (T-123). */
+  readonly comarcasMaximasNoCortejo: number;
+  readonly acuerdosMaximosNoAgresion: number;
 }

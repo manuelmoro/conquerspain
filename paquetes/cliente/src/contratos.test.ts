@@ -6,6 +6,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   cierreDeContrato,
+  costeDeRomper,
+  sePuedeRomper,
   estadoDeCasa,
   famaDeCredito,
   frasesDeContrato,
@@ -115,6 +117,8 @@ describe('la propuesta del formulario', () => {
     cantidad: '20',
     comarca: 'prueba-costa',
     hacia: '',
+    comarca2: '',
+    comarca3: '',
     obra: 'puente',
     niveles: '1',
     precio: '100',
@@ -161,5 +165,56 @@ describe('la propuesta del formulario', () => {
       10,
     );
     expect(validarIntencion({ idCliente: 'c-4', ...prestamo }).ok).toBe(true);
+  });
+});
+
+describe('los acuerdos (T-123)', () => {
+  const noCortejo: Contrato = {
+    ...base,
+    estado: 'vigente',
+    tipo: 'no-cortejo',
+    compromete: UNO,
+    comarcas: ['costa' as IdComarca],
+    precio: 50,
+  };
+
+  it('se cuentan en castellano y los vigentes se pueden romper, con su coste', () => {
+    expect(frasesDeContrato(noCortejo, UNO, n)).toBe(
+      'Tú no cortejas La Costa hasta el plazo, por 50 maravedís.',
+    );
+    expect(sePuedeRomper(noCortejo)).toBe(true);
+    expect(sePuedeRomper({ ...noCortejo, estado: 'propuesto' })).toBe(false);
+    expect(sePuedeRomper({ ...entrega, estado: 'vigente' })).toBe(false);
+    expect(costeDeRomper()).toMatch(/crédito.*prestigio.*todos/);
+  });
+
+  it('el formulario de no cortejar junta las comarcas y lo valida el motor', () => {
+    const intencion = intencionDeContrato(
+      {
+        tipo: 'no-cortejo',
+        con: DOS,
+        activa: 'yo',
+        recurso: '',
+        cantidad: '',
+        comarca: 'prueba-vega',
+        comarca2: 'prueba-rio',
+        comarca3: 'prueba-vega',
+        hacia: '',
+        obra: '',
+        niveles: '',
+        precio: '20',
+        devolver: '',
+        turnos: '10',
+        penalizacion: '',
+      },
+      5,
+    );
+    expect(intencion?.['condiciones']).toEqual({
+      tipo: 'no-cortejo',
+      activa: 'propone',
+      comarcas: ['prueba-vega', 'prueba-rio'],
+      precio: 20,
+    });
+    expect(validarIntencion({ idCliente: 'c-9', ...intencion }).ok).toBe(true);
   });
 });

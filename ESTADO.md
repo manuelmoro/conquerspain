@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 10 de noviembre de 2026 (T-103 hecha; T-087 y T-088 a falta de los checkpoints J-01 a J-03)
+**Última actualización:** 10 de noviembre de 2026 (**plan terminado**: de T-001 a T-123, salvo T-066 y T-108, que esperan al usuario)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -28,7 +28,7 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 **Lo que toca es del usuario: los checkpoints J-01, J-02 y J-03** (preparación abajo y en
 [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md)). Cierran T-088 (J-01) y **T-087**, cuyo
 trabajo está hecho a falta de medir con personas los 60 fps, el arranque y el recorrido con una mano (ficha §8).
-Mientras tanto, la **fase 5** sigue: T-100 está terminada (se cierra con T-087), T-101 y T-102 también (se cierran con T-100), T-103 también (se cierra con T-102), T-104, T-105, T-106 (v1) y T-107 también, T-120 a T-122 también, y lo siguiente es **T-123 · Acuerdos, rupturas y reputación**, la última del plan. T-108 (equilibrio v2) espera a datos de partidas reales. Los checkpoints J-01 a J-04 se omiten por decisión del usuario (10-11-2026): el plan se termina entero y él corrige jugando. **Checkpoints pendientes del usuario:** J-01 (para cerrar
+Mientras tanto, la **fase 5** sigue: T-100 está terminada (se cierra con T-087), T-101 y T-102 también (se cierran con T-100), T-103 también (se cierra con T-102), T-104, T-105, T-106 (v1) y T-107 también, T-120 a T-123 también: **el plan está terminado**. Solo quedan dos tareas que dependen del usuario: **T-066** (probar el correo con un buzón real: hace falta una cuenta SMTP) y **T-108** (equilibrio multijugador v2, mejor con datos de partidas de verdad). T-108 (equilibrio v2) espera a datos de partidas reales. Los checkpoints J-01 a J-04 se omiten por decisión del usuario (10-11-2026): el plan se termina entero y él corrige jugando. **Checkpoints pendientes del usuario:** J-01 (para cerrar
 T-088) y **J-02 · ciclo completo, casas y ausencia**, que ya se puede hacer: T-083, T-084 y T-085 están hechas.
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
@@ -128,6 +128,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 10-11-2026 | **T-123 hecha: acuerdos, rupturas y reputación. Plan terminado.** Sobre los contratos de T-103, tres acuerdos nuevos con efecto y plazo: **no agresión** (retira la hostilidad y la impide; como mucho tres por casa), **no cortejar** hasta tres comarcas y **exclusiva de venta** de un recurso. Romper un acuerdo se anuncia a todos y cuesta 25 de crédito y 30 de prestigio para siempre. Con esto están hechas todas las tareas del plan salvo T-066 (correo real) y T-108 (equilibrio con partidas reales), que esperan al usuario. |
 | 10-11-2026 | **T-122 hecha: bandidaje.** Cada tramo tiene un riesgo de asalto pequeño (de 0 a 10 %) que sube en puertos, sierras, tierra de nadie y comarcas desleales, y baja con ventas, lealtad y calzada; una mesnada propia de escolta lo anula. Un asalto se lleva la cuarta parte de la carga y la recua sigue su camino. El mapa de caminos marca con «⚠» los tramos peligrosos, con lo que el jugador sabe. |
 | 10-11-2026 | **T-121 hecha: pasos y asedios.** Una mesnada cierra el paso a las recuas y los rebaños de las casas hostiles, que rodean o esperan. El asedio de una comarca (nunca la capital) es público: seis turnos sin rendirse, y después se rinde si el sitiador puede más que la defensa (la guarnición, el pan, la muralla y las mesnadas del dueño). El defensor ofrece rescate cuando quiera y el sitiador lo acepta o no. Quien pierde una comarca conserva el resto. |
 | 10-11-2026 | **T-120 hecha: milicia concejil y hostilidad.** Se leva hasta el 20 % de una comarca (pierde 5 de lealtad); cada mesnada come pan y cobra soldada, que se encarece hasta el triple lejos de casa, y sin paga deserta. La hostilidad avisa a todos con un turno de preaviso. Dos milicias hostiles en una comarca se enfrentan sin azar: quien defiende su tierra cuenta 1,5 y con muralla el doble; la que pierde vuelve a casa y nada más. Los hombres nunca mueren: salen de su comarca y vuelven a ella. Sección «Milicia y hostilidad» en «Tu casa» y mesnadas en el mapa (🛡️). |

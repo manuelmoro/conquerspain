@@ -62,6 +62,7 @@ export const NOMBRE_DE_ORDEN: Readonly<Record<TipoDeOrden, string>> = {
   asediar: 'Poner asedio',
   tregua: 'Ofrecer rescate',
   'aceptar-tregua': 'Aceptar el rescate',
+  'romper-acuerdo': 'Romper un acuerdo',
 };
 
 export const NOMBRE_DE_COMETIDO: Readonly<Record<Cometido, string>> = {
@@ -180,6 +181,11 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
   },
   tregua: { texto: 'Ofrece rescate por un asedio en «Tu casa».', donde: 'casa', llega: null },
   'aceptar-tregua': { texto: 'Acepta el rescate en «Tu casa».', donde: 'casa', llega: null },
+  'romper-acuerdo': {
+    texto: 'Rompe un acuerdo vigente en «Tus contratos».',
+    donde: 'casa',
+    llega: null,
+  },
   ruta: {
     texto: 'Dale otro camino a la recua o al rebaño desde «Tus recuas y rebaños».',
     donde: 'unidades',

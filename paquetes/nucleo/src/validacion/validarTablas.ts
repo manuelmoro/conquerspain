@@ -632,6 +632,10 @@ const validarContratos: Validador<DatosContratos> = objeto<DatosContratos>({
   turnosParaResponder: entero({ minimo: 1, maximo: 24 }),
   plazoMaximo: entero({ minimo: 1, maximo: 240 }),
   portazgoMaximo: enteroNoNegativo(1000),
+  creditoPorRomper: enteroNoNegativo(100),
+  prestigioPorRomper: enteroNoNegativo(1000),
+  comarcasMaximasNoCortejo: entero({ minimo: 1, maximo: 10 }),
+  acuerdosMaximosNoAgresion: entero({ minimo: 1, maximo: 12 }),
 });
 
 const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({

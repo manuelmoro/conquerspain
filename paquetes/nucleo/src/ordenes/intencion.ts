@@ -8,6 +8,8 @@
 // Esto comprueba la **forma** y la **propiedad** (lo que cita es del jugador y lo conoce); no
 // comprueba que haya recursos o cuadrillas: eso es ejecucion legal y lo decide el motor al darla
 // de alta, que la cancela con su motivo y lo cuenta en la cronica.
+import { hayNoAgresion } from '../reglas/contratos.ts';
+import { TIPOS_DE_ACUERDO } from '../tipos/contratos.ts';
 import { claveDeHostilidad } from '../reglas/milicia.ts';
 import { cortejable, estaAmparado } from '../reglas/ausencia.ts';
 import {
@@ -340,6 +342,14 @@ function comprobarPropiedad(
         );
       break;
     }
+    case 'romper-acuerdo': {
+      const c = estado.contratos?.[o.contrato];
+      if (c === undefined || (c.propone !== ctx.jugador && c.recibe !== ctx.jugador))
+        errores.push(error('contrato', `no tienes ningun acuerdo "${o.contrato}"`));
+      else if (c.estado !== 'vigente' || !TIPOS_DE_ACUERDO.includes(c.tipo))
+        errores.push(error('contrato', 'solo se rompe un acuerdo vigente'));
+      break;
+    }
     case 'asediar':
       if (estado.mesnadas?.[o.mesnada]?.jugador !== ctx.jugador)
         errores.push(error('mesnada', `la mesnada "${o.mesnada}" no es tuya`));
@@ -375,6 +385,8 @@ function comprobarPropiedad(
         errores.push(error('contra', 'solo retira la hostilidad quien la declaro'));
       if (o.declarar && otra !== undefined && estaAmparado(otra, estado.turno))
         errores.push(error('contra', 'esa casa esta amparada: acaba de entrar en la partida'));
+      if (o.declarar && hayNoAgresion(estado, ctx.jugador, o.contra))
+        errores.push(error('contra', 'teneis un acuerdo de no agresion: rompelo antes'));
       break;
     }
     case 'portazgo': {
@@ -576,6 +588,7 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
     case 'asediar':
     case 'tregua':
     case 'aceptar-tregua':
+    case 'romper-acuerdo':
       return valido({ ...o, ...fijos, ...sinCola });
     case 'entrar':
       // Ya esta en la partida: entrar es cosa de la convocatoria, no una orden que se pueda dar.

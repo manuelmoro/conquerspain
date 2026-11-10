@@ -14,4 +14,9 @@ export const CONTRATOS: DatosContratos = {
   plazoMaximo: 48,
   // El portazgo de un tramo, en maravedis por paso (docs/06 §6.5.2).
   portazgoMaximo: 20,
+  // Romper un acuerdo (T-123) cuesta mas que incumplir un contrato: se hace a sabiendas.
+  creditoPorRomper: 25,
+  prestigioPorRomper: 30,
+  comarcasMaximasNoCortejo: 3,
+  acuerdosMaximosNoAgresion: 3,
 };

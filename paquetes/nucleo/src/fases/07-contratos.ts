@@ -31,10 +31,18 @@ import type { CondicionesDeContrato } from '../tipos/ordenes.ts';
 import { RECURSOS, recursosSegun } from '../tipos/recursos.ts';
 import type { Recurso } from '../tipos/recursos.ts';
 import { OBRAS_MAYORES_DE_TRAMO } from '../tipos/reglas.ts';
+import { TIPOS_DE_ACUERDO } from '../tipos/contratos.ts';
+import { claveDeHostilidad } from '../reglas/milicia.ts';
 import { MIL } from '../utiles/enteros.ts';
 import { comparar, idsEnOrden } from '../utiles/orden.ts';
 
-const CERRADOS: readonly Contrato['estado'][] = ['cumplido', 'incumplido', 'rechazado', 'caducado'];
+const CERRADOS: readonly Contrato['estado'][] = [
+  'cumplido',
+  'incumplido',
+  'rechazado',
+  'caducado',
+  'roto',
+];
 
 export function faseContratos(ctx: Contexto): void {
   for (const contrato of contratosEnOrden(ctx.estado)) {
@@ -48,6 +56,7 @@ export function faseContratos(ctx: Contexto): void {
   for (const orden of respuestas) responder(ctx, orden);
   for (const orden of ordenesVivas(ctx, 'contrato')) proponer(ctx, orden);
   for (const orden of ordenesVivas(ctx, 'portazgo')) fijarPortazgo(ctx, orden);
+  for (const orden of ordenesVivas(ctx, 'romper-acuerdo')) romper(ctx, orden);
   for (const contrato of contratosEnOrden(ctx.estado)) {
     if (contrato.estado === 'propuesto') caducar(ctx, contrato);
     else if (contrato.estado === 'vigente') seguir(ctx, contrato);
@@ -158,6 +167,24 @@ function nuevoContrato(
       };
     case 'paso':
       return { ...base, tipo: 'paso', concede: activa, precio: condiciones.precio };
+    case 'no-agresion':
+      return { ...base, tipo: 'no-agresion', compromete: activa, precio: condiciones.precio };
+    case 'no-cortejo':
+      return {
+        ...base,
+        tipo: 'no-cortejo',
+        compromete: activa,
+        comarcas: [...condiciones.comarcas],
+        precio: condiciones.precio,
+      };
+    case 'exclusiva':
+      return {
+        ...base,
+        tipo: 'exclusiva',
+        compromete: activa,
+        recurso: condiciones.recurso,
+        precio: condiciones.precio,
+      };
   }
 }
 
@@ -280,8 +307,19 @@ function firmar(ctx: Contexto, contrato: Contrato): void {
       firmado = { ...contrato, estado: 'vigente', idObra: abrirObraPorContrato(ctx, contrato) };
       break;
     case 'paso':
+    case 'no-cortejo':
+    case 'exclusiva':
       pagar(ctx, pasiva, activa, contrato.precio, motivo);
       break;
+    case 'no-agresion': {
+      pagar(ctx, pasiva, activa, contrato.precio, motivo);
+      // Al firmar la paz se retira la hostilidad; los asedios se levantan solos al no haberla.
+      const clave = claveDeHostilidad(activa, pasiva);
+      if (ctx.estado.hostilidades?.[clave] !== undefined) {
+        aplicar(ctx, { tipo: 'hostilidad-baja', clave });
+      }
+      break;
+    }
   }
   actualizar(ctx, firmado);
   contarALasDos(ctx, 'contrato.firmado', firmado, { plazo: firmado.plazo }, (j) =>
@@ -393,6 +431,9 @@ function seguir(ctx: Contexto, contrato: Contrato): void {
       seguirObra(ctx, contrato);
       return;
     case 'paso':
+    case 'no-agresion':
+    case 'no-cortejo':
+    case 'exclusiva':
       if (vencido(ctx, contrato)) cumplir(ctx, contrato);
       return;
     case 'aperos':
@@ -545,4 +586,37 @@ function fijarPortazgo(ctx: Contexto, orden: OrdenDe<'portazgo'>): void {
     { desde: orden.desde, hasta: orden.hasta, cantidad },
     { jugador: orden.jugador, comarca: orden.desde },
   );
+}
+
+// ——— Romper un acuerdo (T-123) ————————————————————————————————————————————————
+
+function romper(ctx: Contexto, orden: OrdenDe<'romper-acuerdo'>): void {
+  const contrato = ctx.estado.contratos?.[orden.contrato];
+  if (
+    contrato === undefined ||
+    contrato.estado !== 'vigente' ||
+    !TIPOS_DE_ACUERDO.includes(contrato.tipo) ||
+    (contrato.propone !== orden.jugador && contrato.recibe !== orden.jugador)
+  ) {
+    cancelarOrden(ctx, orden, 'contrato-sin-propuesta');
+    return;
+  }
+  empezarOrden(ctx, orden, 'terminada');
+  const t = ctx.reglas.contratos;
+  actualizar(ctx, { ...contrato, estado: 'roto', motivo: 'acuerdo-roto', fallo: orden.jugador });
+  aplicar(ctx, {
+    tipo: 'credito',
+    jugador: orden.jugador,
+    delta: -t.creditoPorRomper,
+    cumplido: false,
+    motivo: 'acuerdo-roto',
+  });
+  // La ruptura la saben todos: la reputacion de guerra es publica. El prestigio lo resta la fase 11,
+  // que cuenta las rupturas en el registro y las pone entre las penalizaciones.
+  registrarSuceso(ctx.sucesos, ctx.fase, 'acuerdo.roto', {
+    de: orden.jugador,
+    contra: otraParte(contrato, orden.jugador),
+    acuerdo: contrato.tipo,
+    prestigio: t.prestigioPorRomper,
+  });
 }

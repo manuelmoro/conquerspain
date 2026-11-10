@@ -66,7 +66,8 @@ export function prestigioDe(
   };
   const penalizaciones =
     r.comarcasPerdidas * t.penalizacionPorComarcaPerdida +
-    r.turnosConEscasez * t.penalizacionPorEscasez;
+    r.turnosConEscasez * t.penalizacionPorEscasez +
+    (r.acuerdosRotos ?? 0) * reglas.contratos.prestigioPorRomper;
   const suma = Object.values(capitulos).reduce((total, puntos) => total + puntos, 0);
   return { total: suma - penalizaciones, capitulos, penalizaciones };
 }

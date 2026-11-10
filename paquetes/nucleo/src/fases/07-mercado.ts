@@ -4,10 +4,11 @@
 // comercian en ella —paradas de ruta y ordenes `mercado`— y fija su precio nuevo; las plazas
 // cerradas solo dejan que su precio vuelva al base. Las plazas van por identificador y los
 // recursos en el orden de `RECURSOS`, asi que el resultado no depende del orden de llegada.
+import { tieneExclusiva } from '../reglas/contratos.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { factorAlcanzadoDe } from '../contexto.ts';
-import { cancelarOrden, dejarEnEspera, ordenesVivas } from '../ordenes.ts';
+import { cancelarOrden, dejarEnEspera, ordenesEnCurso, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
 import { factorDeAcontecimientos, precioBaseEfectivo } from '../reglas/acontecimientos.ts';
 import { modificadoresDelJugador } from '../reglas/casas/index.ts';
@@ -34,6 +35,7 @@ type Solicitudes = Map<string, Solicitud[]>;
 
 export function faseMercado(ctx: Contexto): void {
   letrasDeCambio(ctx);
+  exclusivas(ctx);
   const catalogo = catalogoDePlazas(ctx.estado, ctx.mundo, ctx.calendario.feriasActivas);
   for (const plaza of catalogo.abiertas) {
     if (ctx.estado.mercados[plaza.id] === undefined) abrirMercado(ctx, plaza);
@@ -461,5 +463,15 @@ function cerrarTurnoDeOrden(ctx: Contexto, id: string, casada: number): void {
       estado: 'terminada',
       motivo: 'caducada',
     });
+  }
+}
+
+/** Quien tiene una exclusiva de venta (T-123) no vende ese recurso en ninguna plaza. */
+function exclusivas(ctx: Contexto): void {
+  const ordenes = [...ordenesVivas(ctx, 'mercado'), ...ordenesEnCurso(ctx, 'mercado')];
+  for (const orden of ordenes) {
+    if (orden.operacion === 'vender' && tieneExclusiva(ctx.estado, orden.jugador, orden.recurso)) {
+      cancelarOrden(ctx, orden, 'exclusiva-vigente');
+    }
   }
 }

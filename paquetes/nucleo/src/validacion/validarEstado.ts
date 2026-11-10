@@ -90,6 +90,9 @@ import type {
   ContratoEntrega,
   ContratoObra,
   ContratoPaso,
+  ContratoNoAgresion,
+  ContratoNoCortejo,
+  ContratoExclusiva,
   ContratoPrestamo,
 } from '../tipos/contratos.ts';
 
@@ -132,6 +135,7 @@ const validarRegistro: Validador<RegistroDeJugador> = objeto<RegistroDeJugador>(
   turnosConEscasez: enteroNoNegativo(),
   turnosDeDespensaEstable: enteroNoNegativo(),
   contratosCumplidos: opcional(enteroNoNegativo()),
+  acuerdosRotos: opcional(enteroNoNegativo()),
   conocidasAlEmpezar: lista(identificador<IdComarca>()),
 });
 
@@ -427,6 +431,26 @@ const validarContrato: Validador<Contrato> = porTipo<Contrato>({
     ...baseDeContrato,
     tipo: unoDe(['paso'] as const),
     concede: identificador<IdJugador>(),
+    precio: enteroNoNegativo(),
+  }),
+  'no-agresion': objeto<ContratoNoAgresion>({
+    ...baseDeContrato,
+    tipo: unoDe(['no-agresion'] as const),
+    compromete: identificador<IdJugador>(),
+    precio: enteroNoNegativo(),
+  }),
+  'no-cortejo': objeto<ContratoNoCortejo>({
+    ...baseDeContrato,
+    tipo: unoDe(['no-cortejo'] as const),
+    compromete: identificador<IdJugador>(),
+    comarcas: lista(identificador<IdComarca>(), { minimo: 1, maximo: 10 }),
+    precio: enteroNoNegativo(),
+  }),
+  exclusiva: objeto<ContratoExclusiva>({
+    ...baseDeContrato,
+    tipo: unoDe(['exclusiva'] as const),
+    compromete: identificador<IdJugador>(),
+    recurso: unoDe(RECURSOS),
     precio: enteroNoNegativo(),
   }),
 });

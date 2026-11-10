@@ -47,6 +47,7 @@ const ICONO: Readonly<Record<Orden['tipo'], string>> = {
   asediar: '🏰',
   tregua: '🤝',
   'aceptar-tregua': '🤝',
+  'romper-acuerdo': '💔',
 };
 
 function plaza(mercado: string, n: Nombres): string {
@@ -122,6 +123,8 @@ export function fraseDeOrden(o: Orden, n: Nombres): string {
       return `Ofrecer ${String(o.rescate)} mrs por levantar un asedio`;
     case 'aceptar-tregua':
       return 'Aceptar el rescate de un asedio';
+    case 'romper-acuerdo':
+      return 'Romper un acuerdo';
     case 'hostilidad':
       return o.declarar
         ? `Declarar la hostilidad a ${n.jugador(o.contra)}`

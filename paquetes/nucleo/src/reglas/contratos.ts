@@ -36,6 +36,10 @@ export function parteActiva(contrato: Contrato): IdJugador {
       return contrato.construye;
     case 'paso':
       return contrato.concede;
+    case 'no-agresion':
+    case 'no-cortejo':
+    case 'exclusiva':
+      return contrato.compromete;
   }
 }
 
@@ -88,7 +92,10 @@ export type MotivoDeContrato =
   | 'sin-entrega'
   | 'obra-sin-terminar'
   | 'obra-perdida'
-  | 'sin-respuesta';
+  | 'sin-respuesta'
+  | 'demasiados-acuerdos'
+  | 'demasiadas-comarcas'
+  | 'acuerdo-roto';
 
 /** Lo que el jugador tiene libre de un recurso, sin lo reservado para sus ordenes. */
 export function libre(jugador: EstadoJugador, recurso: Recurso): number {
@@ -155,6 +162,65 @@ export function impedimentoDeFirma(
       return libre(pasiva, 'maravedis') < contrato.precio ? 'sin-fondos' : null;
     }
     case 'paso':
+    case 'exclusiva':
+      return libre(pasiva, 'maravedis') < contrato.precio ? 'sin-fondos' : null;
+    case 'no-agresion': {
+      // Nadie se blinda contra todos: como mucho tres a la vez cada casa (T-123).
+      const vigentes = (id: IdJugador): number =>
+        Object.values(estado.contratos ?? {}).filter(
+          (c) =>
+            c.tipo === 'no-agresion' &&
+            c.estado === 'vigente' &&
+            (c.propone === id || c.recibe === id),
+        ).length;
+      const maximo = reglas.contratos.acuerdosMaximosNoAgresion;
+      if (vigentes(activa.id) >= maximo || vigentes(pasiva.id) >= maximo)
+        return 'demasiados-acuerdos';
+      return libre(pasiva, 'maravedis') < contrato.precio ? 'sin-fondos' : null;
+    }
+    case 'no-cortejo':
+      if (contrato.comarcas.length > reglas.contratos.comarcasMaximasNoCortejo)
+        return 'demasiadas-comarcas';
       return libre(pasiva, 'maravedis') < contrato.precio ? 'sin-fondos' : null;
   }
+}
+
+/** El acuerdo vigente de no agresion entre las dos casas, si lo hay (T-123). */
+export function hayNoAgresion(estado: EstadoPartida, una: IdJugador, otra: IdJugador): boolean {
+  return Object.values(estado.contratos ?? {}).some(
+    (c) =>
+      c.tipo === 'no-agresion' &&
+      c.estado === 'vigente' &&
+      ((c.propone === una && c.recibe === otra) || (c.propone === otra && c.recibe === una)),
+  );
+}
+
+/** El jugador se comprometio a no cortejar esa comarca (T-123). */
+export function noPuedeCortejar(
+  estado: EstadoPartida,
+  jugador: IdJugador,
+  comarca: string,
+): boolean {
+  return Object.values(estado.contratos ?? {}).some(
+    (c) =>
+      c.tipo === 'no-cortejo' &&
+      c.estado === 'vigente' &&
+      c.compromete === jugador &&
+      c.comarcas.some((x) => x === comarca),
+  );
+}
+
+/** El jugador se comprometio a no vender ese recurso en las plazas (T-123). */
+export function tieneExclusiva(
+  estado: EstadoPartida,
+  jugador: IdJugador,
+  recurso: string,
+): boolean {
+  return Object.values(estado.contratos ?? {}).some(
+    (c) =>
+      c.tipo === 'exclusiva' &&
+      c.estado === 'vigente' &&
+      c.compromete === jugador &&
+      c.recurso === recurso,
+  );
 }

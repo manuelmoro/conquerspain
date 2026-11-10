@@ -1,6 +1,7 @@
 // Ausencia y amparo (docs/06 §6.4.3 y §6.4.4; ficha T-105). Funciones puras: en que escalon de
 // ausencia esta una casa, si esta amparada y si una comarca se puede cortejar.
 import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
+import { noPuedeCortejar } from './contratos.ts';
 import type { IdJugador } from '../tipos/ids.ts';
 import type { TablasDeReglas } from '../tipos/reglas.ts';
 
@@ -44,6 +45,8 @@ export function cortejable(
   jugador: IdJugador,
   reglas: TablasDeReglas,
 ): boolean {
+  // Quien se comprometio a no cortejarla no la corteja (T-123).
+  if (noPuedeCortejar(estado, jugador, comarca.id)) return false;
   if (comarca.duenyo === null) return true;
   return comarca.duenyo !== jugador && enManosDelConcejo(estado, comarca, reglas);
 }

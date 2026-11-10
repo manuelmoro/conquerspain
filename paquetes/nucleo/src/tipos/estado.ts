@@ -103,6 +103,8 @@ export interface RegistroDeJugador {
   readonly turnosDeDespensaEstable: number;
   /** Contratos que cumplio (T-103): para el hito de buen nombre. Sin poner, ninguno. */
   readonly contratosCumplidos?: number;
+  /** Acuerdos que rompio antes de tiempo (T-123): penalizan su prestigio. Sin poner, ninguno. */
+  readonly acuerdosRotos?: number;
   /**
    * Comarcas que el jugador ya conocia al empezar sin haberlas explorado (la canyada de la Mesta,
    * T-058): no cuentan como exploradas ni para el prestigio ni para los hitos.

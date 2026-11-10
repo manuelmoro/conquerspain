@@ -323,6 +323,11 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
   'contrato.perdido': aviso(
     'El contrato {acuerdo} con {de} se deshace sin culpa de nadie: la obra se perdió sin terminar.',
   ),
+  'acuerdo.roto': p(
+    'avisos',
+    '{de} rompe su acuerdo {acuerdo} con {contra} antes de tiempo: pierde crédito y {prestigio} de prestigio.',
+    { publica: true },
+  ),
   'credito.cambio': economia('Tu crédito ante las demás casas queda en {total}.'),
   'portazgo.fijado': suceso(
     'Portazgo fijado entre {desde} y {hasta}: {cantidad} maravedís por paso.',
@@ -591,6 +596,12 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'ya-asediada': 'esa comarca ya está asediada',
   'asedio-desconocido': 'ese asedio ya no sigue',
   'rescate-sin-fondos': 'el defensor ya no tiene el rescate',
+  'demasiados-acuerdos': 'una de las dos ya tiene tres acuerdos de no agresión',
+  'demasiadas-comarcas': 'no se puede comprometer a no cortejar más de tres comarcas',
+  'acuerdo-roto': 'una de las partes lo rompió',
+  'exclusiva-vigente':
+    'tienes una exclusiva de venta de ese recurso: solo se lo vendes a quien la firmó',
+  'acuerdo-de-no-agresion': 'hay un acuerdo de no agresión con esa casa',
   'temporada-cerrada': 'la temporada ya se cerró',
   'origen-no-ofrecido': 'ese origen ya no está libre o lejos de los demás',
   'comarca-desleal': 'la comarca está descontenta',
@@ -734,6 +745,7 @@ export const NOMBRES_DE_ORDEN: Readonly<Record<string, string>> = {
   asediar: 'asedio',
   tregua: 'oferta de rescate',
   'aceptar-tregua': 'aceptación del rescate',
+  'romper-acuerdo': 'ruptura de un acuerdo',
 };
 
 /** Palabras sueltas de los sucesos, por campo y valor. */
@@ -758,6 +770,9 @@ export const PALABRAS: Readonly<Record<string, Readonly<Record<string, string>>>
     aperos: 'de aperos',
     obra: 'de obra',
     paso: 'de paso de ganado',
+    'no-agresion': 'de no agresión',
+    'no-cortejo': 'de no cortejar',
+    exclusiva: 'de exclusiva de venta',
   },
   'operacion:infinitivo': { comprar: 'comprar', vender: 'vender' },
   'cometido:infinitivo': {

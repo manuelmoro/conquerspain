@@ -125,6 +125,8 @@ function apuntarElTurno(ctx: Contexto, jugador: EstadoJugador): void {
     ...(antes.contratosCumplidos === undefined
       ? {}
       : { contratosCumplidos: antes.contratosCumplidos }),
+    // Los acuerdos que rompio este turno, del suceso publico de la ruptura (T-123).
+    ...acuerdosRotos(ctx, jugador.id, antes.acuerdosRotos),
   };
   aplicar(ctx, { tipo: 'registro', jugador: jugador.id, registro });
 }
@@ -174,4 +176,17 @@ function recuento(ctx: Contexto): void {
       aplicar(ctx, { tipo: 'prestigio', jugador: jugador.id, delta, motivo: 'recuento' });
     }
   }
+}
+
+/** Los acuerdos rotos, sumando los de este turno; sin poner mientras no rompa ninguno. */
+function acuerdosRotos(
+  ctx: Contexto,
+  jugador: string,
+  antes: number | undefined,
+): { acuerdosRotos?: number } {
+  const ahora = ctx.sucesos.filter(
+    (s) => s.tipo === 'acuerdo.roto' && s.datos['de'] === jugador,
+  ).length;
+  const total = (antes ?? 0) + ahora;
+  return total === 0 ? {} : { acuerdosRotos: total };
 }
