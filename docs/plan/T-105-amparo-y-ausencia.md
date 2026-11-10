@@ -1,6 +1,8 @@
 # T-105 · Amparo del novato, ausencia y administración del concejo
 
-**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** en curso (ficha **detallada** el## 1. Contexto
+**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** **hecha (10-11-2026)**
+
+## 1. Contexto
 
 Las reglas que hacen habitable una partida larga: que entrar tarde no sea un suicidio y que irse de
 vacaciones no arruine a nadie (docs/06 §6.4.3 y §6.4.4). El mayordomo (T-045) ya mantiene la economía
@@ -10,8 +12,13 @@ de quien no da órdenes; faltaba qué pasa con su dominio y qué ven los demás.
 
 **Qué cuenta como estar.** Dar cualquier orden ese turno (la del mayordomo no cuenta: es automática).
 El motor lo sabe por las órdenes nuevas del turno, sin mirar conexiones: un dato que el servidor no
-tiene por qué guardar. `EstadoJugador.turnosSinOrdenes` (opcional; sin poner, 0) se pone a 0 con una
-orden y si no, suma uno, al empezar la fase 0.
+tiene por qué guardar. `EstadoJugador.turnosSinOrdenes` (ya existía, siempre a 0 y sin uso) se pone a 0
+con una orden y si no, suma uno, al empezar la fase 0 (`fases/00-ausencia.ts`).
+
+**El suelo vale para todo.** Al probarlo resultó que la regla de abandono (−1 por turno sin actividad) y el
+hambre ya bajaban la lealtad de quien no actúa hasta perder comarcas. Para que el ausente conserve su
+dominio, mientras no está presente **ninguna** causa le baja una comarca de 50 (el suelo va en el cambio
+`lealtad`, junto al de los monjes); si ya estaba por debajo, se queda donde estaba.
 
 **Los escalones** (tabla `ausencia`, todo en turnos):
 
@@ -41,9 +48,13 @@ y la vista ya tratan el amparo, pero nadie lo recibe hasta que exista la entrada
 
 ## 4. Lo que se ve
 
-`CasaPublica` lleva `ausencia: 'presente' | 'ausente' | 'concejo'` y `amparoHasta: number | null`. En el
-cliente, la ficha de una comarca de una casa en administración dice que se puede cortejar, y «Tus
-contratos» marca a las casas ausentes.
+`CasaPublica` lleva `turnosSinOrdenes` (el escalón se calcula con las mismas tablas,
+`situacionDeAusencia`; así la vista no necesita las reglas) y `amparoHasta: number | null`. En el cliente,
+«Tus contratos» dice de cada casa si está ausente, si la administra el concejo o si está amparada, y la
+ficha de la comarca («Cómo ganarla») ya cuenta que se puede incorporar porque usa la misma regla.
+
+**En el motor,** «cortejable» (`reglas/ausencia.ts`) sustituye a «sin dueño» en todo lo que es cortejar:
+influencia del turno, presencia de las recuas, regalo, incorporación y su orden.
 
 ## 5. Criterios de aceptación
 
@@ -54,7 +65,9 @@ contratos» marca a las casas ausentes.
 
 ## 6. Verificación
 
-`npm run verificar`, con `nucleo/pruebas/ausencia.test.ts` (contador, escalones, lealtad con suelo,
+`npm run verificar`. **Hecho:** las huellas de las partidas de reproducción se regeneraron (el contador
+avanza); las pruebas de cien turnos sin órdenes y de equivalencia del plan se aíslan de la ausencia,
+que no es lo que miden. `nucleo/pruebas/ausencia.test.ts` (contador, escalones, lealtad con suelo,
 cortejo e incorporación en concejo, capital a salvo, reingreso, amparo frente a portazgo y cortejo).
 
 ar la ficha.

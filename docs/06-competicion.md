@@ -175,11 +175,15 @@ que el botón pide confirmarlo; ningún otro jugador lo tiene.
 2. **Nada de reflejos.** No existe ninguna acción que se resuelva por orden de llegada. Los empates
    se deshacen por mérito y luego por hash (ver [02-diseno-nucleo.md](02-diseno-nucleo.md) §2.4.4).
 3. **Amparo del novato.** Un jugador nuevo en una partida en curso entra con amparo durante 20
-   turnos: nadie puede cortejar sus comarcas ni cobrarle portazgo.
+   turnos: nadie puede cortejar sus comarcas ni cobrarle portazgo. (T-105 lo hace en el motor; la
+   entrada tardía llega con T-107.)
 4. **Ausencia protegida.** Si un jugador no da órdenes, el mayordomo mantiene su economía. Su
    dominio no se deshace solo: la lealtad baja despacio y con avisos. Tras 30 turnos sin conectarse,
    su casa pasa a «administración del concejo»: sigue produciendo, deja de expandirse y sus comarcas
-   pueden ser cortejadas.
+   pueden ser cortejadas. **Cómo está hecho (T-105):** se cuentan los turnos sin dar ninguna orden; a
+   los 5, aviso; a los 15, «ausente» (público) y la lealtad baja 1 por turno; a los 30, el concejo (público)
+   y sus comarcas, salvo la capital, se cortejan como neutrales. Mientras falta, ninguna comarca baja de
+   50 de lealtad por ninguna causa. La primera orden le devuelve el mando y borra la influencia ajena.
 5. **Sin pactos ocultos que el juego no vea.** Los acuerdos entre jugadores que tengan efecto
    mecánico (portazgo, préstamo, contrato de obra) se firman **dentro del juego**, con condiciones
    que el motor puede verificar.
