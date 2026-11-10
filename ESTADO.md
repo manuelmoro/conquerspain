@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 9 de noviembre de 2026 (T-083 a T-086 y T-089 hechas; T-087 y T-088 a falta de los checkpoints J-01 a J-03)
+**Última actualización:** 10 de noviembre de 2026 (T-103 hecha; T-087 y T-088 a falta de los checkpoints J-01 a J-03)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -28,7 +28,7 @@ regalo al concejo se ofrece también en las comarcas oídas (ficha §2).
 **Lo que toca es del usuario: los checkpoints J-01, J-02 y J-03** (preparación abajo y en
 [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md)). Cierran T-088 (J-01) y **T-087**, cuyo
 trabajo está hecho a falta de medir con personas los 60 fps, el arranque y el recorrido con una mano (ficha §8).
-Mientras tanto, la **fase 5** sigue: T-100 está terminada (se cierra con T-087), T-101 y T-102 también (se cierran con T-100), y lo siguiente es **T-103 · Contratos, portazgos y crédito**. **Checkpoints pendientes del usuario:** J-01 (para cerrar
+Mientras tanto, la **fase 5** sigue: T-100 está terminada (se cierra con T-087), T-101 y T-102 también (se cierran con T-100), T-103 también (se cierra con T-102), y lo siguiente es **T-104 · Clasificación pública y temporadas**. Tras T-103 toca además el piloto **J-04** (varios días con varias casas). **Checkpoints pendientes del usuario:** J-01 (para cerrar
 T-088) y **J-02 · ciclo completo, casas y ausencia**, que ya se puede hacer: T-083, T-084 y T-085 están hechas.
 Preparación en [checkpoints-jugabilidad.md](docs/plan/checkpoints-jugabilidad.md):
 
@@ -41,7 +41,7 @@ Pregunta del checkpoint: ¿entiendo mis recursos y puedo elegir, enviar y cancel
 Aprovechar para mirar el atlas en un móvil (fluidez y legibilidad de los tres modos): es lo que T-080 y T-081
 dejaron para esta sesión. Si el usuario prefiere seguir sin jugar, T-083 puede empezar y J-01 queda pendiente.
 
-### Lo que T-047 v1 deja abierto (se reabre tras T-103)
+### Lo que T-047 v1 deja abierto (se reabre en T-106, ya con los contratos de T-103)
 
 La base de referencia es **`herramientas/banco/informes/E-feria3-*`** (robots 11, métricas 5, tres
 semillas por campaña): **352 filas cumplen y 119 no, ninguna sin evaluar**. Lo que no cumple, por tamaño:
@@ -84,11 +84,11 @@ En Claude Code basta con invocar `/sigue-construyendo-conquerspain`, que hace ju
 | `paquetes/` | `cliente` desde T-083: recuas y rebaños con editor de ruta y misiones desde la ficha; `nucleo/src/prevision/`: la previsión compartida. `servidor`: persistencia (T-060), reloj (T-061), API (T-062), cuentas (T-063), avisos (T-064) y alta (T-065) hechos; falta el transporte de correo real (T-066); `nucleo` y `mundo` implementados y cerrados hasta T-051 (T-050 solo añadió exportaciones de funciones de movimiento, ruta y pastos; T-051 no tocó el motor); el ajuste de equilibrio (T-047) está **en curso** y ha dado dos tareas nuevas: el origen de los ferrones exige ya hierro y monte propios, **T-052** ha puesto el precio base en cada comarca y **T-053** (en curso) abre plaza con la venta, en tierra de nadie; `cliente`: armazón (T-080), atlas (T-081), ficha y bandeja (T-082) |
 | `herramientas/` | `atlas` (T-011) y `banco` (T-046, T-048, T-050 y T-051), los dos en marcha |
 | Verificación | `npm run verificar` (tipos + lint + formato + tests) pasa en limpio |
-| Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador está desactivado hasta T-103 |
+| Casas | Las ocho, en `src/datos/casas.ts`, sobre modificadores, permisos y prohibiciones genéricos que las fases consultan a través de `reglas/casas/`; ningún archivo del motor nombra una casa (lo vigila un test). Lo que necesita a otro jugador (aperos vendidos, obra por encargo, portazgos) va por contratos desde T-103 |
 | Jugar sin estar | Fase 0 (mayordomo) antes del calendario: plan de temporada de seis turnos, colas de obra y de recua que no reservan hasta empezar, reglas del mayordomo con condiciones y acciones cerradas (3 a 6 activas) y rutas permanentes que se detienen solas y reponen en casa. **Demostrado en T-051**: el mismo plan, dejado por bloques de seis turnos o entregado a mano día a día, da **exactamente el mismo dominio**; 144 de 144 filas al 0,0 % en las ocho casas y tres semillas. Los seis escenarios mínimos (obras, comercio con precio límite, feria que cruza el bloque, trashumancia con fecha, gobierno e influencia, y los casos que se tuercen) viven en `escenarios/equivalencia.test.ts` |
 | Niebla y crónica | `vistaDeJugador` (lo único que sale del servidor) con las diez reglas de filtrado y prueba de fuga; crónica por plantillas para los 108 tipos de suceso, en el orden avisos → sucesos → economía → rumores → hitos y con acción sugerida; precios fechados por plaza; rumores deterministas y acotados al 5 % |
-| Marcador | Prestigio recalculado cada turno por nueve capítulos y penalizaciones sobre el estado y el `registro` del jugador; doce hitos (uno desactivado hasta T-103) con su primicia; clasificación guardada con el puesto anterior. Tabla y catálogo en `src/datos/prestigio.ts` |
-| Tradiciones | 72 en `src/datos/tradiciones.ts` (tres por casa y ronda: profundizar, compensar y abrir), cuatro desactivadas hasta T-102, T-103 y T-120. Rondas Renombre, Fama y Linaje que se abren en la fase 11, orden `tradicion` gratuita e irreversible, y composición casa + tradiciones en `reglas/casas` según `COMPOSICION_DE_MODIFICADORES` |
+| Marcador | Prestigio recalculado cada turno por nueve capítulos y penalizaciones sobre el estado y el `registro` del jugador; doce hitos con su primicia; clasificación guardada con el puesto anterior. Tabla y catálogo en `src/datos/prestigio.ts` |
+| Tradiciones | 72 en `src/datos/tradiciones.ts` (tres por casa y ronda: profundizar, compensar y abrir), tres desactivadas hasta T-102 y T-120. Rondas Renombre, Fama y Linaje que se abren en la fase 11, orden `tradicion` gratuita e irreversible, y composición casa + tradiciones en `reglas/casas` según `COMPOSICION_DE_MODIFICADORES` |
 | Guardas de pureza del núcleo | Dos capas activas: reglas de ESLint y `paquetes/nucleo/pruebas/pureza.test.ts` |
 | Útiles del núcleo | `paquetes/nucleo/src/utiles/`: milésimas, orden estable, azar con semilla, forma canónica y SHA-256 propio |
 | Tipos del dominio | `paquetes/nucleo/src/tipos/`: mundo, estado, órdenes, tablas de reglas y crónica |
@@ -128,7 +128,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
-| 10-11-2026 | **T-103 en curso: el motor, hecho y verificado.** Fase nueva **07 · contratos** (después del mercado): los cinco contratos se proponen, se firman con sus comprobaciones, se cumplen o se incumplen al plazo con su penalización y −20 de crédito, y salen del estado al turno siguiente. Crédito bajo: pago por adelantado, sin préstamos y −20 % de influencia. Portazgos al entrar en un tramo con su camino viejo; ventas de arrieros que cobran; paso de ganado por contrato; la Banca de los mercaderes activada. **Falta:** la interfaz («Tus contratos», portazgos, letra en el mercado), los documentos y cerrar. |
+| 10-11-2026 | **T-103 terminada (se cierra con T-102): contratos, crédito y portazgos.** Fase nueva **07 · contratos** (tras el mercado): cinco contratos que el motor ejecuta —entrega, préstamo, aperos de los ferrones, obra de los canteros (con su material y sus ventajas) y paso de ganado—; incumplir cuesta la penalización y 20 de crédito, cumplir da 5, y todo sale en la crónica de las dos casas. El **crédito** es público: por debajo de 30, pago por adelantado, sin préstamos y −20 % de influencia. **Portazgos** de los arrieros en sus puentes, calzadas y ventas; quien no llega va por el **camino viejo**, más despacio. La **Banca** de los mercaderes y el hito **Buen nombre**, activos. En el cliente: «Tus contratos» en «Tu casa», el peaje en el atlas y «Mandarle dinero por letra» en la compra. Probado en el navegador con dos cuentas. |
 | 10-11-2026 | **T-103 en curso: ficha detallada.** Cinco piezas: crédito público (de 0 a 100, empieza en 50, +5 al cumplir y −20 al incumplir); cinco contratos que el motor ejecuta (entrega, préstamo, aperos de los ferrones, obra de los canteros y paso de ganado); la letra de cambio de los mercaderes (ya hecha, ahora se activa); portazgos de los arrieros en sus puentes, calzadas y ventas, con el camino viejo siempre libre; y rebaños en tierra ajena con acuerdo de paso. |
 | 10-11-2026 | **T-102 terminada (se cierra con T-100): mercado común y emisario.** Casi todo el mercado común ya estaba: casación entre jugadores, retirada gradual de los mercaderes menores, tope del 15 % por turno y rumores fechados y acotados. Faltaba el **emisario**: una recua en tierra de otra casa reúne en 2 turnos un informe de **todo su dominio**, y el espiado lo sabe desde el primer turno. Se manda desde la ficha («Enviar un emisario»). Arreglada de paso una prueba de T-100 que fallaba según la semilla. |
 | 10-11-2026 | **T-101 terminada (se cierra con T-100): la disputa por la tierra.** Una comarca disputada no costaba más que una libre, y por eso hay regla nueva: **el concejo dividido se hace de rogar**. Con otra casa presente el mismo turno, el concejo se queda la mitad de lo aportado y del regalo, así que disputada cuesta el doble (o más) que libre. Quien tiene la comarca a la vista (gente allí o una comarca al lado) recibe un aviso cuando otra casa empieza a cortejarla o a incorporarla. La previsión de la ficha no delata a un rival que no se ve. |

@@ -14,6 +14,17 @@ export type {
   IdRecua,
 } from './ids.ts';
 export { idDeMercadoDeFeria, idDeMercadoLocal } from './ids.ts';
+export { ESTADOS_DE_CONTRATO, TIPOS_DE_CONTRATO } from './contratos.ts';
+export type {
+  Contrato,
+  ContratoAperos,
+  ContratoEntrega,
+  ContratoObra,
+  ContratoPaso,
+  ContratoPrestamo,
+  EstadoDeContrato,
+  TipoDeContrato,
+} from './contratos.ts';
 export { RECURSOS, RECURSOS_PERECEDEROS, recursosSegun } from './recursos.ts';
 export type { Recurso, Recursos } from './recursos.ts';
 export { POTENCIALES, RASGOS, TERRENOS, VOLUMENES_FERIA } from './mundo.ts';
@@ -77,6 +88,7 @@ export type {
   AccionDeMayordomo,
   CondicionDeMayordomo,
   EstadoDeOrden,
+  CondicionesDeContrato,
   Orden,
   OrdenBase,
   OrdenCarga,
@@ -105,8 +117,10 @@ export {
   CRITERIOS_DE_TRADICION,
   ESTACIONES,
   HITOS,
+  OBRAS_MAYORES_DE_TRAMO,
   RONDAS_DE_TRADICION,
   TIPOS_DE_EDIFICIO,
+  TIPOS_DE_OBRA_MAYOR,
   VERSION_REGLAS,
 } from './reglas.ts';
 export type {

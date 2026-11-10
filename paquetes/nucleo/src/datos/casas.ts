@@ -2,8 +2,7 @@
 //
 // Cada casa es una fila sobre puntos de extension genericos: el motor no nombra a ninguna, solo
 // consulta estos numeros, permisos y prohibiciones. Lo que exige a otro jugador (contratos de
-// aperos y de obra, portazgo) queda desactivado hasta T-103: el permiso esta aqui, pero ninguna
-// fase lo lee todavia.
+// aperos y de obra, portazgo) lo leen las fases de contratos y de movimiento (T-103).
 import type {
   Casa,
   CriterioDeOrigen,
@@ -123,7 +122,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     privilegio:
       'Ferrería de monte: con hierro 1 basta, y cada carbonera sostiene dos de sus niveles.',
     herramienta:
-      'Aperos de cuarta: nivel 4 (los demás, 3) y, cuando haya contratos entre casas, venderlos instalados.',
+      'Aperos de cuarta: nivel 4 (los demás, 3), y los vende instalados a otras casas por contrato.',
     limite: 'Monte devorado: el agotamiento del monte le sube un 50 % más deprisa.',
     modificadores: {
       potencialMinimoEdificio: { ferreria: 1 },
@@ -144,7 +143,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
   canteros: casa({
     nombre: 'Canteros trasmeranos',
     privilegio:
-      'Contrato de obra: cuando haya contratos entre casas, sus cuadrillas trabajarán obras mayores en tierra ajena.',
+      'Contrato de obra: por contrato, sus cuadrillas levantan obras mayores en tierra ajena, con su material y sus ventajas.',
     herramienta:
       'Maestría: obras mayores un 25 % más baratas, un 30 % más rápidas y sin frenazo de invierno.',
     limite: 'Pocas manos para el campo: un solar menos en cada comarca.',
@@ -175,7 +174,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
     privilegio:
       'Carta puebla: funda pueblas con la mitad de gente y la lealtad de sus comarcas no baja de 50.',
     herramienta: 'Monasterio: una obra mayor un 30 % más barata.',
-    limite: 'Pobreza declarada: sin carga fiscal dura y, cuando haya portazgos, sin cobrarlos.',
+    limite: 'Pobreza declarada: sin carga fiscal dura y sin cobrar portazgos.',
     modificadores: {
       lealtadMinima: 50,
       vecinosParaPueblaMil: 500,
@@ -211,7 +210,7 @@ export const CASAS_DE_OFICIO: Readonly<Record<Casa, DatosCasa>> = {
   arrieros: casa({
     nombre: 'Arrieros maragatos',
     privilegio:
-      'Portazgo: cuando haya portazgos, cobra por sus caminos y sus recuas no pagan el ajeno.',
+      'Portazgo: cobra por los puentes y calzadas que levanta y por sus ventas, y sus recuas no pagan el ajeno.',
     herramienta: 'Recua maragata: un 40 % más barata, una jornada más de paso y cinco de porte.',
     limite: 'Poca raíz: un vecino menos por nivel de casas y no puede levantar catedral.',
     modificadores: {

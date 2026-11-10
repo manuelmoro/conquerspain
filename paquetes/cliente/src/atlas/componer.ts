@@ -210,15 +210,22 @@ export function componerAtlas(
     ];
     if (t.canyada) clases.push('canyada');
     if (cerrado) clases.push('puerto-cerrado');
+    // El portazgo lo ve todo el mundo: quien lo cobra y cuanto (T-103).
+    const peaje = vista.caminos[claveTramo(t.desde, t.hasta)]?.portazgo ?? 0;
+    if (peaje > 0) clases.push('peaje');
     figuras.push({ capa: 'caminos', forma: 'linea', puntos: [a, b], clase: clases.join(' ') });
-    if (modo === 'logistico') {
+    if (modo === 'logistico' || peaje > 0) {
       const medio: Punto = [Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2)];
       figuras.push({
         capa: 'rotulos',
         forma: 'texto',
         puntos: [medio],
         clase: cerrado ? 'rotulo dato cerrado' : 'rotulo dato',
-        texto: cerrado ? 'cerrado' : `${String(t.jornadasBase)} j`,
+        texto: cerrado
+          ? 'cerrado'
+          : peaje > 0
+            ? `${String(t.jornadasBase)} j · peaje ${String(peaje)}`
+            : `${String(t.jornadasBase)} j`,
         prioridad: PRIORIDAD.dato,
       });
     }

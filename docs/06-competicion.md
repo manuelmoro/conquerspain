@@ -148,7 +148,7 @@ prestigio. A **10** queda entre el 103 % y el 165 %.
 | Año redondo | Un rebaño esquila con calidad del año del 90 % o más | 30 |
 | Maestro de obra | La primera obra mayor terminada | 40 |
 | Camino abierto | La primera calzada terminada | 30 |
-| Buen nombre | Crédito ≥ 80 con tres contratos cumplidos (⏸ hasta T-103) | 40 |
+| Buen nombre | Crédito ≥ 80 con tres contratos cumplidos | 40 |
 | Señor de ferias | 1 000 mrs de volumen propio en ferias en un mismo año | 40 |
 | Ciudad | La capital llega a 260 vecinos | 50 |
 | Casa conocida | 1 000 de prestigio | 50 |
@@ -188,22 +188,44 @@ que el botón pide confirmarlo; ningún otro jugador lo tiene.
 
 ## 6.5 Interacción entre jugadores
 
-### 6.5.1 Comercio directo
+### 6.5.1 Comercio directo: contratos y crédito (T-103)
 
-Contratos con condiciones verificables: «te entrego 40 de hierro en Soria en el turno 61 y me pagas
-600 mrs al recibirlo». El motor ejecuta el contrato; nadie puede incumplir sin que se note. Un
-contrato incumplido resta **crédito** (reputación mecánica, visible), y con poco crédito los demás
-te exigen pago por adelantado.
+Contratos con condiciones verificables: «te entrego 40 de hierro en Soria antes del turno 61 y me
+pagas 600 mrs al recibirlo». Una casa propone (orden `contrato`) y la otra acepta o rechaza
+(`responder-contrato`) antes de dos turnos, o la propuesta caduca. Al aceptar, el motor comprueba
+que se puede firmar con el estado de ese momento. Todo se resuelve en la fase de contratos, después
+del mercado, en orden de identificador: el orden de llegada no cuenta.
 
-### 6.5.2 Portazgos y caminos
+| Tipo | Quién | Se cumple cuando | Si falla |
+|---|---|---|---|
+| **Entrega** | cualquiera | una recua del que entrega está en la comarca de entrega (del que paga) con la mercancía: pasa al almacén del que paga y el precio al que entrega | sin entrega al plazo, falla quien entrega; si el que paga no tiene el precio, falla él |
+| **Préstamo** | presta cualquiera; pide quien tenga crédito de 30 o más | al firmar pasa la cantidad; al plazo se cobra la devolución | se cobra lo que haya y falla quien pidió |
+| **Aperos** | vende un ferrón | al firmar: el ferrón pone el hierro, la comarca sube sus niveles (hasta el máximo del ferrón) y el comprador paga | no se firma sin hierro, dinero o margen |
+| **Obra** | construye un cantero | al firmar, el cliente paga y empieza la obra en su comarca; el cantero pone el material con sus ventajas de casa; se cumple al terminarla | si no está terminada al plazo, falla el cantero y la obra sigue como del cliente |
+| **Paso** | concede quien tiene la tierra | al firmar se paga; hasta el plazo, los rebaños de la otra casa entran por cualquier camino | no se incumple: se cumple al plazo |
 
-Los caminos y ventas son propiedad de quien los construyó. Otro jugador puede usarlos:
+- **Incumplir** cuesta la penalización pactada (de lo que tenga quien falla) y 20 de crédito.
+  Cumplir da 5 a cada parte. Todo sale en la crónica de las dos.
+- **El crédito** (0 a 100, empieza en 50) es público. Por debajo de 30: quien paga una entrega
+  deposita el precio al firmar, no puede pedir prestado y su influencia en los concejos vale un 20 %
+  menos. La tradición **Banca** de los mercaderes presta aun así, y al plazo cobra también de lo que
+  lleven las recuas del deudor.
+- Las comarcas que cita un contrato las conocen las dos partes, al menos de oídas.
+- Un contrato cerrado se ve un turno más y sale del estado; queda en la crónica.
 
-- pagando el portazgo que fije el dueño (0–20 mrs por tramo);
-- o rodeando, con el coste en jornadas que eso suponga.
+### 6.5.2 Portazgos y caminos (T-103)
 
-Un portazgo abusivo empuja a los demás a abrir una ruta alternativa: el mercado corrige al que se
-pasa de listo. Esta es la interacción hostil más sana del juego y llega mucho antes que la guerra.
+Quien puede cobrar portazgo (los arrieros; los monjes lo tienen prohibido) es dueño de los tramos
+que mejora con un puente o una calzada, y de lo que sus ventas cobran a recuas ajenas. Fija lo que
+cobra cada tramo con la orden `portazgo` (0 a 20 mrs; empieza en 0). Otro jugador:
+
+- **paga al entrar en el tramo**, con los maravedís de la recua y, si no le llegan, de su almacén;
+- **o va por el camino viejo**: el mismo tramo sin la mejora (un vado sin puente, una vereda sin
+  calzada), más despacio y sin pagar. Siempre hay alternativa.
+
+Las recuas de los arrieros no pagan portazgo ajeno. El cobro sale en la crónica de las dos casas y
+el atlas rotula el tramo («peaje 5»). Un portazgo abusivo empuja a los demás al camino viejo o a
+abrir otra ruta: el mercado corrige al que se pasa de listo.
 
 ### 6.5.3 Información
 

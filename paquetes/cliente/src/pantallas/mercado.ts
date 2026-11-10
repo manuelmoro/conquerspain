@@ -6,6 +6,7 @@ import {
   RECURSOS_DE_MERCADO,
   TABLAS_DEL_JUEGO,
   modificadoresDelJugador,
+  permisosDelJugador,
   pesoDeLaCarga,
 } from '@conquer/nucleo';
 import type { PlazaEnPanel, Recurso } from '@conquer/nucleo';
@@ -14,6 +15,7 @@ import type { Almacen } from '../almacen.ts';
 import type { MercadoRecibido } from '../api.ts';
 import {
   avisosDeCompraventa,
+  letraParaComprar,
   enMaravedis,
   fechaDePrecio,
   intencionesDeCompraventa,
@@ -203,6 +205,32 @@ function formularioSencillo(
     'dar-la-orden',
   );
   if (precio === null) dar.setAttribute('disabled', '');
+  // Fuera de casa, quien puede librar letras le manda a la recua lo que le falta (T-103).
+  const letra =
+    datos === null ||
+    casa === undefined ||
+    !permisosDelJugador(casa, TABLAS_DEL_JUEGO).letraDeCambio
+      ? null
+      : letraParaComprar(pedido(), datos, comision, TABLAS_DEL_JUEGO.mercado.comisionLetraMil);
+  const porLetra =
+    letra === null
+      ? ''
+      : el(
+          'p',
+          {},
+          boton(
+            `✉️ Mandarle ${String(letra.cantidad)} maravedís por letra`,
+            () => {
+              void almacen.anyadir(letra.intencion);
+            },
+            'secundario',
+          ),
+          el(
+            'span',
+            { class: 'suave' },
+            ' Salen del almacén y le llegan el turno que viene, menos la comisión.',
+          ),
+        );
   return el(
     'div',
     { class: 'tarjeta comerciar' },
@@ -212,6 +240,7 @@ function formularioSencillo(
     cantidad,
     el('p', { class: 'total-de-orden' }, total),
     ...avisos.map((a) => el('p', { class: 'suave' }, `ℹ️ ${a}`)),
+    porLetra,
     el(
       'details',
       { class: 'mas-opciones' },

@@ -181,3 +181,22 @@ export function avisosDeCompraventa(
   }
   return avisos;
 }
+
+/**
+ * La letra de cambio que cubre lo que le falta a una recua fuera de casa para comprar (T-103): los
+ * maravedis que salen del almacen para que, quitada la comision, le lleguen los que faltan. Null si
+ * no hace falta (en casa se carga sin letra) o si no le falta nada.
+ */
+export function letraParaComprar(
+  p: PedidoDeMercado,
+  recua: RecuaQueTrata,
+  comisionMil: number,
+  comisionLetraMil: number,
+): { readonly cantidad: number; readonly intencion: Readonly<Record<string, unknown>> } | null {
+  if (p.operacion !== 'comprar' || recua.enCasa) return null;
+  const falta =
+    maravedisParaComprar(p.cantidad, p.precioLimiteMil, comisionMil) - recua.carga.maravedis;
+  if (falta <= 0) return null;
+  const cantidad = Math.ceil((falta * 1000) / (1000 - comisionLetraMil));
+  return { cantidad, intencion: { tipo: 'letra-de-cambio', recua: p.recua, cantidad } };
+}

@@ -120,12 +120,12 @@ necesita.
 | Casa | Funciona | Desactivado |
 |---|---|---|
 | Mesta | paso franco en tierra ajena por cañada, rebaño a mitad de precio, +25 % de lana, sin roturar, pan −30 % | — |
-| Ferrones | ferrería con hierro 1, una carbonera por dos niveles, aperos de nivel 4, monte +50 % de agotamiento | **vender aperos instalados** a otro jugador (T-103) |
-| Canteros | obras mayores −25 % de coste, +30 % de avance y sin frenazo de invierno, un solar menos | **contrato de obra** en comarca ajena (T-103) |
+| Ferrones | ferrería con hierro 1, una carbonera por dos niveles, aperos de nivel 4, monte +50 % de agotamiento, **vender aperos instalados** a otra casa por contrato (T-103) | — |
+| Canteros | obras mayores −25 % de coste, +30 % de avance y sin frenazo de invierno, un solar menos, **contrato de obra** en comarca ajena con su material y sus ventajas (T-103) | — |
 | Mercaderes | letra de cambio (3 % y un turno), corresponsales (precios de hoy de las plazas que visitó) y rumores dobles, un solar menos, pan −25 % | — |
-| Monjes | puebla con la mitad de gente, lealtad mínima 50, monasterio −30 %, sin carga fiscal dura | **portazgos** (T-103); **carta puebla gratis**, que hoy no cuesta nada (T-047) |
+| Monjes | puebla con la mitad de gente, lealtad mínima 50, monasterio −30 %, sin carga fiscal dura ni portazgos (T-103) | **carta puebla gratis**, que hoy no cuesta nada (T-047) |
 | Salineros | salinas +50 %, pan sin merma, lonja +50 % y nivel 3, explotaciones de tierra un nivel por debajo | transporte sin bastimento extra (no se modela) |
-| Arrieros | recua −40 %, +1 jornada, +5 de porte, −1 vecino por nivel de casas, sin catedral | **portazgo propio** (T-103) |
+| Arrieros | recua −40 %, +1 jornada, +5 de porte, −1 vecino por nivel de casas, sin catedral, **portazgo** en sus puentes, calzadas y ventas, y sus recuas no pagan el ajeno (T-103) | — |
 | Hortelanos | acequia menor (el pan sin factor de estación), huerta de nivel 4 y +50 % en vega, labor −25 % fuera de vega o río | — |
 
 Las fases nunca leen la tabla de casas directamente: piden los modificadores, permisos y
@@ -199,7 +199,7 @@ Respecto a los primeros esbozos, la ronda Renombre reformula lo que pedía mecá
 crecimiento, *Azud mayor* lleva el agua fuera de la vega en lugar de regar comarcas vecinas,
 *Morera y seda* da maravedís en vez de un bien de lujo, *Ventas reales* alimenta a las recuas y
 *Flota* abarata la atarazana y mejora las lonjas. *Tribunal de las aguas*, *Maestros de forja* y
-*Gremio* funcionan ya para uno mismo y ganarán su parte entre jugadores con T-103.
+*Gremio* funcionan para uno mismo; el *Gremio* da también su cuadrilla en las obras por contrato (T-103), y el *Tribunal de las aguas* ganará su parte con las alianzas.
 
 #### La Mesta
 
@@ -213,7 +213,7 @@ crecimiento, *Azud mayor* lleva el agua fuera de la vega en lugar de regar comar
 
 | Ronda | Profundizar | Compensar | Abrir |
 |---|---|---|---|
-| Renombre | **Maestros de forja**: Tus aperos rinden un 30 % más, pero tu pan un 10 % menos; con T-103, los vendidos pagan más renta. | **Vena profunda**: El hierro se agota a la mitad y el monte un 20 % más despacio; las ferrerías cuestan un 25 % más. | **Armas** ⏸ (T-120): Espadas, lanzas y corazas: con la fase de conflicto, milicia temprana y más barata. |
+| Renombre | **Maestros de forja**: Tus aperos rinden un 30 % más, pero tu pan un 10 % menos. | **Vena profunda**: El hierro se agota a la mitad y el monte un 20 % más despacio; las ferrerías cuestan un 25 % más. | **Armas** ⏸ (T-120): Espadas, lanzas y corazas: con la fase de conflicto, milicia temprana y más barata. |
 | Fama | **Ferrería mayor**: Tus ferrerías rinden un 30 % más, pero cada carbonera cuesta un 30 % más. | **Trasmochos**: Se corta la rama y no el tronco: el monte se te agota un 30 % más despacio. | **Anclas y clavazón**: Mercados e impuestos dan un 20 % más de maravedís y la atarazana te cuesta un 40 % menos. |
 | Linaje | **Hierro de Vizcaya**: Un 30 % más de hierro, pero administrar cada comarca cuesta un 10 % más. | **Martinetes**: El mazo de agua aprovecha el carbón: cada carbonera sostiene tres niveles de ferrería. | **Hidalguía universal**: La lealtad de tus comarcas no baja de 30 y administrarlas cuesta un 15 % menos. |
 
@@ -221,7 +221,7 @@ crecimiento, *Azud mayor* lleva el agua fuera de la vega en lugar de regar comar
 
 | Ronda | Profundizar | Compensar | Abrir |
 |---|---|---|---|
-| Renombre | **Cimborrio**: Tus catedrales se levantan en la mitad de tiempo, y cuestan un 10 % más. | **Gremio**: Una cuadrilla más en cada comarca; con T-103, además, contratos de obra simultáneos. | **Ingenieros**: Puentes y calzadas un 40 % más baratos y otro 40 % más rápidos. |
+| Renombre | **Cimborrio**: Tus catedrales se levantan en la mitad de tiempo, y cuestan un 10 % más. | **Gremio**: Una cuadrilla más en cada comarca, también en las ajenas donde levantas obra por contrato. | **Ingenieros**: Puentes y calzadas un 40 % más baratos y otro 40 % más rápidos. |
 | Fama | **Maestro mayor**: Todas tus obras mayores avanzan un 20 % más, pero tu pan rinde un 10 % menos. | **Bancales**: Muros de piedra seca ganan tierra a la ladera: recuperas el solar que te faltaba. | **Cal y canto**: Casas, cercas, ventas y mercados te cuestan un 30 % menos. |
 | Linaje | **Escuela de Trasmiera**: Obras mayores un 10 % más baratas, pero administrar cada comarca cuesta un 10 % más. | **Casas de piedra**: Cada nivel de casas aloja dos vecinos más. | **Villas muradas**: La muralla te cuesta la mitad y la lealtad de tus comarcas no baja de 25. |
 
@@ -229,7 +229,7 @@ crecimiento, *Azud mayor* lleva el agua fuera de la vega en lugar de regar comar
 
 | Ronda | Profundizar | Compensar | Abrir |
 |---|---|---|---|
-| Renombre | **Consulado**: El consulado negocia por ti: no pagas comisión en ninguna plaza, pero administrar cuesta un 10 % más. | **Flota**: La atarazana te cuesta la mitad y tus lonjas rinden un 30 % más. | **Banca** ⏸ (T-103): Prestar maravedís a otros jugadores con interés, con contrato que el motor cumple. |
+| Renombre | **Consulado**: El consulado negocia por ti: no pagas comisión en ninguna plaza, pero administrar cuesta un 10 % más. | **Flota**: La atarazana te cuesta la mitad y tus lonjas rinden un 30 % más. | **Banca**: Prestas aunque quien pide tenga poco crédito, y si no te devuelve al plazo cobras también de lo que lleven sus recuas. |
 | Fama | **Compañía**: Tus recuas cuestan un 20 % menos y cargan tres más, pero tu gente crece un 5 % más despacio. | **Censos**: Compras rentas sobre tierras ajenas: tu pan rinde un 20 % más. | **Asentistas**: Adelantas dinero y material: tus obras mayores cuestan un 20 % menos. |
 | Linaje | **Ferias de pagos**: Mercados e impuestos dan un 30 % más de maravedís, y administrar cuesta otro 10 % más. | **Alhóndigas**: El pan del almacén se pierde a menos de la mitad de ritmo. | **Mecenazgo**: Catedrales y monasterios te cuestan un 30 % menos. |
 

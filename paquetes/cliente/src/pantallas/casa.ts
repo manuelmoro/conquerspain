@@ -30,6 +30,7 @@ import {
 } from '../casa.ts';
 import type { Campo, Nombres } from '../casa.ts';
 import { NOMBRE_DE_RECURSO } from '../nombres.ts';
+import { seccionDeContratos } from './contratos.ts';
 import { boton, el } from './dom.ts';
 
 /** El estado del formulario del mayordomo: sobrevive a las repintadas. */
@@ -346,6 +347,13 @@ export function pantallaDeCasa(
   if (elegidas.length > 0)
     partes.push(el('p', {}, el('strong', {}, 'Ya elegidas: '), elegidas.join(', ')));
 
+  partes.push(
+    ...seccionDeContratos(almacen, vista, {
+      comarca: n.comarca,
+      comarcas: o.comarcas,
+      propias: o.propias,
+    }),
+  );
   partes.push(...mayordomo(almacen, vista, n, o));
 
   const sal = vista.jugador.conservarConSal;

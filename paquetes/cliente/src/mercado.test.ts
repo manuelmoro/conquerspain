@@ -26,6 +26,7 @@ import {
   enMaravedis,
   fechaDePrecio,
   intencionesDeCompraventa,
+  letraParaComprar,
   intencionesDeMercado,
   limitePorDefecto,
   maravedisParaComprar,
@@ -186,6 +187,20 @@ describe('comprar y vender en pocos toques (T-093)', () => {
     expect(intencionesDeCompraventa(venta, vacia, 20)[0]).toMatchObject({
       cargar: { lana: 10 },
     });
+  });
+
+  it('fuera de casa, la letra le manda lo que le falta, con la comisión ya contada (T-103)', () => {
+    const fuera = { ...vacia, enCasa: false };
+    const letra = letraParaComprar(pedido, fuera, 20, 30);
+    // Le faltan 34; con un 3 % de comisión hay que mandar 36 para que le lleguen 34.
+    expect(letra).toEqual({
+      cantidad: 36,
+      intencion: { tipo: 'letra-de-cambio', recua: 'recua-1', cantidad: 36 },
+    });
+    expect(36 - Math.floor((36 * 30) / 1000)).toBeGreaterThanOrEqual(34);
+    expect(letraParaComprar(pedido, vacia, 20, 30)).toBeNull();
+    const conDinero = { ...fuera, carga: { ...fuera.carga, maravedis: 40 } };
+    expect(letraParaComprar(pedido, conDinero, 20, 30)).toBeNull();
   });
 
   it('de punta a punta: la recua en casa y sin dinero compra pan, y al descargarlo va al almacén', async () => {

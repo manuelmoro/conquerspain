@@ -173,10 +173,36 @@ function proponer(ctx: Contexto, orden: OrdenDe<'contrato'>): void {
   const contrato = nuevoContrato(ctx, orden, orden.condiciones);
   aplicar(ctx, { tipo: 'siguiente-id' });
   actualizar(ctx, contrato);
+  darAConocer(ctx, contrato);
   empezarOrden(ctx, orden, 'terminada');
   contarALasDos(ctx, 'contrato.propuesto', contrato, { plazo: contrato.plazo }, (j) =>
     j === contrato.propone ? 'propone' : 'recibe',
   );
+}
+
+/**
+ * Las comarcas que cita el contrato las conocen las dos partes, al menos de oidas: no se firma una
+ * entrega en un sitio del que no se sabe ni el nombre.
+ */
+function darAConocer(ctx: Contexto, contrato: Contrato): void {
+  const citadas =
+    contrato.tipo === 'entrega' || contrato.tipo === 'aperos'
+      ? [contrato.comarca]
+      : contrato.tipo === 'obra'
+        ? [contrato.comarca, ...(contrato.hacia === null ? [] : [contrato.hacia])]
+        : [];
+  for (const jugador of [contrato.propone, contrato.recibe]) {
+    for (const comarca of citadas) {
+      const sabe = ctx.estado.jugadores[jugador]?.conocimiento[comarca]?.nivel ?? 'desconocida';
+      if (sabe !== 'desconocida' || ctx.estado.comarcas[comarca] === undefined) continue;
+      aplicar(ctx, {
+        tipo: 'conocimiento',
+        jugador,
+        comarca,
+        conocimiento: { nivel: 'oida', turnoUltimaNoticia: ctx.turno, datos: null },
+      });
+    }
+  }
 }
 
 function responder(ctx: Contexto, orden: OrdenDe<'responder-contrato'>): void {

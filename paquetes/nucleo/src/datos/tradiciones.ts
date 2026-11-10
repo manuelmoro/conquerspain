@@ -158,8 +158,7 @@ export const TRADICIONES: Readonly<Record<string, DatosTradicion>> = {
     ronda: 'renombre',
     criterio: 'profundizar',
     nombre: 'Maestros de forja',
-    descripcion:
-      'Tus aperos rinden un 30 % más, pero tu pan un 10 % menos; cuando haya contratos entre casas, los vendidos pagan más renta.',
+    descripcion: 'Tus aperos rinden un 30 % más, pero tu pan un 10 % menos.',
     nota: 'Las rejas, azadas y hoces de hierro vizcaíno se vendían por toda Castilla: un buen apero duraba una vida y se heredaba.',
     modificadores: { efectoAperosMil: 1300, produccionMil: { pan: 900 } },
   }),
@@ -265,7 +264,7 @@ export const TRADICIONES: Readonly<Record<string, DatosTradicion>> = {
     criterio: 'compensar',
     nombre: 'Gremio',
     descripcion:
-      'Una cuadrilla más en cada comarca; cuando haya contratos entre casas, además, contratos de obra simultáneos.',
+      'Una cuadrilla más en cada comarca, también en las ajenas donde levantas obra por contrato.',
     nota: 'Las cuadrillas de Trasmiera salían cada primavera de sus valles con el maestro al frente y volvían por San Martín: el oficio pasaba de padres a hijos.',
     modificadores: { cuadrillasExtra: 1 },
   }),

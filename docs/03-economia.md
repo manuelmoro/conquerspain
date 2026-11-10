@@ -269,7 +269,8 @@ en esa plaza (`ventaCobraMil`, hoy el precio entero) con los maravedís que llev
 igual de quién sea la venta o que esté en tierra de nadie: la venta es de quien pasa. Si no lleva
 maravedís bastantes, come de su carga como siempre. Así un viaje largo deja de llevar encima toda
 su comida y queda sitio para la mercancía, sin que el pan salga de la nada: la venta cambia porte
-por dinero. Lo que cobra el ventero no es de nadie hasta que haya portazgos (T-103).
+por dinero. Lo que cobra el ventero sale de la partida, salvo que la venta sea de una casa que cobra
+portazgo (los arrieros) y la recua de otra: entonces es para el dueño de la venta (T-103).
 
 **La comarca con feria también da de comer** (T-059 §9). Igual que una venta: la recua que empieza el
 turno en una comarca con feria o entra en ella paga allí el bastimento del turno con los maravedís
@@ -367,9 +368,9 @@ Un **rebaño** es una unidad móvil como la recua, pero de ganado:
   otro camino.
 - Su ruta **no es circular**: la subida y la bajada son dos órdenes al año.
 - **Tierra ajena.** Un rebaño entra por cualquier camino en comarcas propias o neutrales; en la de
-  otro jugador, solo por una cañada real y solo si su casa tiene **paso franco** (la Mesta). Hasta
-  que haya portazgos y acuerdos entre jugadores esa es toda la regla; al trazar la ruta las
-  cañadas pesan la mitad.
+  otro jugador, por una cañada real si su casa tiene **paso franco** (la Mesta), o por cualquier
+  camino si tiene un **contrato de paso** vigente con el dueño (T-103). Al trazar la ruta las cañadas
+  pesan la mitad. Los portazgos los paga del almacén; si no le llegan, va por el camino viejo.
 - Un puerto que va a cerrar **dentro de exactamente dos turnos** se avisa a los rebaños que lo
   tienen por delante; si llegan y está cerrado, esperan; si la nieve los pilla a medio puerto,
   vuelven.

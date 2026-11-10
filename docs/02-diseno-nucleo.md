@@ -106,6 +106,9 @@ interface Orden {
 | Casa | `tradicion` | Elegir una tradición en una ronda abierta: gratis, irreversible y vigente desde el turno siguiente (docs/04 §4.3) |
 | Gestión | `mayordomo` | Alta o baja de una regla permanente (ver §2.5) |
 | Gestión | `cola` | Reordenar las órdenes que esperan en una cola (§2.5.1) |
+| Casas | `contrato` | Proponer un contrato a otra casa: entrega, préstamo, aperos, obra o paso de ganado, con plazo y penalización (docs/06 §6.5.1; T-103) |
+| Casas | `responder-contrato` | Aceptar o rechazar un contrato propuesto; al aceptar, el motor comprueba que se puede firmar |
+| Camino | `portazgo` | Fijar lo que cobra un tramo propio mejorado, de 0 a 20 mrs por paso (arrieros; T-103) |
 | Gestión | `anular` | Quitar una orden propia que aún no ha empezado (en cola, en espera o programada) y devolver lo que tuviera apartado. Se resuelve en la fase 0, antes de que la orden se intente; lo empezado no se anula (T-092) |
 
 Cada familia se detalla en el documento de la mecánica correspondiente. El catálogo crece con las
@@ -151,6 +154,7 @@ del orden en que se recibieron las órdenes ni del orden de los jugadores.
 | 5 | **Cometidos** | Exploración, porte, repoblación, presencia e influencia en destino |
 | 6 | **Obras** | Avance y finalización de construcciones y obras mayores |
 | 7 | **Mercado** | Casación de ferias y mercados locales; formación de precios |
+| 7b | **Contratos** | Respuestas (en orden de contrato), propuestas y portazgos nuevos; cada contrato vivo caduca, se cumple o se incumple al plazo (T-103) |
 | 8 | **Territorio** | Incorporaciones, cambios de lealtad, fueros que entran en vigor |
 | 9 | **Población** | Crecimiento, mermas por hambre prolongada, migraciones internas |
 | 10 | **Acontecimientos** | Se aplican los anunciados y se anuncian los de los turnos siguientes |
