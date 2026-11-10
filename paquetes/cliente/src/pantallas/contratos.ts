@@ -17,6 +17,7 @@ import {
   QUIEN_HACE,
   cierreDeContrato,
   contratosEnOrden,
+  estadoDeCasa,
   famaDeCredito,
   fijarPortazgo,
   frasesDeContrato,
@@ -340,7 +341,10 @@ export function seccionDeContratos(
           'p',
           { class: 'suave' },
           casas
-            .map((c) => `${c.nombre}: ${String(c.credito)} (${famaDeCredito(c.credito)})`)
+            .map(
+              (c) =>
+                `${c.nombre}: ${String(c.credito)} (${famaDeCredito(c.credito)})${estadoDeCasa(c, vista.turno)}`,
+            )
             .join(' · '),
         ),
     lista(almacen, vista, o),

@@ -43,6 +43,7 @@ import { LONGITUD_MAXIMA_DE_RUTA } from './tipos/estado.ts';
 import type { Recurso, Recursos } from './tipos/recursos.ts';
 import { RECURSOS } from './tipos/recursos.ts';
 import { rangoDe } from './reglas/obras.ts';
+import { enManosDelConcejo, situacionDeAusencia } from './reglas/ausencia.ts';
 import { precioBaseEfectivo } from './reglas/acontecimientos.ts';
 import { factorAlcanzadoDe } from './contexto.ts';
 import { precioBaseLocalMil } from './reglas/precios.ts';
@@ -61,6 +62,12 @@ export type Cambio =
       /** Un contrato cerrado sale del estado: ya se vio un turno y queda en la cronica (T-103). */
       readonly tipo: 'contrato-baja';
       readonly contrato: IdContrato;
+    }
+  | {
+      /** Turnos seguidos sin ordenes de un jugador (T-105). */
+      readonly tipo: 'ausencia';
+      readonly jugador: IdJugador;
+      readonly turnosSinOrdenes: number;
     }
   | {
       /** El credito de un jugador sube o baja; cumplir suma uno a sus contratos cumplidos (T-103). */
@@ -745,11 +752,20 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'lealtad': {
       const comarca = comarcaDe(ctx, cambio.comarca);
-      // Una casa puede tener un suelo de lealtad (los monjes): nunca baja de ahi.
-      const suelo =
+      // Una casa puede tener un suelo de lealtad (los monjes): nunca baja de ahi. Y la casa ausente
+      // conserva su dominio (T-105): ninguna causa le baja una comarca de su minimo, si no estaba ya
+      // por debajo.
+      const duenyo = comarca.duenyo === null ? undefined : ctx.estado.jugadores[comarca.duenyo];
+      const sueloDeAusente =
+        duenyo !== undefined && situacionDeAusencia(duenyo, ctx.reglas) !== 'presente'
+          ? Math.min(ctx.reglas.ausencia.lealtadMinimaAusente, comarca.lealtad)
+          : 0;
+      const suelo = Math.max(
+        sueloDeAusente,
         comarca.duenyo === null
           ? 0
-          : modificadoresDe(ctx.estado, comarca.duenyo, ctx.reglas).lealtadMinima;
+          : modificadoresDe(ctx.estado, comarca.duenyo, ctx.reglas).lealtadMinima,
+      );
       const despues = limitar(comarca.lealtad + cambio.delta, Math.min(suelo, 100), 100);
       if (despues === comarca.lealtad) return;
       comarca.lealtad = despues;
@@ -844,10 +860,10 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'influencia': {
       const comarca = comarcaDe(ctx, cambio.comarca);
-      if (comarca.duenyo !== null) {
+      if (comarca.duenyo !== null && !enManosDelConcejo(ctx.estado, comarca, ctx.reglas)) {
         throw new ErrorDeMotor(
           'invariante-rota',
-          `${cambio.comarca} tiene duenyo: solo las comarcas neutrales acumulan influencia.`,
+          `${cambio.comarca} tiene duenyo: solo las comarcas neutrales (o en manos del concejo) acumulan influencia.`,
           { comarca: cambio.comarca },
         );
       }
@@ -922,7 +938,11 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'presencia-seguida': {
       const comarca = comarcaDe(ctx, cambio.comarca);
-      if (comarca.duenyo !== null || !Number.isSafeInteger(cambio.turnos) || cambio.turnos < 0) {
+      if (
+        (comarca.duenyo !== null && !enManosDelConcejo(ctx.estado, comarca, ctx.reglas)) ||
+        !Number.isSafeInteger(cambio.turnos) ||
+        cambio.turnos < 0
+      ) {
         throw new ErrorDeMotor(
           'invariante-rota',
           `La presencia seguida de ${cambio.jugador} en ${cambio.comarca} no puede quedar en ${String(cambio.turnos)} (solo las comarcas neutrales la cuentan).`,
@@ -1112,10 +1132,10 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
 
     case 'regalo': {
       const comarca = comarcaDe(ctx, cambio.comarca);
-      if (comarca.duenyo !== null) {
+      if (comarca.duenyo !== null && !enManosDelConcejo(ctx.estado, comarca, ctx.reglas)) {
         throw new ErrorDeMotor(
           'invariante-rota',
-          `${cambio.comarca} tiene duenyo: el concejo solo recibe regalos mientras es neutral.`,
+          `${cambio.comarca} tiene duenyo: el concejo solo recibe regalos mientras es neutral o la administra.`,
           { comarca: cambio.comarca },
         );
       }
@@ -1678,6 +1698,11 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
     case 'contrato-baja': {
       const { [cambio.contrato]: _fuera, ...quedan } = ctx.estado.contratos ?? {};
       ctx.estado.contratos = quedan;
+      return;
+    }
+
+    case 'ausencia': {
+      jugadorDe(ctx, cambio.jugador).turnosSinOrdenes = cambio.turnosSinOrdenes;
       return;
     }
 

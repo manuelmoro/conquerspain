@@ -273,3 +273,22 @@ export function intencionDeContrato(
     ? null
     : { tipo: 'contrato', con: f.con, plazo: turno + turnos, penalizacion, condiciones };
 }
+
+/**
+ * Si otra casa falta o esta amparada, en pocas palabras y con un guion delante; vacio si esta y no
+ * tiene amparo (T-105). Es publico: nadie pierde el tiempo con quien no esta.
+ */
+export function estadoDeCasa(
+  casa: { readonly turnosSinOrdenes: number; readonly amparoHasta: number | null },
+  turno: number,
+): string {
+  const t = TABLAS_DEL_JUEGO.ausencia;
+  const partes: string[] = [];
+  if (casa.turnosSinOrdenes >= t.turnosParaConcejo)
+    partes.push('la administra el concejo: sus comarcas, salvo la capital, se pueden cortejar');
+  else if (casa.turnosSinOrdenes >= t.turnosParaAusente)
+    partes.push(`ausente desde hace ${String(casa.turnosSinOrdenes)} turnos`);
+  if (casa.amparoHasta !== null && casa.amparoHasta >= turno)
+    partes.push(`amparada hasta el turno ${String(casa.amparoHasta)}: ni portazgo ni cortejo`);
+  return partes.length === 0 ? '' : ` — ${partes.join('; ')}`;
+}

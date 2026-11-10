@@ -851,6 +851,7 @@ export interface TablasDeReglas {
   readonly mercado: DatosMercado;
   readonly influencia: DatosInfluencia;
   readonly prestigio: DatosPrestigio;
+  readonly ausencia: DatosAusencia;
   readonly hitos: Readonly<Record<Hito, DatosHito>>;
   readonly rumores: DatosRumores;
   readonly mayordomo: DatosMayordomo;
@@ -858,6 +859,17 @@ export interface TablasDeReglas {
   readonly acontecimientos: DatosAcontecimientos;
   readonly ganaderia: DatosGanaderia;
   readonly contratos: DatosContratos;
+}
+
+/** Ausencia y amparo (docs/06 §6.4; ficha T-105), en turnos. */
+export interface DatosAusencia {
+  readonly turnosParaAvisar: number;
+  readonly turnosParaAusente: number;
+  readonly turnosParaConcejo: number;
+  /** Lo que baja la lealtad de cada comarca por turno de ausencia, sin pasar del minimo. */
+  readonly lealtadPorTurnoAusente: number;
+  readonly lealtadMinimaAusente: number;
+  readonly turnosDeAmparo: number;
 }
 
 /** Contratos, credito y portazgos (ficha T-103). */

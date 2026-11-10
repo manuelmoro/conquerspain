@@ -37,8 +37,8 @@ describe('armazon del resolutor', () => {
     const estado = estadoMini();
     const { estado: despues } = resolverTurno(estado, [], mundoMini(), tablasMini());
     expect(despues.turno).toBe(estado.turno + 1);
-    // Fuera del turno, la huella, el almacen, lo que escribe la produccion (T-031) y el marcador
-    // de la fase 11 (T-043), el estado tiene que ser identico: ninguna fase toca lo que no le
+    // Fuera del turno, la huella, el almacen, lo que escribe la produccion (T-031), el marcador
+    // de la fase 11 (T-043) y el contador de ausencia (T-105), el estado tiene que ser identico: ninguna fase toca lo que no le
     // corresponde.
     const sinVolatiles = (valor: typeof estado): unknown => ({
       ...valor,
@@ -49,7 +49,14 @@ describe('armazon del resolutor', () => {
       jugadores: Object.fromEntries(
         Object.entries(valor.jugadores).map(([id, jugador]) => [
           id,
-          { ...jugador, almacen: null, prestigio: null, registro: null, hitos: null },
+          {
+            ...jugador,
+            almacen: null,
+            prestigio: null,
+            registro: null,
+            hitos: null,
+            turnosSinOrdenes: null,
+          },
         ]),
       ),
       comarcas: Object.fromEntries(

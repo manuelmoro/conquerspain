@@ -37,6 +37,7 @@ import type {
   DatosMercado,
   DatosMovimiento,
   DatosPoblacion,
+  DatosAusencia,
   DatosPrestigio,
   DatosProduccion,
   DatosRecurso,
@@ -579,6 +580,15 @@ const validarArranque: Validador<DatosArranque> = objeto<DatosArranque>({
   recorte: validarRecorte,
 });
 
+const validarAusencia = objeto<DatosAusencia>({
+  turnosParaAvisar: entero({ minimo: 1, maximo: 500 }),
+  turnosParaAusente: entero({ minimo: 1, maximo: 500 }),
+  turnosParaConcejo: entero({ minimo: 1, maximo: 1000 }),
+  lealtadPorTurnoAusente: enteroNoNegativo(20),
+  lealtadMinimaAusente: enteroNoNegativo(100),
+  turnosDeAmparo: enteroNoNegativo(500),
+});
+
 const validarContratos: Validador<DatosContratos> = objeto<DatosContratos>({
   creditoPorCumplir: enteroNoNegativo(100),
   creditoPorIncumplir: enteroNoNegativo(100),
@@ -615,6 +625,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   acontecimientos: validarAcontecimientos,
   ganaderia: validarGanaderia,
   contratos: validarContratos,
+  ausencia: validarAusencia,
 });
 
 /** Valida las tablas de equilibrio y su coherencia con la version de reglas del motor. */

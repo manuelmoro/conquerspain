@@ -201,7 +201,14 @@ export function dominioDe(estado: EstadoPartida): Record<string, unknown> {
     Object.entries(jugadores).map(([id, jugador]) => {
       // Lo reservado es el espejo de las órdenes en vuelo: una orden que espera pendiente reserva
       // su coste, y una que espera en cola no. Como no se comparan las órdenes, su reserva tampoco.
-      const { colas: _colas, reservado: _reservado, ...resto } = jugador;
+      // Y el contador de ausencia (T-105) mide justo eso, cuántos turnos lleva sin dar órdenes: con
+      // bloques de seis no llega a ningún escalón, así que no cambia el dominio.
+      const {
+        colas: _colas,
+        reservado: _reservado,
+        turnosSinOrdenes: _turnosSinOrdenes,
+        ...resto
+      } = jugador;
       return [id, resto];
     }),
   );

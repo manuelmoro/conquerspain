@@ -123,6 +123,8 @@ export interface EstadoJugador {
   readonly prestigio: number;
   /** Reputacion mecanica, de 0 a 100 (docs/06-competicion.md §6.5.1). */
   readonly credito: number;
+  /** Ultimo turno de amparo de quien entro tarde (T-105). Sin poner, ninguno. */
+  readonly amparoHasta?: number;
   /** Hito → turno en que se logro. */
   readonly hitos: Readonly<Partial<Record<Hito, number>>>;
   readonly registro: RegistroDeJugador;
@@ -138,6 +140,7 @@ export interface EstadoJugador {
   readonly deudaAdministracion: number;
   /** Traslado de la corte en marcha, o null. */
   readonly traslado: TrasladoDeCorte | null;
+  /** Turnos seguidos sin dar ninguna orden: la escala de la ausencia (T-105). */
   readonly turnosSinOrdenes: number;
   /** Las reglas del mayordomo, de menor a mayor prioridad (docs/02 §2.5.3). */
   readonly mayordomo: readonly ReglaDeMayordomo[];

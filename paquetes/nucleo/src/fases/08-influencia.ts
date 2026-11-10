@@ -4,6 +4,7 @@
 // al concejo, la influencia de cada comarca neutral y las incorporaciones, que se resuelven con la
 // influencia ya actualizada. La influencia se calcula sobre una foto del estado, asi que ni el orden
 // de las comarcas ni el de los jugadores cambian nada.
+import { cortejable, enManosDelConcejo } from '../reglas/ausencia.ts';
 import { tienePocoCredito } from '../reglas/contratos.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
@@ -47,7 +48,7 @@ function regalo(ctx: Contexto, orden: OrdenDe<'regalo'>): void {
     cancelarOrden(ctx, orden, 'comarca-desconocida');
     return;
   }
-  if (comarca.duenyo !== null) {
+  if (!cortejable(ctx.estado, comarca, orden.jugador, ctx.reglas)) {
     cancelarOrden(ctx, orden, 'comarca-con-duenyo');
     return;
   }
@@ -59,7 +60,7 @@ function regalo(ctx: Contexto, orden: OrdenDe<'regalo'>): void {
   }
   empezarOrden(ctx, orden, 'terminada');
   // Con otra casa presente, el concejo dividido tambien se hace de rogar con los regalos (T-101).
-  const dividido = hayOtraCasaPresente(ctx.estado, comarca, orden.jugador)
+  const dividido = hayOtraCasaPresente(ctx.estado, comarca, orden.jugador, ctx.reglas)
     ? t.concejoDivididoMil
     : MIL;
   // Y el mal pagador tambien convence menos con regalos (T-103).
@@ -92,11 +93,14 @@ export function influenciaDelTurno(ctx: Contexto): void {
   const actividad = actividadDeMercado(ctx.sucesos);
   for (const idComarca of idsEnOrden(foto.comarcas)) {
     const comarca = foto.comarcas[idComarca];
-    if (comarca === undefined || comarca.duenyo !== null) continue;
+    if (comarca === undefined) continue;
+    // Las neutrales, y las de una casa en manos del concejo (T-105), salvo para su dueno.
+    if (comarca.duenyo !== null && !enManosDelConcejo(foto, comarca, ctx.reglas)) continue;
     for (const idJugador of idsEnOrden(foto.jugadores)) {
       const jugador = foto.jugadores[idJugador];
       const nivel = jugador?.conocimiento[idComarca]?.nivel ?? 'desconocida';
-      if (jugador === undefined || nivel === 'desconocida') continue;
+      if (jugador === undefined || nivel === 'desconocida' || comarca.duenyo === idJugador)
+        continue;
 
       const fuentes = fuentesDeInfluencia(
         { comarca, jugador, actividad },
@@ -262,7 +266,7 @@ function quienesLaTienenCerca(
 /** Suma un turno a una orden en curso; si le llega el ultimo, entra en la disputa de su comarca. */
 function avanzar(ctx: Contexto, orden: OrdenDe<'incorporar'>): Candidata | null {
   const comarca = ctx.estado.comarcas[orden.comarca];
-  if (comarca === undefined || comarca.duenyo !== null) {
+  if (comarca === undefined || !cortejable(ctx.estado, comarca, orden.jugador, ctx.reglas)) {
     devolverCoste(ctx, orden, 'comarca-con-duenyo');
     return null;
   }

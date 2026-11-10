@@ -4,6 +4,7 @@
 // queda camino, cumplir su cometido. Todo se decide sobre una foto del estado tomada al empezar la
 // fase y se aplica en orden de identificador de recua; las fundaciones de puebla se reunen y se
 // resuelven al final, todas a la vez, por la regla de influencia y nunca por quien se proceso antes.
+import { cortejable } from '../reglas/ausencia.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { modificadoresDe, modificadoresDelJugador } from '../reglas/casas/index.ts';
@@ -408,7 +409,8 @@ function resolverFundacion(
 
 /** Estar presente en una comarca neutral cuesta bastimento; sin el, no cuenta ese turno. */
 function estarPresente(ctx: Contexto, foto: EstadoPartida, recua: Recua, donde: IdComarca): void {
-  if (foto.comarcas[donde]?.duenyo !== null) {
+  const comarca = foto.comarcas[donde];
+  if (comarca === undefined || !cortejable(foto, comarca, recua.jugador, ctx.reglas)) {
     sinEfecto(ctx, recua, 'comarca-con-duenyo', false);
     return;
   }

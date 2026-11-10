@@ -464,6 +464,25 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
       ajeno: '{jugador} ha sido la primera casa en lograr «{hito}».',
     },
   ),
+  // ——— Ausencia (T-105) ———
+  'ausencia.aviso': aviso(
+    'Llevas {turnos} turnos sin dar órdenes: el mayordomo lleva la casa. Si pasan {ausente} más, contarás como ausente y la lealtad de tus comarcas empezará a bajar.',
+  ),
+  'ausencia.ausente': p(
+    'avisos',
+    '{de} anda ausente: no da órdenes y la lealtad de sus comarcas baja. Si sigue así {concejo} turnos más, el concejo administrará sus tierras.',
+    { publica: true },
+  ),
+  'ausencia.concejo': p(
+    'avisos',
+    'El concejo administra las tierras de {de}, que no da órdenes: sus comarcas, salvo la capital, se pueden cortejar e incorporar.',
+    { publica: true },
+  ),
+  'ausencia.vuelve': p(
+    'sucesos',
+    '{de} vuelve a mandar en su casa tras {turnos} turnos sin órdenes; la influencia ajena en sus comarcas se pierde.',
+    { publica: true },
+  ),
   'temporada.cerrada': p(
     'hitos',
     'Se cierra la temporada. Gana {ganador}, con {prestigio} de prestigio; la partida queda como archivo.',

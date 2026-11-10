@@ -2,6 +2,7 @@
 //
 // Funciones puras: dicen de donde sale la influencia de un jugador en una comarca neutral este
 // turno y cuanta se pierde. Quien la apunta y en que orden es cosa de la fase 8.
+import { cortejable } from './ausencia.ts';
 import type { Suceso } from '../tipos/cronica.ts';
 import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { Mundo } from '../tipos/mundo.ts';
@@ -77,13 +78,14 @@ export function hayOtraCasaPresente(
   foto: EstadoPartida,
   comarca: EstadoComarca,
   jugador: string,
+  reglas: TablasDeReglas,
 ): boolean {
   return Object.values(foto.recuas).some(
     (recua) =>
       recua.jugador !== jugador &&
       recua.situacion.donde === 'comarca' &&
       recua.situacion.comarca === comarca.id &&
-      estaPresente(recua, comarca),
+      estaPresente(recua, comarca, cortejable(foto, comarca, recua.jugador, reglas)),
   );
 }
 
@@ -108,10 +110,11 @@ export function fuentesDeInfluencia(
       recua.jugador === jugador.id &&
       recua.situacion.donde === 'comarca' &&
       recua.situacion.comarca === comarca.id &&
-      estaPresente(recua, comarca),
+      estaPresente(recua, comarca, cortejable(foto, comarca, recua.jugador, reglas)),
   );
 
-  const disputada = (rivalesVisibles || presente) && hayOtraCasaPresente(foto, comarca, jugador.id);
+  const disputada =
+    (rivalesVisibles || presente) && hayOtraCasaPresente(foto, comarca, jugador.id, reglas);
 
   const vecinasPropias = (mundo.vecinos[comarca.id] ?? []).filter(
     (vecina) => foto.comarcas[vecina]?.duenyo === jugador.id,

@@ -199,7 +199,15 @@ describe('la vista de un jugador, regla a regla', () => {
 
   it('7. almacén ajeno: nunca (el crédito sí es público, T-103)', () => {
     for (const casa of vista.casas)
-      expect(Object.keys(casa).sort()).toEqual(['casa', 'credito', 'id', 'nombre', 'prestigio']);
+      expect(Object.keys(casa).sort()).toEqual([
+        'amparoHasta',
+        'casa',
+        'credito',
+        'id',
+        'nombre',
+        'prestigio',
+        'turnosSinOrdenes',
+      ]);
     expect(JSON.stringify(vista)).not.toContain(String(SECRETO_ALMACEN));
   });
 

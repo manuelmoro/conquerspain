@@ -2,7 +2,7 @@
 //
 // Una recua que se queda en una comarca neutral se gana al concejo poco a poco: la influencia la
 // suma la fase de territorio (T-038). Aqui solo se decide si esta presente de verdad este turno,
-// que es si esta quieta en una comarca sin duenyo y ha podido comer.
+// que es si esta quieta en una comarca que se puede cortejar y ha podido comer.
 import { bastimentoDe } from './bastimento.ts';
 import type { Bastimento } from './bastimento.ts';
 import type { EstadoComarca, Recua } from '../tipos/estado.ts';
@@ -13,14 +13,21 @@ export function bastimentoDePresencia(estacion: Estacion, reglas: TablasDeReglas
   return bastimentoDe(reglas.cometidos.bastimentoPresenciaMil, estacion, reglas);
 }
 
-/** La recua cuenta como presente para la influencia (la consulta T-038). */
-export function estaPresente(recua: Recua, comarca: EstadoComarca | undefined): boolean {
+/**
+ * La recua cuenta como presente para la influencia (la consulta T-038): en una comarca neutral, o
+ * en una ajena que administra el concejo (`cortejable`, T-105).
+ */
+export function estaPresente(
+  recua: Recua,
+  comarca: EstadoComarca | undefined,
+  cortejable: boolean = comarca?.duenyo === null,
+): boolean {
   return (
     recua.cometido === 'presencia' &&
     recua.situacion.donde === 'comarca' &&
     recua.ruta.length === 0 &&
     comarca !== undefined &&
-    comarca.duenyo === null &&
+    cortejable &&
     !recua.avisadaSinBastimento
   );
 }

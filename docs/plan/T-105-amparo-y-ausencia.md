@@ -1,48 +1,63 @@
 # T-105 · Amparo del novato, ausencia y administración del concejo
 
-**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** pendiente (ficha **esbozada**)
+**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** en curso (ficha **detallada** el## 1. Contexto
 
-> Esta ficha está esbozada a propósito. **Detallarla es la primera mitad de la tarea**: antes de
-> escribir código, complétala al nivel de las fichas de las fases 0 a 2 (diseño detallado con
-> firmas, fórmulas y casos límite) y anota en `ESTADO.md` que ya está detallada.
+Las reglas que hacen habitable una partida larga: que entrar tarde no sea un suicidio y que irse de
+vacaciones no arruine a nadie (docs/06 §6.4.3 y §6.4.4). El mayordomo (T-045) ya mantiene la economía
+de quien no da órdenes; faltaba qué pasa con su dominio y qué ven los demás.
 
-## 1. Contexto
+## 2. La ausencia
 
-Las reglas que hacen que una partida larga sea habitable: que entrar tarde no sea un suicidio y
-que irse de vacaciones no arruine a nadie.
+**Qué cuenta como estar.** Dar cualquier orden ese turno (la del mayordomo no cuenta: es automática).
+El motor lo sabe por las órdenes nuevas del turno, sin mirar conexiones: un dato que el servidor no
+tiene por qué guardar. `EstadoJugador.turnosSinOrdenes` (opcional; sin poner, 0) se pone a 0 con una
+orden y si no, suma uno, al empezar la fase 0.
 
-Lee antes: [docs/06-competicion.md](../06-competicion.md) §6.4.
+**Los escalones** (tabla `ausencia`, todo en turnos):
 
-## 2. Objetivo
+| Turnos sin órdenes | Qué pasa | Quién lo ve |
+|---|---|---|
+| 5 (`turnosParaAvisar`) | Aviso: «el mayordomo lleva la casa» | el jugador (y por correo, con los avisos de T-064) |
+| 15 (`turnosParaAusente`) | **Ausente.** La lealtad de sus comarcas baja 1 por turno, pero nunca de 50 (`lealtadMinimaAusente`): ninguna se va por eso | todos (`ausencia.ausente`, público) |
+| 30 (`turnosParaConcejo`) | **Administración del concejo.** Sigue produciendo con su mayordomo; no puede incorporar; y sus comarcas, **salvo la capital**, se pueden cortejar e incorporar como si fueran neutrales | todos (`ausencia.concejo`, público) |
 
-Amparo temporal para quien entra, y degradación lenta, avisada y reversible para quien falta.
+**El reingreso.** La primera orden del ausente le devuelve el mando entero en ese mismo turno: el
+contador vuelve a 0, la lealtad deja de bajar, y la influencia que otros hubieran ganado en sus comarcas
+se borra (`ausencia.vuelve`, público). Lo que otro ya incorporó mientras tanto no vuelve: se perdió como
+se pierde cualquier comarca.
 
-## 3. Alcance
+## 3. El amparo
 
-**Entra:** amparo de 20 turnos, estados de ausencia, administración del concejo, reingreso.
+`EstadoJugador.amparoHasta` (opcional): el último turno de amparo. Mientras dura:
 
-**No entra:** sustitución por otro jugador (se estudiará después).
+- **No paga portazgo** a nadie.
+- **Sus comarcas no se pueden cortejar** aunque esté en administración del concejo.
+- **Es público:** la vista de las casas dice `amparada` y el turno en que acaba.
 
-## 4. Puntos que hay que resolver al detallar
+**Quién lo tiene.** Quien entra en una partida ya empezada, 20 turnos (`turnosDeAmparo`). Hoy no hay
+forma de entrar en una partida empezada: las plazas se cierran al fundar. **Atajo documentado:** el motor
+y la vista ya tratan el amparo, pero nadie lo recibe hasta que exista la entrada tardía, que va en
+[T-107](T-107-entrar-en-partida-empezada.md).
 
-- Qué impide exactamente el amparo y cómo se ve desde fuera (tiene que ser público para que nadie pierda el tiempo).
-- Escala de ausencia: 5 turnos sin órdenes, 15, 30. Qué pasa en cada escalón.
-- Administración del concejo: produce, no expande, y sus comarcas se pueden cortejar.
-- Reingreso: el jugador vuelve y recupera el mando sin penalización adicional.
+## 4. Lo que se ve
 
-## 5. Criterios de aceptación provisionales
+`CasaPublica` lleva `ausencia: 'presente' | 'ausente' | 'concejo'` y `amparoHasta: number | null`. En el
+cliente, la ficha de una comarca de una casa en administración dice que se puede cortejar, y «Tus
+contratos» marca a las casas ausentes.
 
-1. Un jugador ausente 30 turnos conserva su dominio pero deja de expandirse.
-2. Nadie puede aprovecharse de un jugador amparado.
-3. El reingreso devuelve el control íntegro y lo anuncia la crónica.
+## 5. Criterios de aceptación
+
+1. Un jugador ausente 30 turnos conserva su dominio (ninguna comarca baja de 50 de lealtad) pero no se
+   expande, y sus comarcas salvo la capital se pueden cortejar e incorporar.
+2. Nadie puede aprovecharse de un jugador amparado: ni portazgo ni cortejo.
+3. El reingreso devuelve el control íntegro, borra la influencia ajena y lo anuncia la crónica.
 
 ## 6. Verificación
 
-```bash
-npm run verificar
-```
+`npm run verificar`, con `nucleo/pruebas/ausencia.test.ts` (contador, escalones, lealtad con suelo,
+cortejo e incorporación en concejo, capital a salvo, reingreso, amparo frente a portazgo y cortejo).
 
-Más las comprobaciones propias que se añadan al detallar la ficha.
+ar la ficha.
 
 ## 7. Al terminar
 

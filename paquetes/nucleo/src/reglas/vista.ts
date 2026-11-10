@@ -80,6 +80,13 @@ export interface CasaPublica {
   readonly prestigio: number;
   /** Su credito, publico: con quien se firma importa (T-103). */
   readonly credito: number;
+  /**
+   * Turnos seguidos sin dar ordenes: publico, para que nadie pierda el tiempo con quien falta. El
+   * escalon sale de `situacionDeAusencia` con las tablas (T-105).
+   */
+  readonly turnosSinOrdenes: number;
+  /** Ultimo turno de su amparo, o null si no lo tiene (T-105). */
+  readonly amparoHasta: number | null;
 }
 
 export interface VistaJugador {
@@ -254,6 +261,9 @@ export function vistaDeJugador(
         casa: j.casa,
         prestigio: j.prestigio,
         credito: j.credito,
+        turnosSinOrdenes: j.turnosSinOrdenes,
+        amparoHasta:
+          j.amparoHasta !== undefined && j.amparoHasta >= estado.turno ? j.amparoHasta : null,
       })),
     clasificacion: estado.clasificacion,
     comarcas,

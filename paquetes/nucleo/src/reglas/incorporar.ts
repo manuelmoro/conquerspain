@@ -2,6 +2,7 @@
 //
 // Funciones puras: los requisitos, el ganador de una disputa y la prevision que ve el jugador antes
 // de confirmar. La fase 8 las usa para decidir y aplica los efectos con cambios.
+import { cortejable } from './ausencia.ts';
 import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { IdComarca, IdJugador } from '../tipos/ids.ts';
 import type { Camino, Mundo } from '../tipos/mundo.ts';
@@ -66,7 +67,7 @@ export function impedimentoDeIncorporar(
   reglas: TablasDeReglas,
 ): MotivoSinIncorporar | null {
   const t = reglas.influencia;
-  if (comarca.duenyo !== null) return 'comarca-con-duenyo';
+  if (!cortejable(estado, comarca, jugador.id, reglas)) return 'comarca-con-duenyo';
   const propia = comarca.influencias[jugador.id] ?? 0;
   if (propia < t.minimaParaIncorporar) return 'influencia-baja';
   const mejorRival = Object.entries(comarca.influencias)

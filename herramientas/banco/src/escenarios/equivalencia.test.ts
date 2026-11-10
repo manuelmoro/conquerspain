@@ -564,6 +564,12 @@ describe('un viaje de feria que cruza el bloque', () => {
 
 describe('las ocho vías tienen plan equivalente', () => {
   it('el plan que deja el que entra cada seis turnos, entregado a mano, da lo mismo', () => {
+    // A mano, una casa puede pasar más de quince turnos sin dar órdenes y contaría como ausente
+    // (T-105); aquí se mide el plan, no la ausencia, así que no cuenta.
+    const SIN_AUSENCIA = {
+      ...TABLAS_DEL_JUEGO,
+      ausencia: { ...TABLAS_DEL_JUEGO.ausencia, turnosParaAusente: 1000, turnosParaConcejo: 1000 },
+    };
     // Las ocho casas en la misma partida, con los robots entrando cada seis turnos. Su plan se
     // vuelve a jugar entregando cada orden el día en que empezó a trabajar, sin colas ni fechas:
     // las mismas decisiones, la misma información y el mismo resultado (ficha T-051 §6.2).
@@ -578,7 +584,7 @@ describe('las ocho vías tienen plan equivalente', () => {
     });
     const filas = equivalenciaDeLaPartida(
       robots,
-      { estado: alta.estado, mundo: alta.mundo, reglas: TABLAS_DEL_JUEGO, turnos: 100 },
+      { estado: alta.estado, mundo: alta.mundo, reglas: SIN_AUSENCIA, turnos: 100 },
       [100],
     );
     expect(filas).toHaveLength(CASAS.length);

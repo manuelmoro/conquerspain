@@ -431,13 +431,18 @@ function dominioEnFila(elMundo: Mundo, conFuerosYCaminos: boolean): EstadoPartid
 }
 
 describe('escenario de cien turnos', () => {
+  // Cien turnos sin ordenes miden la administracion, no la ausencia (T-105), que aqui no cuenta.
+  const sinAusencia = {
+    ...reglas,
+    ausencia: { ...reglas.ausencia, turnosParaAusente: 1000, turnosParaConcejo: 1000 },
+  };
   function jugar(conFuerosYCaminos: boolean) {
     const elMundo = mundoEnFila();
     let estado = dominioEnFila(elMundo, conFuerosYCaminos);
     let turnosConDeuda = 0;
     let deudaMaxima = 0;
     for (let i = 0; i < 100; i += 1) {
-      estado = turno(estado, [], reglas, elMundo).estado;
+      estado = turno(estado, [], sinAusencia, elMundo).estado;
       const deuda = estado.jugadores[UNO]?.deudaAdministracion ?? 0;
       if (deuda > 0) turnosConDeuda += 1;
       deudaMaxima = Math.max(deudaMaxima, deuda);

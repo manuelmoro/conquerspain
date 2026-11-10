@@ -8,6 +8,7 @@
 // Esto comprueba la **forma** y la **propiedad** (lo que cita es del jugador y lo conoce); no
 // comprueba que haya recursos o cuadrillas: eso es ejecucion legal y lo decide el motor al darla
 // de alta, que la cancela con su motivo y lo cuenta en la cronica.
+import { cortejable } from '../reglas/ausencia.ts';
 import {
   costeDeAperos,
   costeDeEdificio,
@@ -232,9 +233,16 @@ function comprobarPropiedad(
       }
       break;
     case 'regalo':
-    case 'incorporar':
-      neutral('comarca', o.comarca);
+    case 'incorporar': {
+      // Neutral, o de una casa que administra el concejo (T-105).
+      const comarca = estado.comarcas[o.comarca];
+      if (comarca !== undefined && comarca.duenyo !== null && comarca.duenyo !== ctx.jugador) {
+        conocida('comarca', o.comarca);
+        if (!cortejable(estado, comarca, ctx.jugador, reglas))
+          errores.push(error('comarca', `la comarca "${o.comarca}" ya tiene dueño`));
+      } else neutral('comarca', o.comarca);
       break;
+    }
     case 'ruta':
       if ((o.recua === null) === (o.rebanyo === null)) {
         errores.push(

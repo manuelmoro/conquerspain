@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   cierreDeContrato,
+  estadoDeCasa,
   famaDeCredito,
   frasesDeContrato,
   intencionDeContrato,
@@ -85,6 +86,17 @@ describe('lo que dice un contrato', () => {
     );
     const rechazado: Contrato = { ...entrega, estado: 'rechazado', motivo: 'sin-recursos' };
     expect(cierreDeContrato(rechazado, DOS, n.jugador)).toBe('No hay recursos.');
+  });
+
+  it('la casa ausente, en concejo o amparada se dice (T-105)', () => {
+    expect(estadoDeCasa({ turnosSinOrdenes: 2, amparoHasta: null }, 10)).toBe('');
+    expect(estadoDeCasa({ turnosSinOrdenes: 16, amparoHasta: null }, 10)).toBe(
+      ' — ausente desde hace 16 turnos',
+    );
+    expect(estadoDeCasa({ turnosSinOrdenes: 30, amparoHasta: null }, 10)).toMatch(/concejo/);
+    expect(estadoDeCasa({ turnosSinOrdenes: 0, amparoHasta: 20 }, 10)).toMatch(
+      /amparada hasta el turno 20/,
+    );
   });
 
   it('la fama del crédito', () => {

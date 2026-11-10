@@ -158,6 +158,7 @@ const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
   almacen: recursos(),
   reservado: recursos(),
   prestigio: entero(),
+  amparoHasta: opcional(entero({ minimo: 1 })),
   credito: entero({ minimo: 0, maximo: 100 }),
   hitos: registro(entero({ minimo: 1 }), unoDe(HITOS)),
   registro: validarRegistro,

@@ -8,6 +8,7 @@ import type { EstadoJugador, EstadoPartida, EstadoTramo, SituacionMovil } from '
 import type { IdComarca, IdJugador } from '../tipos/ids.ts';
 import type { TablasDeReglas } from '../tipos/reglas.ts';
 import { permisosDelJugador, prohibicionesDelJugador } from './casas/index.ts';
+import { estaAmparado } from './ausencia.ts';
 import type { Avance } from './movimiento.ts';
 import { claveDeTramo } from './ruta.ts';
 
@@ -51,6 +52,8 @@ export function peajeDe(
   const cantidad = tramo?.portazgo ?? 0;
   if (duenyo === undefined || cantidad <= 0 || duenyo === jugador.id) return null;
   if (permisosDelJugador(jugador, reglas).cobrarPortazgo) return null;
+  // Quien entro tarde no paga mientras dura su amparo (T-105).
+  if (estaAmparado(jugador, estado.turno)) return null;
   if (!puedeCobrarPortazgo(estado, duenyo, reglas)) return null;
   return { clave, desde, hasta, duenyo, cantidad };
 }

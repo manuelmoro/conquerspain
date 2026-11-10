@@ -158,6 +158,14 @@ export { bastimentoDePresencia } from './reglas/presencia.ts';
 export { capacidadDePasto, esPastoCorrecto } from './reglas/pastos.ts';
 export { opcionesDeRutaDeRebanyo, pasoDeRebanyo, puedeEntrar } from './reglas/rebanyos.ts';
 export {
+  SITUACIONES_DE_AUSENCIA,
+  cortejable,
+  enManosDelConcejo,
+  estaAmparado,
+  situacionDeAusencia,
+} from './reglas/ausencia.ts';
+export type { SituacionDeAusencia } from './reglas/ausencia.ts';
+export {
   elegirOrigenes,
   origenesPosibles,
   perfilDe,
