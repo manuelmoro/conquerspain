@@ -11,6 +11,7 @@ import {
 import type { AccionDeMayordomo, CondicionDeMayordomo, VistaJugador } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
+import type { ModoDeAviso } from '../api.ts';
 import {
   CAMPOS_DE_ACCION,
   CAMPOS_DE_CONDICION,
@@ -68,6 +69,46 @@ export interface Opciones {
   readonly plazas: readonly { id: string; nombre: string }[];
   readonly comarcas: readonly { id: string; nombre: string }[];
   readonly propias: readonly { id: string; nombre: string }[];
+  /** Como llegan los avisos por correo; null si aun no se sabe (T-066). */
+  readonly avisos: ModoDeAviso | null;
+  readonly cambiarAvisos: (modo: ModoDeAviso) => void;
+}
+
+const MODOS_DE_AVISO: readonly { readonly modo: ModoDeAviso; readonly texto: string }[] = [
+  { modo: 'cada-turno', texto: 'Cada turno' },
+  { modo: 'diario', texto: 'Uno al día' },
+  { modo: 'nada', texto: 'Ninguno' },
+];
+
+/** Los avisos por correo: cada turno, uno al dia o ninguno (T-064; aqui se cambian desde T-066). */
+function avisosPorCorreo(o: Opciones): HTMLElement {
+  return el(
+    'section',
+    {},
+    el('h3', {}, 'Avisos por correo'),
+    el(
+      'p',
+      { class: 'suave' },
+      'Te escribimos cuando se resuelve el turno, con lo que pide tu atención. Elige cuántos quieres recibir.',
+    ),
+    o.avisos === null
+      ? el('p', { class: 'suave' }, 'Cargando…')
+      : el(
+          'div',
+          { class: 'conmutador', role: 'group', 'aria-label': 'Avisos por correo' },
+          ...MODOS_DE_AVISO.map(({ modo, texto }) => {
+            const b = boton(
+              texto,
+              () => {
+                o.cambiarAvisos(modo);
+              },
+              modo === o.avisos ? '' : 'secundario',
+            );
+            b.setAttribute('aria-pressed', modo === o.avisos ? 'true' : 'false');
+            return b;
+          }),
+        ),
+  );
 }
 
 function campo(
@@ -325,5 +366,6 @@ export function pantallaDeCasa(
       'secundario',
     ),
   );
+  partes.push(avisosPorCorreo(o));
   return el('section', { class: 'ficha tarjeta hoja', 'data-conservar-scroll': 'casa' }, ...partes);
 }

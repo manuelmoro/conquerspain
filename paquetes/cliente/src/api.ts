@@ -44,6 +44,9 @@ export interface PartidaDeLaLista {
   readonly ordenesDadas: number;
 }
 
+/** Cada cuanto llega el aviso por correo de una partida (T-064). */
+export type ModoDeAviso = 'cada-turno' | 'diario' | 'nada';
+
 export interface EstadoRecibido {
   readonly turno: number;
   readonly estadoDeLaPartida: string;
@@ -260,6 +263,22 @@ export class ClienteApi {
     return this.pedir<{ turnos: TurnoDelHistorial[] }>(
       'GET',
       `/partidas/${encodeURIComponent(partida)}/historial-de-recursos`,
+    );
+  }
+
+  /** Como quiere el jugador los avisos por correo de esta partida (T-064, T-066). */
+  avisos(partida: string) {
+    return this.pedir<{ modo: ModoDeAviso; porDefecto: ModoDeAviso }>(
+      'GET',
+      `/partidas/${encodeURIComponent(partida)}/avisos`,
+    );
+  }
+
+  fijarAvisos(partida: string, modo: ModoDeAviso) {
+    return this.pedir<{ modo: ModoDeAviso }>(
+      'PUT',
+      `/partidas/${encodeURIComponent(partida)}/avisos`,
+      { modo },
     );
   }
 

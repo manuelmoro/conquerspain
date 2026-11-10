@@ -29,7 +29,7 @@ import { EMBLEMA_DE_CASA } from '../arte/index.ts';
 import { PASOS_DEL_TUTORIAL, terminado } from '../tutorial.ts';
 import { enfocar } from './foco.ts';
 
-import type { MercadoRecibido, TurnoDelHistorial } from '../api.ts';
+import type { MercadoRecibido, ModoDeAviso, TurnoDelHistorial } from '../api.ts';
 import { pantallaDeAyuda } from './ayuda.ts';
 import { dialogoDeHistorial } from './historial.ts';
 import { pantallaDeCasa } from './casa.ts';
@@ -245,6 +245,7 @@ function mapaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
  */
 const fichas = new CacheDeServidor<FichaDeComarca>();
 const mercados = new CacheDeServidor<MercadoRecibido>();
+const avisos = new CacheDeServidor<ModoDeAviso>();
 const cronicas = new CacheDeServidor<Cronica>();
 const clasificaciones = new CacheDeServidor<ClasificacionPublica>();
 
@@ -387,7 +388,24 @@ function casaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | null 
       plaza: (id) => plazas.find((p) => p.id === id)?.nombre ?? 'una plaza',
       unidad: (id) => unidades.find((u) => u.id === id)?.nombre ?? 'una recua',
     },
-    { plazas, comarcas, propias },
+    {
+      plazas,
+      comarcas,
+      propias,
+      avisos: avisos.leer(
+        claveDeVista(estado),
+        () => almacen.pedirAvisos(),
+        () => {
+          almacen.refrescar();
+        },
+      ),
+      cambiarAvisos: (modo) => {
+        void almacen.fijarAvisos(modo).then((ok) => {
+          if (ok) avisos.olvidar(claveDeVista(estado));
+          almacen.refrescar();
+        });
+      },
+    },
   );
 }
 

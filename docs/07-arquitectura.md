@@ -244,6 +244,35 @@ npm run banco:comparar -- informes/antes.csv informes/despues.csv
 - Copias de seguridad diarias de la base de datos y de los registros de auditoría de resolución.
 - Sin proveedor elegido todavía; nada del diseño depende de uno concreto.
 
+### 7.8.1 El correo (T-066)
+
+El servidor manda correo por SMTP si encuentra `SMTP_HOST`. Si no, lo escribe en la consola, y solo en
+desarrollo: en producción no arranca sin SMTP, porque un enlace en la consola da acceso a una cuenta.
+
+| Variable | Qué es |
+|---|---|
+| `SMTP_HOST` | El servidor de correo saliente del proveedor |
+| `SMTP_PUERTO` | 587 por defecto (STARTTLS); 465 es TLS directo |
+| `SMTP_SEGURIDAD` | `starttls`, `tls` o `ninguna` (esta última, solo contra la propia máquina) |
+| `SMTP_USUARIO`, `SMTP_CLAVE` | Las credenciales, las dos o ninguna |
+| `CORREO_REMITENTE` | «ConquerSpain <avisos@tu-dominio.es>» |
+| `CORREO_RESPONDER_A` | Opcional: a dónde van las respuestas |
+
+- **Sin dependencias:** el transporte (`cuentas/smtp.ts`) está escrito con `node:net` y `node:tls`.
+  Abre una conexión por mensaje, manda texto plano en UTF-8 y, si algo falla, lanza un error sin
+  secretos: el despachador de avisos reintenta (T-064).
+- **Los secretos** van en el entorno del servidor, nunca en el repositorio. El registro solo dice el
+  servidor, el puerto y la seguridad.
+- **El dominio remitente** necesita en su DNS tres registros, que da el proveedor de correo:
+  - SPF: un TXT que autoriza a sus servidores;
+  - DKIM: la clave pública con la que firma;
+  - DMARC: un TXT `_dmarc` con al menos `p=none` para empezar.
+
+  Sin ellos, los correos acaban en spam.
+- **Los avisos** llevan la cabecera `List-Unsubscribe`, que apunta al juego, y un pie que dice dónde se
+  cambian: en la partida, «Tu casa» → «Avisos por correo». La baja en un solo clic sin entrar
+  (RFC 8058) necesitaría un enlace firmado por jugador; se hará cuando el volumen de avisos lo pida.
+
 ## 7.9 Lo que NO se va a hacer
 
 - Nada de reglas en la base de datos ni en el cliente.

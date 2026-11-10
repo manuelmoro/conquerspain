@@ -11,7 +11,7 @@ import { servirHttp } from './api/http.ts';
 import { CanalDeAvisos } from './avisos/canal.ts';
 import { DespachadorDeCorreos } from './avisos/despachador.ts';
 import { autenticadorDeSesiones } from './cuentas/autenticador.ts';
-import { CorreoPorConsola } from './cuentas/correo.ts';
+import { enviadorDesdeEntorno } from './cuentas/configuracion-de-correo.ts';
 import { ServicioDeCuentas } from './cuentas/servicio.ts';
 import { RepositorioSqlite } from './persistencia/sqlite.ts';
 import { proveedorDeRecorte } from './reloj/mundoDeLaPartida.ts';
@@ -48,7 +48,13 @@ const registro: Registro = {
 const ahora = (): number => Date.now();
 const repo = new RepositorioSqlite(baseDeDatos);
 await repo.migrar(ahora());
-const correo = new CorreoPorConsola();
+// El correo (T-066): SMTP si hay SMTP_HOST; la consola, solo en desarrollo.
+const { correo, descripcion: transporteDeCorreo } = enviadorDesdeEntorno(
+  entorno,
+  desarrollo,
+  urlPublica,
+);
+registro.anotar('info', 'correo', { transporte: transporteDeCorreo });
 const canal = new CanalDeAvisos();
 const proveedorDeMundo = proveedorDeRecorte(mundo, TABLAS_DEL_JUEGO);
 const cuentas = new ServicioDeCuentas({

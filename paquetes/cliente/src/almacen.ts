@@ -13,6 +13,7 @@ import type {
   CuentaDelCliente,
   EstadoRecibido,
   MercadoRecibido,
+  ModoDeAviso,
   OrdenEnviada,
   TurnoDelHistorial,
 } from './api.ts';
@@ -617,6 +618,27 @@ export class Almacen {
       return null;
     }
     return r.datos.turnos;
+  }
+
+  /** Los avisos por correo de la partida abierta (T-066), o null si no se pudo traer. */
+  async pedirAvisos(): Promise<ModoDeAviso | null> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return null;
+    const r = await this.dep.api.avisos(partida.id);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return null;
+    }
+    return r.datos.modo;
+  }
+
+  /** Cambia los avisos por correo de la partida abierta; true si el servidor lo guardo. */
+  async fijarAvisos(modo: ModoDeAviso): Promise<boolean> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return false;
+    const r = await this.dep.api.fijarAvisos(partida.id, modo);
+    if (!r.ok) this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+    return r.ok;
   }
 
   /** El panel de mercado y las series de la partida abierta, o null si no se pudo traer. */
