@@ -24,6 +24,7 @@ import { reproducirTurno } from './auditoria.ts';
 import { proveedorDeRecorte } from './mundoDeLaPartida.ts';
 import { proximaResolucion } from './calendario.ts';
 import { Reloj } from './reloj.ts';
+import { resolverUnTurno } from './resolucion.ts';
 import { RegistroEnMemoria } from './registro.ts';
 import type { DependenciasDeResolucion } from './resolucion.ts';
 
@@ -439,4 +440,29 @@ describe('la auditoria reproduce cualquier turno', () => {
     await expect(reproducirTurno(dep, estado.id, 99)).rejects.toThrow(/No hay auditoria/);
     await e.repo.cerrar();
   }, 120_000);
+});
+
+describe('la temporada que se cierra (T-104)', () => {
+  it('tras el turno que cierra, la partida queda terminada, sin más turnos y consultable', async () => {
+    const e = entorno();
+    const { estado: base, mundo } = partidaDePrueba(['mesta', 'monjes'], '1492', 'p-temporada');
+    const estado: EstadoPartida = {
+      ...base,
+      configuracion: { ...base.configuracion, turnosDeTemporada: base.turno },
+    };
+    await e.repo.migrar(ANCLA);
+    await e.repo.crearPartida(
+      { ...datosDePartida(estado, mundo), proximaResolucion: proximaResolucion(ANCLA, HORA, 1) },
+      estado,
+      ANCLA,
+    );
+    const id = 'p-temporada' as IdPartida;
+    expect((await resolverUnTurno(e.dep, id, { ignorarHora: true })).tipo).toBe('resuelto');
+    const fila = await e.repo.partida(id);
+    expect(fila?.estado).toBe('terminada');
+    expect(fila?.proximaResolucion).toBeNull();
+    expect((await e.repo.ultimoEstado(id))?.cierre?.turno).toBe(base.turno);
+    expect(await e.repo.cronica(id, base.turno, 'mesta' as IdJugador)).not.toBeNull();
+    expect((await resolverUnTurno(e.dep, id, { ignorarHora: true })).tipo).toBe('no-debida');
+  });
 });

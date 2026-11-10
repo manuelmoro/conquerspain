@@ -1,6 +1,6 @@
 # T-082 · Ficha de comarca y bandeja de órdenes con previsión
 
-**Fase:** 4 · Cliente · **Depende de:** T-081 · **Estado:** **hecha (25-09-2026)**; checkpoint J-01 **pendiente** de sesión humana
+**Fase:** 4 · Cliente · **Depende de:** T-081 · **Estado:** **hecha (10-11-2026)**; el checkpoint de personas se omite por decisión del usuario, que corregirá jugando
 
 ## 1. Contexto
 

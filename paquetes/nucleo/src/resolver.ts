@@ -69,6 +69,13 @@ function comprobarEntrada(estado: EstadoPartida, ordenes: readonly Orden[]): voi
       { partida: estado.version, motor: VERSION_REGLAS },
     );
   }
+  if (estado.cierre !== undefined) {
+    throw new ErrorDeMotor(
+      'temporada-cerrada',
+      `La temporada se cerro en el turno ${String(estado.cierre.turno)}: la partida queda como archivo y no se resuelven mas turnos.`,
+      { turno: estado.cierre.turno },
+    );
+  }
   for (const orden of ordenes) {
     if (orden.turnoAlta !== estado.turno) {
       throw new ErrorDeMotor(

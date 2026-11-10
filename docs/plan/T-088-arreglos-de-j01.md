@@ -1,6 +1,6 @@
 # T-088 · Arreglos de J-01: entrar, pinchar el mapa, ficha a mano y resumen del turno
 
-**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** en curso (abierta el 25-09-2026 tras J-01)
+**Fase:** 4 · Cliente · **Depende de:** T-082 · **Estado:** **hecha (10-11-2026)**; el checkpoint de personas se omite por decisión del usuario, que corregirá jugando
 
 ## 1. Contexto
 

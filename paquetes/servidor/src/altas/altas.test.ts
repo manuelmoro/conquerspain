@@ -427,3 +427,26 @@ describe('las reglas del alta (criterio 6)', () => {
     await e.repo.cerrar();
   }, 120_000);
 });
+
+describe('partidas de temporada (T-104)', () => {
+  it('se convoca con temporada y la partida nace con su final; sin ella, abierta', async () => {
+    const e = await entorno();
+    for (const [temporada, modo, turnos] of [
+      [true, 'temporada', TABLAS_DEL_JUEGO.prestigio.turnosDeTemporada],
+      [false, 'vecindad', null],
+    ] as const) {
+      const { id, cuentas } = await convocar(e, ['mesta', 'monjes'], { temporada });
+      const creador = cuentas['mesta'] ?? '';
+      await e.pedir(creador, 'POST', `/convocatorias/${id}/sortear`);
+      for (const casa of ['mesta', 'monjes']) {
+        const cuenta = cuentas[casa] ?? '';
+        const v = vista(await e.pedir(cuenta, 'GET', `/convocatorias/${id}`));
+        await e.pedir(cuenta, 'POST', `/convocatorias/${id}/eleccion`, {
+          comarca: v.misOfertas[0]?.comarca,
+        });
+      }
+      const estado = await e.repo.ultimoEstado(id as IdPartida);
+      expect(estado?.configuracion).toMatchObject({ modo, turnosDeTemporada: turnos });
+    }
+  });
+});

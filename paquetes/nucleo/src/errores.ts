@@ -3,6 +3,7 @@
 
 export type CodigoDeError =
   | 'version-incompatible'
+  | 'temporada-cerrada'
   | 'orden-de-otro-turno'
   | 'orden-invalida'
   | 'estado-invalido'

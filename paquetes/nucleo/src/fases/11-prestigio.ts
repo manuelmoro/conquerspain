@@ -8,6 +8,7 @@
 // 3. Recuento: el prestigio se recalcula entero, ya con los hitos nuevos, y se guarda el total.
 // 4. Clasificacion.
 // 5. Tradiciones: Fama y Linaje se abren por prestigio, asi que van despues del recuento.
+// 6. Si es el ultimo turno de la temporada, el cierre (T-104), con la clasificacion ya hecha.
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import { turnoDelAnyo } from '../reglas/calendario.ts';
@@ -16,6 +17,7 @@ import type { AspiranteAPrimicia } from '../reglas/hitos.ts';
 import { ganadorDePrimicia, hitosNuevos } from '../reglas/hitos.ts';
 import { prestigioDe } from '../reglas/prestigio.ts';
 import { registrarSuceso } from '../sucesos.ts';
+import { cierreDeTemporada, tocaCerrar } from '../reglas/temporada.ts';
 import type { EstadoJugador, RegistroDeJugador } from '../tipos/estado.ts';
 import type { Hito } from '../tipos/reglas.ts';
 import { HITOS, esTipoDeObraMayor } from '../tipos/reglas.ts';
@@ -28,6 +30,27 @@ export function fasePrestigio(ctx: Contexto): void {
   recuento(ctx);
   aplicar(ctx, { tipo: 'clasificacion', puestos: clasificar(ctx.estado, ctx.reglas) });
   tradiciones(ctx);
+  if (tocaCerrar(ctx.estado, ctx.turno)) cerrarTemporada(ctx);
+}
+
+/** El ultimo turno de la temporada: se congela la clasificacion y se anuncia a todos (T-104). */
+function cerrarTemporada(ctx: Contexto): void {
+  const cierre = cierreDeTemporada(ctx.estado, ctx.turno, ctx.reglas);
+  aplicar(ctx, { tipo: 'cierre', cierre });
+  const [primero] = cierre.clasificacion;
+  if (primero !== undefined) {
+    registrarSuceso(ctx.sucesos, ctx.fase, 'temporada.cerrada', {
+      ganador: primero.jugador,
+      prestigio: primero.prestigio,
+    });
+  }
+  for (const r of cierre.reconocimientos) {
+    registrarSuceso(ctx.sucesos, ctx.fase, 'temporada.reconocimiento', {
+      reconocimiento: r.reconocimiento,
+      ganador: r.jugador,
+      valor: r.valor,
+    });
+  }
 }
 
 function jugadores(ctx: Contexto): EstadoJugador[] {

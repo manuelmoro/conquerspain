@@ -116,6 +116,8 @@ export async function resolverUnTurno(
       proximaResolucion: proximaResolucion(fila.ancla, fila.intervaloSegundos, estado.turno + 1),
     };
     await repo.guardarResolucion(resolucion, dep.ahora());
+    // Con la temporada cerrada, la partida queda como archivo: sin mas turnos (T-104).
+    if (resultado.estado.cierre !== undefined) await repo.terminarPartida(id);
     // Solo se avisa de lo que ha quedado guardado.
     dep.canal?.publicar({ partida: id, turno: estado.turno });
     registro.anotar('info', 'turno-resuelto', {

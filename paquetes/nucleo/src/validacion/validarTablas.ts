@@ -466,6 +466,7 @@ const validarPrestigio: Validador<DatosPrestigio> = objeto<DatosPrestigio>({
   reservaDeDespensaEstable: enteroNoNegativo(10_000),
   penalizacionPorComarcaPerdida: enteroNoNegativo(500),
   penalizacionPorEscasez: enteroNoNegativo(100),
+  turnosDeTemporada: entero({ minimo: 24, maximo: 2400 }),
 });
 
 const validarRumores: Validador<DatosRumores> = objeto<DatosRumores>({

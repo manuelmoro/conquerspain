@@ -401,6 +401,26 @@ export interface EstadoPartida {
   readonly contratos?: Readonly<Record<string, Contrato>>;
   /** La clasificacion del ultimo turno resuelto, del primero al ultimo. */
   readonly clasificacion: readonly PuestoEnLaClasificacion[];
+  /** La temporada cerrada (T-104). Sin poner, sigue abierta. */
+  readonly cierre?: CierreDeTemporada;
+}
+
+/** Lo que se reconoce al cerrar una temporada: el primero de cada capitulo (ficha T-104 §2.2). */
+export const RECONOCIMIENTOS = ['poblacion', 'obras', 'comercio', 'caminos', 'ganaderia'] as const;
+export type Reconocimiento = (typeof RECONOCIMIENTOS)[number];
+
+export interface ReconocimientoDeTemporada {
+  readonly reconocimiento: Reconocimiento;
+  readonly jugador: IdJugador;
+  /** Lo que valia su capitulo al cerrar. */
+  readonly valor: number;
+}
+
+/** La temporada cerrada (T-104): el estado ya no avanza. */
+export interface CierreDeTemporada {
+  readonly turno: number;
+  readonly clasificacion: readonly PuestoEnLaClasificacion[];
+  readonly reconocimientos: readonly ReconocimientoDeTemporada[];
 }
 
 export interface PuestoEnLaClasificacion {

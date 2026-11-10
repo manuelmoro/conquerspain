@@ -111,8 +111,8 @@ mapa completo; ESTADO.md es la aguja.
 |---|---|---|---|
 | [T-080](T-080-armazon-cliente.md) | Armazón del cliente y sincronización con el servidor | **hecha** | T-062 |
 | [T-081](T-081-atlas.md) | Atlas: capas, zoom y modos de lectura | **hecha** | T-080 |
-| [T-082](T-082-ficha-y-ordenes.md) | Ficha de comarca y bandeja de órdenes con previsión | **hecha** (J-01 pendiente) | T-081 |
-| [T-088](T-088-arreglos-de-j01.md) | Arreglos de J-01: entrar, pinchar el mapa, ficha a mano y resumen del turno | en curso | T-082 |
+| [T-082](T-082-ficha-y-ordenes.md) | Ficha de comarca y bandeja de órdenes con previsión | **hecha** | T-081 |
+| [T-088](T-088-arreglos-de-j01.md) | Arreglos de J-01: entrar, pinchar el mapa, ficha a mano y resumen del turno | **hecha** | T-082 |
 | [T-083](T-083-recuas-en-mapa.md) | Recuas y rebaños: rutas sobre el mapa | **hecha** | T-082 |
 | [T-084](T-084-mercado-cliente.md) | Mercado, ferias y precios | **hecha** | T-082 |
 | [T-085](T-085-cronica-cliente.md) | Crónica, hitos y clasificación | **hecha** | T-082 |
@@ -123,16 +123,16 @@ mapa completo; ESTADO.md es la aguja.
 | [T-092](T-092-plano-de-la-comarca.md) | El plano de la comarca: los solares a la vista | **hecha** | T-082, T-090 |
 | [T-093](T-093-mercado-ordenes-y-recuas-claros.md) | Mercado sencillo, órdenes claras y recuas en el mapa | **hecha** | T-084, T-092 |
 | [T-094](T-094-crecer-hacia-dentro.md) | Crecer hacia dentro: niveles sin solar, villas y el alfoz | **hecha** | T-092, T-093 |
-| [T-087](T-087-movil-y-rendimiento.md) | Móvil, accesibilidad y rendimiento | en curso | T-086 |
+| [T-087](T-087-movil-y-rendimiento.md) | Móvil, accesibilidad y rendimiento | **hecha** | T-086 |
 
 ## Fase 5 · Multijugador
 
 | Tarea | Título | Estado | Depende de |
 |---|---|---|---|
-| [T-100](T-100-varias-plazas.md) | Varias plazas por partida y reparto del mapa | en curso (terminada; se cierra con T-087) | T-087 |
-| [T-101](T-101-influencia-disputada.md) | Influencia disputada y comarcas que vuelven a neutral | en curso (terminada; se cierra con T-100) | T-100 |
-| [T-102](T-102-mercado-comun.md) | Mercado común, rumores e información entre jugadores | en curso (terminada; se cierra con T-100) | T-100 |
-| [T-103](T-103-contratos-y-portazgos.md) | Contratos, portazgos y crédito | en curso (terminada; se cierra con T-102) | T-102 |
+| [T-100](T-100-varias-plazas.md) | Varias plazas por partida y reparto del mapa | **hecha** | T-087 |
+| [T-101](T-101-influencia-disputada.md) | Influencia disputada y comarcas que vuelven a neutral | **hecha** | T-100 |
+| [T-102](T-102-mercado-comun.md) | Mercado común, rumores e información entre jugadores | **hecha** | T-100 |
+| [T-103](T-103-contratos-y-portazgos.md) | Contratos, portazgos y crédito | **hecha** | T-102 |
 | [T-104](T-104-temporadas.md) | Clasificación pública y temporadas | pendiente | T-101 |
 | [T-105](T-105-amparo-y-ausencia.md) | Amparo del novato, ausencia y administración del concejo | pendiente | T-101 |
 | [T-106](T-106-equilibrio-multijugador.md) | Equilibrio multijugador y métricas de salud | pendiente | T-104 |
@@ -158,6 +158,9 @@ mapa completo; ESTADO.md es la aguja.
 - J-03: tras T-086, probar el recorrido con personas ajenas al desarrollo; junto a J-02, antes
   de cerrar T-087.
 - J-04: tras T-103, piloto durante varios días; antes de cerrar T-106 y entrar en conflicto.
+
+> **10-11-2026 · decisión del usuario:** los checkpoints J-01 a J-04 se omiten. El plan se termina entero y
+> el usuario corrige jugando de verdad.
 
 Las tareas técnicas y los checkpoints tienen estados separados. Un informe de robots no sustituye
 una sesión humana. T-047 puede cerrarse técnicamente sin afirmar que la diversión está validada.

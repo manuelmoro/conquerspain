@@ -1,47 +1,82 @@
 # T-104 · Clasificación pública y temporadas
 
-**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** pendiente (ficha **esbozada**)
+**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** en curso (ficha **detallada** el## 1. Contexto
 
-> Esta ficha está esbozada a propósito. **Detallarla es la primera mitad de la tarea**: antes de
-> escribir código, complétala al nivel de las fichas de las fases 0 a 2 (diseño detallado con
-> firmas, fórmulas y casos límite) y anota en `ESTADO.md` que ya está detallada.
+Para que haya competición de verdad hace falta un marcador público y un corte. Lee antes
+[docs/06-competicion.md](../06-competicion.md) §6.3 y §6.7.
 
-## 1. Contexto
+**Lo que ya existe:**
 
-Para que haya competición de verdad hace falta un marcador público y un corte. Las partidas
-abiertas siguen sin final.
+- La **clasificación en vivo**, con desglose por capítulos, primicias e hitos (T-043 y T-085:
+  `reglas/clasificacion-publica.ts`, pestaña «Clasificación»). Se recalcula cada turno en la fase 11.
+- `ConfiguracionPartida.turnosDeTemporada` y el modo `temporada`, que nadie usaba: el alta siempre
+  ponía `null`.
+- La tabla `partida` admite el estado `terminada`, que nadie ponía.
 
-Lee antes: [docs/06-competicion.md](../06-competicion.md) §6.3 y §6.7.
+## 2. Diseño
 
-## 2. Objetivo
+### 2.1 Crear una partida de temporada
 
-Temporadas de 240 turnos con cierre, clasificación pública y archivo consultable.
+- La convocatoria lleva `turnosDeTemporada` (migración 7: columna `turnos_de_temporada`, nula en las
+  abiertas). El formulario de convocar ofrece «Temporada de diez años (240 turnos)» o «Partida
+  abierta, sin final».
+- El número sale de la tabla: `prestigio.turnosDeTemporada` (240). Con temporada y más de un jugador,
+  el modo es `temporada`; en solitario sigue siendo `solitario`, con su final igual.
 
-## 3. Alcance
+### 2.2 El cierre, en el motor
 
-**Entra:** clasificación en vivo, cierre de temporada, reconocimientos por capítulo, archivo histórico de la partida.
+- **Cuándo:** en la fase 11, después de la clasificación, en el turno `turnosDeTemporada`. Se apunta en
+  el estado `cierre: CierreDeTemporada` (opcional en el validador, para que las partidas viejas se sigan
+  leyendo con la misma huella).
+- **Qué guarda:** el turno, la clasificación final (jugador, puesto, prestigio) y los reconocimientos.
+- **Reconocimientos** (`reglas/temporada.ts`), uno por capítulo, al primero en él:
 
-**No entra:** ligas, emparejamiento por nivel ni recompensas entre partidas.
+  | Reconocimiento | Se mide por |
+  |---|---|
+  | Mayor población | capítulo `poblacion` del prestigio |
+  | Mayor obra | capítulo `obras` |
+  | Mejor comerciante | capítulo `comercio` |
+  | Mayor red de caminos | capítulo `caminos` |
+  | Mejor año trashumante | `registro.mejorEsquileoMil` |
 
-## 4. Puntos que hay que resolver al detallar
+  Solo hay reconocimiento si el mejor tiene más de 0. **Empates:** gana el de más prestigio; si siguen,
+  el de menor identificador (regla explícita y determinista).
+- **La crónica** lo anuncia a todos: `temporada.cerrada` (quién gana) y un `temporada.reconocimiento`
+  por cada uno.
+- **Después del cierre** el motor no resuelve más turnos: `resolverTurno` rechaza un estado cerrado con
+  un error que lo explica.
 
-- Qué se congela exactamente al cerrar y qué se puede seguir consultando.
-- Reconocimientos por capítulo (mejor obra, mejor comerciante, mejor año trashumante…).
-- Cómo se presenta la clasificación para que informe sin desanimar al que va último.
+### 2.3 El cierre, en el servidor
 
-## 5. Criterios de aceptación provisionales
+- Tras guardar el turno que cierra, el reloj marca la partida como `terminada` y sin próxima resolución
+  (`repo.terminarPartida`). No se aceptan órdenes (ya se rechazaban fuera de `activa`).
+- **Lo que se puede seguir consultando:** todo. La vista del último estado, la crónica de cada turno
+  (historial), la clasificación con su desglose y el atlas. Lo único que se congela es el estado: no
+  hay más turnos.
 
-1. Una temporada se cierra sola en su turno 240 y publica la clasificación.
-2. La partida cerrada se puede consultar entera, con su crónica.
-3. La clasificación en vivo se actualiza cada turno con su desglose.
+### 2.4 En el cliente
 
-## 6. Verificación
+- **La cabecera** de una partida de temporada dice «turno 37 de 240».
+- **Partida terminada:** una tarjeta «Temporada cerrada» arriba de la clasificación con el podio, los
+  reconocimientos y tu puesto; la bandeja de órdenes no se ofrece.
+- **Que informe sin desanimar:** la clasificación dice a cada uno **su mejor capítulo** y su puesto en
+  él («Vas 2.º en obras»), y cuánto le falta para el puesto de arriba.
+- **Mis partidas** marca las terminadas («Temporada cerrada · 3.º de 5») y siguen abriéndose.
 
-```bash
-npm run verificar
-```
+## 3. Criterios de aceptación
 
-Más las comprobaciones propias que se añadan al detallar la ficha.
+1. Una temporada se cierra sola en su turno 240 y publica la clasificación y los reconocimientos.
+2. La partida cerrada se puede consultar entera, con su crónica; no admite órdenes ni más turnos.
+3. La clasificación en vivo se actualiza cada turno con su desglose, y cada jugador ve su mejor capítulo.
+4. Las partidas abiertas no se cierran nunca.
+
+## 4. Verificación
+
+`npm run verificar`, con pruebas del motor (cierre en su turno, reconocimientos y desempates, nada
+después del cierre, abiertas sin cierre), del servidor (alta con temporada, migración, partida que pasa a
+terminada y sigue consultable) y del cliente (mejor capítulo, cabecera).
+
+ar la ficha.
 
 ## 7. Al terminar
 

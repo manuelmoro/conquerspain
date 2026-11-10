@@ -1,7 +1,6 @@
 # T-101 · Influencia disputada y comarcas que vuelven a neutral
 
-**Fase:** 5 · Multijugador · **Depende de:** T-100 · **Estado:** en curso: trabajo terminado y verificado; se
-cierra cuando se cierre T-100, que espera a T-087
+**Fase:** 5 · Multijugador · **Depende de:** T-100 · **Estado:** **hecha (10-11-2026)**; el checkpoint de personas se omite por decisión del usuario, que corregirá jugando
 
 ## 1. Contexto
 

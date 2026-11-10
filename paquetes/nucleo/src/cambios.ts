@@ -26,6 +26,7 @@ import type {
   EstadoTramo,
   Fuero,
   CargaFiscal,
+  CierreDeTemporada,
   Obra,
   PreciosConocidos,
   PuestoEnLaClasificacion,
@@ -435,6 +436,11 @@ export type Cambio =
       readonly jugador: IdJugador;
       readonly mercado: string;
       readonly precios: PreciosConocidos;
+    }
+  | {
+      /** Se cierra la temporada (T-104): el estado ya no avanza. */
+      readonly tipo: 'cierre';
+      readonly cierre: CierreDeTemporada;
     }
   | {
       readonly tipo: 'clasificacion';
@@ -1012,6 +1018,17 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         );
       }
       jugador.plazas[cambio.mercado] = comoBorrador(cambio.precios);
+      return;
+    }
+
+    case 'cierre': {
+      if (ctx.estado.cierre !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          'La temporada ya estaba cerrada: no se cierra dos veces.',
+        );
+      }
+      ctx.estado.cierre = comoBorrador(cambio.cierre);
       return;
     }
 

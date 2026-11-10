@@ -464,6 +464,16 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
       ajeno: '{jugador} ha sido la primera casa en lograr «{hito}».',
     },
   ),
+  'temporada.cerrada': p(
+    'hitos',
+    'Se cierra la temporada. Gana {ganador}, con {prestigio} de prestigio; la partida queda como archivo.',
+    { publica: true },
+  ),
+  'temporada.reconocimiento': p(
+    'hitos',
+    'Reconocimiento de la temporada a {reconocimiento}: {ganador}, con {valor}.',
+    { publica: true },
+  ),
   'prestigio.cambio': null,
   'prestigio.clasificacion': null,
   'prestigio.desglose': p(
@@ -641,6 +651,13 @@ export const PALABRAS: Readonly<Record<string, Readonly<Record<string, string>>>
     invierno: 'el invierno',
   },
   operacion: { comprar: 'compró', vender: 'vendió' },
+  reconocimiento: {
+    poblacion: 'la mayor población',
+    obras: 'la mayor obra',
+    comercio: 'el mejor comerciante',
+    caminos: 'la mayor red de caminos',
+    ganaderia: 'la mejor trashumancia',
+  },
   acuerdo: {
     entrega: 'de entrega',
     prestamo: 'de préstamo',

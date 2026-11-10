@@ -99,7 +99,9 @@ function tarjetaDePartida(p: PartidaDeLaLista, abrir: (id: string) => void): HTM
     el(
       'p',
       { class: 'suave' },
-      `Turno ${String(p.turno)}${r === null ? '' : ` · ${r.fecha}`} · corte: ${tiempoHastaElCorte(p.proximaResolucion, Date.now())}`,
+      p.estado === 'terminada'
+        ? `Temporada cerrada en el turno ${String(p.turno - 1)}: queda como archivo`
+        : `Turno ${String(p.turno)}${r === null ? '' : ` · ${r.fecha}`} · corte: ${tiempoHastaElCorte(p.proximaResolucion, Date.now())}`,
     ),
     el(
       'p',
@@ -112,7 +114,9 @@ function tarjetaDePartida(p: PartidaDeLaLista, abrir: (id: string) => void): HTM
             { class: 'chip' },
             `${String(r.prestigio)} de prestigio${r.puesto === null ? '' : ` · ${String(r.puesto)}.º de ${String(r.casas)}`}`,
           ),
-      esperaOrdenes(p) ? el('span', { class: 'chip baja' }, 'Sin órdenes este turno') : '',
+      esperaOrdenes(p) && p.estado !== 'terminada'
+        ? el('span', { class: 'chip baja' }, 'Sin órdenes este turno')
+        : '',
     ),
     boton('Abrir', () => {
       abrir(p.id);
@@ -292,11 +296,21 @@ function convocar(almacen: Almacen, api: ClienteApi): HTMLElement {
     value: '4',
     'aria-label': 'Plazas',
   });
+  const duracion = el('select', { 'aria-label': 'Duración' });
+  duracion.append(
+    el('option', { value: 'abierta' }, 'Abierta, sin final'),
+    el(
+      'option',
+      { value: 'temporada' },
+      'Temporada de diez años (240 turnos), con clasificación final',
+    ),
+  );
   const formulario = el(
     'form',
     {},
     el('label', {}, 'Nombre', nombre),
     el('label', {}, 'Ritmo', ritmo),
+    el('label', {}, 'Duración', duracion),
     el('label', {}, 'Jugadores (1 a 12; con más de 8, alguna casa se repite)', plazas),
     el('h3', {}, 'Tu casa'),
     eleccionDeCasa(almacen),
@@ -323,6 +337,7 @@ function convocar(almacen: Almacen, api: ClienteApi): HTMLElement {
         casa: estado.casa,
         intervaloMinutos: Number(ritmo.value),
         plazas: Number(plazas.value),
+        temporada: duracion.value === 'temporada',
       })
       .then((r) => {
         despues(almacen, api, r);

@@ -1,7 +1,6 @@
 # T-100 · Varias plazas por partida y reparto del mapa
 
-**Fase:** 5 · Multijugador · **Depende de:** T-087 · **Estado:** en curso: trabajo terminado y verificado; se
-cierra al cerrar T-087, que espera la medición con personas (ESTADO)
+**Fase:** 5 · Multijugador · **Depende de:** T-087 · **Estado:** **hecha (10-11-2026)**; el checkpoint de personas se omite por decisión del usuario, que corregirá jugando
 
 ## 1. Contexto
 

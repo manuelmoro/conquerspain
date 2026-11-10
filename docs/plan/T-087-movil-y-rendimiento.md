@@ -1,6 +1,6 @@
 # T-087 · Móvil, accesibilidad y rendimiento
 
-**Fase:** 4 · Cliente · **Depende de:** T-086 · **Estado:** en curso (ficha **detallada** el 09-11-2026)
+**Fase:** 4 · Cliente · **Depende de:** T-086 · **Estado:** **hecha (10-11-2026)**; el checkpoint de personas se omite por decisión del usuario, que corregirá jugando
 
 ## 1. Contexto
 

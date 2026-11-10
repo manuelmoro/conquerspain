@@ -8,6 +8,7 @@ import { ErrorDeMotor } from '../errores.ts';
 import type { Casa } from '../tipos/reglas.ts';
 import type {
   Acontecimiento,
+  CierreDeTemporada,
   ConfiguracionPartida,
   Conocimiento,
   DatosConocidos,
@@ -101,6 +102,8 @@ export interface VistaJugador {
   readonly acontecimientos: readonly Acontecimiento[];
   /** Los contratos en los que es parte, propuestos o firmados (T-103). */
   readonly contratos: readonly Contrato[];
+  /** La temporada cerrada, publica: clasificacion final y reconocimientos (T-104). */
+  readonly cierre: CierreDeTemporada | null;
 }
 
 /** El rumbo de una comarca a otra, en ocho puntos, por sus centros [longitud, latitud]. */
@@ -264,5 +267,6 @@ export function vistaDeJugador(
     contratos: Object.values(estado.contratos ?? {})
       .filter((c) => c.propone === jugador || c.recibe === jugador)
       .sort((a, b) => comparar(a.id, b.id)),
+    cierre: estado.cierre ?? null,
   };
 }

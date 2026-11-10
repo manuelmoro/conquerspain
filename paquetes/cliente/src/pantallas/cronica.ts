@@ -1,24 +1,13 @@
 // La cronica y la clasificacion en el panel (ficha T-085 §4.3): el archivo de turnos con ← → y saltos
 // por anyo, avisos primero y con su accion; y la clasificacion con el desglose de cada casa y tus hitos.
 import { CAPITULOS_DE_PRESTIGIO } from '@conquer/nucleo';
-import type { CapituloDePrestigio, ClasificacionPublica, Cronica } from '@conquer/nucleo';
+import type { CierreDeTemporada, ClasificacionPublica, Cronica } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
 import { anyoDe, anyosDelArchivo, moverTurno, ultimoResuelto } from '../archivo.ts';
+import { NOMBRE_DE_CAPITULO, animo, lineasDeCierre } from '../temporada.ts';
 import { boton, el } from './dom.ts';
 import { seccionesDeCronica } from './entradas.ts';
-
-const NOMBRE_DE_CAPITULO: Readonly<Record<CapituloDePrestigio, string>> = {
-  poblacion: 'población',
-  territorio: 'territorio',
-  obras: 'obras',
-  caminos: 'caminos',
-  comercio: 'comercio',
-  exploracion: 'exploración',
-  ganaderia: 'ganadería',
-  industria: 'industria',
-  hitos: 'hitos',
-};
 
 function pestanyas(
   almacen: Almacen,
@@ -108,8 +97,30 @@ function archivo(
   return partes;
 }
 
-function clasificacion(c: ClasificacionPublica | null): (Node | string)[] {
+function cierreEnTarjeta(
+  cierre: CierreDeTemporada,
+  nombre: (jugador: string) => string,
+): HTMLElement {
+  return el(
+    'div',
+    { class: 'tarjeta consejo' },
+    el('h3', {}, `Temporada cerrada en el turno ${String(cierre.turno)}`),
+    el('ul', { class: 'lista' }, ...lineasDeCierre(cierre, nombre).map((l) => el('li', {}, l))),
+    el('p', { class: 'suave' }, 'La partida queda como archivo: puedes leer toda su crónica.'),
+  );
+}
+
+function clasificacion(
+  c: ClasificacionPublica | null,
+  yo: string,
+  cierre: CierreDeTemporada | null,
+): (Node | string)[] {
   if (c === null) return [el('p', { class: 'suave' }, 'Cargando la clasificación…')];
+  const nombreDe = (id: string): string => c.filas.find((f) => f.jugador === id)?.nombre ?? id;
+  const arriba: (Node | string)[] = [];
+  if (cierre !== null) arriba.push(cierreEnTarjeta(cierre, nombreDe));
+  const frase = animo(c, yo);
+  if (frase !== null) arriba.push(el('p', { class: 'consejo' }, frase));
   const lista = el('ol', { class: 'lista clasificacion' });
   for (const f of c.filas) {
     const cambio =
@@ -189,6 +200,7 @@ function clasificacion(c: ClasificacionPublica | null): (Node | string)[] {
   for (const h of c.porLograr)
     faltan.append(el('li', {}, `${h.nombre}: ${h.condicion} (+${String(h.prestigio)})`));
   return [
+    ...arriba,
     lista,
     el('h3', {}, 'Tus hitos'),
     c.misHitos.length === 0 ? el('p', { class: 'suave' }, 'Ninguno todavía.') : hitos,
@@ -204,7 +216,12 @@ function clasificacion(c: ClasificacionPublica | null): (Node | string)[] {
 export function pantallaDeCronica(
   almacen: Almacen,
   abierta: { readonly turno: number; readonly vista: 'cronica' | 'clasificacion' },
-  datos: { cronica: Cronica | null; clasificacion: ClasificacionPublica | null },
+  datos: {
+    cronica: Cronica | null;
+    clasificacion: ClasificacionPublica | null;
+    yo: string;
+    cierre: CierreDeTemporada | null;
+  },
   turnoQueSeJuega: number,
   turnosPorAnyo: number,
   nombre: (id: string) => string,
@@ -233,6 +250,6 @@ export function pantallaDeCronica(
           nombre,
           corte,
         )
-      : clasificacion(datos.clasificacion)),
+      : clasificacion(datos.clasificacion, datos.yo, datos.cierre)),
   );
 }

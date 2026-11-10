@@ -300,6 +300,14 @@ export class RepositorioSqlite
     return filas.map(filaDePartida);
   }
 
+  async terminarPartida(id: IdPartida): Promise<void> {
+    const cambios = this.ejecutar(
+      "UPDATE partida SET estado = 'terminada', proxima_resolucion = NULL WHERE id = ?",
+      id,
+    );
+    if (cambios === 0) throw this.desconocida(id);
+  }
+
   async detenerPartida(id: IdPartida, motivo: string): Promise<void> {
     const cambios = this.ejecutar(
       "UPDATE partida SET estado = 'detenida', proxima_resolucion = NULL, motivo_detencion = ? WHERE id = ?",
@@ -1077,6 +1085,7 @@ export class RepositorioSqlite
       intervaloMinutos: entero(f, 'intervalo_minutos'),
       plazas: entero(f, 'plazas'),
       esDePrueba: entero(f, 'de_prueba') === 1,
+      turnosDeTemporada: enteroONulo(f, 'turnos_de_temporada'),
       semilla: texto(f, 'semilla'),
       creadaEn: entero(f, 'creada_en'),
       estado: conocido,
@@ -1091,7 +1100,7 @@ export class RepositorioSqlite
     this.transaccion(() => {
       this.ejecutar(
         `INSERT INTO convocatoria (id, nombre, creador, codigo, intervalo_minutos, plazas, de_prueba,
-           semilla, estado, creada_en) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'abierta', ?)`,
+           turnos_de_temporada, semilla, estado, creada_en) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'abierta', ?)`,
         datos.id,
         datos.nombre,
         datos.creador,
@@ -1099,6 +1108,7 @@ export class RepositorioSqlite
         datos.intervaloMinutos,
         datos.plazas,
         datos.esDePrueba ? 1 : 0,
+        datos.turnosDeTemporada,
         datos.semilla,
         datos.creadaEn,
       );

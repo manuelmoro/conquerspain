@@ -11,6 +11,7 @@ import { EXPLICACION_DE_MODO, NOMBRE_DE_MODO, leyendaDe } from '../atlas/leyenda
 import { montarAtlas } from '../atlas/svg.ts';
 import type { AtlasMontado } from '../atlas/svg.ts';
 import { colasDe, moverEnLaCola, resumenDeRecursos, tiempoHastaElCorte } from '../bandeja.ts';
+import { turnoEnCabecera } from '../temporada.ts';
 import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO } from '../nombres.ts';
 import { describirOrden, fichasDeRecursos } from './comun.ts';
 import { boton, el } from './dom.ts';
@@ -355,7 +356,12 @@ function cronicaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement | nu
   return pantallaDeCronica(
     almacen,
     abierta,
-    { cronica, clasificacion },
+    {
+      cronica,
+      clasificacion,
+      yo: partida.recibido.vista.jugador.id,
+      cierre: partida.recibido.vista.cierre,
+    },
     partida.recibido.turno,
     TABLAS_DEL_JUEGO.estaciones.turnosPorAnyo,
     nombreDeComarcaEn(estado),
@@ -766,7 +772,7 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       el(
         'p',
         { class: 'suave' },
-        `${TABLAS_DEL_JUEGO.casas[vista.jugador.casa].nombre} · turno ${String(vista.turno)} · corte: ${tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())}`,
+        `${TABLAS_DEL_JUEGO.casas[vista.jugador.casa].nombre} · ${turnoEnCabecera(vista)}${vista.cierre === null ? ` · corte: ${tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())}` : ''}`,
       ),
     ),
   );

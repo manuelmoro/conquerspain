@@ -1,6 +1,7 @@
 // Validacion del estado de una partida: forma, coherencia interna y version de reglas.
 import type {
   Acontecimiento,
+  CierreDeTemporada,
   ConfiguracionPartida,
   Conocimiento,
   DatosConocidos,
@@ -8,6 +9,7 @@ import type {
   EstadoJugador,
   PreciosConocidos,
   PuestoEnLaClasificacion,
+  ReconocimientoDeTemporada,
   RegistroDeJugador,
   EstadoMercado,
   EstadoPartida,
@@ -26,6 +28,7 @@ import {
   LONGITUD_MAXIMA_DE_RUTA,
   MODOS_DE_PARTIDA,
   NIVELES_DE_CONOCIMIENTO,
+  RECONOCIMIENTOS,
   RECURSOS_AGOTABLES,
   TIPOS_DE_OBRA,
 } from '../tipos/estado.ts';
@@ -131,6 +134,18 @@ const validarPuesto: Validador<PuestoEnLaClasificacion> = objeto<PuestoEnLaClasi
   puesto: entero({ minimo: 1 }),
   puestoAnterior: oNulo(entero({ minimo: 1 })),
   prestigio: entero(),
+});
+
+const validarCierre: Validador<CierreDeTemporada> = objeto<CierreDeTemporada>({
+  turno: entero({ minimo: 1 }),
+  clasificacion: lista(validarPuesto),
+  reconocimientos: lista(
+    objeto<ReconocimientoDeTemporada>({
+      reconocimiento: unoDe(RECONOCIMIENTOS),
+      jugador: identificador<IdJugador>(),
+      valor: entero(),
+    }),
+  ),
 });
 
 const validarJugador: Validador<EstadoJugador> = objeto<EstadoJugador>({
@@ -382,6 +397,7 @@ const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
   primicias: registro(identificador<IdJugador>(), unoDe(HITOS)),
   contratos: opcional(registro(validarContrato, identificador())),
   clasificacion: lista(validarPuesto),
+  cierre: opcional(validarCierre),
 });
 
 /**

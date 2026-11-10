@@ -39,6 +39,8 @@ export const PRESTIGIO: DatosPrestigio = {
   reservaDeDespensaEstable: 60,
   penalizacionPorComarcaPerdida: 20,
   penalizacionPorEscasez: 1,
+  // Diez anyos de veinticuatro quincenas.
+  turnosDeTemporada: 240,
 };
 
 function hito(

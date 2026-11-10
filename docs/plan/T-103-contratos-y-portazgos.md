@@ -1,6 +1,6 @@
 # T-103 · Contratos, portazgos y crédito
 
-**Fase:** 5 · Multijugador · **Depende de:** T-102 · **Estado:** en curso: trabajo terminado y verificado (10-11-2026); se cierra cuando se cierre T-102, que espera a T-100 y T-087
+**Fase:** 5 · Multijugador · **Depende de:** T-102 · **Estado:** **hecha (10-11-2026)**; el checkpoint de personas se omite por decisión del usuario, que corregirá jugando
 
 ## 1. Contexto
 

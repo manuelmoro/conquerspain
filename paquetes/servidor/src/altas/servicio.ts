@@ -148,6 +148,9 @@ export class ServicioDeAltas {
         `Una partida es de 1 a ${String(PLAZAS_MAXIMAS)} jugadores.`,
       );
     }
+    // De temporada, con el corte de la tabla; si no, abierta y sin final (T-104).
+    const turnosDeTemporada =
+      cuerpo['temporada'] === true ? this.dep.reglas.prestigio.turnosDeTemporada : null;
     const id = `p-${randomBytes(6).toString('hex')}`;
     const codigo = this.aleatorio(16);
     await this.dep.repo.crearConvocatoria(
@@ -159,6 +162,7 @@ export class ServicioDeAltas {
         intervaloMinutos: intervalo,
         plazas,
         esDePrueba,
+        turnosDeTemporada,
         semilla: this.aleatorio(32),
         creadaEn: this.dep.ahora(),
       },
@@ -377,8 +381,13 @@ export class ServicioDeAltas {
       configuracion: {
         nombre: c.nombre,
         intervaloMinutos: c.intervaloMinutos,
-        modo: plazas.length === 1 ? 'solitario' : 'vecindad',
-        turnosDeTemporada: null,
+        modo:
+          plazas.length === 1
+            ? 'solitario'
+            : c.turnosDeTemporada === null
+              ? 'vecindad'
+              : 'temporada',
+        turnosDeTemporada: c.turnosDeTemporada,
         reservaMinimaDePan: 30,
         esDePrueba: c.esDePrueba,
       },

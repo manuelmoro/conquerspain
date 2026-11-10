@@ -10,6 +10,8 @@ export interface ConvocatoriaNueva {
   readonly intervaloMinutos: number;
   readonly plazas: number;
   readonly esDePrueba: boolean;
+  /** Turnos de la temporada, o null si la partida es abierta (T-104). */
+  readonly turnosDeTemporada: number | null;
   readonly semilla: string;
   readonly creadaEn: number;
 }

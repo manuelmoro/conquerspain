@@ -347,6 +347,7 @@ export class ClienteApi {
     intervaloMinutos: number;
     plazas: number;
     esDePrueba?: boolean;
+    temporada?: boolean;
   }) {
     return this.pedir<{ id: string; codigo: string }>('POST', '/convocatorias', datos);
   }

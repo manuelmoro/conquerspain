@@ -141,6 +141,8 @@ export interface Repositorio {
   /** Partidas activas cuya proxima resolucion ya ha llegado, las mas atrasadas primero. */
   partidasPorResolver(hasta: number, limite: number): Promise<readonly FilaDePartida[]>;
   detenerPartida(id: IdPartida, motivo: string): Promise<void>;
+  /** La temporada se cerro: sin mas turnos, y se sigue pudiendo consultar (T-104). */
+  terminarPartida(id: IdPartida): Promise<void>;
   participantes(id: IdPartida): Promise<readonly Participante[]>;
   /** Las partidas en las que juega una cuenta, con el jugador y la casa que lleva en cada una. */
   partidasDeCuenta(cuenta: string): Promise<readonly PartidaDeCuenta[]>;

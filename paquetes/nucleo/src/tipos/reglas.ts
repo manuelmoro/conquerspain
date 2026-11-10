@@ -671,6 +671,8 @@ export interface DatosPrestigio {
   readonly reservaDeDespensaEstable: number;
   readonly penalizacionPorComarcaPerdida: number;
   readonly penalizacionPorEscasez: number;
+  /** Turnos de una temporada: diez anyos de juego (docs/06 §6.7; T-104). */
+  readonly turnosDeTemporada: number;
 }
 
 /** Los hitos de la partida (ficha T-043 §4.3). Cada uno se logra una vez y guarda su turno. */
