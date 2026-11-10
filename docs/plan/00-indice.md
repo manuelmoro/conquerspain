@@ -135,8 +135,9 @@ mapa completo; ESTADO.md es la aguja.
 | [T-103](T-103-contratos-y-portazgos.md) | Contratos, portazgos y crédito | **hecha** | T-102 |
 | [T-104](T-104-temporadas.md) | Clasificación pública y temporadas | **hecha** | T-101 |
 | [T-105](T-105-amparo-y-ausencia.md) | Amparo del novato, ausencia y administración del concejo | **hecha** | T-101 |
-| [T-106](T-106-equilibrio-multijugador.md) | Equilibrio multijugador y métricas de salud | pendiente | T-104 |
+| [T-106](T-106-equilibrio-multijugador.md) | Equilibrio multijugador y métricas de salud | **hecha (v1, con excepciones)** | T-104 |
 | [T-107](T-107-entrar-en-partida-empezada.md) | Entrar en una partida empezada, con amparo | pendiente | T-105 |
+| [T-108](T-108-equilibrio-multijugador-v2.md) | Equilibrio multijugador v2: las vías rezagadas | pendiente (mejor con partidas reales) | T-106 |
 
 ## Fase 6 · Conflicto (se detalla al llegar)
 
