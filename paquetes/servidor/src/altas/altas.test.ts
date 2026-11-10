@@ -331,7 +331,9 @@ describe('una casa repetida y fundar sin esperar a todos (T-100)', () => {
     expect(deBeto.map((o) => o.comarca)).not.toContain(deAna[0]?.comarca);
 
     // Solo Ana elige; Beto y Carla no. Quien no convoca no puede fundar.
-    await e.pedir(ana, 'POST', `/convocatorias/${id}/eleccion`, { comarca: deAna[1]?.comarca });
+    await e.pedir(ana, 'POST', `/convocatorias/${id}/eleccion`, {
+      comarca: deAna.at(-1)?.comarca,
+    });
     expect(codigoDe(await e.pedir(beto, 'POST', `/convocatorias/${id}/fundar`))).toBe(
       'solo-quien-convoca',
     );
@@ -339,7 +341,7 @@ describe('una casa repetida y fundar sin esperar a todos (T-100)', () => {
     expect(fundada.estado).toBe('fundada');
     const estado = await e.repo.ultimoEstado(id as IdPartida);
     expect(Object.keys(estado?.jugadores ?? {}).sort()).toEqual(['mesta', 'mesta-2', 'monjes']);
-    expect(estado?.jugadores['mesta']?.capital).toBe(deAna[1]?.comarca);
+    expect(estado?.jugadores['mesta']?.capital).toBe(deAna.at(-1)?.comarca);
     expect(estado?.jugadores['mesta-2']?.capital).toBe(deBeto[0]?.comarca);
     expect(estado?.jugadores['mesta-2']?.casa).toBe('mesta');
     await e.repo.cerrar();

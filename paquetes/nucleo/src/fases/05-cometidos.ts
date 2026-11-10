@@ -52,6 +52,9 @@ export function faseCometidos(ctx: Contexto): void {
       case 'presencia':
         estarPresente(ctx, foto, recua, donde);
         break;
+      case 'emisario':
+        hacerDeEmisario(ctx, foto, recua, donde);
+        break;
       case 'disolver':
         disolver(ctx, foto, recua, donde);
         break;
@@ -64,6 +67,62 @@ export function faseCometidos(ctx: Contexto): void {
   for (const comarca of [...fundaciones.keys()].sort(comparar)) {
     resolverFundacion(ctx, comarca, fundaciones.get(comarca) ?? []);
   }
+}
+
+/**
+ * El emisario (T-102, docs/06 §6.5.3): en una comarca ajena reune durante `turnosDeEmisario` un informe
+ * del dominio de su dueno —todas sus comarcas tal como estan, su gente y sus obras en marcha— y
+ * vuelve a no tener encargo. El espiado se entera el primer turno: la visita es publica.
+ */
+function hacerDeEmisario(ctx: Contexto, foto: EstadoPartida, recua: Recua, donde: IdComarca): void {
+  const duenyo = foto.comarcas[donde]?.duenyo ?? null;
+  if (duenyo === null || duenyo === recua.jugador) {
+    sinEfecto(ctx, recua, duenyo === null ? 'comarca-sin-duenyo' : 'comarca-propia', true);
+    return;
+  }
+  const turnos = recua.turnosDeCometido + 1;
+  if (turnos === 1) {
+    registrarSuceso(
+      ctx.sucesos,
+      ctx.fase,
+      'emisario.visto',
+      { de: recua.jugador },
+      { jugador: duenyo, comarca: donde },
+    );
+  }
+  if (turnos < ctx.reglas.cometidos.turnosDeEmisario) {
+    aplicar(ctx, { tipo: 'recua-turnos-cometido', recua: recua.id, turnos });
+    return;
+  }
+  // El informe: todo el dominio del vecino, como esta hoy.
+  const suyas = idsEnOrden(foto.comarcas).filter((id) => foto.comarcas[id]?.duenyo === duenyo);
+  let vecinos = 0;
+  for (const id of suyas) {
+    const comarca = foto.comarcas[id];
+    const geografia = ctx.mundo.comarcas[id];
+    if (comarca === undefined || geografia === undefined) continue;
+    vecinos += comarca.poblacion;
+    aplicar(ctx, {
+      tipo: 'conocimiento',
+      jugador: recua.jugador,
+      comarca: id as IdComarca,
+      conocimiento: {
+        nivel: 'explorada',
+        turnoUltimaNoticia: ctx.turno,
+        datos: datosConocidosDe(comarca, geografia),
+      },
+    });
+  }
+  const obras = Object.values(foto.obras).filter((o) => o.jugador === duenyo).length;
+  registrarSuceso(
+    ctx.sucesos,
+    ctx.fase,
+    'emisario.informe',
+    { recua: recua.id, de: duenyo, comarcas: suyas.length, vecinos, obras },
+    { jugador: recua.jugador, comarca: donde },
+  );
+  aplicar(ctx, { tipo: 'recua-turnos-cometido', recua: recua.id, turnos: 0 });
+  aplicar(ctx, { tipo: 'recua-cometido', recua: recua.id, cometido: null });
 }
 
 function esDe(foto: EstadoPartida, comarca: IdComarca, jugador: string): boolean {

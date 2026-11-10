@@ -1,51 +1,56 @@
 # T-102 · Mercado común, rumores e información entre jugadores
 
-**Fase:** 5 · Multijugador · **Depende de:** T-100 · **Estado:** pendiente (ficha **esbozada**)
-
-> Esta ficha está esbozada a propósito. **Detallarla es la primera mitad de la tarea**: antes de
-> escribir código, complétala al nivel de las fichas de las fases 0 a 2 (diseño detallado con
-> firmas, fórmulas y casos límite) y anota en `ESTADO.md` que ya está detallada.
+**Fase:** 5 · Multijugador · **Depende de:** T-100 · **Estado:** en curso: trabajo terminado y verificado; se
+cierra cuando se cierre T-100, que espera a T-087
 
 ## 1. Contexto
 
-Con varios jugadores, los precios los mueven ellos. Es la competición más sana y la que más
-juego da sin que nadie ataque a nadie.
+Con varios jugadores, los precios los mueven ellos. Al detallar esta ficha se vio que casi todo el mercado
+común ya estaba hecho desde T-037, T-044, T-054 y T-057:
 
-Lee antes: [docs/03-economia.md](../03-economia.md) §3.10 y [docs/06-competicion.md](../06-competicion.md) §6.5.3.
+- **La casación entre jugadores** va primero, al precio de la plaza, con el sobrante repartido en proporción a
+  lo pedido (docs/03 §3.10.4).
+- **Los mercaderes menores** se retiran según el comercio humano, sin que la plaza se quede seca de golpe: su
+  cupo es el tope de la plaza por su liquidez, menos lo que los jugadores ya se comercian entre sí.
+  `cupoDeMenores` es una resta lineal: a más comercio humano, menos menores, sin saltos.
+- **La protección contra la manipulación:**
+  - el precio no se mueve más de un 15 % por turno y nunca baja del 40 % del base (docs/03 §3.10.3);
+  - ninguna plaza mueve más de su tope de volumen por recurso y turno.
 
-## 2. Objetivo
+  Así, un jugador puede empujar el precio, pero no llevarlo al suelo en un turno. Un tope por jugador no
+  añadiría nada que no hagan ya estos dos: el que vende mucho se hunde a sí mismo el precio.
+- **Los rumores:** llegan fechados, con su fuente, a dos cifras significativas y sin apartarse más de un 5 %
+  (T-044, `rumores.test.ts`). Llegan por ferias, ventas propias y el Camino de Santiago.
 
-Mercado compartido de verdad, con mercaderes menores decreciendo, rumores entre jugadores y
-el cometido de emisario.
+Lo que faltaba era **el emisario** (docs/06 §6.5.3).
 
-## 3. Alcance
+## 2. El emisario
 
-**Entra:** casación con varios jugadores, retirada progresiva de los mercaderes menores, rumores por feria, emisario y su informe con retraso.
+- **El cometido `emisario`:** con una recua quieta en una comarca de otra casa.
+  - Pasa `turnosDeEmisario` (2) reuniendo un informe: ese es su retraso.
+  - Al acabar, el jugador pasa a conocer **todas las comarcas del dominio de esa casa** tal como están, como
+    exploradas y fechadas: su gente y sus edificios.
+  - Un suceso cuenta las comarcas, los vecinos y las obras en marcha. El cometido termina.
+- **Deja rastro:** el espiado recibe el primer turno el aviso «Un emisario de X anda por Y: en dos turnos sabrá
+  cómo está tu dominio».
+- **Cuesta lo que cuesta una recua fuera:** su provisión y su tiempo. Ni dinero ni orden aparte.
+- **En tierra de nadie o propia** no hace nada: se avisa y el cometido termina.
+- **Desde la ficha** de una comarca de otra casa, ya explorada: «Enviar un emisario». Como las demás
+  misiones, carga la provisión, va, toma el encargo y vuelve sola cuando acaba el informe.
 
-**No entra:** contratos y portazgos (T-103).
+## 3. Fuera de esta tarea
 
-## 4. Puntos que hay que resolver al detallar
+- **El correo de los arrieros** (vender información a otro jugador) va con los contratos entre jugadores
+  (T-103).
+- **Los portazgos y el crédito** son T-103.
 
-- Curva de retirada de los mercaderes menores según volumen humano, sin que una plaza se quede seca de golpe.
-- Qué información viaja por rumor y con cuánto retraso e imprecisión.
-- Emisario: coste, retraso, y que el espiado se entere (es información pública que ha habido visita).
-- Protección contra manipulación: límites de volumen por turno y por jugador en una plaza.
+## 4. Criterios de aceptación
 
-## 5. Criterios de aceptación provisionales
+1. Un jugador puede mover el precio de un recurso, pero no llevarlo al suelo en un turno: tope del 15 % por
+   turno y suelo del 40 %, ya probados en `precios.test.ts`. ✔
+2. Los rumores llegan fechados y su imprecisión está acotada a un 5 % (`rumores.test.ts`). ✔
+3. El emisario informa con retraso y deja rastro (`emisario.test.ts`). ✔
 
-1. Un jugador puede mover el precio de un recurso, pero no llevarlo al suelo en un turno.
-2. Los rumores llegan fechados y su imprecisión está acotada.
-3. El emisario informa con retraso y deja rastro.
+## 5. Verificación
 
-## 6. Verificación
-
-```bash
-npm run verificar
-```
-
-Más las comprobaciones propias que se añadan al detallar la ficha.
-
-## 7. Al terminar
-
-Marca la tarea como `hecha` en `00-indice.md`, actualiza `ESTADO.md` (siguiente tarea y bitácora) y
-haz commit con `T-102: <resumen>`.
+`npm run verificar`.

@@ -215,6 +215,8 @@ export const COMETIDOS = [
   'tratar',
   'poblar',
   'presencia',
+  /** Recoger en una comarca ajena un informe del dominio de su dueno (T-102). */
+  'emisario',
   'disolver',
 ] as const;
 export type Cometido = (typeof COMETIDOS)[number];

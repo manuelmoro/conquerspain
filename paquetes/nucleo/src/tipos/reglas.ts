@@ -404,6 +404,8 @@ export interface DatosCometidos {
   readonly influenciaParaPuebla: number;
   readonly vecinosParaPuebla: number;
   readonly turnosParaPuebla: number;
+  /** Turnos que pasa un emisario en tierra ajena reuniendo su informe: su retraso (T-102). */
+  readonly turnosDeEmisario: number;
   readonly lealtadDePuebla: number;
   /** Jornadas de bastimento que gasta al turno una recua que esta presente, en milesimas. */
   readonly bastimentoPresenciaMil: number;

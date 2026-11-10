@@ -59,6 +59,7 @@ export const NOMBRE_DE_COMETIDO: Readonly<Record<Cometido, string>> = {
   tratar: 'tratar en la plaza',
   poblar: 'fundar puebla',
   presencia: 'estar presente',
+  emisario: 'hacer de emisario',
   disolver: 'disolverse',
 };
 

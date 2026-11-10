@@ -255,6 +255,7 @@ const validarCometidos: Validador<DatosCometidos> = objeto<DatosCometidos>({
   influenciaParaPuebla: entero({ minimo: 0, maximo: 100 }),
   vecinosParaPuebla: entero({ minimo: 1, maximo: 200 }),
   turnosParaPuebla: entero({ minimo: 1, maximo: 20 }),
+  turnosDeEmisario: entero({ minimo: 1, maximo: 20 }),
   lealtadDePuebla: entero({ minimo: 0, maximo: 100 }),
   bastimentoPresenciaMil: milesimas(0, 10000),
   devolucionAlDisolverMil: milesimas(0, 1000),

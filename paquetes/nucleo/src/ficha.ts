@@ -235,7 +235,11 @@ export function fichaDeComarca(
   const accionDeMision = (mision: Mision): AccionDeFicha => {
     const plan = planDeMision(new Tablero(vista, mundo, reglas), comarca, mision);
     const titulo =
-      mision === 'presencia' ? 'Enviar una recua a estar presente' : 'Enviar una recua a explorar';
+      mision === 'presencia'
+        ? 'Enviar una recua a estar presente'
+        : mision === 'emisario'
+          ? 'Enviar un emisario'
+          : 'Enviar una recua a explorar';
     const turnos = plan.ok ? plan.valor.llegada : 1;
     const nada = recursosSegun(() => 0);
     if (!plan.ok) {
@@ -249,7 +253,9 @@ export function fichaDeComarca(
         efecto:
           mision === 'presencia'
             ? 'Una recua presente suma influencia cada turno'
-            : 'Una recua que explora te dice qué tiene la comarca',
+            : mision === 'emisario'
+              ? 'Un emisario te trae cómo está el dominio de esa casa'
+              : 'Una recua que explora te dice qué tiene la comarca',
         bloqueo: bloqueo(plan.motivo),
       };
     }
@@ -258,7 +264,9 @@ export function fichaDeComarca(
     const efecto =
       mision === 'presencia'
         ? `${llega}; +${String(multiplicarFactores(reglas.influencia.porPresencia, [casa.influenciaMil]))} de influencia por turno durante ${String(p.turnosPresente ?? 1)} turnos, y vuelve sola`
-        : `${llega}, la explora y vuelve a ${mundo.comarcas[p.vuelta]?.nombre ?? 'casa'}`;
+        : mision === 'emisario'
+          ? `${llega}; en ${String(p.turnosPresente ?? 1)} turnos trae un informe de todo el dominio de esa casa, y vuelve. Lo sabrán: la visita se ve`
+          : `${llega}, la explora y vuelve a ${mundo.comarcas[p.vuelta]?.nombre ?? 'casa'}`;
     return {
       clave: `mision-${mision}`,
       titulo,
@@ -302,7 +310,7 @@ export function fichaDeComarca(
           accionDeMision('presencia'),
           accionDeMision('explorar'),
         ]
-      : [accionDeMision('explorar')];
+      : [accionDeMision('explorar'), accionDeMision('emisario')];
     if (neutral) {
       acciones.push(
         accion(

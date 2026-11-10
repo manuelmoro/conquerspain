@@ -16,6 +16,7 @@ const ENCARGO: Readonly<Record<NonNullable<Recua['cometido']>, string>> = {
   tratar: 'comprar y vender en las plazas donde para',
   poblar: 'fundar una puebla',
   presencia: 'estar presente para ganar influencia',
+  emisario: 'reunir un informe del dominio de su dueño',
   disolver: 'disolverse al llegar',
 };
 

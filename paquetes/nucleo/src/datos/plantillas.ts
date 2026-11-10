@@ -328,6 +328,12 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     'Empieza la incorporación de {comarca}: {turnos} turnos, si nadie la disputa.',
   ),
   'incorporar.completa': null,
+  'emisario.visto': aviso(
+    'Un emisario de {de} anda por {comarca}: en dos turnos sabrá cómo está tu dominio.',
+  ),
+  'emisario.informe': suceso(
+    'El emisario de {recua} trae su informe del dominio de {de}: {comarcas} comarcas, {vecinos} vecinos y {obras} obras en marcha. Lo ves en el mapa, fechado hoy.',
+  ),
   'incorporar.de-otro': aviso(
     '{de} ha empezado a incorporar {comarca}: en {turnos} turnos será suya, si nadie le gana con más influencia.',
     'incorporar',
@@ -402,6 +408,8 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'comarca-ajena': 'la comarca no es del dominio',
   'comarca-desconocida': 'nadie sabe dónde está esa comarca',
   'comarca-con-duenyo': 'la comarca ya tiene dueño',
+  'comarca-sin-duenyo': 'la comarca no es de nadie: un emisario va a tierra de otra casa',
+  'comarca-propia': 'es tierra tuya',
   'comarca-desleal': 'la comarca está descontenta',
   'recua-desconocida': 'esa recua ya no existe',
   'recua-sin-plaza': 'la recua no está en una plaza',

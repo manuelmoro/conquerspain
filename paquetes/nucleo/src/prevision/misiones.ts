@@ -9,7 +9,7 @@ import { Tablero } from './tablero.ts';
 import type { ResultadoDeViaje, ViajeImposible } from './viaje.ts';
 import { panDePresencia, provisionPara } from './viaje.ts';
 
-export type Mision = 'presencia' | 'explorar';
+export type Mision = 'presencia' | 'explorar' | 'emisario';
 
 export interface PlanDeMision {
   readonly recua: IdRecua;
@@ -128,6 +128,27 @@ export function planDeMision(
         pan: Math.max(0, pan - recua.carga.pan),
         sal: Math.max(0, sal - recua.carga.sal),
         turnosPresente: null,
+      },
+    };
+  }
+
+  if (mision === 'emisario') {
+    // El emisario (T-102): va, reune su informe en `turnosDeEmisario` y vuelve solo.
+    const { pan, sal } = provision.valor;
+    const reunir = t.reglas.cometidos.turnosDeEmisario;
+    return {
+      ok: true,
+      valor: {
+        ...base,
+        intenciones: [
+          intencionDeCarga(recua, pan - recua.carga.pan, sal - recua.carga.sal),
+          ruta(recua, destino, false),
+          { tipo: 'cometido', recua: recua.id, cometido: 'emisario' },
+          ruta(recua, vuelta, false, t.turno + llegada + reunir),
+        ],
+        pan: Math.max(0, pan - recua.carga.pan),
+        sal: Math.max(0, sal - recua.carga.sal),
+        turnosPresente: reunir,
       },
     };
   }

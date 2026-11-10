@@ -7,6 +7,8 @@ export const COMETIDOS_DE_RECUA: DatosCometidos = {
   influenciaParaPuebla: 40,
   vecinosParaPuebla: 10,
   turnosParaPuebla: 2,
+  // El emisario tarda dos turnos en reunir su informe del dominio ajeno (docs/06 §6.5.3).
+  turnosDeEmisario: 2,
   lealtadDePuebla: 50,
   // Estar presente cuesta como andar una jornada al turno.
   bastimentoPresenciaMil: 1000,

@@ -209,8 +209,10 @@ pasa de listo. Esta es la interacción hostil más sana del juego y llega mucho 
 
 - **Rumores** por ferias y caminos: información fechada y a veces imprecisa.
 - **Correo** (tradición de arrieros): vender información a otro jugador, con precio.
-- **Emisario**: cometido de recua que, en una comarca ajena, devuelve un informe del dominio vecino
-  (población, obras, precios) con dos turnos de retraso. Es visible para el espiado.
+- **Emisario** (T-102): cometido de recua que, quieta en una comarca ajena, reúne en dos turnos un informe
+  de todo el dominio de esa casa: sus comarcas, su gente, sus edificios y cuántas obras tiene en marcha. Los
+  precios de la plaza los ve cualquier recua que esté allí. El espiado lo sabe desde el primer turno. Se
+  manda desde la ficha de una comarca de otra casa: «Enviar un emisario».
 
 ### 6.5.4 Diplomacia ligera
 
