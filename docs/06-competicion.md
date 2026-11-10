@@ -265,6 +265,11 @@ Regla de oro: **un jugador que pierde una guerra debe seguir teniendo una partid
     red de caminos, mejor año trashumante);
   - la partida queda consultable como archivo histórico, con su crónica completa.
 - Las partidas abiertas no terminan: siguen con hitos y clasificación viva.
+- **Cómo está hecho (T-104):** se elige al convocar («Temporada de diez años» o «Abierta»). El cierre se
+  apunta en la fase 11 del turno 240 (`EstadoPartida.cierre`); los cinco reconocimientos van al primero de
+  los capítulos población, obras, comercio, caminos y ganadería (empates: más prestigio, luego menor
+  identificador). El servidor deja la partida `terminada`, consultable entera. La clasificación dice a cada
+  uno su mejor capítulo y cuánto le falta para el de delante.
 
 ## 6.8 Lo que hay que medir para saber si funciona
 

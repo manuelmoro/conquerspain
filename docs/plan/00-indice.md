@@ -133,7 +133,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-101](T-101-influencia-disputada.md) | Influencia disputada y comarcas que vuelven a neutral | **hecha** | T-100 |
 | [T-102](T-102-mercado-comun.md) | Mercado común, rumores e información entre jugadores | **hecha** | T-100 |
 | [T-103](T-103-contratos-y-portazgos.md) | Contratos, portazgos y crédito | **hecha** | T-102 |
-| [T-104](T-104-temporadas.md) | Clasificación pública y temporadas | pendiente | T-101 |
+| [T-104](T-104-temporadas.md) | Clasificación pública y temporadas | **hecha** | T-101 |
 | [T-105](T-105-amparo-y-ausencia.md) | Amparo del novato, ausencia y administración del concejo | pendiente | T-101 |
 | [T-106](T-106-equilibrio-multijugador.md) | Equilibrio multijugador y métricas de salud | pendiente | T-104 |
 

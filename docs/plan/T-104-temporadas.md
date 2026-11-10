@@ -1,6 +1,8 @@
 # T-104 · Clasificación pública y temporadas
 
-**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** en curso (ficha **detallada** el## 1. Contexto
+**Fase:** 5 · Multijugador · **Depende de:** T-101 · **Estado:** **hecha (10-11-2026)**
+
+## 1. Contexto
 
 Para que haya competición de verdad hace falta un marcador público y un corte. Lee antes
 [docs/06-competicion.md](../06-competicion.md) §6.3 y §6.7.
@@ -37,7 +39,7 @@ Para que haya competición de verdad hace falta un marcador público y un corte.
   | Mayor obra | capítulo `obras` |
   | Mejor comerciante | capítulo `comercio` |
   | Mayor red de caminos | capítulo `caminos` |
-  | Mejor año trashumante | `registro.mejorEsquileoMil` |
+  | Mejor trashumancia | capítulo `ganaderia` (años trashumantes); el registro no guarda el mejor año, y un año suelto premiaría la suerte |
 
   Solo hay reconocimiento si el mejor tiene más de 0. **Empates:** gana el de más prestigio; si siguen,
   el de menor identificador (regla explícita y determinista).
@@ -71,6 +73,12 @@ Para que haya competición de verdad hace falta un marcador público y un corte.
 4. Las partidas abiertas no se cierran nunca.
 
 ## 4. Verificación
+
+**Hecho:** `nucleo/pruebas/temporada.test.ts` (cierre en su turno, abiertas sin cierre, nada después,
+vista pública, reconocimientos y desempates), `servidor` (alta con y sin temporada; el reloj deja la partida
+`terminada`, sin próxima resolución y con su crónica) y `cliente/src/temporada.test.ts` (mejor capítulo y
+cierre en palabras).
+
 
 `npm run verificar`, con pruebas del motor (cierre en su turno, reconocimientos y desempates, nada
 después del cierre, abiertas sin cierre), del servidor (alta con temporada, migración, partida que pasa a
