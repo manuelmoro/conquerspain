@@ -73,3 +73,51 @@ export function puedeEntrarLaMesnada(
   const amparada = otra?.amparoHasta !== undefined && turno <= otra.amparoHasta;
   return !amparada && sonHostiles(estado, jugador, duenyo, turno);
 }
+
+/**
+ * La defensa de una comarca sitiada (T-121): su guarnicion, mas si su casa no pasa hambre y con
+ * muralla, y las mesnadas de su dueno que esten alli.
+ */
+export function defensaDe(
+  estado: EstadoPartida,
+  comarca: IdComarca,
+  reglas: TablasDeReglas,
+): number {
+  const t = reglas.milicia;
+  const tierra = estado.comarcas[comarca];
+  if (tierra?.duenyo === null || tierra === undefined) return 0;
+  const duenyo = estado.jugadores[tierra.duenyo];
+  const guarnicion = Math.floor((tierra.poblacion * t.guarnicionMil) / MIL);
+  const base = multiplicarFactores(guarnicion * MIL, [
+    duenyo !== undefined && !duenyo.escasez ? t.ventajaAbastecidaMil : MIL,
+    tierra.obrasMayores.includes('muralla') ? t.ventajaMurallaMil : MIL,
+  ]);
+  const mesnadas = Object.values(estado.mesnadas ?? {})
+    .filter(
+      (m) =>
+        m.jugador === tierra.duenyo &&
+        m.situacion.donde === 'comarca' &&
+        m.situacion.comarca === comarca,
+    )
+    .reduce((total, m) => total + fuerzaDe(m, comarca, estado, reglas), 0);
+  return base + mesnadas;
+}
+
+/**
+ * Una mesnada en la comarca cierra la entrada a las recuas y rebanyos de las casas con hostilidad
+ * vigente (T-121): el bloqueo de un paso.
+ */
+export function pasoCerradoPara(
+  estado: EstadoPartida,
+  jugador: IdJugador,
+  comarca: IdComarca,
+  turno: number,
+): boolean {
+  return Object.values(estado.mesnadas ?? {}).some(
+    (m) =>
+      m.jugador !== jugador &&
+      m.situacion.donde === 'comarca' &&
+      m.situacion.comarca === comarca &&
+      sonHostiles(estado, jugador, m.jugador, turno),
+  );
+}

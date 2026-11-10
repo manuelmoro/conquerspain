@@ -6,8 +6,12 @@ import type { Almacen } from '../almacen.ts';
 import {
   fraseDeHostilidad,
   fraseDeMesnada,
+  aceptarRescate,
+  asediar,
+  fraseDeAsedio,
   hostilidad,
   hostilidadCon,
+  ofrecerRescate,
   levaMaxima,
   levar,
   licenciar,
@@ -79,11 +83,90 @@ function mesnadas(almacen: Almacen, vista: VistaJugador, o: OpcionesDeMilicia): 
             },
             'secundario',
           ),
+          puedeAsediar(vista, m)
+            ? boton(
+                '🏰 Poner asedio',
+                () => {
+                  void almacen.anyadir(asediar(m.id));
+                },
+                'secundario',
+              )
+            : '',
         ),
       ),
     );
   }
   return ul;
+}
+
+/** La mesnada esta en una comarca de una casa hostil, que no es su capital, y nadie la asedia ya. */
+function puedeAsediar(vista: VistaJugador, m: VistaJugador['mesnadas'][number]): boolean {
+  if (m.situacion.donde !== 'comarca') return false;
+  const aqui = m.situacion.comarca;
+  const v = vista.comarcas[aqui];
+  const duenyo = v?.nivel === 'explorada' ? (v.datos?.duenyo ?? null) : null;
+  if (duenyo === null || duenyo === vista.jugador.id) return false;
+  const h = hostilidadCon(vista, duenyo);
+  return (
+    h !== undefined &&
+    vista.turno >= h.vigenteDesde &&
+    !vista.asedios.some((a) => a.comarca === aqui)
+  );
+}
+
+const rescates: Record<string, string> = {};
+
+function asedios(almacen: Almacen, vista: VistaJugador, o: OpcionesDeMilicia): HTMLElement[] {
+  const yo = vista.jugador.id;
+  const jugador = (id: string): string => vista.casas.find((c) => c.id === id)?.nombre ?? id;
+  const mios = vista.asedios.filter(
+    (a) => a.sitiador === yo || vista.comarcas[a.comarca]?.nivel === 'propia',
+  );
+  if (mios.length === 0) return [];
+  const ul = el('ul', { class: 'lista' });
+  for (const a of mios) {
+    const acciones: (HTMLElement | string)[] = [];
+    if (a.sitiador === yo && a.rescate !== null) {
+      acciones.push(
+        boton(`Aceptar ${String(a.rescate)} maravedís y levantarlo`, () => {
+          void almacen.anyadir(aceptarRescate(a.id));
+        }),
+      );
+    }
+    if (a.sitiador !== yo) {
+      const i = el('input', {
+        type: 'number',
+        min: '0',
+        step: '10',
+        value: rescates[a.id] ?? '',
+        'aria-label': 'Rescate (mrs)',
+      });
+      i.addEventListener('change', () => {
+        rescates[a.id] = i.value;
+      });
+      acciones.push(
+        el('label', { class: 'campo-carga' }, 'Rescate (mrs)', i),
+        boton(
+          'Ofrecer rescate',
+          () => {
+            const cantidad = Math.max(0, Math.floor(Number(rescates[a.id] ?? '0')));
+            void almacen.anyadir(ofrecerRescate(a.id, cantidad));
+          },
+          'secundario',
+        ),
+      );
+    }
+    ul.append(
+      el(
+        'li',
+        {},
+        el('strong', {}, `🏰 ${o.comarca(a.comarca)}`),
+        el('p', {}, fraseDeAsedio(a, yo, vista.turno, o.comarca, jugador)),
+        el('p', { class: 'fila' }, ...acciones),
+      ),
+    );
+  }
+  return [el('h4', {}, 'Asedios'), ul];
 }
 
 function leva(almacen: Almacen, vista: VistaJugador, o: OpcionesDeMilicia): HTMLElement[] {
@@ -189,6 +272,7 @@ export function seccionDeMilicia(
   return [
     el('h3', {}, 'Milicia y hostilidad'),
     mesnadas(almacen, vista, o),
+    ...asedios(almacen, vista, o),
     ...leva(almacen, vista, o),
     ...(vista.casas.length > 1 ? hostilidades(almacen, vista) : []),
   ];

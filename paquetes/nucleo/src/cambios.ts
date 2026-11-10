@@ -7,6 +7,7 @@ import { ErrorDeMotor } from './errores.ts';
 import { registrarSuceso } from './sucesos.ts';
 import type {
   IdAcontecimiento,
+  IdAsedio,
   IdComarca,
   IdContrato,
   IdMesnada,
@@ -28,6 +29,7 @@ import type {
   EstadoTramo,
   Fuero,
   CargaFiscal,
+  Asedio,
   CierreDeTemporada,
   Hostilidad,
   Mesnada,
@@ -76,6 +78,16 @@ export type Cambio =
       /** La mesnada se disuelve: sus hombres ya volvieron a casa (T-120). */
       readonly tipo: 'mesnada-baja';
       readonly mesnada: IdMesnada;
+    }
+  | {
+      /** Un asedio nuevo o con su rescate al dia (T-121). */
+      readonly tipo: 'asedio';
+      readonly asedio: Asedio;
+    }
+  | {
+      /** El asedio se levanta o termina (T-121). */
+      readonly tipo: 'asedio-baja';
+      readonly asedio: IdAsedio;
     }
   | {
       /** Se declara una hostilidad (T-120). */
@@ -1749,6 +1761,20 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
     case 'mesnada-baja': {
       const { [cambio.mesnada]: _fuera, ...quedan } = ctx.estado.mesnadas ?? {};
       ctx.estado.mesnadas = quedan;
+      return;
+    }
+
+    case 'asedio': {
+      ctx.estado.asedios = {
+        ...(ctx.estado.asedios ?? {}),
+        [cambio.asedio.id]: { ...cambio.asedio },
+      };
+      return;
+    }
+
+    case 'asedio-baja': {
+      const { [cambio.asedio]: _fuera, ...quedan } = ctx.estado.asedios ?? {};
+      ctx.estado.asedios = quedan;
       return;
     }
 

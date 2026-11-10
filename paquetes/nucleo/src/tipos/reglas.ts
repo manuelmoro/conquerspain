@@ -880,6 +880,13 @@ export interface DatosMilicia {
   readonly ventajaMurallaMil: number;
   /** Los que se van a casa tras perder un enfrentamiento, en milesimas de los hombres. */
   readonly bajasDerrotaMil: number;
+  /** Turnos de asedio antes de que una comarca pueda rendirse (T-121). */
+  readonly turnosMinimosAsedio: number;
+  /** La guarnicion de una comarca: esta parte de su poblacion, en milesimas. */
+  readonly guarnicionMil: number;
+  /** La defensa de una casa que no pasa hambre. */
+  readonly ventajaAbastecidaMil: number;
+  readonly lealtadTrasRendicion: number;
 }
 
 /** Ausencia y amparo (docs/06 §6.4; ficha T-105), en turnos. */

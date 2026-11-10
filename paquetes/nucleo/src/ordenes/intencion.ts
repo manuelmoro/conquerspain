@@ -340,6 +340,23 @@ function comprobarPropiedad(
         );
       break;
     }
+    case 'asediar':
+      if (estado.mesnadas?.[o.mesnada]?.jugador !== ctx.jugador)
+        errores.push(error('mesnada', `la mesnada "${o.mesnada}" no es tuya`));
+      break;
+    case 'tregua': {
+      const asedio = estado.asedios?.[o.asedio];
+      if (asedio === undefined || estado.comarcas[asedio.comarca]?.duenyo !== ctx.jugador)
+        errores.push(error('asedio', 'no hay ningun asedio a una comarca tuya con ese nombre'));
+      break;
+    }
+    case 'aceptar-tregua': {
+      const asedio = estado.asedios?.[o.asedio];
+      if (asedio?.sitiador !== ctx.jugador) errores.push(error('asedio', 'ese asedio no es tuyo'));
+      else if (asedio.rescate === null)
+        errores.push(error('asedio', 'el defensor aun no ha ofrecido rescate'));
+      break;
+    }
     case 'licenciar':
     case 'marchar': {
       if (estado.mesnadas?.[o.mesnada]?.jugador !== ctx.jugador)
@@ -556,6 +573,9 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
     case 'licenciar':
     case 'marchar':
     case 'hostilidad':
+    case 'asediar':
+    case 'tregua':
+    case 'aceptar-tregua':
       return valido({ ...o, ...fijos, ...sinCola });
     case 'entrar':
       // Ya esta en la partida: entrar es cosa de la convocatoria, no una orden que se pueda dar.

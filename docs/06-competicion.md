@@ -266,6 +266,12 @@ para las dos casas; nunca contra quien está amparado. Dos mesnadas hostiles en 
 sin azar (hombres × 1,5 si defiende su tierra × 2 con muralla); la que pierde vuelve a casa y el 10 % de sus
 hombres se va con los suyos. Los hombres nunca mueren y nada se destruye.
 
+**Pasos y asedios (T-121).** Una mesnada en una comarca cierra la entrada a las recuas y rebaños de las casas
+hostiles. El asedio (nunca a una capital) es público y no rinde nada durante seis turnos; desde entonces, si
+la fuerza del sitiador supera la defensa —el 10 % de la población, ×1,5 si su casa no pasa hambre, ×2 con
+muralla, más sus mesnadas—, la comarca se rinde con 40 de lealtad. En cualquier turno el defensor ofrece un
+rescate y el sitiador puede aceptarlo.
+
 Regla de oro: **un jugador que pierde una guerra debe seguir teniendo una partida que jugar**.
 
 ## 6.7 Temporadas y clasificación

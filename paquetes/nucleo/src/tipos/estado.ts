@@ -2,6 +2,7 @@
 // Es serializable, comparable y versionado; de su forma canonica sale la huella del turno.
 import type {
   IdAcontecimiento,
+  IdAsedio,
   IdComarca,
   IdJugador,
   IdMercado,
@@ -411,6 +412,8 @@ export interface EstadoPartida {
   readonly mesnadas?: Readonly<Record<string, Mesnada>>;
   /** Hostilidades declaradas (T-120), por la clave de las dos casas. Sin poner, ninguna. */
   readonly hostilidades?: Readonly<Record<string, Hostilidad>>;
+  /** Asedios en marcha (T-121), por identificador. Sin poner, ninguno. */
+  readonly asedios?: Readonly<Record<string, Asedio>>;
 }
 
 // ——— Milicia y hostilidad (T-120) ——————————————————————————————————————————————
@@ -438,6 +441,17 @@ export interface Hostilidad {
   readonly contra: IdJugador;
   readonly declaradaEn: number;
   readonly vigenteDesde: number;
+}
+
+/** Un asedio a una comarca (T-121): publico, largo y negociable. */
+export interface Asedio {
+  readonly id: IdAsedio;
+  readonly comarca: IdComarca;
+  readonly sitiador: IdJugador;
+  readonly mesnada: IdMesnada;
+  readonly desde: number;
+  /** Maravedis que ofrece el defensor por levantarlo, o null si no ha ofrecido nada. */
+  readonly rescate: number | null;
 }
 
 /** Lo que se reconoce al cerrar una temporada: el primero de cada capitulo (ficha T-104 §2.2). */

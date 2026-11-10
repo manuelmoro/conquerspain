@@ -3,6 +3,7 @@
 // en la resolucion. Ninguna orden guarda texto libre.
 import type { Cometido, CargaFiscal, Fuero } from './estado.ts';
 import type {
+  IdAsedio,
   IdComarca,
   IdContrato,
   IdJugador,
@@ -58,6 +59,9 @@ export const TIPOS_DE_ORDEN = [
   'licenciar',
   'marchar',
   'hostilidad',
+  'asediar',
+  'tregua',
+  'aceptar-tregua',
 ] as const;
 export type TipoDeOrden = (typeof TIPOS_DE_ORDEN)[number];
 
@@ -391,6 +395,25 @@ export interface OrdenHostilidad extends OrdenBase {
   readonly declarar: boolean;
 }
 
+/** Pone asedio a la comarca donde esta la mesnada (T-121). */
+export interface OrdenAsediar extends OrdenBase {
+  readonly tipo: 'asediar';
+  readonly mesnada: IdMesnada;
+}
+
+/** El defensor ofrece un rescate por levantar el asedio (T-121). */
+export interface OrdenTregua extends OrdenBase {
+  readonly tipo: 'tregua';
+  readonly asedio: IdAsedio;
+  readonly rescate: number;
+}
+
+/** El sitiador acepta el rescate ofrecido (T-121). */
+export interface OrdenAceptarTregua extends OrdenBase {
+  readonly tipo: 'aceptar-tregua';
+  readonly asedio: IdAsedio;
+}
+
 /** Fija el portazgo de un tramo que el jugador mejoro (T-103). */
 export interface OrdenPortazgo extends OrdenBase {
   readonly tipo: 'portazgo';
@@ -432,4 +455,7 @@ export type Orden =
   | OrdenLevar
   | OrdenLicenciar
   | OrdenMarchar
-  | OrdenHostilidad;
+  | OrdenHostilidad
+  | OrdenAsediar
+  | OrdenTregua
+  | OrdenAceptarTregua;

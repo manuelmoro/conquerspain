@@ -1,6 +1,7 @@
 // Validacion del estado de una partida: forma, coherencia interna y version de reglas.
 import type {
   Acontecimiento,
+  Asedio,
   CierreDeTemporada,
   Hostilidad,
   Mesnada,
@@ -37,6 +38,7 @@ import {
 } from '../tipos/estado.ts';
 import type {
   IdAcontecimiento,
+  IdAsedio,
   IdComarca,
   IdContrato,
   IdJugador,
@@ -267,6 +269,15 @@ const validarMesnada: Validador<Mesnada> = objeto<Mesnada>({
   turnosFuera: enteroNoNegativo(),
 });
 
+const validarAsedio: Validador<Asedio> = objeto<Asedio>({
+  id: identificador<IdAsedio>(),
+  comarca: identificador<IdComarca>(),
+  sitiador: identificador<IdJugador>(),
+  mesnada: identificador<IdMesnada>(),
+  desde: entero({ minimo: 1 }),
+  rescate: oNulo(enteroNoNegativo()),
+});
+
 const validarHostilidad: Validador<Hostilidad> = objeto<Hostilidad>({
   de: identificador<IdJugador>(),
   contra: identificador<IdJugador>(),
@@ -443,6 +454,7 @@ const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
   cierre: opcional(validarCierre),
   mesnadas: opcional(registro(validarMesnada, identificador())),
   hostilidades: opcional(registro(validarHostilidad, texto({ minimo: 1, maximo: 200 }))),
+  asedios: opcional(registro(validarAsedio, identificador())),
 });
 
 /**

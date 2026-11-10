@@ -2,6 +2,7 @@
 // es un error, para que nadie pueda colar datos que el motor ignoraria en silencio.
 import { CARGAS_FISCALES, COMETIDOS, FUEROS } from '../tipos/estado.ts';
 import type {
+  IdAsedio,
   IdComarca,
   IdContrato,
   IdJugador,
@@ -44,6 +45,9 @@ import type {
   OrdenLicenciar,
   OrdenMarchar,
   OrdenHostilidad,
+  OrdenAsediar,
+  OrdenTregua,
+  OrdenAceptarTregua,
   OrdenResponderContrato,
   ParadaDeRuta,
   ReglaDeMayordomo,
@@ -413,6 +417,25 @@ const hostilidad: Validador<OrdenHostilidad> = objeto<OrdenHostilidad>({
   declarar: booleano(),
 });
 
+const asediar: Validador<OrdenAsediar> = objeto<OrdenAsediar>({
+  ...camposBase,
+  tipo: unoDe(['asediar'] as const),
+  mesnada: identificador<IdMesnada>(),
+});
+
+const tregua: Validador<OrdenTregua> = objeto<OrdenTregua>({
+  ...camposBase,
+  tipo: unoDe(['tregua'] as const),
+  asedio: identificador<IdAsedio>(),
+  rescate: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+});
+
+const aceptarTregua: Validador<OrdenAceptarTregua> = objeto<OrdenAceptarTregua>({
+  ...camposBase,
+  tipo: unoDe(['aceptar-tregua'] as const),
+  asedio: identificador<IdAsedio>(),
+});
+
 const portazgo: Validador<OrdenPortazgo> = objeto<OrdenPortazgo>({
   ...camposBase,
   tipo: unoDe(['portazgo'] as const),
@@ -456,6 +479,9 @@ const validarForma = porTipo<Orden>({
   licenciar,
   marchar,
   hostilidad,
+  asediar,
+  tregua,
+  'aceptar-tregua': aceptarTregua,
 });
 
 /** Valida la forma de una orden que llega de fuera. No comprueba si sus referencias existen. */

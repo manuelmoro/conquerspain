@@ -9,6 +9,7 @@ import type { OrdenDe } from '../ordenes.ts';
 import { indiceDeCaminos, jornadasDesde } from '../partidas/distancias.ts';
 import { estaAmparado } from '../reglas/ausencia.ts';
 import { esDesleal } from '../reglas/lealtad.ts';
+import { asedios } from './04-asedios.ts';
 import {
   claveDeHostilidad,
   costeDeMesnada,
@@ -30,6 +31,7 @@ export function movimientoDeMesnadas(ctx: Contexto): void {
   for (const orden of ordenesVivas(ctx, 'marchar')) marchar(ctx, orden);
   for (const id of idsEnOrden(ctx.estado.mesnadas ?? {})) avanzarYMantener(ctx, id);
   enfrentamientos(ctx);
+  asedios(ctx);
 }
 
 function mesnadaDe(ctx: Contexto, id: string): Mesnada | undefined {

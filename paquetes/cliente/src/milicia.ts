@@ -1,7 +1,7 @@
 // Milicia y hostilidad en el cliente (ficha T-120): las frases de cada mesnada y de cada hostilidad, y
 // las intenciones de levar, marchar, licenciar y declarar o retirar la hostilidad.
 import { TABLAS_DEL_JUEGO, costeDeMesnada } from '@conquer/nucleo';
-import type { Hostilidad, Mesnada, VistaJugador } from '@conquer/nucleo';
+import type { Asedio, Hostilidad, Mesnada, VistaJugador } from '@conquer/nucleo';
 
 export function levar(comarca: string, hombres: number): Readonly<Record<string, unknown>> {
   return { tipo: 'levar', comarca, hombres };
@@ -54,4 +54,34 @@ export function hostilidadCon(vista: VistaJugador, otra: string): Hostilidad | u
   return vista.hostilidades.find(
     (h) => (h.de === yo && h.contra === otra) || (h.de === otra && h.contra === yo),
   );
+}
+
+export function asediar(mesnada: string): Readonly<Record<string, unknown>> {
+  return { tipo: 'asediar', mesnada };
+}
+
+export function ofrecerRescate(asedio: string, rescate: number): Readonly<Record<string, unknown>> {
+  return { tipo: 'tregua', asedio, rescate };
+}
+
+export function aceptarRescate(asedio: string): Readonly<Record<string, unknown>> {
+  return { tipo: 'aceptar-tregua', asedio };
+}
+
+/** Un asedio dicho para quien lo lee: quien sitia, desde cuando y cuando podria rendirse. */
+export function fraseDeAsedio(
+  a: Asedio,
+  yo: string,
+  turno: number,
+  comarca: (id: string) => string,
+  jugador: (id: string) => string,
+): string {
+  const quien = a.sitiador === yo ? 'Tu milicia' : `La milicia de ${jugador(a.sitiador)}`;
+  const rinde = a.desde + TABLAS_DEL_JUEGO.milicia.turnosMinimosAsedio - 1;
+  const cuando =
+    turno < rinde
+      ? `no puede rendirse antes del turno ${String(rinde)}`
+      : 'ya puede rendirse si el sitiador puede más que la defensa';
+  const rescate = a.rescate === null ? '' : ` Rescate ofrecido: ${String(a.rescate)} maravedís.`;
+  return `${quien} asedia ${comarca(a.comarca)} desde el turno ${String(a.desde)}: ${cuando}.${rescate}`;
 }

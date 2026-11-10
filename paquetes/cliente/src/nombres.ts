@@ -59,6 +59,9 @@ export const NOMBRE_DE_ORDEN: Readonly<Record<TipoDeOrden, string>> = {
   licenciar: 'Licenciar una mesnada',
   marchar: 'Marchar con una mesnada',
   hostilidad: 'Hostilidad',
+  asediar: 'Poner asedio',
+  tregua: 'Ofrecer rescate',
+  'aceptar-tregua': 'Aceptar el rescate',
 };
 
 export const NOMBRE_DE_COMETIDO: Readonly<Record<Cometido, string>> = {
@@ -170,6 +173,13 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
   licenciar: { texto: 'Licencia tus mesnadas en «Tu casa».', donde: 'casa', llega: null },
   marchar: { texto: 'Manda marchar tus mesnadas en «Tu casa».', donde: 'casa', llega: null },
   hostilidad: { texto: 'Declara o retira la hostilidad en «Tu casa».', donde: 'casa', llega: null },
+  asediar: {
+    texto: 'Pon asedio desde «Tu casa», con una mesnada en tierra hostil.',
+    donde: 'casa',
+    llega: null,
+  },
+  tregua: { texto: 'Ofrece rescate por un asedio en «Tu casa».', donde: 'casa', llega: null },
+  'aceptar-tregua': { texto: 'Acepta el rescate en «Tu casa».', donde: 'casa', llega: null },
   ruta: {
     texto: 'Dale otro camino a la recua o al rebaño desde «Tus recuas y rebaños».',
     donde: 'unidades',

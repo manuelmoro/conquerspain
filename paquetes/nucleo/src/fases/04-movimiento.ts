@@ -52,6 +52,7 @@ import { RECURSOS, recursosSegun } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
 import { movimientoDeRebanyos } from './04-rebanyos.ts';
 import { movimientoDeMesnadas } from './04-mesnadas.ts';
+import { pasoCerradoPara } from '../reglas/milicia.ts';
 import { cobrarPortazgos, maravedisLibres } from './04-portazgos.ts';
 import { mejorasDelViaje, puedeCobrarPortazgo } from '../reglas/portazgos.ts';
 
@@ -438,8 +439,11 @@ function moverRecua(ctx: Contexto, id: string): void {
     },
     ctx.reglas,
   );
+  // Una mesnada hostil en la comarca de llegada cierra el paso (T-121), como un puerto nevado.
   const costeDe = (a: IdComarca, b: IdComarca) =>
-    costeDeTramoMil(tramo(ctx, a, b), ctx.estacional, ctx.reglas, mejoras);
+    pasoCerradoPara(ctx.estado, recua.jugador, b, ctx.turno)
+      ? ('cerrado' as const)
+      : costeDeTramoMil(tramo(ctx, a, b), ctx.estacional, ctx.reglas, mejoras);
 
   // Sin bastimento, el primer turno se para y avisa; despues malvive: anda al paso minimo sin
   // pagar y pierde una acemila por turno, para que siempre pueda volver a casa.

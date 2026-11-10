@@ -16,4 +16,9 @@ export const MILICIA: DatosMilicia = {
   ventajaEnCasaMil: 1500,
   ventajaMurallaMil: 2000,
   bajasDerrotaMil: 100,
+  // El asedio (T-121): seis turnos para defenderse o negociar antes de que nada se rinda.
+  turnosMinimosAsedio: 6,
+  guarnicionMil: 100,
+  ventajaAbastecidaMil: 1500,
+  lealtadTrasRendicion: 40,
 };

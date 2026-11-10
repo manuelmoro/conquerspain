@@ -593,6 +593,10 @@ const validarMilicia = objeto<DatosMilicia>({
   ventajaEnCasaMil: milesimas(1000, 5000),
   ventajaMurallaMil: milesimas(1000, 5000),
   bajasDerrotaMil: milesimas(0, 1000),
+  turnosMinimosAsedio: entero({ minimo: 1, maximo: 100 }),
+  guarnicionMil: milesimas(0, 1000),
+  ventajaAbastecidaMil: milesimas(1000, 5000),
+  lealtadTrasRendicion: enteroNoNegativo(100),
 });
 
 const validarAusencia = objeto<DatosAusencia>({

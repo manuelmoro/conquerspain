@@ -27,6 +27,7 @@ import {
   tramoEntre,
 } from '../reglas/ruta.ts';
 import { mejorasDelViaje } from '../reglas/portazgos.ts';
+import { pasoCerradoPara } from '../reglas/milicia.ts';
 import { registrarSuceso } from '../sucesos.ts';
 import type { Contrato } from '../tipos/contratos.ts';
 import { cobrarPortazgos, maravedisLibres } from './04-portazgos.ts';
@@ -200,7 +201,8 @@ function moverRebanyo(ctx: Contexto, id: string): void {
     const camino = tramoEntre(ctx.mundo, a, b);
     if (
       camino === undefined ||
-      !puedeEntrar(camino, ctx.estado.comarcas[b], jugador, ctx.reglas, contratos)
+      !puedeEntrar(camino, ctx.estado.comarcas[b], jugador, ctx.reglas, contratos) ||
+      pasoCerradoPara(ctx.estado, jugador.id, b, ctx.turno)
     ) {
       return 'cerrado' as const;
     }

@@ -491,6 +491,29 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     'En {comarca} se enfrentan las milicias de {ganador} y de {de}: gana {ganador}. La de {de} se retira y {bajas} de sus hombres vuelven a casa.',
     { publica: true },
   ),
+  'asedio.empieza': p(
+    'avisos',
+    '{de} pone asedio a {comarca}, de {contra}. Durante {turnos} turnos no puede rendirse: tiempo para defenderla o negociar.',
+    { publica: true },
+  ),
+  'asedio.rescate': aviso('{de} ofrece {rescate} maravedís por levantar el asedio de {comarca}.'),
+  'asedio.tregua': p(
+    'sucesos',
+    'Se levanta el asedio de {comarca}: {contra} paga {rescate} maravedís a {de}.',
+    { publica: true },
+  ),
+  'asedio.levantado': p(
+    'sucesos',
+    'Se levanta el asedio de {comarca}: la milicia de {de} ya no está.',
+    {
+      publica: true,
+    },
+  ),
+  'asedio.rendicion': p(
+    'avisos',
+    '{comarca} se rinde a {de} tras {turnos} turnos de asedio. {contra} la pierde, pero conserva el resto de su dominio.',
+    { publica: true },
+  ),
   // ——— Ausencia (T-105) ———
   'ausencia.aviso': aviso(
     'Llevas {turnos} turnos sin dar órdenes: el mayordomo lleva la casa. Si pasan {ausente} más, contarás como ausente y la lealtad de tus comarcas empezará a bajar.',
@@ -560,6 +583,11 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'mesnada-desconocida': 'esa mesnada ya no existe',
   'mesnada-en-marcha': 'la mesnada sigue de marcha',
   'tierra-vedada': 'no hay hostilidad con esa casa, o está amparada',
+  'sin-nada-que-asediar': 'esa comarca no es de nadie',
+  'capital-intocable': 'la capital no se asedia: el vencido tiene que poder seguir jugando',
+  'ya-asediada': 'esa comarca ya está asediada',
+  'asedio-desconocido': 'ese asedio ya no sigue',
+  'rescate-sin-fondos': 'el defensor ya no tiene el rescate',
   'temporada-cerrada': 'la temporada ya se cerró',
   'origen-no-ofrecido': 'ese origen ya no está libre o lejos de los demás',
   'comarca-desleal': 'la comarca está descontenta',
@@ -700,6 +728,9 @@ export const NOMBRES_DE_ORDEN: Readonly<Record<string, string>> = {
   licenciar: 'licencia de milicia',
   marchar: 'marcha',
   hostilidad: 'hostilidad',
+  asediar: 'asedio',
+  tregua: 'oferta de rescate',
+  'aceptar-tregua': 'aceptación del rescate',
 };
 
 /** Palabras sueltas de los sucesos, por campo y valor. */

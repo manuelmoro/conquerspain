@@ -8,6 +8,7 @@ import { ErrorDeMotor } from '../errores.ts';
 import type { Casa } from '../tipos/reglas.ts';
 import type {
   Acontecimiento,
+  Asedio,
   CierreDeTemporada,
   Hostilidad,
   Mesnada,
@@ -119,6 +120,8 @@ export interface VistaJugador {
   readonly mesnadasAjenas: readonly MesnadaAjena[];
   /** Todas las hostilidades: son publicas (T-120). */
   readonly hostilidades: readonly Hostilidad[];
+  /** Todos los asedios en marcha: son publicos (T-121). */
+  readonly asedios: readonly Asedio[];
 }
 
 export interface MesnadaAjena {
@@ -296,6 +299,7 @@ export function vistaDeJugador(
       .filter((m) => m.jugador === jugador)
       .sort((a, b) => comparar(a.id, b.id)),
     mesnadasAjenas: mesnadasAjenasDe(estado, jugador),
+    asedios: Object.values(estado.asedios ?? {}).sort((a, b) => comparar(a.id, b.id)),
     hostilidades: Object.keys(estado.hostilidades ?? {})
       .sort(comparar)
       .flatMap((clave) => {

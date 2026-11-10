@@ -1,8 +1,15 @@
 // Milicia en el cliente (T-120): la mesnada y la hostilidad en una frase, y la leva máxima.
-import type { IdComarca, IdJugador, IdMesnada, Mesnada } from '@conquer/nucleo';
+import type { IdAsedio, IdComarca, IdJugador, IdMesnada, Mesnada } from '@conquer/nucleo';
 import { describe, expect, it } from 'vitest';
 
-import { fraseDeHostilidad, fraseDeMesnada, hostilidad, levaMaxima, levar } from './milicia.ts';
+import {
+  fraseDeAsedio,
+  fraseDeHostilidad,
+  fraseDeMesnada,
+  hostilidad,
+  levaMaxima,
+  levar,
+} from './milicia.ts';
 
 const m: Mesnada = {
   id: 'mesnada-1' as IdMesnada,
@@ -44,5 +51,29 @@ describe('la milicia en palabras', () => {
       contra: 'monjes',
       declarar: true,
     });
+  });
+});
+
+describe('el asedio en palabras (T-121)', () => {
+  it('quién sitia, desde cuándo y cuándo puede rendirse', () => {
+    const a = {
+      id: 'asedio-1' as IdAsedio,
+      comarca: 'almazan' as IdComarca,
+      sitiador: 'mesta' as IdJugador,
+      mesnada: 'mesnada-1' as IdMesnada,
+      desde: 10,
+      rescate: 30,
+    };
+    expect(
+      fraseDeAsedio(
+        a,
+        'monjes',
+        12,
+        (id) => id,
+        () => 'La Mesta',
+      ),
+    ).toBe(
+      'La milicia de La Mesta asedia almazan desde el turno 10: no puede rendirse antes del turno 15. Rescate ofrecido: 30 maravedís.',
+    );
   });
 });
