@@ -8,7 +8,7 @@ Cómo está montado y cómo se repite (docs/07 §7.8).
 |---|---|---|
 | Dominio `conquerspain.com` | Cloudflare Registrar | unos 10 €/año |
 | DNS, HTTPS y túnel | Cloudflare (plan gratuito) | 0 € |
-| Servidor | Hetzner Cloud CX22, Ubuntu 24.04 | unos 4,60 €/mes |
+| Servidor | Hetzner Cloud CX23 (Núremberg), Ubuntu 26.04 | 7,25 €/mes con la IPv4 |
 | Correo saliente | Brevo (300 correos al día gratis) | 0 € |
 
 - **Un solo proceso** sirve el juego entero: el cliente compilado y la API bajo `/api/`
@@ -16,7 +16,7 @@ Cómo está montado y cómo se repite (docs/07 §7.8).
 - **El túnel de Cloudflare** (`cloudflared`) saca el juego a internet sin abrir ningún puerto de la
   máquina: solo sale la conexión del túnel. La IP real de cada jugador llega en `cf-connecting-ip`
   (`CABECERA_DE_ORIGEN`), que usa el límite de peticiones.
-- **Copias:** el servicio `copias` hace una al arrancar y una al día en `/datos/copias`, y guarda las
+- **Copias:** el servicio `copias` hace una al minuto de arrancar (cuando el juego ya creó la base) y una al día en `/datos/copias`, y guarda las
   catorce últimas.
 - **Despliegue tirando de git:** el temporizador `conquerspain-actualizar.timer` mira cada cinco
   minutos `origin/main`; si hay un commit nuevo **y la verificación de GitHub lo dio por bueno**, lo
@@ -25,7 +25,7 @@ Cómo está montado y cómo se repite (docs/07 §7.8).
 
 ## Montarlo desde cero
 
-En la máquina (Ubuntu 24.04), como `root`:
+En la máquina (Ubuntu 24.04 o posterior), como `root`:
 
 ```bash
 apt-get update && apt-get install -y docker.io docker-compose-v2 git python3 curl
@@ -37,8 +37,17 @@ cp despliegue/conquerspain-actualizar.service despliegue/conquerspain-actualizar
 systemctl daemon-reload && systemctl enable --now conquerspain-actualizar.timer
 ```
 
-En Cloudflare: Zero Trust › Networks › Tunnels › crear un túnel «conquerspain», copiar su token a
+En Cloudflare: Networking › Tunnels (o Zero Trust › Networks › Tunnels) › crear un túnel «conquerspain», copiar su token a
 `TUNNEL_TOKEN`, y en «Public hostnames» `conquerspain.com` y `www.conquerspain.com` → `http://juego:8471`.
+
+## Cómo está hoy (10-11-2026)
+
+- Máquina `conquerspain` en Hetzner, IP 2.31.182.183, acceso SSH solo con clave; el cortafuegos (ufw)
+  solo deja entrar SSH.
+- Túnel `conquerspain` con la ruta `conquerspain.com` → `http://juego:8471`.
+- Correo por Brevo (`smtp-relay.brevo.com:587`), dominio autenticado con DKIM y DMARC; la clave SMTP
+  no caduca (Brevo la retira tras 90 días sin uso).
+- El temporizador de despliegue está activo.
 
 ## El día a día
 

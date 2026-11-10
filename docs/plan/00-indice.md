@@ -103,7 +103,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-063](T-063-cuentas.md) | Cuentas, sesiones y seguridad | **hecha** | T-062 |
 | [T-064](T-064-avisos.md) | Avisos de resolución (SSE y correo) | **hecha** | T-062, T-063 |
 | [T-065](T-065-alta-de-partida.md) | Alta de partida: casa, sorteo de orígenes y recorte de mapa | **hecha** | T-062, T-049 |
-| [T-066](T-066-transporte-de-correo.md) | Transporte de correo real (SMTP o proveedor) | en curso (falta la prueba con un buzón real: decide el usuario) | T-064 |
+| [T-066](T-066-transporte-de-correo.md) | Transporte de correo real (SMTP o proveedor) | en curso (desplegado con Brevo: falta que el usuario confirme que el correo llegó) | T-064 |
 
 ## Fase 4 · Cliente
 

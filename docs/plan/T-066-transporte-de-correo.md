@@ -36,7 +36,9 @@ sola vez, reintentos y preferencias. Faltaba el transporte real.
 
 ## 3. Criterios de aceptación
 
-1. Un aviso y un enlace llegan a una bandeja real en el entorno de preproducción. **Pendiente del usuario:**
+1. Un aviso y un enlace llegan a una bandeja real en el entorno de preproducción. **10-11-2026:** desplegado con
+   Brevo; el primer enlace salió de https://conquerspain.com hacia el buzón del usuario y Brevo lo aceptó.
+   Falta que el usuario confirme que llegó (y no a spam). Antes decía: **Pendiente del usuario:**
    hace falta una cuenta SMTP y un dominio (o la cuenta de un proveedor gratuito). Con `SMTP_HOST`,
    `SMTP_USUARIO`, `SMTP_CLAVE` y `CORREO_REMITENTE` en el entorno, se lanza `npm run servidor` y se pide un
    enlace desde la portada.

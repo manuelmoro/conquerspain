@@ -11,11 +11,13 @@ services:
   copias:
     build: .
     restart: unless-stopped
+    depends_on:
+      - juego
     volumes:
       - datos:/datos
-    # Una copia al arrancar y despues una al dia; se guardan las ultimas catorce.
+    # Una copia al minuto de arrancar y despues una al dia; se guardan las ultimas catorce.
     command: >
-      sh -c 'while true; do npx tsx paquetes/servidor/herramientas/copia.ts; sleep 86400; done'
+      sh -c 'sleep 60; while true; do npx tsx paquetes/servidor/herramientas/copia.ts; sleep 86400; done'
 
   tunel:
     image: cloudflare/cloudflared:2025.10.0
