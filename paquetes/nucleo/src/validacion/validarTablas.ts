@@ -39,6 +39,7 @@ import type {
   DatosPoblacion,
   DatosAusencia,
   DatosMilicia,
+  DatosBandidaje,
   DatosPrestigio,
   DatosProduccion,
   DatosRecurso,
@@ -581,6 +582,21 @@ const validarArranque: Validador<DatosArranque> = objeto<DatosArranque>({
   recorte: validarRecorte,
 });
 
+const validarBandidaje = objeto<DatosBandidaje>({
+  baseMil: milesimas(0, 1000),
+  puertoMil: milesimas(0, 1000),
+  terrenoAgresteMil: milesimas(0, 1000),
+  sinDuenoMil: milesimas(0, 1000),
+  deslealMil: milesimas(0, 1000),
+  ventaMil: milesimas(0, 1000),
+  lealMil: milesimas(0, 1000),
+  lealtadSegura: enteroNoNegativo(100),
+  calzadaMil: milesimas(0, 1000),
+  riesgoMaximoMil: milesimas(0, 1000),
+  perdidaMil: milesimas(0, 1000),
+  avisoMil: milesimas(0, 1000),
+});
+
 const validarMilicia = objeto<DatosMilicia>({
   levaMaximaMil: milesimas(0, 1000),
   lealtadPorLeva: enteroNoNegativo(50),
@@ -646,6 +662,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   contratos: validarContratos,
   ausencia: validarAusencia,
   milicia: validarMilicia,
+  bandidaje: validarBandidaje,
 });
 
 /** Valida las tablas de equilibrio y su coherencia con la version de reglas del motor. */

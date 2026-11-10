@@ -86,6 +86,10 @@ svg.atlas {
 .camino.puerto-cerrado {
   stroke: #b0282b;
 }
+/* Tramo con riesgo de asalto (T-122): se avisa antes de mandar la recua. */
+.camino.destacado.peligro {
+  stroke: #a2421f;
+}
 /* Tramo de peaje (T-103): se ve en todos los modos, con su rótulo. */
 .camino.peaje {
   stroke: #b8860b;

@@ -252,7 +252,10 @@ export function crearApi(
 
   const verAtlas: Manejador = async (ctx) => {
     const { estado, mundo, vista } = await estadoYVista(ctx);
-    return { estado: 200, datos: { turno: estado.turno, atlas: atlasDeJugador(vista, mundo) } };
+    return {
+      estado: 200,
+      datos: { turno: estado.turno, atlas: atlasDeJugador(vista, mundo, dep.reglas) },
+    };
   };
 
   const verHistorial: Manejador = async (ctx) => {

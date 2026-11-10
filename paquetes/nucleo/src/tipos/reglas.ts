@@ -853,6 +853,7 @@ export interface TablasDeReglas {
   readonly prestigio: DatosPrestigio;
   readonly ausencia: DatosAusencia;
   readonly milicia: DatosMilicia;
+  readonly bandidaje: DatosBandidaje;
   readonly hitos: Readonly<Record<Hito, DatosHito>>;
   readonly rumores: DatosRumores;
   readonly mayordomo: DatosMayordomo;
@@ -860,6 +861,25 @@ export interface TablasDeReglas {
   readonly acontecimientos: DatosAcontecimientos;
   readonly ganaderia: DatosGanaderia;
   readonly contratos: DatosContratos;
+}
+
+/** Bandidaje en los caminos (docs/06 §6.6; ficha T-122), en milesimas de riesgo por tramo. */
+export interface DatosBandidaje {
+  readonly baseMil: number;
+  readonly puertoMil: number;
+  readonly terrenoAgresteMil: number;
+  readonly sinDuenoMil: number;
+  readonly deslealMil: number;
+  readonly ventaMil: number;
+  readonly lealMil: number;
+  /** Lealtad desde la que una punta cuenta como segura. */
+  readonly lealtadSegura: number;
+  readonly calzadaMil: number;
+  readonly riesgoMaximoMil: number;
+  /** Lo que se lleva un asalto de cada cosa que lleva la recua, en milesimas. */
+  readonly perdidaMil: number;
+  /** Desde este riesgo el mapa avisa del tramo. */
+  readonly avisoMil: number;
 }
 
 /** Milicia y hostilidad (docs/06 §6.6; ficha T-120). */

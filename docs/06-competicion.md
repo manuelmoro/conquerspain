@@ -272,6 +272,11 @@ la fuerza del sitiador supera la defensa —el 10 % de la población, ×1,5 si s
 muralla, más sus mesnadas—, la comarca se rinde con 40 de lealtad. En cualquier turno el defensor ofrece un
 rescate y el sitiador puede aceptarlo.
 
+**Bandidaje (T-122).** Cada tramo tiene un riesgo de asalto de 0 a 10 %: sube en puertos, sierra, tierra de nadie y
+comarcas desleales; baja con ventas, comarcas leales y calzada, y es nulo con una mesnada propia de escolta en
+una de las puntas. Un asalto se lleva la cuarta parte de la carga; la recua sigue entera. El mapa avisa de los
+tramos peligrosos («⚠») antes de mandar la recua.
+
 Regla de oro: **un jugador que pierde una guerra debe seguir teniendo una partida que jugar**.
 
 ## 6.7 Temporadas y clasificación

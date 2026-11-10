@@ -53,6 +53,7 @@ import { idsEnOrden } from '../utiles/orden.ts';
 import { movimientoDeRebanyos } from './04-rebanyos.ts';
 import { movimientoDeMesnadas } from './04-mesnadas.ts';
 import { pasoCerradoPara } from '../reglas/milicia.ts';
+import { asaltos } from './04-bandidaje.ts';
 import { cobrarPortazgos, maravedisLibres } from './04-portazgos.ts';
 import { mejorasDelViaje, puedeCobrarPortazgo } from '../reglas/portazgos.ts';
 
@@ -545,6 +546,7 @@ function moverRecua(ctx: Contexto, id: string): void {
   });
   const lleva = ctx.estado.recuas[idRecua]?.carga.maravedis ?? 0;
   cobrarPortazgos(ctx, { recua: idRecua, lleva }, jugador, salida, avance, mejoras);
+  asaltos(ctx, idRecua, salida, avance, mejoras);
   contarAvance(ctx, recua, avance);
 }
 

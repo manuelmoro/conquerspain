@@ -1,7 +1,7 @@
 // El atlas en el cliente (ficha T-081 §6): modos, niebla, movimiento, rotulos, encuadre y presupuesto.
 import { describe, expect, it } from 'vitest';
 
-import { atlasDeJugador, vistaDeJugador } from '@conquer/nucleo';
+import { TABLAS_DEL_JUEGO, atlasDeJugador, vistaDeJugador } from '@conquer/nucleo';
 import type {
   AtlasDeJugador,
   ComarcaEnAtlas,
@@ -23,7 +23,7 @@ import { cajaDeRotulo, colocarRotulos } from './rotulos.ts';
 
 const { estado, mundo } = partidaDePrueba(['mesta', 'monjes', 'canteros'], '1492', 'p1');
 const vista = vistaDeJugador(estado, 'mesta' as IdJugador, mundo);
-const atlas = atlasDeJugador(vista, mundo);
+const atlas = atlasDeJugador(vista, mundo, TABLAS_DEL_JUEGO);
 
 /** El peor caso: el mapa entero de ocho casas, todo explorado. */
 function atlasCompleto(): { atlas: AtlasDeJugador; vista: VistaJugador } {
@@ -55,7 +55,7 @@ function atlasCompleto(): { atlas: AtlasDeJugador; vista: VistaJugador } {
         ] as const,
     ),
   );
-  const todo = atlasDeJugador({ ...v, comarcas: conocidas }, grande.mundo);
+  const todo = atlasDeJugador({ ...v, comarcas: conocidas }, grande.mundo, TABLAS_DEL_JUEGO);
   return { atlas: { ...todo, comarcas }, vista: v };
 }
 
@@ -282,5 +282,23 @@ describe('el presupuesto (criterio 5)', () => {
       componerAtlas(todo, v, { modo, estacion: 'invierno' });
     }
     expect((performance.now() - inicio) / 3).toBeLessThan(250);
+  });
+});
+
+describe('los tramos peligrosos (T-122)', () => {
+  it('el atlas trae el riesgo de cada tramo y el modo de caminos avisa de los peligrosos', () => {
+    const peligrosos = atlas.tramos.filter(
+      (t) => t.riesgoMil >= TABLAS_DEL_JUEGO.bandidaje.avisoMil,
+    );
+    for (const t of atlas.tramos) {
+      expect(t.riesgoMil).toBeGreaterThanOrEqual(0);
+      expect(t.riesgoMil).toBeLessThanOrEqual(TABLAS_DEL_JUEGO.bandidaje.riesgoMaximoMil);
+    }
+    const figuras = componerAtlas(atlas, vista, {
+      modo: 'logistico',
+      estacion: 'primavera',
+    }).figuras;
+    const avisados = figuras.filter((f) => f.capa === 'caminos' && f.clase.includes('peligro'));
+    expect(avisados).toHaveLength(peligrosos.length);
   });
 });

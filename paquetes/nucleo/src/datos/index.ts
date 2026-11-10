@@ -14,6 +14,7 @@ import { ESTACIONES } from './estaciones.ts';
 import { GANADERIA } from './ganaderia.ts';
 import { AUSENCIA } from './ausencia.ts';
 import { MILICIA } from './milicia.ts';
+import { BANDIDAJE } from './bandidaje.ts';
 import { CONTRATOS } from './contratos.ts';
 import { INFLUENCIA } from './influencia.ts';
 import { MAYORDOMO } from './mayordomo.ts';
@@ -56,4 +57,5 @@ export const TABLAS_DEL_JUEGO: TablasDeReglas = {
   contratos: CONTRATOS,
   ausencia: AUSENCIA,
   milicia: MILICIA,
+  bandidaje: BANDIDAJE,
 };

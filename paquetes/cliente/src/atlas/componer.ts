@@ -1,6 +1,6 @@
 // La composicion del atlas (ficha T-081 §4.2 a §4.5): del atlas del jugador y su vista a una lista de
 // figuras por capa. Pura: se prueba sin DOM, y `svg.ts` solo pinta lo que sale de aqui.
-import { POTENCIALES } from '@conquer/nucleo';
+import { POTENCIALES, TABLAS_DEL_JUEGO } from '@conquer/nucleo';
 
 import { COLOR_DE_CASA, COLOR_DE_POTENCIAL, COLOR_NEUTRAL, COLOR_PROPIO } from './paleta.ts';
 import type {
@@ -213,6 +213,9 @@ export function componerAtlas(
     // El portazgo lo ve todo el mundo: quien lo cobra y cuanto (T-103).
     const peaje = vista.caminos[claveTramo(t.desde, t.hasta)]?.portazgo ?? 0;
     if (peaje > 0) clases.push('peaje');
+    // El tramo peligroso se avisa antes de mandar la recua (T-122).
+    const peligro = t.riesgoMil >= TABLAS_DEL_JUEGO.bandidaje.avisoMil;
+    if (peligro) clases.push('peligro');
     figuras.push({ capa: 'caminos', forma: 'linea', puntos: [a, b], clase: clases.join(' ') });
     if (modo === 'logistico' || peaje > 0) {
       const medio: Punto = [Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2)];
@@ -223,9 +226,7 @@ export function componerAtlas(
         clase: cerrado ? 'rotulo dato cerrado' : 'rotulo dato',
         texto: cerrado
           ? 'cerrado'
-          : peaje > 0
-            ? `${String(t.jornadasBase)} j · peaje ${String(peaje)}`
-            : `${String(t.jornadasBase)} j`,
+          : `${peligro ? '⚠ ' : ''}${String(t.jornadasBase)} j${peaje > 0 ? ` · peaje ${String(peaje)}` : ''}`,
         prioridad: PRIORIDAD.dato,
       });
     }

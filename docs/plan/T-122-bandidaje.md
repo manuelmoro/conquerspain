@@ -1,45 +1,59 @@
 # T-122 · Bandidaje y seguridad de caminos
 
-**Fase:** 6 · Conflicto · **Depende de:** T-120 · **Estado:** pendiente (ficha **esbozada**)
-
-> Esta ficha está esbozada a propósito. **Detallarla es la primera mitad de la tarea**: antes de
-> escribir código, complétala al nivel de las fichas de las fases 0 a 2 (diseño detallado con
-> firmas, fórmulas y casos límite) y anota en `ESTADO.md` que ya está detallada.
+**Fase:** 6 · Conflicto · **Depende de:** T-120 · **Estado:** **hecha (10-11-2026)**
 
 ## 1. Contexto
 
-Riesgo ambiental, no entre jugadores: da valor a las ventas, las cercas y los caminos
-cuidados, y castiga a quien deja su red sin atender.
+Un riesgo moderado, previsible y evitable en los caminos, que haga interesante invertir en seguridad. Nadie
+dirige a los bandidos: es un riesgo del mundo (docs/06 §6.6).
 
-## 2. Objetivo
+## 2. El riesgo de un tramo
 
-Un riesgo moderado, previsible y evitable, que haga interesante invertir en seguridad.
+`riesgoDeTramoMil` (`reglas/bandidaje.ts`), en milésimas, con las cifras de la tabla `bandidaje`:
 
-## 3. Alcance
+| Qué | Riesgo |
+|---|---|
+| Base de cualquier tramo | +40 |
+| Cruza un puerto de montaña | +30 |
+| Terreno de sierra | +20 |
+| Por cada punta sin dueño | +10 |
+| Por cada punta desleal | +20 |
+| Por cada punta con venta | −15 |
+| Por cada punta con dueño y lealtad de 70 o más | −10 |
+| Calzada | −20 |
 
-**Entra:** probabilidad por tramo según atención y obras, pérdidas acotadas, avisos previos, medidas de protección.
+Se recorta entre 0 y **100** (`riesgoMaximoMil`): nunca más de un 10 % por tramo. **La escolta:** si la casa de
+la recua tiene una mesnada (T-120) en una de las dos puntas, el riesgo es 0. Así siempre se puede bajar a casi
+nada invirtiendo: ventas, calzada, comarcas leales o una escolta.
 
-**No entra:** que un jugador dirija a los bandidos.
+## 3. El asalto
 
-## 4. Puntos que hay que resolver al detallar
+Al **entrar** una recua en un tramo (los mismos tramos que pagan portazgo, T-103), el azar determinista de la
+partida (`azarDe(semilla, turno, 'bandidaje', recua|tramo)`) decide si hay asalto con esa probabilidad.
 
-- Cómo se calcula el riesgo de un tramo (tránsito, ventas, cercas, lealtad de las comarcas vecinas).
-- Pérdida máxima por incidente: nunca una recua entera.
-- Aviso previo: un tramo peligroso se sabe antes de entrar.
+- Se pierde el **25 %** (`perdidaMil`) de cada cosa que lleva, redondeando hacia abajo. **Nunca las acémilas:
+  la recua sigue entera** y sigue su camino.
+- La crónica lo cuenta (`bandidaje.asalto`).
+- Los rebaños no sufren asaltos: andan con sus pastores y sus perros.
 
-## 5. Criterios de aceptación provisionales
+## 4. Lo que se ve antes
 
-1. El riesgo nunca supera el máximo fijado y siempre se puede reducir a casi cero invirtiendo.
-2. Un incidente jamás destruye una recua completa.
+El atlas, en el modo de caminos, marca los tramos con riesgo de 50 o más con «⚠» y un trazo de aviso, con el
+riesgo **estimado** con lo que el jugador sabe (de las comarcas ajenas no se conoce la lealtad: cuenta como
+neutra).
+
+## 5. Criterios de aceptación
+
+1. El riesgo nunca supera el máximo y siempre se puede reducir a casi cero invirtiendo.
+2. Un asalto jamás destruye una recua: se lleva una parte de la carga y nada más.
 3. El mapa muestra los tramos peligrosos antes de enviar la recua.
 
 ## 6. Verificación
 
-```bash
-npm run verificar
-```
-
-Más las comprobaciones propias que se añadan al detallar la ficha.
+`npm run verificar`, con `nucleo/pruebas/bandidaje.test.ts` (techo del riesgo, bajarlo invirtiendo, escolta,
+botín, asalto que deja la recua entera y en camino) y la prueba del atlas (cada tramo trae su riesgo estimado y
+el modo de caminos marca los peligrosos con «⚠»). El riesgo estimado lo calcula `atlasDeJugador`, que ahora
+recibe las tablas.
 
 ## 7. Al terminar
 

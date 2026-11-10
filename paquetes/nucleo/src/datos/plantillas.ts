@@ -514,6 +514,9 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     '{comarca} se rinde a {de} tras {turnos} turnos de asedio. {contra} la pierde, pero conserva el resto de su dominio.',
     { publica: true },
   ),
+  'bandidaje.asalto': aviso(
+    'Asaltan a {recua} entre {desde} y {hasta}: se llevan {perdido} de la carga. La recua sigue su camino. Una venta, una calzada o una escolta lo evitan.',
+  ),
   // ——— Ausencia (T-105) ———
   'ausencia.aviso': aviso(
     'Llevas {turnos} turnos sin dar órdenes: el mayordomo lleva la casa. Si pasan {ausente} más, contarás como ausente y la lealtad de tus comarcas empezará a bajar.',
