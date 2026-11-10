@@ -37,7 +37,8 @@ import { proximaResolucion } from '../reloj/calendario.ts';
 /** Ritmos de una partida normal (docs/02 §1): una hora, seis o un dia. */
 export const INTERVALOS_ADMITIDOS = [60, 360, 1440] as const;
 const INTERVALO_MAXIMO_DE_PRUEBA = 10_080;
-const PLAZAS_MAXIMAS = 8;
+/** Hasta doce: la temporada (docs/06 §6.1). Con mas de ocho, alguna casa se repite (T-100). */
+const PLAZAS_MAXIMAS = 12;
 const NOMBRE_MAXIMO = 60;
 
 export interface DependenciasDeAltas {
@@ -58,6 +59,8 @@ export interface VistaDeConvocatoria {
   /** Solo para quien convoco. */
   readonly codigo: string | null;
   readonly jugadores: readonly { casa: string; nombre: string; haElegido: boolean }[];
+  /** Si quien mira es quien convoco: puede cerrar la lista y fundar sin esperar a todos (T-100). */
+  readonly esQuienConvoca: boolean;
   readonly misOfertas: readonly OfertaDeOrigen[];
   readonly miEleccion: string | null;
   readonly avisos: readonly string[];
@@ -189,7 +192,7 @@ export class ServicioDeAltas {
       case 'casa-ocupada':
         throw new ErrorDeApi(
           'casa-ocupada',
-          `La casa "${casa}" ya la lleva otro jugador: en cada partida, cada casa una vez.`,
+          `La casa "${casa}" ya la llevan dos jugadores: en cada partida, cada casa como mucho dos veces.`,
         );
       case 'llena':
         throw new ErrorDeApi('convocatoria-llena', 'La partida ya tiene todas sus plazas.');
@@ -231,12 +234,13 @@ export class ServicioDeAltas {
       plazas: c.plazas,
       esDePrueba: c.esDePrueba,
       codigo: c.creador === cuenta ? c.codigo : null,
+      esQuienConvoca: c.creador === cuenta,
       jugadores: plazas.map((p) => ({
         casa: p.casa,
         nombre: p.nombre,
         haElegido: p.eleccion !== null,
       })),
-      misOfertas: leerOfertas(c.ofertas)[mia.casa] ?? [],
+      misOfertas: leerOfertas(c.ofertas)[mia.jugador] ?? [],
       miEleccion: mia.eleccion,
       avisos: c.avisos,
       partida: c.partida,
@@ -250,7 +254,7 @@ export class ServicioDeAltas {
 
   private participantes(plazas: readonly PlazaDeConvocatoria[]): Participante[] {
     return plazas.map((p) => ({
-      id: p.casa as IdJugador,
+      id: p.jugador as IdJugador,
       nombre: p.nombre,
       casa: this.casaPedida(p.casa),
     }));
@@ -312,16 +316,43 @@ export class ServicioDeAltas {
       );
     }
     const comarca = cuerpo['comarca'];
-    const mias = leerOfertas(c.ofertas)[mia.casa] ?? [];
+    const mias = leerOfertas(c.ofertas)[mia.jugador] ?? [];
     if (typeof comarca !== 'string' || !mias.some((o) => o.comarca === comarca)) {
-      throw new ErrorDeApi(
-        'eleccion-invalida',
-        'Tienes que elegir una de tus tres comarcas de origen.',
-      );
+      throw new ErrorDeApi('eleccion-invalida', 'Tienes que elegir una de tus comarcas de origen.');
     }
     await this.dep.repo.elegir(id, cuenta, comarca);
     const plazas = await this.dep.repo.plazas(id);
     if (plazas.every((p) => p.eleccion !== null)) await this.fundar(c, plazas);
+    return this.ver(cuenta, id);
+  }
+
+  /**
+   * Quien convoco no espera para siempre a quien no elige (T-100): funda ya, y a quien no eligio le
+   * toca su primera oferta. Cualquier combinacion de ofertas respeta la distancia entre capitales.
+   */
+  async fundarYa(cuenta: string, id: string): Promise<VistaDeConvocatoria> {
+    const { convocatoria: c, plazas } = await this.miConvocatoria(cuenta, id);
+    if (c.creador !== cuenta) {
+      throw new ErrorDeApi(
+        'solo-quien-convoca',
+        'Solo quien convoco la partida puede fundarla sin esperar a todos.',
+      );
+    }
+    if (c.estado !== 'eligiendo') {
+      throw new ErrorDeApi(
+        'convocatoria-cerrada',
+        c.estado === 'abierta'
+          ? 'Aun no se ha sorteado: cierra la lista primero.'
+          : 'La partida ya esta fundada.',
+      );
+    }
+    const ofertas = leerOfertas(c.ofertas);
+    for (const p of plazas) {
+      const primera = ofertas[p.jugador]?.[0]?.comarca;
+      if (p.eleccion === null && primera !== undefined)
+        await this.dep.repo.elegir(id, p.cuenta, primera);
+    }
+    await this.fundar(c, await this.dep.repo.plazas(id));
     return this.ver(cuenta, id);
   }
 
@@ -334,7 +365,8 @@ export class ServicioDeAltas {
       );
     }
     const elecciones: Record<string, IdComarca> = {};
-    for (const p of plazas) if (p.eleccion !== null) elecciones[p.casa] = p.eleccion as IdComarca;
+    for (const p of plazas)
+      if (p.eleccion !== null) elecciones[p.jugador] = p.eleccion as IdComarca;
     const estado = fundarPartida({
       preparada,
       reglas: this.dep.reglas,
@@ -372,7 +404,7 @@ export class ServicioDeAltas {
           proximaResolucion: proximaResolucion(ahora, intervaloSegundos, 1),
           esDePrueba: c.esDePrueba,
           participantes: plazas.map((p) => ({
-            jugador: p.casa as IdJugador,
+            jugador: p.jugador as IdJugador,
             casa: p.casa,
             cuenta: p.cuenta,
           })),

@@ -73,6 +73,8 @@ export interface OpcionesDeAlta {
   readonly recortar?: boolean | undefined;
   /** Origen fijado de una casa, para los escenarios que quieren una comarca concreta. */
   readonly origenesFijos?: Readonly<Record<string, IdComarca>> | undefined;
+  /** Casas que llevan un segundo jugador, «casa-2» (T-100: hasta doce plazas con ocho casas). */
+  readonly dobles?: readonly Casa[] | undefined;
 }
 
 /** La partida inicial del banco con estas casas, preparada y fundada como lo hara el servidor. */
@@ -85,11 +87,14 @@ export function altaDelBanco(opciones: OpcionesDeAlta): PartidaDelBanco {
     preferencia = () => 0,
     recortar = true,
   } = opciones;
-  const participantes: Participante[] = casas.map((casa) => ({
-    id: casa as string as IdJugador,
-    nombre: NOMBRES[casa],
-    casa,
-  }));
+  const participantes: Participante[] = [
+    ...casas.map((casa) => ({ id: casa as string as IdJugador, nombre: NOMBRES[casa], casa })),
+    ...(opciones.dobles ?? []).map((casa) => ({
+      id: `${casa}-2` as IdJugador,
+      nombre: `${NOMBRES[casa]} (2)`,
+      casa,
+    })),
+  ];
   const preparada = prepararPartida({
     mundo,
     reglas,
@@ -127,7 +132,7 @@ export function altaDelBanco(opciones: OpcionesDeAlta): PartidaDelBanco {
     configuracion: {
       nombre: `Banco de pruebas, semilla ${semilla}`,
       intervaloMinutos: 1440,
-      modo: casas.length === 1 ? 'solitario' : 'vecindad',
+      modo: participantes.length === 1 ? 'solitario' : 'vecindad',
       turnosDeTemporada: null,
       reservaMinimaDePan: 30,
       esDePrueba: true,

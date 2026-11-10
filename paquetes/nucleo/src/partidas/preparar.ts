@@ -111,7 +111,11 @@ export function prepararPartida(peticion: PeticionDePreparacion): Resultado<Part
 
   let mundo = peticion.mundo;
   let intentos = 0;
-  if (peticion.recortar ?? true) {
+  // Con muchos jugadores se juega en la peninsula entera: el recorte apenas quitaria nada y fallaba
+  // al buscar sitio para todos (T-100 §9).
+  const peninsulaEntera =
+    participantes.length >= reglas.arranque.recorte.jugadoresParaPeninsulaEntera;
+  if ((peticion.recortar ?? true) && !peninsulaEntera) {
     const recorte = recortarMundo(
       peticion.mundo,
       reglas,

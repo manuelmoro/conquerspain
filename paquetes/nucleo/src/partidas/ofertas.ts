@@ -122,6 +122,11 @@ export function ofertasDeOrigen(
   fijos: Readonly<Record<string, IdComarca>> = {},
 ): Ofertas {
   const recorte = reglas.arranque.recorte;
+  // Con muchos jugadores, menos ofertas por cabeza: si no, no caben a la distancia debida (T-100).
+  const porCabeza =
+    participantes.length >= recorte.jugadoresParaPeninsulaEntera
+      ? recorte.origenesConMuchosJugadores
+      : recorte.origenesPorCasa;
   const indice = indiceDeCaminos(mundo);
   const ordenados = [...participantes].sort((a, b) => comparar(a.id, b.id));
   const sorteo = azarDe(semilla, 0, 'preparacion', 'orden').barajar(ordenados);
@@ -157,9 +162,9 @@ export function ofertasDeOrigen(
       candidatas,
       participante.casa,
       `${semilla}|${participante.id}`,
-      fijo === undefined ? recorte.origenesPorCasa : 1,
+      fijo === undefined ? porCabeza : 1,
     );
-    if (fijo === undefined && elegidas.length < recorte.origenesPorCasa) {
+    if (fijo === undefined && elegidas.length < porCabeza) {
       avisos.push(
         `${reglas.casas[participante.casa].nombre}: solo caben ${String(elegidas.length)} origenes a ${String(recorte.jornadasEntreCapitales)} jornadas de los demas`,
       );

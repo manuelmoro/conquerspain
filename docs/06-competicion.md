@@ -18,6 +18,14 @@ partida de nadie.
 El mapa de una partida es un **recorte** de la península proporcional al número de jugadores, de
 manera que siempre haya tierra que repartirse, pero no tanta que nadie se encuentre nunca.
 
+**Muchas plazas (T-100):**
+
+- Con más de ocho jugadores se juega en la península entera, y cada uno recibe dos ofertas de origen en vez
+  de tres: tres por cabeza no caben a seis jornadas de las de todos los demás.
+- Como solo hay ocho casas, cada casa puede repetirse una vez.
+- El reparto se mide: a nadie le falta pan, madera, piedra y algo estratégico a seis jornadas de su origen.
+  Además, el peor comienzo de la partida vale al menos el 60 % del mejor (`equidadDelReparto`).
+
 ## 6.2 Influencia: cómo se consigue tierra
 
 Las comarcas neutrales no se toman: se ganan. Cada jugador acumula **influencia** (0–100) en cada

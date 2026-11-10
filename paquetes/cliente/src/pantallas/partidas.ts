@@ -1,5 +1,5 @@
 // La entrada al juego (ficha T-086 §4.2): mis partidas con lo que avisan, las convocatorias en marcha,
-// convocar o unirse eligiendo casa, y elegir origen entre las tres ofertas.
+// convocar o unirse eligiendo casa, y elegir origen entre sus ofertas.
 import { CASAS, POTENCIALES, TABLAS_DEL_JUEGO } from '@conquer/nucleo';
 import type { Casa } from '@conquer/nucleo';
 
@@ -174,6 +174,20 @@ function tarjetaDeConvocatoria(
           `Ya elegiste. Faltan ${String(paso.faltan)} por elegir origen.`,
         ),
       );
+      // Quien convoca no espera para siempre: funda, y a quien no eligio le toca su primera oferta.
+      if (c.esQuienConvoca === true)
+        partes.push(
+          boton(
+            'Fundar ya, sin esperar',
+            () => {
+              void api.fundarYa(c.id).then((r) => {
+                despues(almacen, api, r);
+              });
+            },
+            'secundario',
+          ),
+          el('p', { class: 'suave' }, 'A quien no haya elegido le toca la primera de sus ofertas.'),
+        );
       break;
     case 'abrir':
       partes.push(
@@ -274,7 +288,7 @@ function convocar(almacen: Almacen, api: ClienteApi): HTMLElement {
   const plazas = el('input', {
     type: 'number',
     min: '1',
-    max: '8',
+    max: '12',
     value: '4',
     'aria-label': 'Plazas',
   });
@@ -283,7 +297,7 @@ function convocar(almacen: Almacen, api: ClienteApi): HTMLElement {
     {},
     el('label', {}, 'Nombre', nombre),
     el('label', {}, 'Ritmo', ritmo),
-    el('label', {}, 'Casas que juegan (1 a 8)', plazas),
+    el('label', {}, 'Jugadores (1 a 12; con más de 8, alguna casa se repite)', plazas),
     el('h3', {}, 'Tu casa'),
     eleccionDeCasa(almacen),
     el(

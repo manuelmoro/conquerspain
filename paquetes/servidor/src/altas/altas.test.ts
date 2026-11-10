@@ -214,7 +214,7 @@ describe('el sorteo es reproducible y persiste (criterios 1 y 4)', () => {
       reglas: TABLAS_DEL_JUEGO,
       semilla: guardada?.semilla ?? '',
       participantes: plazas.map((p) => ({
-        id: p.casa as IdJugador,
+        id: p.jugador as IdJugador,
         nombre: p.nombre,
         casa: p.casa as Casa,
       })),
@@ -301,6 +301,51 @@ describe('cada casa recibe origenes viables (criterio 3)', () => {
   );
 });
 
+describe('una casa repetida y fundar sin esperar a todos (T-100)', () => {
+  it('dos de la Mesta reciben ofertas distintas; quien convoca funda y a quien no eligió le toca su primera', async () => {
+    const e = await entorno();
+    const ana = await e.cuenta('ana');
+    const beto = await e.cuenta('beto');
+    const carla = await e.cuenta('carla');
+    const creada = await e.pedir(ana, 'POST', '/convocatorias', {
+      nombre: 'Dos pastores',
+      casa: 'mesta',
+      intervaloMinutos: 1440,
+      plazas: 3,
+    });
+    const { id, codigo } = creada.cuerpo as { id: string; codigo: string };
+    for (const [cuenta, casa] of [
+      [beto, 'mesta'],
+      [carla, 'monjes'],
+    ] as const) {
+      expect(
+        (await e.pedir(cuenta, 'POST', '/convocatorias/unirse', { codigo, casa })).estado,
+      ).toBe(200);
+    }
+    expect((await e.repo.plazas(id)).map((p) => p.jugador)).toEqual(['mesta', 'mesta-2', 'monjes']);
+    await e.pedir(ana, 'POST', `/convocatorias/${id}/sortear`);
+    const deAna = vista(await e.pedir(ana, 'GET', `/convocatorias/${id}`)).misOfertas;
+    const deBeto = vista(await e.pedir(beto, 'GET', `/convocatorias/${id}`)).misOfertas;
+    expect(deAna.length).toBeGreaterThan(0);
+    expect(deBeto.length).toBeGreaterThan(0);
+    expect(deBeto.map((o) => o.comarca)).not.toContain(deAna[0]?.comarca);
+
+    // Solo Ana elige; Beto y Carla no. Quien no convoca no puede fundar.
+    await e.pedir(ana, 'POST', `/convocatorias/${id}/eleccion`, { comarca: deAna[1]?.comarca });
+    expect(codigoDe(await e.pedir(beto, 'POST', `/convocatorias/${id}/fundar`))).toBe(
+      'solo-quien-convoca',
+    );
+    const fundada = vista(await e.pedir(ana, 'POST', `/convocatorias/${id}/fundar`));
+    expect(fundada.estado).toBe('fundada');
+    const estado = await e.repo.ultimoEstado(id as IdPartida);
+    expect(Object.keys(estado?.jugadores ?? {}).sort()).toEqual(['mesta', 'mesta-2', 'monjes']);
+    expect(estado?.jugadores['mesta']?.capital).toBe(deAna[1]?.comarca);
+    expect(estado?.jugadores['mesta-2']?.capital).toBe(deBeto[0]?.comarca);
+    expect(estado?.jugadores['mesta-2']?.casa).toBe('mesta');
+    await e.repo.cerrar();
+  }, 120_000);
+});
+
 describe('las reglas del alta (criterio 6)', () => {
   it('cada rechazo con su codigo', async () => {
     const e = await entorno();
@@ -313,7 +358,7 @@ describe('las reglas del alta (criterio 6)', () => {
       { ...base, casa: 'templarios' },
       { ...base, intervaloMinutos: 90 },
       { ...base, plazas: 0 },
-      { ...base, plazas: 9 },
+      { ...base, plazas: 13 },
       { ...base, esDePrueba: true, intervaloMinutos: 0 },
     ]) {
       expect(codigoDe(await e.pedir(a, 'POST', '/convocatorias', malo)), JSON.stringify(malo)).toBe(
@@ -339,8 +384,20 @@ describe('las reglas del alta (criterio 6)', () => {
         await e.pedir(b, 'POST', '/convocatorias/unirse', { codigo: 'falso', casa: 'monjes' }),
       ),
     ).toBe('convocatoria-desconocida');
+    // Una casa se repite una vez como mucho (T-100): el segundo de la Mesta entra; el tercero, no.
+    const tres = (await e.pedir(a, 'POST', '/convocatorias', { ...base, plazas: 3 })).cuerpo as {
+      codigo: string;
+    };
+    const d = await e.cuenta('dora');
+    const f = await e.cuenta('fede');
     expect(
-      codigoDe(await e.pedir(b, 'POST', '/convocatorias/unirse', { codigo, casa: 'mesta' })),
+      (await e.pedir(d, 'POST', '/convocatorias/unirse', { codigo: tres.codigo, casa: 'mesta' }))
+        .estado,
+    ).toBe(200);
+    expect(
+      codigoDe(
+        await e.pedir(f, 'POST', '/convocatorias/unirse', { codigo: tres.codigo, casa: 'mesta' }),
+      ),
     ).toBe('casa-ocupada');
     expect(
       codigoDe(await e.pedir(a, 'POST', '/convocatorias/unirse', { codigo, casa: 'monjes' })),

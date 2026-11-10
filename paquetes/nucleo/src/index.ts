@@ -93,6 +93,8 @@ export { atlasDeJugador } from './reglas/atlas.ts';
 export { fichaDeComarca } from './ficha.ts';
 export { comoGanarLa } from './reglas/ganar-comarca.ts';
 export { regaloYaPedido } from './reglas/regalo.ts';
+export { LO_BASICO, comienzoDe, equidadDelReparto } from './partidas/equidad.ts';
+export type { Basico, Comienzo, EquidadDelReparto } from './partidas/equidad.ts';
 export { comarcasIncorporables } from './reglas/incorporar.ts';
 export type { ComoGanarLa, PartidaDeInfluencia } from './reglas/ganar-comarca.ts';
 export type {

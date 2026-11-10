@@ -107,6 +107,9 @@ function estadoDeOrden(valor: string): EstadoDeOrdenGuardada {
   return encontrado;
 }
 
+/** Cuantos jugadores puede haber de una misma casa en una partida (T-100). */
+const JUGADORES_POR_CASA = 2;
+
 export class RepositorioSqlite
   implements Repositorio, RepositorioDeCuentas, RepositorioDeAvisos, RepositorioDeConvocatorias
 {
@@ -1100,9 +1103,10 @@ export class RepositorioSqlite
         datos.creadaEn,
       );
       this.ejecutar(
-        'INSERT INTO plaza_convocatoria (convocatoria, cuenta, casa, nombre, orden) VALUES (?, ?, ?, ?, 0)',
+        'INSERT INTO plaza_convocatoria (convocatoria, cuenta, casa, jugador, nombre, orden) VALUES (?, ?, ?, ?, ?, 0)',
         datos.id,
         datos.creador,
+        casa,
         casa,
         nombre,
       );
@@ -1134,6 +1138,7 @@ export class RepositorioSqlite
     ).map((f) => ({
       cuenta: texto(f, 'cuenta'),
       casa: texto(f, 'casa'),
+      jugador: texto(f, 'jugador'),
       nombre: texto(f, 'nombre'),
       eleccion: textoONulo(f, 'eleccion'),
     }));
@@ -1153,13 +1158,16 @@ export class RepositorioSqlite
         id,
       );
       if (ocupadas.some((p) => texto(p, 'cuenta') === cuenta)) return 'ya-dentro';
-      if (ocupadas.some((p) => texto(p, 'casa') === casa)) return 'casa-ocupada';
+      // Cada casa, como mucho dos veces (T-100): con doce plazas y ocho casas alguna se repite.
+      const deEsaCasa = ocupadas.filter((p) => texto(p, 'casa') === casa).length;
+      if (deEsaCasa >= JUGADORES_POR_CASA) return 'casa-ocupada';
       if (ocupadas.length >= entero(c, 'plazas')) return 'llena';
       this.ejecutar(
-        'INSERT INTO plaza_convocatoria (convocatoria, cuenta, casa, nombre, orden) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO plaza_convocatoria (convocatoria, cuenta, casa, jugador, nombre, orden) VALUES (?, ?, ?, ?, ?, ?)',
         id,
         cuenta,
         casa,
+        deEsaCasa === 0 ? casa : `${casa}-${String(deEsaCasa + 1)}`,
         nombre,
         ocupadas.length,
       );

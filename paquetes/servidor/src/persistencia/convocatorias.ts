@@ -26,6 +26,8 @@ export interface Convocatoria extends ConvocatoriaNueva {
 export interface PlazaDeConvocatoria {
   readonly cuenta: string;
   readonly casa: string;
+  /** El jugador que sera en la partida: la casa, o «casa-2» para el segundo de esa casa (T-100). */
+  readonly jugador: string;
   readonly nombre: string;
   readonly eleccion: string | null;
 }

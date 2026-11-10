@@ -561,6 +561,10 @@ const validarRecorte: Validador<DatosRecorte> = objeto<DatosRecorte>({
   laborAltaMinima: enteroNoNegativo(100),
   feriasMinimas: enteroNoNegativo(100),
   origenesPorCasa: entero({ minimo: 1, maximo: 10 }),
+  jugadoresParaPeninsulaEntera: entero({ minimo: 2, maximo: 100 }),
+  origenesConMuchosJugadores: entero({ minimo: 1, maximo: 5 }),
+  jornadasDeAlcance: entero({ minimo: 1, maximo: 60 }),
+  equidadMinimaMil: milesimas(0, 1000),
 });
 
 const validarArranque: Validador<DatosArranque> = objeto<DatosArranque>({

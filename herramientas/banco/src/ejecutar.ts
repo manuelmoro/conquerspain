@@ -112,7 +112,7 @@ export function jugarTurno(
   const ordenes: Orden[] = [];
   const decisiones = new Map<string, DecisionDeRobot | null>();
   for (const robot of robots) {
-    const jugador = robot.casa as string as IdJugador;
+    const jugador = (robot.jugador ?? robot.casa) as IdJugador;
     if ((estado.turno - 1) % robot.cadencia !== 0) {
       decisiones.set(jugador, null);
       continue;

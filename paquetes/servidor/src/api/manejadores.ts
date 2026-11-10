@@ -740,6 +740,14 @@ export function crearApi(
           },
           {
             metodo: 'POST',
+            patron: '/convocatorias/:id/fundar',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: { convocatoria: await altas.fundarYa(ctx.cuenta, ctx.parametros['id'] ?? '') },
+            })),
+          },
+          {
+            metodo: 'POST',
             patron: '/convocatorias/:id/eleccion',
             manejador: privada(async (ctx) => ({
               estado: 200,

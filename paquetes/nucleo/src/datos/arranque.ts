@@ -34,5 +34,12 @@ export const ARRANQUE: DatosArranque = {
     laborAltaMinima: 3,
     feriasMinimas: 1,
     origenesPorCasa: 3,
+    // Con mas de ocho jugadores (temporada, hasta doce, T-100): tres ofertas por cabeza a seis jornadas
+    // de todas las demas no caben, y el recorte apenas quitaria nada. Medido en T-100 §9.
+    jugadoresParaPeninsulaEntera: 9,
+    origenesConMuchosJugadores: 2,
+    // La equidad: lo que hay a seis jornadas de cada comienzo, y el peor frente al mejor.
+    jornadasDeAlcance: 6,
+    equidadMinimaMil: 600,
   },
 };

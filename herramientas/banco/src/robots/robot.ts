@@ -18,6 +18,8 @@ export interface Decidido {
 
 export interface Robot {
   readonly casa: Casa;
+  /** El jugador al que lleva; por defecto, el de su casa. El segundo de una casa es «casa-2» (T-100). */
+  readonly jugador?: string;
   readonly nombre: string;
   /** Cada cuantos turnos entra: 1 es el jugador diligente; 6, el que deja colas y mayordomo. */
   readonly cadencia: number;

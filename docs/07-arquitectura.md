@@ -153,10 +153,14 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
   - `GET /partidas/:id/eventos` (SSE: «turno resuelto»)
 - **Nunca** se envía al cliente información que su jugador no debe ver. El filtrado se hace en el
   servidor, sobre el estado completo, con una función del núcleo (`vistaDeJugador`).
-- Alta (T-065, `paquetes/servidor/src/altas/`): convocatoria por invitación (código de 128 bits), una casa por
-  partida, sorteo con semilla privada guardado en la misma transacción que cierra la lista (recargar no vuelve a
-  sortear), elección entre las propias ofertas y fundación con `fundarPartida` al elegir el último. Todo el
-  recorte, las ofertas y el arranque son los de T-049; aquí solo se guarda y se decide quién puede qué.
+- Alta (T-065, `paquetes/servidor/src/altas/`): convocatoria por invitación (código de 128 bits), sorteo con
+  semilla privada guardado en la misma transacción que cierra la lista (recargar no vuelve a sortear), elección
+  entre las propias ofertas y fundación con `fundarPartida` al elegir el último. Todo el recorte, las ofertas y
+  el arranque son los de T-049; aquí solo se guarda y se decide quién puede qué.
+  - **Desde T-100:** hasta 12 plazas, y cada casa como mucho dos veces. La plaza guarda su jugador (la casa,
+    o «casa-2» para el segundo), y con él se reparten las ofertas y se funda.
+  - Quien convoca puede fundar sin esperar (`POST /convocatorias/:id/fundar`): a quien no eligió le toca su
+    primera oferta.
 - Avisos (T-064, `paquetes/servidor/src/avisos/`): SSE `GET /partidas/:id/eventos` con un canal en memoria que
   el reloj alimenta **después** de guardar; correo por una cola en la base (`aviso_correo`, clave por turno y
   jugador) que se llena **en la misma transacción** que la resolución y vacía un despachador con reintentos

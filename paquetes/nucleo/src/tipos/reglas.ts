@@ -746,6 +746,14 @@ export interface DatosRecorte {
   readonly feriasMinimas: number;
   /** Origenes posibles que conserva cada casa dentro del recorte. */
   readonly origenesPorCasa: number;
+  /** Desde cuantos jugadores se juega en la peninsula entera, sin recortar (T-100). */
+  readonly jugadoresParaPeninsulaEntera: number;
+  /** Ofertas de origen por jugador cuando juegan tantos: con tres no caben a la distancia debida. */
+  readonly origenesConMuchosJugadores: number;
+  /** Jornadas a las que se mira lo que tiene a mano un comienzo (equidad, T-100). */
+  readonly jornadasDeAlcance: number;
+  /** El peor comienzo de un reparto frente al mejor, como minimo, en milesimas (T-100). */
+  readonly equidadMinimaMil: Milesimas;
 }
 
 /** Los acontecimientos del catalogo (docs/01 §1.3, docs/02 §2.4.5; ficha T-039). */

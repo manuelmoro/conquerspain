@@ -100,6 +100,8 @@ export interface ConvocatoriaRecibida {
   readonly esDePrueba: boolean;
   readonly codigo: string | null;
   readonly jugadores: readonly { casa: string; nombre: string; haElegido: boolean }[];
+  /** Quien mira es quien convoco: puede fundar sin esperar a todos (T-100). */
+  readonly esQuienConvoca?: boolean;
   readonly misOfertas: readonly OfertaRecibida[];
   readonly miEleccion: string | null;
   readonly avisos: readonly string[];
@@ -368,6 +370,14 @@ export class ClienteApi {
     return this.pedir<{ convocatoria: ConvocatoriaRecibida }>(
       'POST',
       `/convocatorias/${encodeURIComponent(id)}/sortear`,
+    );
+  }
+
+  /** Quien convoco funda sin esperar: a quien no eligio le toca su primera oferta (T-100). */
+  fundarYa(id: string) {
+    return this.pedir<{ convocatoria: ConvocatoriaRecibida }>(
+      'POST',
+      `/convocatorias/${encodeURIComponent(id)}/fundar`,
     );
   }
 
