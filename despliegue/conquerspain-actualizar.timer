@@ -1,0 +1,9 @@
+[Unit]
+Description=ConquerSpain: mira cada cinco minutos si hay version nueva
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target

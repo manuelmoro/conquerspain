@@ -1,0 +1,30 @@
+# El despliegue (docs/07 §7.8, despliegue/LEEME.md): el juego, sus copias diarias y el tunel de
+# Cloudflare, que lo saca a internet sin abrir ningun puerto en la maquina.
+services:
+  juego:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - datos:/datos
+
+  copias:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - datos:/datos
+    # Una copia al arrancar y despues una al dia; se guardan las ultimas catorce.
+    command: >
+      sh -c 'while true; do npx tsx paquetes/servidor/herramientas/copia.ts; sleep 86400; done'
+
+  tunel:
+    image: cloudflare/cloudflared:2025.10.0
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      - juego
+
+volumes:
+  datos:

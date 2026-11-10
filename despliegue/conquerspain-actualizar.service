@@ -1,0 +1,7 @@
+[Unit]
+Description=ConquerSpain: despliega el ultimo commit verificado de origin/main
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/conquerspain/despliegue/actualizar.sh

@@ -88,11 +88,20 @@ const reloj = new Reloj(
   { repo, reglas: TABLAS_DEL_JUEGO, proveedorDeMundo, resolverTurno, registro, ahora, canal },
   { despachador: new DespachadorDeCorreos({ repo, correo, registro, ahora }) },
 );
-const servidor = await servirHttp(api, { puerto });
+// En el despliegue (docs/07 §7.8) el mismo proceso sirve el cliente compilado y escucha en la red del
+// contenedor; delante esta el tunel de Cloudflare, que dice la IP real de cada jugador.
+const estaticos = entorno['CLIENTE_COMPILADO'];
+const cabeceraDeOrigen = entorno['CABECERA_DE_ORIGEN'];
+const servidor = await servirHttp(api, {
+  puerto,
+  anfitrion: entorno['ANFITRION'] ?? '127.0.0.1',
+  ...(estaticos === undefined ? {} : { estaticos }),
+  ...(cabeceraDeOrigen === undefined ? {} : { cabeceraDeOrigen: cabeceraDeOrigen.toLowerCase() }),
+});
 relojListo = reloj;
 reloj.iniciar();
 console.log(
-  `ConquerSpain escucha en http://127.0.0.1:${String(servidor.puerto)} (base: ${baseDeDatos}).`,
+  `ConquerSpain escucha en http://${entorno['ANFITRION'] ?? '127.0.0.1'}:${String(servidor.puerto)} (base: ${baseDeDatos}${estaticos === undefined ? '' : `, cliente: ${estaticos}`}).`,
 );
 
 for (const senyal of ['SIGINT', 'SIGTERM'] as const) {
