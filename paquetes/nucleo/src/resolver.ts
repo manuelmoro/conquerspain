@@ -84,7 +84,8 @@ function comprobarEntrada(estado: EstadoPartida, ordenes: readonly Orden[]): voi
         { orden: orden.id, turnoAlta: orden.turnoAlta, turno: estado.turno },
       );
     }
-    if (estado.jugadores[orden.jugador] === undefined) {
+    // Quien entra en la partida aun no esta en el estado: lo da de alta la fase 0 (T-107).
+    if (estado.jugadores[orden.jugador] === undefined && orden.tipo !== 'entrar') {
       throw new ErrorDeMotor(
         'orden-invalida',
         `La orden "${orden.id}" es de un jugador que no esta en la partida.`,

@@ -39,6 +39,7 @@ const ICONO: Readonly<Record<Orden['tipo'], string>> = {
   contrato: '🤝',
   'responder-contrato': '✍️',
   portazgo: '🚧',
+  entrar: '🚪',
 };
 
 function plaza(mercado: string, n: Nombres): string {
@@ -100,6 +101,8 @@ export function fraseDeOrden(o: Orden, n: Nombres): string {
       return o.acepta ? 'Aceptar un contrato' : 'Rechazar un contrato';
     case 'portazgo':
       return `Portazgo de ${String(o.cantidad)} mrs entre ${n.comarca(o.desde)} y ${n.comarca(o.hasta)}`;
+    case 'entrar':
+      return `Entrar en la partida en ${n.comarca(o.comarca)}`;
     case 'letra-de-cambio':
       return `Letra de cambio: ${String(o.cantidad)} mrs para ${n.unidad(o.recua)}`;
     case 'tradicion':

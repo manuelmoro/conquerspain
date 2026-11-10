@@ -54,6 +54,7 @@ export const NOMBRE_DE_ORDEN: Readonly<Record<TipoDeOrden, string>> = {
   contrato: 'Proponer un contrato',
   'responder-contrato': 'Responder a un contrato',
   portazgo: 'Fijar un portazgo',
+  entrar: 'Entrar en la partida',
 };
 
 export const NOMBRE_DE_COMETIDO: Readonly<Record<Cometido, string>> = {
@@ -156,6 +157,11 @@ export const QUE_HACER: Readonly<Record<TipoDeOrden, QueHacer>> = {
     llega: null,
   },
   portazgo: { texto: 'Fija el portazgo de tus tramos en «Tu casa».', donde: 'casa', llega: null },
+  entrar: {
+    texto: 'Se entra desde «Unirse a una partida», con su código.',
+    donde: 'casa',
+    llega: null,
+  },
   ruta: {
     texto: 'Dale otro camino a la recua o al rebaño desde «Tus recuas y rebaños».',
     donde: 'unidades',

@@ -450,3 +450,63 @@ describe('partidas de temporada (T-104)', () => {
     }
   });
 });
+
+describe('entrar en una partida empezada (T-107)', () => {
+  it('con el código pide ofertas, elige, espera al turno y entra con amparo', async () => {
+    const e = await entorno();
+    const { id, codigo, cuentas } = await convocar(e, ['mesta', 'monjes']);
+    const creador = cuentas['mesta'] ?? '';
+    await e.pedir(creador, 'POST', `/convocatorias/${id}/sortear`);
+    for (const casa of ['mesta', 'monjes']) {
+      const cuenta = cuentas[casa] ?? '';
+      const v = vista(await e.pedir(cuenta, 'GET', `/convocatorias/${id}`));
+      await e.pedir(cuenta, 'POST', `/convocatorias/${id}/eleccion`, {
+        comarca: v.misOfertas[0]?.comarca,
+      });
+    }
+    const nueva = await e.cuenta('tardia');
+    // La primera casa que tenga sitio en el recorte de la partida.
+    let casa: string | null = null;
+    let ofertas: readonly OfertaDeOrigen[] = [];
+    for (const c of ['hortelanos', 'arrieros', 'canteros', 'salineros', 'ferrones', 'mercaderes']) {
+      const r = await e.pedir(nueva, 'POST', '/partidas/entrada/ofertas', { codigo, casa: c });
+      if (r.estado === 200) {
+        casa = c;
+        ofertas = (r.cuerpo as { ofertas: readonly OfertaDeOrigen[] }).ofertas;
+        break;
+      }
+      expect(codigoDe(r)).toBe('sin-sitio');
+    }
+    expect(casa).not.toBeNull();
+    const elegida = ofertas[0]?.comarca;
+    const r = await e.pedir(nueva, 'POST', '/partidas/entrada', { codigo, casa, comarca: elegida });
+    expect(r.estado, JSON.stringify(r.cuerpo)).toBe(200);
+    // Hasta que se resuelva el turno, aún no está en el estado.
+    expect(codigoDe(await e.pedir(nueva, 'GET', `/partidas/${id}/estado`))).toBe(
+      'entrada-en-espera',
+    );
+    expect(
+      codigoDe(
+        await e.pedir(nueva, 'POST', '/partidas/entrada', { codigo, casa, comarca: elegida }),
+      ),
+    ).toBe('ya-dentro');
+    const resuelto = await resolverUnTurno(
+      {
+        repo: e.repo,
+        reglas: TABLAS_DEL_JUEGO,
+        proveedorDeMundo: proveedorDeRecorte(mundoPeninsula(), TABLAS_DEL_JUEGO),
+        resolverTurno,
+        registro: new RegistroEnMemoria(),
+        ahora: () => AHORA,
+      },
+      id as IdPartida,
+      { ignorarHora: true },
+    );
+    expect(resuelto.tipo).toBe('resuelto');
+    const estado = await e.repo.ultimoEstado(id as IdPartida);
+    const jugador = estado?.jugadores[casa as IdJugador];
+    expect(jugador?.capital).toBe(elegida);
+    expect(jugador?.amparoHasta).toBeGreaterThan(1);
+    expect((await e.pedir(nueva, 'GET', `/partidas/${id}/estado`)).estado).toBe(200);
+  });
+});

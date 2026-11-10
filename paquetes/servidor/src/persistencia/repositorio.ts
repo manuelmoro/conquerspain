@@ -141,6 +141,8 @@ export interface Repositorio {
   /** Partidas activas cuya proxima resolucion ya ha llegado, las mas atrasadas primero. */
   partidasPorResolver(hasta: number, limite: number): Promise<readonly FilaDePartida[]>;
   detenerPartida(id: IdPartida, motivo: string): Promise<void>;
+  /** Quien entra en una partida empezada (T-107): su plaza, antes de que el motor lo de de alta. */
+  anyadirParticipante(id: IdPartida, participante: ParticipanteNuevo): Promise<void>;
   /** La temporada se cerro: sin mas turnos, y se sigue pudiendo consultar (T-104). */
   terminarPartida(id: IdPartida): Promise<void>;
   participantes(id: IdPartida): Promise<readonly Participante[]>;

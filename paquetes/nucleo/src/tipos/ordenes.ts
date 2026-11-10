@@ -13,7 +13,7 @@ import type {
   IdRecua,
 } from './ids.ts';
 import type { Recurso, Recursos } from './recursos.ts';
-import type { Estacion, Tradicion, TipoEdificio, TipoObraMayor } from './reglas.ts';
+import type { Casa, Estacion, Tradicion, TipoEdificio, TipoObraMayor } from './reglas.ts';
 
 export const ESTADOS_DE_ORDEN = [
   'pendiente',
@@ -52,6 +52,7 @@ export const TIPOS_DE_ORDEN = [
   'contrato',
   'responder-contrato',
   'portazgo',
+  'entrar',
 ] as const;
 export type TipoDeOrden = (typeof TIPOS_DE_ORDEN)[number];
 
@@ -347,6 +348,17 @@ export interface OrdenResponderContrato extends OrdenBase {
   readonly acepta: boolean;
 }
 
+/**
+ * Entra en la partida ya empezada (T-107): la da el servidor, no el jugador, que aun no esta en el
+ * estado. Su `jugador` es el identificador que tendra.
+ */
+export interface OrdenEntrar extends OrdenBase {
+  readonly tipo: 'entrar';
+  readonly casa: Casa;
+  readonly nombre: string;
+  readonly comarca: IdComarca;
+}
+
 /** Fija el portazgo de un tramo que el jugador mejoro (T-103). */
 export interface OrdenPortazgo extends OrdenBase {
   readonly tipo: 'portazgo';
@@ -383,4 +395,5 @@ export type Orden =
   | OrdenAnular
   | OrdenContrato
   | OrdenResponderContrato
-  | OrdenPortazgo;
+  | OrdenPortazgo
+  | OrdenEntrar;

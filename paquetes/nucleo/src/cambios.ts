@@ -22,6 +22,7 @@ import type {
   Acontecimiento,
   Cometido,
   Conocimiento,
+  EstadoJugador,
   EstadoMercado,
   EstadoTramo,
   Fuero,
@@ -62,6 +63,11 @@ export type Cambio =
       /** Un contrato cerrado sale del estado: ya se vio un turno y queda en la cronica (T-103). */
       readonly tipo: 'contrato-baja';
       readonly contrato: IdContrato;
+    }
+  | {
+      /** Entra un jugador en la partida empezada (T-107). */
+      readonly tipo: 'jugador-alta';
+      readonly jugador: EstadoJugador;
     }
   | {
       /** Turnos seguidos sin ordenes de un jugador (T-105). */
@@ -1698,6 +1704,25 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
     case 'contrato-baja': {
       const { [cambio.contrato]: _fuera, ...quedan } = ctx.estado.contratos ?? {};
       ctx.estado.contratos = quedan;
+      return;
+    }
+
+    case 'jugador-alta': {
+      if (ctx.estado.jugadores[cambio.jugador.id] !== undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `El jugador "${cambio.jugador.id}" ya esta en la partida: no entra dos veces.`,
+          { jugador: cambio.jugador.id },
+        );
+      }
+      ctx.estado.jugadores[cambio.jugador.id] = comoBorrador(cambio.jugador);
+      registrarSuceso(
+        ctx.sucesos,
+        ctx.fase,
+        'jugador.entra',
+        { de: cambio.jugador.id, amparoHasta: cambio.jugador.amparoHasta ?? ctx.turno },
+        { comarca: cambio.jugador.capital },
+      );
       return;
     }
 

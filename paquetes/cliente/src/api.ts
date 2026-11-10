@@ -12,6 +12,7 @@ import type {
   PanelDeMercado,
   PrevisionDeRuta,
   Recurso,
+  OfertaDeOrigen,
   VistaJugador,
 } from '@conquer/nucleo';
 
@@ -354,6 +355,24 @@ export class ClienteApi {
 
   unirse(codigo: string, casa: string) {
     return this.pedir<{ id: string }>('POST', '/convocatorias/unirse', { codigo, casa });
+  }
+
+  /** Ofertas para entrar en una partida ya empezada, con su codigo (T-107). */
+  ofertasParaEntrar(codigo: string, casa: string) {
+    return this.pedir<{ partida: string; ofertas: OfertaDeOrigen[] }>(
+      'POST',
+      '/partidas/entrada/ofertas',
+      { codigo, casa },
+    );
+  }
+
+  /** Entra en la partida empezada con el origen elegido: juega desde que se resuelva el turno. */
+  entrarEnPartida(codigo: string, casa: string, comarca: string) {
+    return this.pedir<{ partida: string; turno: number }>('POST', '/partidas/entrada', {
+      codigo,
+      casa,
+      comarca,
+    });
   }
 
   misConvocatorias() {

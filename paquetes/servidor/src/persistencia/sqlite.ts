@@ -41,6 +41,7 @@ import type {
   OpcionesDeLectura,
   OrdenGuardada,
   Participante,
+  ParticipanteNuevo,
   PartidaDeCuenta,
   Repositorio,
   ResolucionDeTurno,
@@ -298,6 +299,16 @@ export class RepositorioSqlite
       limite,
     );
     return filas.map(filaDePartida);
+  }
+
+  async anyadirParticipante(id: IdPartida, p: ParticipanteNuevo): Promise<void> {
+    this.ejecutar(
+      'INSERT INTO participante (partida, jugador, casa, cuenta) VALUES (?, ?, ?, ?)',
+      id,
+      p.jugador,
+      p.casa,
+      p.cuenta,
+    );
   }
 
   async terminarPartida(id: IdPartida): Promise<void> {

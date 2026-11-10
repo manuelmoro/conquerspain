@@ -518,5 +518,8 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
     case 'responder-contrato':
     case 'portazgo':
       return valido({ ...o, ...fijos, ...sinCola });
+    case 'entrar':
+      // Ya esta en la partida: entrar es cosa de la convocatoria, no una orden que se pueda dar.
+      return invalidos([error('tipo', 'ya estas en la partida: no se entra dos veces')]);
   }
 }

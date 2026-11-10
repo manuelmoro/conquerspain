@@ -464,6 +464,11 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
       ajeno: '{jugador} ha sido la primera casa en lograr «{hito}».',
     },
   ),
+  'jugador.entra': p(
+    'avisos',
+    '{de} entra en la partida en {comarca}, con amparo hasta {amparoHasta:fecha}: ni portazgo ni cortejo mientras dure.',
+    { publica: true },
+  ),
   // ——— Ausencia (T-105) ———
   'ausencia.aviso': aviso(
     'Llevas {turnos} turnos sin dar órdenes: el mayordomo lleva la casa. Si pasan {ausente} más, contarás como ausente y la lealtad de tus comarcas empezará a bajar.',
@@ -526,6 +531,9 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'obra-perdida': 'la obra se perdió sin terminar',
   'sin-respuesta': 'nadie respondió',
   'tramo-ajeno': 'ese tramo no lo mejoró tu casa',
+  'ya-en-la-partida': 'esa casa ya está en la partida',
+  'temporada-cerrada': 'la temporada ya se cerró',
+  'origen-no-ofrecido': 'ese origen ya no está libre o lejos de los demás',
   'comarca-desleal': 'la comarca está descontenta',
   'recua-desconocida': 'esa recua ya no existe',
   'recua-sin-plaza': 'la recua no está en una plaza',
@@ -659,6 +667,7 @@ export const NOMBRES_DE_ORDEN: Readonly<Record<string, string>> = {
   contrato: 'contrato',
   'responder-contrato': 'respuesta a un contrato',
   portazgo: 'portazgo',
+  entrar: 'entrada en la partida',
 };
 
 /** Palabras sueltas de los sucesos, por campo y valor. */

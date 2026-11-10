@@ -38,6 +38,7 @@ import type {
   CondicionesDeContrato,
   OrdenContrato,
   OrdenPortazgo,
+  OrdenEntrar,
   OrdenResponderContrato,
   ParadaDeRuta,
   ReglaDeMayordomo,
@@ -48,7 +49,7 @@ import type {
 import { TURNOS_POR_ANYO } from '../reglas/calendario.ts';
 import { ESTADOS_DE_ORDEN } from '../tipos/ordenes.ts';
 import { RECURSOS, RECURSOS_COMERCIABLES } from '../tipos/recursos.ts';
-import { ESTACIONES, TIPOS_DE_EDIFICIO, TIPOS_DE_OBRA_MAYOR } from '../tipos/reglas.ts';
+import { CASAS, ESTACIONES, TIPOS_DE_EDIFICIO, TIPOS_DE_OBRA_MAYOR } from '../tipos/reglas.ts';
 import { recursos, recursosParciales } from './comunes.ts';
 import type { CamposDe, ErrorValidacion, Resultado, Validador } from './validador.ts';
 import {
@@ -372,6 +373,14 @@ const responderContrato: Validador<OrdenResponderContrato> = objeto<OrdenRespond
   acepta: booleano(),
 });
 
+const entrar: Validador<OrdenEntrar> = objeto<OrdenEntrar>({
+  ...camposBase,
+  tipo: unoDe(['entrar'] as const),
+  casa: unoDe(CASAS),
+  nombre: texto({ minimo: 1, maximo: 60 }),
+  comarca: identificador<IdComarca>(),
+});
+
 const portazgo: Validador<OrdenPortazgo> = objeto<OrdenPortazgo>({
   ...camposBase,
   tipo: unoDe(['portazgo'] as const),
@@ -410,6 +419,7 @@ const validarForma = porTipo<Orden>({
   contrato,
   'responder-contrato': responderContrato,
   portazgo,
+  entrar,
 });
 
 /** Valida la forma de una orden que llega de fuera. No comprueba si sus referencias existen. */
@@ -461,6 +471,8 @@ function comarcasCitadas(orden: Orden): string[] {
       return orden.paradas.map((parada) => parada.comarca);
     case 'portazgo':
       return [orden.desde, orden.hasta];
+    case 'entrar':
+      return [orden.comarca];
     case 'contrato': {
       const c = orden.condiciones;
       if (c.tipo === 'obra') return c.hacia === null ? [c.comarca] : [c.comarca, c.hacia];

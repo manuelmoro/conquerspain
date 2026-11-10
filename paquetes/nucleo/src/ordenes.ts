@@ -20,7 +20,8 @@ export type OrdenDe<T extends TipoDeOrden> = Extract<Orden, { readonly tipo: T }
 
 function cabe(ctx: Contexto, orden: Orden): boolean {
   const jugador = ctx.estado.jugadores[orden.jugador];
-  if (jugador === undefined) return false;
+  // Quien entra en la partida aun no tiene almacen, y su orden no cuesta nada (T-107).
+  if (jugador === undefined) return orden.tipo === 'entrar';
   return RECURSOS.every((r) => jugador.almacen[r] - jugador.reservado[r] >= orden.coste[r]);
 }
 

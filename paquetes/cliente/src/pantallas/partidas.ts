@@ -1,7 +1,7 @@
 // La entrada al juego (ficha T-086 §4.2): mis partidas con lo que avisan, las convocatorias en marcha,
 // convocar o unirse eligiendo casa, y elegir origen entre sus ofertas.
 import { CASAS, POTENCIALES, TABLAS_DEL_JUEGO } from '@conquer/nucleo';
-import type { Casa } from '@conquer/nucleo';
+import type { Casa, OfertaDeOrigen } from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
 import type { ClienteApi, ConvocatoriaRecibida, PartidaDeLaLista } from '../api.ts';
@@ -45,6 +45,8 @@ const estado: {
   cargando: boolean;
   error: string | null;
   casa: Casa;
+  /** Las ofertas para entrar en una partida ya empezada, si el codigo era de una (T-107). */
+  entrada: { readonly codigo: string; readonly ofertas: readonly OfertaDeOrigen[] } | null;
 } = {
   modo: 'lista',
   partidas: null,
@@ -52,6 +54,7 @@ const estado: {
   cargando: false,
   error: null,
   casa: 'hortelanos',
+  entrada: null,
 };
 
 /** Al salir de la cuenta: la lista era de quien ha salido (T-091). */
@@ -376,11 +379,68 @@ function unirse(almacen: Almacen, api: ClienteApi): HTMLElement {
   );
   formulario.addEventListener('submit', (e) => {
     e.preventDefault();
-    void api.unirse(codigo.value.trim(), estado.casa).then((r) => {
+    const elCodigo = codigo.value.trim();
+    void api.unirse(elCodigo, estado.casa).then(async (r) => {
+      // Si la partida ya empezo, se entra igual: con un origen libre y amparo (T-107).
+      if (!r.ok && r.tipo === 'error' && r.codigo === 'convocatoria-cerrada') {
+        const ofertas = await api.ofertasParaEntrar(elCodigo, estado.casa);
+        if (ofertas.ok) {
+          estado.entrada = { codigo: elCodigo, ofertas: ofertas.datos.ofertas };
+          estado.error = null;
+          almacen.refrescar();
+          return;
+        }
+        despues(almacen, api, ofertas);
+        return;
+      }
       despues(almacen, api, r);
     });
   });
-  return el('section', { class: 'tarjeta' }, el('h2', {}, 'Unirse a una partida'), formulario);
+  const partes: (Node | string)[] = [el('h2', {}, 'Unirse a una partida'), formulario];
+  if (estado.entrada !== null) partes.push(entradaTardia(almacen, api, estado.entrada));
+  return el('section', { class: 'tarjeta' }, ...partes);
+}
+
+/** La partida ya empezo: se elige un origen libre y se entra al resolverse el turno (T-107). */
+function entradaTardia(
+  almacen: Almacen,
+  api: ClienteApi,
+  entrada: { readonly codigo: string; readonly ofertas: readonly OfertaDeOrigen[] },
+): HTMLElement {
+  const lista = el('ul', { class: 'lista ofertas' });
+  for (const o of entrada.ofertas) {
+    lista.append(
+      el(
+        'li',
+        { class: 'oferta' },
+        el(
+          'div',
+          { class: 'fila' },
+          el('strong', {}, o.nombre),
+          el('span', { class: 'etiqueta' }, nombreDePerfil(o.perfil)),
+        ),
+        el('p', {}, el('strong', {}, 'A favor: '), o.ventaja),
+        el('p', {}, el('strong', {}, 'En contra: '), o.limitacion),
+        boton(`Entrar en ${o.nombre}`, () => {
+          void api.entrarEnPartida(entrada.codigo, estado.casa, o.comarca).then((r) => {
+            if (r.ok) estado.entrada = null;
+            despues(almacen, api, r);
+          });
+        }),
+      ),
+    );
+  }
+  return el(
+    'div',
+    {},
+    el('h3', {}, 'Esta partida ya ha empezado'),
+    el(
+      'p',
+      { class: 'consejo' },
+      'Puedes entrar igual: elige dónde empieza tu casa, lejos de las demás. Entras al resolverse el turno, con veinte turnos de amparo: nadie te cobra portazgo ni corteja tus comarcas.',
+    ),
+    lista,
+  );
 }
 
 export function pantallaDePartidas(

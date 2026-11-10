@@ -76,16 +76,18 @@ function comarcaInicial(
   };
 }
 
-function jugadorInicial(
+export function jugadorInicial(
   participante: Participante,
   capital: IdComarca,
   almacen: Recursos,
   mundo: Mundo,
+  /** El turno en que entra: el 1 al fundar, el que toque si entra tarde (T-107). */
+  turno = 1,
 ): EstadoJugador {
   // Se conoce la capital, y de oidas las comarcas que la rodean y las que tienen feria: el
   // calendario de ferias es publico (T-059).
   const conocimiento: Record<string, Conocimiento> = {
-    [capital]: { nivel: 'propia', turnoUltimaNoticia: 1, datos: null },
+    [capital]: { nivel: 'propia', turnoUltimaNoticia: turno, datos: null },
   };
   const deOidas = [
     ...(mundo.vecinos[capital] ?? []),
@@ -93,7 +95,7 @@ function jugadorInicial(
   ];
   for (const id of deOidas) {
     if (conocimiento[id] !== undefined) continue;
-    conocimiento[id] = { nivel: 'oida', turnoUltimaNoticia: 1, datos: null };
+    conocimiento[id] = { nivel: 'oida', turnoUltimaNoticia: turno, datos: null };
   }
   return {
     id: participante.id,
@@ -220,11 +222,12 @@ function darleSuAlfoz(
  * Quien conoce las canyadas empieza con su canyada y el camino hasta ella exploradas, con la foto
  * del turno 1, y oye hablar de sus vecinas, igual que si una recua lo hubiera recorrido (T-058).
  */
-function conSuCanyada(
+export function conSuCanyada(
   jugador: EstadoJugador,
   mundo: Mundo,
   comarcas: Readonly<Record<string, EstadoComarca>>,
   reglas: TablasDeReglas,
+  turno = 1,
 ): EstadoJugador {
   if (!permisosDelJugador(jugador, reglas).conoceLasCanyadas) return jugador;
   const conocimiento: Record<string, Conocimiento> = { ...jugador.conocimiento };
@@ -235,14 +238,14 @@ function conSuCanyada(
     if (comarca === undefined || geografia === undefined) continue;
     conocimiento[id] = {
       nivel: 'explorada',
-      turnoUltimaNoticia: 1,
+      turnoUltimaNoticia: turno,
       datos: datosConocidosDe(comarca, geografia),
     };
   }
   for (const id of exploradas) {
     for (const vecina of [...(mundo.vecinos[id] ?? [])].sort(comparar)) {
       if (conocimiento[vecina] !== undefined) continue;
-      conocimiento[vecina] = { nivel: 'oida', turnoUltimaNoticia: 1, datos: null };
+      conocimiento[vecina] = { nivel: 'oida', turnoUltimaNoticia: turno, datos: null };
     }
   }
   return {

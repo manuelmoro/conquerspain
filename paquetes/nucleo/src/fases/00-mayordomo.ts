@@ -8,6 +8,7 @@
 //    misma alta y las mismas fases, y la cronica las marca como suyas.
 import { aplicar } from '../cambios.ts';
 import { contarAusencia } from './00-ausencia.ts';
+import { entradas } from './00-entradas.ts';
 import type { Contexto } from '../contexto.ts';
 import { activarPlan, cancelarOrden, darDeAlta, empezarOrden, ordenesVivas } from '../ordenes.ts';
 import type { OrdenDe } from '../ordenes.ts';
@@ -21,7 +22,9 @@ import { comparar, idsEnOrden } from '../utiles/orden.ts';
 import { validarOrdenEntrante } from '../validacion/validarOrden.ts';
 
 export function faseMayordomo(ctx: Contexto): void {
-  // Primero quien esta y quien no (T-105): el ausente que vuelve manda ya este turno.
+  // Primero quien entra (T-107), y despues quien esta y quien no (T-105): el ausente que vuelve
+  // manda ya este turno.
+  entradas(ctx);
   contarAusencia(ctx);
   activarPlan(ctx);
   for (const orden of ordenesVivas(ctx, 'mayordomo')) cambiarReglas(ctx, orden);

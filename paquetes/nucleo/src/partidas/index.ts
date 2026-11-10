@@ -14,3 +14,5 @@ export { prepararPartida, primeraOferta } from './preparar.ts';
 export type { PartidaPreparada, PeticionDePreparacion } from './preparar.ts';
 export { faltasDelRecorte, mundoCon, recortarMundo, requisitosDe } from './recorte.ts';
 export type { Requisito, ResultadoDeRecorte } from './recorte.ts';
+export { entradaDe, impedimentoDeEntrada, ofertasDeEntrada } from './entrada.ts';
+export type { MotivoSinEntrada } from './entrada.ts';

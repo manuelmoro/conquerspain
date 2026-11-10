@@ -1,5 +1,7 @@
 // El alta de partidas (ficha T-065 §4.1 y §4.2): convocar, unirse, sortear, elegir y fundar, sobre
 // el preparador y el fundador puros de T-049. Aqui solo se decide quien puede que y se guarda.
+import { entrarEnPartida, ofertasParaEntrar } from './entrada.ts';
+import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
 import { randomBytes } from 'node:crypto';
 
 import {
@@ -170,6 +172,24 @@ export class ServicioDeAltas {
       await this.nombreDeCuenta(cuenta),
     );
     return { id, codigo };
+  }
+
+  /** Las ofertas para entrar en una partida ya empezada, con su codigo (T-107). */
+  ofertasParaEntrar(
+    cuenta: string,
+    cuerpo: Record<string, unknown>,
+    proveedorDeMundo: ProveedorDeMundo,
+  ): ReturnType<typeof ofertasParaEntrar> {
+    return ofertasParaEntrar({ ...this.dep, proveedorDeMundo }, cuenta, cuerpo);
+  }
+
+  /** Entra en una partida ya empezada con el origen elegido (T-107). */
+  entrarEnPartida(
+    cuenta: string,
+    cuerpo: Record<string, unknown>,
+    proveedorDeMundo: ProveedorDeMundo,
+  ): ReturnType<typeof entrarEnPartida> {
+    return entrarEnPartida({ ...this.dep, proveedorDeMundo }, cuenta, cuerpo);
   }
 
   async unirse(cuenta: string, cuerpo: Record<string, unknown>): Promise<{ id: string }> {

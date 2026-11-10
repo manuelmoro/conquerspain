@@ -35,6 +35,8 @@ export const CODIGOS_DE_API = [
   'credenciales-invalidas',
   'correo-sin-confirmar',
   'solo-en-pruebas',
+  'entrada-en-espera',
+  'sin-sitio',
   'error-interno',
 ] as const;
 
@@ -75,6 +77,8 @@ const ESTADO_HTTP: Readonly<Record<CodigoDeApi, number>> = {
   'credenciales-invalidas': 401,
   'correo-sin-confirmar': 403,
   'solo-en-pruebas': 403,
+  'entrada-en-espera': 409,
+  'sin-sitio': 409,
   'error-interno': 500,
 };
 

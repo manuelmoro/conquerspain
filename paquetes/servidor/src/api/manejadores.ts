@@ -190,6 +190,12 @@ export function crearApi(
     if (estado === null) {
       throw new Error(`La partida "${id}" no tiene ningun estado guardado.`);
     }
+    if (estado.jugadores[jugador] === undefined) {
+      throw new ErrorDeApi(
+        'entrada-en-espera',
+        'Entras en la partida al resolverse este turno: vuelve entonces y ya tendras tu casa.',
+      );
+    }
     const mundo = dep.proveedorDeMundo(fila, estado);
     return { fila, jugador, id, estado, mundo, vista: vistaDeJugador(estado, jugador, mundo) };
   }
@@ -200,8 +206,9 @@ export function crearApi(
       filas.map(async (p) => {
         // Lo que la lista avisa (T-086): abastecimiento, puesto y si ya dio ordenes este turno.
         const estado = await dep.repo.ultimoEstado(p.partida.id);
+        // Quien acaba de pedir entrar aun no esta en el estado: sin resumen hasta el turno.
         const resumen =
-          estado === null
+          estado === null || estado.jugadores[p.jugador] === undefined
             ? null
             : resumenParaLaLista(
                 estado,
@@ -720,6 +727,30 @@ export function crearApi(
             manejador: privada(async (ctx) => ({
               estado: 200,
               datos: await altas.unirse(ctx.cuenta, objetoJson(ctx.peticion.cuerpo)),
+            })),
+          },
+          {
+            metodo: 'POST',
+            patron: '/partidas/entrada/ofertas',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: await altas.ofertasParaEntrar(
+                ctx.cuenta,
+                objetoJson(ctx.peticion.cuerpo),
+                dep.proveedorDeMundo,
+              ),
+            })),
+          },
+          {
+            metodo: 'POST',
+            patron: '/partidas/entrada',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: await altas.entrarEnPartida(
+                ctx.cuenta,
+                objetoJson(ctx.peticion.cuerpo),
+                dep.proveedorDeMundo,
+              ),
             })),
           },
           {
