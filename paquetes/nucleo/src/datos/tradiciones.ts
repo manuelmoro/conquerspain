@@ -369,9 +369,9 @@ export const TRADICIONES: Readonly<Record<string, DatosTradicion>> = {
     criterio: 'abrir',
     nombre: 'Banca',
     descripcion:
-      'Prestar maravedís a otros jugadores con interés, con contrato que el motor cumple.',
+      'Prestas aunque quien pide tenga poco crédito, y si no te devuelve al plazo cobras también de lo que lleven sus recuas.',
     nota: 'Los banqueros de Medina y Burgos prestaban a nobles, concejos y al propio rey: el dinero de la lana acabó financiando imperios.',
-    pendienteDe: 'T-103',
+    permisos: { banca: true },
   }),
   'mercaderes-compania': tradicion({
     casa: 'mercaderes',

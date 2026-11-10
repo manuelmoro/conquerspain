@@ -4,6 +4,7 @@
 import type { Cometido, CargaFiscal, Fuero } from './estado.ts';
 import type {
   IdComarca,
+  IdContrato,
   IdJugador,
   IdMercado,
   IdObra,
@@ -48,6 +49,9 @@ export const TIPOS_DE_ORDEN = [
   'trasladar-corte',
   'cola',
   'anular',
+  'contrato',
+  'responder-contrato',
+  'portazgo',
 ] as const;
 export type TipoDeOrden = (typeof TIPOS_DE_ORDEN)[number];
 
@@ -290,6 +294,67 @@ export interface OrdenAnular extends OrdenBase {
 /** Los estados de una orden que se pueden anular: los que aun no han empezado. */
 export const ESTADOS_ANULABLES: readonly EstadoDeOrden[] = ['en cola', 'en espera', 'programada'];
 
+/** Que parte hace lo principal de un contrato (entregar, prestar, vender, construir, conceder). */
+export type ParteActiva = 'propone' | 'recibe';
+
+/** Las condiciones de un contrato propuesto, segun su tipo (ficha T-103 §3.3). */
+export type CondicionesDeContrato =
+  | {
+      readonly tipo: 'entrega';
+      readonly activa: ParteActiva;
+      readonly recurso: Recurso;
+      readonly cantidad: number;
+      /** Comarca de quien recibe la mercancia. */
+      readonly comarca: IdComarca;
+      readonly precio: number;
+    }
+  | {
+      readonly tipo: 'prestamo';
+      readonly activa: ParteActiva;
+      readonly cantidad: number;
+      readonly devolver: number;
+    }
+  | {
+      readonly tipo: 'aperos';
+      readonly activa: ParteActiva;
+      readonly comarca: IdComarca;
+      readonly niveles: number;
+      readonly precio: number;
+    }
+  | {
+      readonly tipo: 'obra';
+      readonly activa: ParteActiva;
+      readonly comarca: IdComarca;
+      readonly obra: TipoObraMayor;
+      readonly hacia: IdComarca | null;
+      readonly precio: number;
+    }
+  | { readonly tipo: 'paso'; readonly activa: ParteActiva; readonly precio: number };
+
+/** Propone un contrato a otra casa (T-103). */
+export interface OrdenContrato extends OrdenBase {
+  readonly tipo: 'contrato';
+  readonly con: IdJugador;
+  readonly plazo: number;
+  readonly penalizacion: number;
+  readonly condiciones: CondicionesDeContrato;
+}
+
+/** Acepta o rechaza un contrato que le han propuesto (T-103). */
+export interface OrdenResponderContrato extends OrdenBase {
+  readonly tipo: 'responder-contrato';
+  readonly contrato: IdContrato;
+  readonly acepta: boolean;
+}
+
+/** Fija el portazgo de un tramo que el jugador mejoro (T-103). */
+export interface OrdenPortazgo extends OrdenBase {
+  readonly tipo: 'portazgo';
+  readonly desde: IdComarca;
+  readonly hasta: IdComarca;
+  readonly cantidad: number;
+}
+
 export interface OrdenTrasladarCorte extends OrdenBase {
   readonly tipo: 'trasladar-corte';
   readonly comarca: IdComarca;
@@ -315,4 +380,7 @@ export type Orden =
   | OrdenMayordomo
   | OrdenTrasladarCorte
   | OrdenCola
-  | OrdenAnular;
+  | OrdenAnular
+  | OrdenContrato
+  | OrdenResponderContrato
+  | OrdenPortazgo;

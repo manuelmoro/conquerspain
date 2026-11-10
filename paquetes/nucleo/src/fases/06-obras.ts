@@ -32,10 +32,17 @@ import {
   impedimentoDeConstruir,
   impedimentoDeObraMayor,
 } from '../reglas/obras.ts';
+import { puedeCobrarPortazgo } from '../reglas/portazgos.ts';
 import { impedimentoDeRoturar, potencialesTrasRoturar } from '../reglas/roturar.ts';
 import { claveDeTramo, tramoEntre } from '../reglas/ruta.ts';
 import { registrarSuceso } from '../sucesos.ts';
-import type { EstadoComarca, EstadoJugador, Obra, TipoDeObra } from '../tipos/estado.ts';
+import type {
+  EstadoComarca,
+  EstadoJugador,
+  EstadoTramo,
+  Obra,
+  TipoDeObra,
+} from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
 import { nuevoId } from '../tipos/ids.ts';
 import type { Orden } from '../tipos/ordenes.ts';
@@ -383,7 +390,9 @@ function esDePiedra(ctx: Contexto, obra: Obra): boolean {
 
 function avanzarObra(ctx: Contexto, id: string): void {
   const obra = ctx.estado.obras[id];
-  const jugador = obra === undefined ? undefined : ctx.estado.jugadores[obra.jugador];
+  // La obra por contrato la levanta el cantero: su material y sus ventajas de casa (T-103).
+  const jugador =
+    obra === undefined ? undefined : ctx.estado.jugadores[obra.porContrato ?? obra.jugador];
   if (obra === undefined || jugador === undefined) return;
   const casa = modificadoresDelJugador(jugador, ctx.reglas);
 
@@ -427,7 +436,7 @@ function avanzarObra(ctx: Contexto, id: string): void {
         ctx.fase,
         'obra.detenida',
         { obra: obra.id, que: obra.que, falta, necesita: cuota[falta] },
-        { jugador: obra.jugador, comarca: obra.comarca },
+        { jugador: jugador.id, comarca: obra.comarca },
       );
       return;
     }
@@ -435,7 +444,7 @@ function avanzarObra(ctx: Contexto, id: string): void {
       if (cuota[recurso] > 0) {
         aplicar(ctx, {
           tipo: 'recurso',
-          jugador: obra.jugador,
+          jugador: jugador.id,
           recurso,
           delta: -cuota[recurso],
           motivo: `obra ${obra.id}`,
@@ -504,13 +513,17 @@ function terminarObraMayor(ctx: Contexto, obra: Obra, tipo: TipoObraMayor): void
     const clave = claveDeTramo(obra.comarca, obra.hacia);
     const antes = ctx.estado.caminos[clave];
     const calidad = antes?.calidad ?? (camino?.calzadaRomana === true ? 'carretero' : 'vereda');
+    const mejora: EstadoTramo =
+      tipo === 'puente'
+        ? { calidad, puente: true }
+        : { calidad: 'calzada', puente: antes?.puente ?? false };
+    // El tramo apunta a quien lo mejoro solo si puede cobrar por el; empieza sin portazgo (T-103).
     aplicar(ctx, {
       tipo: 'tramo',
       clave,
-      tramo:
-        tipo === 'puente'
-          ? { calidad, puente: true }
-          : { calidad: 'calzada', puente: antes?.puente ?? false },
+      tramo: puedeCobrarPortazgo(ctx.estado, obra.jugador, ctx.reglas)
+        ? { ...mejora, duenyo: obra.jugador, portazgo: 0 }
+        : mejora,
     });
   } else {
     aplicar(ctx, { tipo: 'obra-mayor-terminada', comarca: obra.comarca, obra: tipo });

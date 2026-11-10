@@ -12,6 +12,7 @@ export const NOMBRES_DE_FASE = [
   'cometidos',
   'obras',
   'mercado',
+  'contratos',
   'territorio',
   'poblacion',
   'acontecimientos',

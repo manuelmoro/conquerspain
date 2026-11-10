@@ -98,6 +98,10 @@ function apuntarElTurno(ctx: Contexto, jugador: EstadoJugador): void {
     turnosConEscasez: antes.turnosConEscasez + (jugador.escasez ? 1 : 0),
     turnosDeDespensaEstable: despensaEstable ? antes.turnosDeDespensaEstable + 1 : 0,
     conocidasAlEmpezar: antes.conocidasAlEmpezar,
+    // Lo lleva el credito al cumplir un contrato (T-103): aqui solo se conserva.
+    ...(antes.contratosCumplidos === undefined
+      ? {}
+      : { contratosCumplidos: antes.contratosCumplidos }),
   };
   aplicar(ctx, { tipo: 'registro', jugador: jugador.id, registro });
 }

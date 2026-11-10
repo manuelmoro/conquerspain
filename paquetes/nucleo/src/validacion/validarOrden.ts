@@ -3,6 +3,7 @@
 import { CARGAS_FISCALES, COMETIDOS, FUEROS } from '../tipos/estado.ts';
 import type {
   IdComarca,
+  IdContrato,
   IdJugador,
   IdMercado,
   IdObra,
@@ -34,6 +35,10 @@ import type {
   OrdenTrasladarCorte,
   OrdenAnular,
   OrdenCola,
+  CondicionesDeContrato,
+  OrdenContrato,
+  OrdenPortazgo,
+  OrdenResponderContrato,
   ParadaDeRuta,
   ReglaDeMayordomo,
   AccionDeMayordomo,
@@ -309,6 +314,72 @@ const anular: Validador<OrdenAnular> = objeto<OrdenAnular>({
   orden: identificador<IdOrden>(),
 });
 
+// ——— Contratos y portazgos (T-103) ————————————————————————————————————————————
+
+const activa = unoDe(['propone', 'recibe'] as const);
+const MARAVEDIS_MAXIMOS = 100_000;
+
+const condiciones: Validador<CondicionesDeContrato> = porTipo<CondicionesDeContrato>({
+  entrega: objeto({
+    tipo: unoDe(['entrega'] as const),
+    activa,
+    recurso: unoDe(RECURSOS_COMERCIABLES),
+    cantidad: entero({ minimo: 1, maximo: 10_000 }),
+    comarca: identificador<IdComarca>(),
+    precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
+  prestamo: objeto({
+    tipo: unoDe(['prestamo'] as const),
+    activa,
+    cantidad: entero({ minimo: 1, maximo: MARAVEDIS_MAXIMOS }),
+    devolver: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
+  aperos: objeto({
+    tipo: unoDe(['aperos'] as const),
+    activa,
+    comarca: identificador<IdComarca>(),
+    niveles: entero({ minimo: 1, maximo: 4 }),
+    precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
+  obra: objeto({
+    tipo: unoDe(['obra'] as const),
+    activa,
+    comarca: identificador<IdComarca>(),
+    obra: unoDe(TIPOS_DE_OBRA_MAYOR),
+    hacia: oNulo(identificador<IdComarca>()),
+    precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
+  paso: objeto({
+    tipo: unoDe(['paso'] as const),
+    activa,
+    precio: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  }),
+});
+
+const contrato: Validador<OrdenContrato> = objeto<OrdenContrato>({
+  ...camposBase,
+  tipo: unoDe(['contrato'] as const),
+  con: identificador<IdJugador>(),
+  plazo: entero({ minimo: 1 }),
+  penalizacion: enteroNoNegativo(MARAVEDIS_MAXIMOS),
+  condiciones,
+});
+
+const responderContrato: Validador<OrdenResponderContrato> = objeto<OrdenResponderContrato>({
+  ...camposBase,
+  tipo: unoDe(['responder-contrato'] as const),
+  contrato: identificador<IdContrato>(),
+  acepta: booleano(),
+});
+
+const portazgo: Validador<OrdenPortazgo> = objeto<OrdenPortazgo>({
+  ...camposBase,
+  tipo: unoDe(['portazgo'] as const),
+  desde: identificador<IdComarca>(),
+  hasta: identificador<IdComarca>(),
+  cantidad: enteroNoNegativo(1000),
+});
+
 const trasladarCorte: Validador<OrdenTrasladarCorte> = objeto<OrdenTrasladarCorte>({
   ...camposBase,
   tipo: unoDe(['trasladar-corte'] as const),
@@ -336,6 +407,9 @@ const validarForma = porTipo<Orden>({
   'trasladar-corte': trasladarCorte,
   cola,
   anular,
+  contrato,
+  'responder-contrato': responderContrato,
+  portazgo,
 });
 
 /** Valida la forma de una orden que llega de fuera. No comprueba si sus referencias existen. */
@@ -385,6 +459,13 @@ function comarcasCitadas(orden: Orden): string[] {
       return [orden.comarca];
     case 'ruta':
       return orden.paradas.map((parada) => parada.comarca);
+    case 'portazgo':
+      return [orden.desde, orden.hasta];
+    case 'contrato': {
+      const c = orden.condiciones;
+      if (c.tipo === 'obra') return c.hacia === null ? [c.comarca] : [c.comarca, c.hacia];
+      return c.tipo === 'entrega' || c.tipo === 'aperos' ? [c.comarca] : [];
+    }
     default:
       return [];
   }

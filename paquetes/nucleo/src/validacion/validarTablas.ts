@@ -25,6 +25,7 @@ import type {
   DatosRecorte,
   DatosCasa,
   DatosCometidos,
+  DatosContratos,
   DatosObraMayor,
   DatosObras,
   DatosConsumo,
@@ -156,6 +157,7 @@ const camposDePermisos: CamposDe<Permisos> = {
   cartaPuebla: booleano(),
   corresponsales: booleano(),
   conoceLasCanyadas: booleano(),
+  banca: booleano(),
 };
 const validarPermisos = objeto<Permisos>(camposDePermisos);
 
@@ -576,6 +578,16 @@ const validarArranque: Validador<DatosArranque> = objeto<DatosArranque>({
   recorte: validarRecorte,
 });
 
+const validarContratos: Validador<DatosContratos> = objeto<DatosContratos>({
+  creditoPorCumplir: enteroNoNegativo(100),
+  creditoPorIncumplir: enteroNoNegativo(100),
+  creditoBajo: entero({ minimo: 0, maximo: 100 }),
+  influenciaConCreditoBajoMil: milesimas(0, 1000),
+  turnosParaResponder: entero({ minimo: 1, maximo: 24 }),
+  plazoMaximo: entero({ minimo: 1, maximo: 240 }),
+  portazgoMaximo: enteroNoNegativo(1000),
+});
+
 const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   version: entero({ minimo: 1 }),
   recursos: registroCompleto(RECURSOS, validarRecurso),
@@ -601,6 +613,7 @@ const validarForma: Validador<TablasDeReglas> = objeto<TablasDeReglas>({
   arranque: validarArranque,
   acontecimientos: validarAcontecimientos,
   ganaderia: validarGanaderia,
+  contratos: validarContratos,
 });
 
 /** Valida las tablas de equilibrio y su coherencia con la version de reglas del motor. */

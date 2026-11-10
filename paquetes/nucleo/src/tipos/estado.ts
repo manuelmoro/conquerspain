@@ -11,6 +11,7 @@ import type {
   IdRebanyo,
   IdRecua,
 } from './ids.ts';
+import type { Contrato } from './contratos.ts';
 import type { Recurso, Recursos } from './recursos.ts';
 import type {
   CalidadCamino,
@@ -98,6 +99,8 @@ export interface RegistroDeJugador {
   readonly turnosConEscasez: number;
   /** Turnos seguidos sin perder pan y con reserva: para el hito de la despensa. */
   readonly turnosDeDespensaEstable: number;
+  /** Contratos que cumplio (T-103): para el hito de buen nombre. Sin poner, ninguno. */
+  readonly contratosCumplidos?: number;
   /**
    * Comarcas que el jugador ya conocia al empezar sin haberlas explorado (la canyada de la Mesta,
    * T-058): no cuentan como exploradas ni para el prestigio ni para los hitos.
@@ -284,12 +287,18 @@ export interface Obra {
   readonly entregado: Recursos;
   readonly costeTotal: Recursos;
   readonly abandonada: boolean;
+  /** La levanta por contrato otra casa (T-103): pone el material y sus ventajas de casa. */
+  readonly porContrato?: IdJugador;
 }
 
 /** Lo que se ha construido en un tramo de camino. */
 export interface EstadoTramo {
   readonly calidad: CalidadCamino;
   readonly puente: boolean;
+  /** Quien lo mejoro (puente o calzada) y puede cobrar portazgo por la mejora (T-103). */
+  readonly duenyo?: IdJugador;
+  /** Maravedis por paso que cobra su dueno a las recuas y rebanyos ajenos; 0 o sin poner, nada. */
+  readonly portazgo?: number;
 }
 
 // ——— Mercado ———————————————————————————————————————————————————————————————
@@ -388,6 +397,8 @@ export interface EstadoPartida {
   readonly huellaTurnoAnterior: string | null;
   /** Hito → jugador que lo logro el primero de la partida. */
   readonly primicias: Readonly<Partial<Record<Hito, IdJugador>>>;
+  /** Contratos entre jugadores (T-103), por identificador. Sin poner, ninguno. */
+  readonly contratos?: Readonly<Record<string, Contrato>>;
   /** La clasificacion del ultimo turno resuelto, del primero al ultimo. */
   readonly clasificacion: readonly PuestoEnLaClasificacion[];
 }

@@ -12,6 +12,7 @@ import { faseConsumo } from './fases/03-consumo.ts';
 import { faseMovimiento } from './fases/04-movimiento.ts';
 import { faseCometidos } from './fases/05-cometidos.ts';
 import { faseObras } from './fases/06-obras.ts';
+import { faseContratos } from './fases/07-contratos.ts';
 import { faseMercado } from './fases/07-mercado.ts';
 import { faseTerritorio } from './fases/08-territorio.ts';
 import { fasePoblacion } from './fases/09-poblacion.ts';
@@ -44,6 +45,7 @@ export const FASES: readonly (readonly [NombreFase, Fase])[] = [
   ['cometidos', faseCometidos],
   ['obras', faseObras],
   ['mercado', faseMercado],
+  ['contratos', faseContratos],
   ['territorio', faseTerritorio],
   ['poblacion', fasePoblacion],
   ['acontecimientos', faseAcontecimientos],

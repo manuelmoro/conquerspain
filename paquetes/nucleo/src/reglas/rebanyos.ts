@@ -3,6 +3,8 @@
 // Funciones puras: el paso, por donde puede ir, cuantas cabezas pierde y de que puertos hay que
 // avisarle. La fase 4 las aplica.
 import { permisosDelJugador } from './casas/index.ts';
+import { tienePasoEn } from './contratos.ts';
+import type { Contrato } from '../tipos/contratos.ts';
 import type { EstadoComarca, EstadoJugador, Rebanyo } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
 import type { Camino, Mundo } from '../tipos/mundo.ts';
@@ -29,17 +31,19 @@ export function pasoDeRebanyo(
 
 /**
  * Un rebanyo entra en una comarca sin duenyo o propia por cualquier camino; en la de otro jugador,
- * solo por una canyada y solo si su casa tiene paso franco (la Mesta). Hasta que T-103 traiga
- * portazgos y acuerdos, esa es toda la regla de tierra ajena.
+ * por una canyada si su casa tiene paso franco (la Mesta), o por cualquier camino si tiene un
+ * contrato de paso vigente con el dueno (T-103).
  */
 export function puedeEntrar(
   camino: Camino,
   destino: EstadoComarca | undefined,
   jugador: EstadoJugador,
   reglas: TablasDeReglas,
+  contratos: readonly Contrato[],
 ): boolean {
   if (destino === undefined || destino.duenyo === null || destino.duenyo === jugador.id)
     return true;
+  if (tienePasoEn(contratos, destino.duenyo, jugador.id)) return true;
   return camino.canyada !== null && permisosDelJugador(jugador, reglas).pasoFrancoPorCanyada;
 }
 
@@ -48,9 +52,10 @@ export function opcionesDeRutaDeRebanyo(
   comarcas: Readonly<Record<string, EstadoComarca>>,
   jugador: EstadoJugador,
   reglas: TablasDeReglas,
+  contratos: readonly Contrato[],
 ): OpcionesDeRuta {
   return {
-    permite: (camino, hacia) => puedeEntrar(camino, comarcas[hacia], jugador, reglas),
+    permite: (camino, hacia) => puedeEntrar(camino, comarcas[hacia], jugador, reglas, contratos),
     pesoMil: (camino) => (camino.canyada === null ? MIL : reglas.ganaderia.costeCanyadaMil),
   };
 }

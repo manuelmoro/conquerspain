@@ -363,6 +363,7 @@ export function pantallaDeMercado(
     comarca: nombre,
     unidad: (id: string) => unidades.find((u) => u.id === id)?.nombre ?? 'una recua',
     orden: () => undefined,
+    jugador: (id: string) => vista?.casas.find((c) => c.id === id)?.nombre ?? 'otra casa',
   };
   const dadas = almacen.estado.enviadas.map((o) => o.orden).filter((o) => o.tipo === 'mercado');
   const vivas = (vista?.ordenes ?? []).filter((o) => o.tipo === 'mercado');

@@ -98,6 +98,12 @@ function sucesosDelMotor(): Map<string, Set<string>> {
       const claves = clavesDeDatos(entera);
       for (const tipo of entera.matchAll(/'([a-z]+\.[a-z-]+)'/g)) apuntar(tipo[1] ?? '', claves);
     }
+    // Los contratos cuentan lo mismo a las dos partes con su propio ayudante (fases/07-contratos).
+    for (const coincidencia of texto.matchAll(/contarALasDos\(ctx/g)) {
+      const entera = llamada(texto, coincidencia.index + 'contarALasDos'.length);
+      const claves = ['contrato', 'acuerdo', 'de', 'rol', ...clavesDeDatos(entera)];
+      for (const tipo of entera.matchAll(/'([a-z]+\.[a-z-]+)'/g)) apuntar(tipo[1] ?? '', claves);
+    }
   }
   // Los que se componen en tiempo de ejecucion: la escasez y los acontecimientos.
   const escasez = tipos.get('escasez.empieza') ?? new Set(['seguidas']);

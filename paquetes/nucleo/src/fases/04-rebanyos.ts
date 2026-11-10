@@ -26,7 +26,10 @@ import {
   rutaPorParadas,
   tramoEntre,
 } from '../reglas/ruta.ts';
+import { mejorasDelViaje } from '../reglas/portazgos.ts';
 import { registrarSuceso } from '../sucesos.ts';
+import type { Contrato } from '../tipos/contratos.ts';
+import { cobrarPortazgos, maravedisLibres } from './04-portazgos.ts';
 import type { Rebanyo } from '../tipos/estado.ts';
 import { LONGITUD_MAXIMA_DE_RUTA } from '../tipos/estado.ts';
 import type { IdComarca } from '../tipos/ids.ts';
@@ -140,7 +143,7 @@ function fijarRuta(ctx: Contexto, orden: OrdenDe<'ruta'>): void {
     transitables,
     ctx.reglas,
     ctx.estado.caminos,
-    opcionesDeRutaDeRebanyo(ctx.estado.comarcas, jugador, ctx.reglas),
+    opcionesDeRutaDeRebanyo(ctx.estado.comarcas, jugador, ctx.reglas, contratosDe(ctx)),
   );
   if (ruta === null) {
     dejarEnEspera(ctx, orden, 'sin-ruta-conocida');
@@ -180,14 +183,28 @@ function moverRebanyo(ctx: Contexto, id: string): void {
     ctx.reglas,
   );
 
+  const contratos = contratosDe(ctx);
+  const salida = rebanyo.situacion;
+  // El rebanyo paga los portazgos del almacen; los que no le llegan, por el camino viejo (T-103).
+  const mejoras = mejorasDelViaje(
+    ctx.estado,
+    rebanyo.situacion,
+    rebanyo.ruta,
+    jugador,
+    maravedisLibres(jugador),
+    ctx.reglas,
+  );
   // Un tramo que no existe, que la nieve o una riada cierran o que cruza tierra ajena sin permiso
   // esta cerrado para el rebanyo.
   const costeDe = (a: IdComarca, b: IdComarca) => {
     const camino = tramoEntre(ctx.mundo, a, b);
-    if (camino === undefined || !puedeEntrar(camino, ctx.estado.comarcas[b], jugador, ctx.reglas)) {
+    if (
+      camino === undefined ||
+      !puedeEntrar(camino, ctx.estado.comarcas[b], jugador, ctx.reglas, contratos)
+    ) {
       return 'cerrado' as const;
     }
-    return costeDeTramoMil(camino, ctx.estacional, ctx.reglas, ctx.estado.caminos);
+    return costeDeTramoMil(camino, ctx.estacional, ctx.reglas, mejoras);
   };
   const avance = avanzar(rebanyo.situacion, rebanyo.ruta, false, pasoMil, costeDe);
   aplicar(ctx, {
@@ -196,6 +213,7 @@ function moverRebanyo(ctx: Contexto, id: string): void {
     situacion: avance.situacion,
     ruta: avance.ruta,
   });
+  cobrarPortazgos(ctx, { rebanyo: rebanyo.id }, jugador, salida, avance, mejoras);
 
   const donde2 = { jugador: rebanyo.jugador };
   if (avance.retrocede && avance.cerrado !== null) {
@@ -238,7 +256,13 @@ function moverRebanyo(ctx: Contexto, id: string): void {
     const camino = tramoEntre(ctx.mundo, avance.cerrado.desde, avance.cerrado.hasta);
     const ajena =
       camino !== undefined &&
-      !puedeEntrar(camino, ctx.estado.comarcas[avance.cerrado.hasta], jugador, ctx.reglas);
+      !puedeEntrar(
+        camino,
+        ctx.estado.comarcas[avance.cerrado.hasta],
+        jugador,
+        ctx.reglas,
+        contratos,
+      );
     registrarSuceso(
       ctx.sucesos,
       ctx.fase,
@@ -397,4 +421,9 @@ function contarPasto(ctx: Contexto, rebanyo: Rebanyo, pastoMil: number): void {
     motivo: 'sin pasto',
   });
   if (rebanyo.cabezas - perdidas <= 0) aplicar(ctx, { tipo: 'rebanyo-baja', rebanyo: rebanyo.id });
+}
+
+/** Los contratos de la partida, para ver quien tiene paso en tierra ajena (T-103). */
+function contratosDe(ctx: Contexto): readonly Contrato[] {
+  return Object.values(ctx.estado.contratos ?? {});
 }

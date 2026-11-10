@@ -306,7 +306,7 @@ export class Tablero {
       this.transitables(),
       this.reglas,
       this.vista.caminos,
-      opcionesDeRutaDeRebanyo(comarcas, this.yo, this.reglas),
+      opcionesDeRutaDeRebanyo(comarcas, this.yo, this.reglas, this.vista.contratos),
     );
   }
 

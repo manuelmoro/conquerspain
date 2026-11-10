@@ -48,6 +48,6 @@ describe('la clasificación pública', () => {
     ]);
     expect(JSON.stringify(c.filas)).not.toContain('villa');
     expect(c.porLograr.some((h) => h.hito === 'villa')).toBe(true);
-    expect(c.porLograr.some((h) => h.hito === 'buen-nombre')).toBe(false);
+    expect(c.porLograr.some((h) => h.hito === 'buen-nombre')).toBe(true);
   });
 });

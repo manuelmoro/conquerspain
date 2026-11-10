@@ -55,6 +55,7 @@ const nombres = {
   comarca: (id: string) => ({ burgos: 'Alfoz de Burgos', odra: 'Odra-Pisuerga' })[id] ?? id,
   unidad: () => 'Recua de Burgos',
   orden: (id: string) => (id === 'o-1' ? compra : undefined),
+  jugador: (id: string) => (id === 'mesta' ? 'La Mesta' : id),
 };
 
 describe('las órdenes en palabras', () => {

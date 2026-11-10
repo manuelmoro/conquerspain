@@ -280,6 +280,82 @@ export const PLANTILLAS: Readonly<Record<string, PlantillaDeSuceso>> = {
     '{recua} cobra la letra: {cantidad} maravedís, con {comision} de comisión.',
   ),
 
+  // ——— Contratos, crédito y portazgos (T-103) ———
+  'contrato.propuesto': {
+    segun: 'rol',
+    casos: {
+      propone: suceso(
+        'Propones a {de} un contrato {acuerdo}, con plazo hasta {plazo:fecha}: si no responde pronto, caduca.',
+      ),
+      recibe: aviso(
+        '{de} te propone un contrato {acuerdo}, con plazo hasta {plazo:fecha}. Lo tienes en «Tus contratos»: acéptalo o recházalo antes de que caduque.',
+        'responder-contrato',
+      ),
+    },
+  },
+  'contrato.firmado': suceso(
+    'Se firma con {de} el contrato {acuerdo}, con plazo hasta {plazo:fecha}.',
+  ),
+  'contrato.rechazado': {
+    segun: 'rol',
+    casos: {
+      propone: aviso('{de} no firma tu contrato {acuerdo}: {motivo}.'),
+      recibe: suceso('El contrato {acuerdo} que te proponía {de} no se firma: {motivo}.'),
+    },
+  },
+  'contrato.caducado': suceso(
+    'La propuesta de contrato {acuerdo} entre tu casa y {de} caduca sin respuesta.',
+  ),
+  'contrato.cumplido': suceso(
+    'Se cumple el contrato {acuerdo} con {de}: las dos casas ganan crédito.',
+  ),
+  'contrato.incumplido': {
+    segun: 'rol',
+    casos: {
+      falla: aviso(
+        'Incumples el contrato {acuerdo} con {de}: {motivo}. Pagas {penalizacion} maravedís de penalización y pierdes crédito.',
+      ),
+      cobra: aviso(
+        '{de} incumple el contrato {acuerdo}: {motivo}. Te paga {penalizacion} maravedís de penalización.',
+      ),
+    },
+  },
+  'contrato.perdido': aviso(
+    'El contrato {acuerdo} con {de} se deshace sin culpa de nadie: la obra se perdió sin terminar.',
+  ),
+  'credito.cambio': economia('Tu crédito ante las demás casas queda en {total}.'),
+  'portazgo.fijado': suceso(
+    'Portazgo fijado entre {desde} y {hasta}: {cantidad} maravedís por paso.',
+  ),
+  'portazgo.pagado': {
+    segun: 'por',
+    casos: {
+      recua: economia(
+        '{recua} paga {cantidad} maravedís de portazgo a {de} entre {desde} y {hasta}.',
+      ),
+      rebanyo: economia(
+        'Por {rebanyo} se pagan {cantidad} maravedís de portazgo a {de} entre {desde} y {hasta}.',
+      ),
+    },
+  },
+  'portazgo.cobrado': economia(
+    '{de} te paga {cantidad} maravedís de portazgo entre {desde} y {hasta}.',
+  ),
+  'portazgo.camino-viejo': {
+    segun: 'por',
+    casos: {
+      recua: aviso(
+        '{recua} no lleva para el portazgo de {de} entre {desde} y {hasta} ({cantidad} maravedís): va por el camino viejo, más despacio.',
+      ),
+      rebanyo: aviso(
+        'No hay para el portazgo de {de} entre {desde} y {hasta} ({cantidad} maravedís): {rebanyo} va por el camino viejo, más despacio.',
+      ),
+    },
+  },
+  'venta.cobrada': economia(
+    'Tu venta de {comarca} cobra {cantidad} maravedís a las recuas de {de}.',
+  ),
+
   // ——— Territorio ———
   'comarca.incorporada': p('sucesos', '{comarca} entra en el dominio.', {
     ajeno: '{comarca} entra en el dominio de {jugador}.',
@@ -410,6 +486,17 @@ export const MOTIVOS: Readonly<Record<string, string>> = {
   'comarca-con-duenyo': 'la comarca ya tiene dueño',
   'comarca-sin-duenyo': 'la comarca no es de nadie: un emisario va a tierra de otra casa',
   'comarca-propia': 'es tierra tuya',
+  'casa-desconocida': 'esa casa no está en la partida',
+  'contrato-sin-propuesta': 'ese contrato ya no espera respuesta',
+  'contrato-rechazado': 'la otra casa no lo quiere',
+  'plazo-pasado': 'el plazo ya ha pasado',
+  'poco-credito': 'quien pide prestado tiene poco crédito',
+  'cliente-sin-catedral': 'la casa del cliente no puede levantar catedral',
+  'sin-entrega': 'la mercancía no llegó a tiempo',
+  'obra-sin-terminar': 'la obra no estaba terminada al llegar el plazo',
+  'obra-perdida': 'la obra se perdió sin terminar',
+  'sin-respuesta': 'nadie respondió',
+  'tramo-ajeno': 'ese tramo no lo mejoró tu casa',
   'comarca-desleal': 'la comarca está descontenta',
   'recua-desconocida': 'esa recua ya no existe',
   'recua-sin-plaza': 'la recua no está en una plaza',
@@ -540,6 +627,9 @@ export const NOMBRES_DE_ORDEN: Readonly<Record<string, string>> = {
   'trasladar-corte': 'traslado de la corte',
   cola: 'orden de la cola',
   anular: 'anular una orden',
+  contrato: 'contrato',
+  'responder-contrato': 'respuesta a un contrato',
+  portazgo: 'portazgo',
 };
 
 /** Palabras sueltas de los sucesos, por campo y valor. */
@@ -551,6 +641,13 @@ export const PALABRAS: Readonly<Record<string, Readonly<Record<string, string>>>
     invierno: 'el invierno',
   },
   operacion: { comprar: 'compró', vender: 'vendió' },
+  acuerdo: {
+    entrega: 'de entrega',
+    prestamo: 'de préstamo',
+    aperos: 'de aperos',
+    obra: 'de obra',
+    paso: 'de paso de ganado',
+  },
   'operacion:infinitivo': { comprar: 'comprar', vender: 'vender' },
   'cometido:infinitivo': {
     explorar: 'explorar',

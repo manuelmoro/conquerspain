@@ -537,6 +537,7 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
       comarca: nombre,
       unidad: (id) => unidades.find((u) => u.id === id)?.nombre ?? 'una recua',
       orden: (id) => vista.ordenes.find((o) => o.id === id),
+      jugador: (id) => vista.casas.find((c) => c.id === id)?.nombre ?? 'otra casa',
     },
   );
   const tarjeta = (o: OrdenEnPalabras, ...extra: (Node | string)[]): HTMLElement =>

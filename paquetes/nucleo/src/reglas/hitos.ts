@@ -9,6 +9,9 @@ import type { Hito, TablasDeReglas } from '../tipos/reglas.ts';
 import { HITOS } from '../tipos/reglas.ts';
 import { hash32 } from '../utiles/huella.ts';
 
+/** Contratos cumplidos que pide el buen nombre, ademas del credito (docs/06 §6.3). */
+const CONTRATOS_PARA_BUEN_NOMBRE = 3;
+
 /** Lo que miran los hitos y no esta en el estado: lo que paso este turno y el prestigio. */
 export interface HechosDelTurno {
   /** La mejor calidad del anyo de los rebanyos del jugador que esquilaron este turno (0 si nada). */
@@ -45,8 +48,8 @@ function cumple(
     case 'camino-abierto':
       return (r.obrasMayores.calzada ?? 0) >= umbral;
     case 'buen-nombre':
-      // Los contratos llegan con T-103; mientras, el hito esta desactivado en la tabla.
-      return false;
+      // Credito alto con contratos de verdad detras (T-103): el umbral es el credito.
+      return jugador.credito >= umbral && (r.contratosCumplidos ?? 0) >= CONTRATOS_PARA_BUEN_NOMBRE;
     case 'senyor-de-ferias':
       return Object.values(r.volumenEnFerias).reduce((total, v) => total + v, 0) >= umbral;
     case 'casa-conocida':

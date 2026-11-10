@@ -32,6 +32,7 @@ import {
 import type {
   IdAcontecimiento,
   IdComarca,
+  IdContrato,
   IdJugador,
   IdMercado,
   IdObra,
@@ -65,12 +66,23 @@ import {
   lista,
   oNulo,
   objeto,
+  opcional,
+  porTipo,
   registro,
   registroCompleto,
   texto,
   unoDe,
   valido,
 } from './validador.ts';
+import { ESTADOS_DE_CONTRATO } from '../tipos/contratos.ts';
+import type {
+  Contrato,
+  ContratoAperos,
+  ContratoEntrega,
+  ContratoObra,
+  ContratoPaso,
+  ContratoPrestamo,
+} from '../tipos/contratos.ts';
 
 const validarConfiguracion: Validador<ConfiguracionPartida> = objeto<ConfiguracionPartida>({
   nombre: texto({ minimo: 1, maximo: 80 }),
@@ -110,6 +122,7 @@ const validarRegistro: Validador<RegistroDeJugador> = objeto<RegistroDeJugador>(
   comarcasPerdidas: enteroNoNegativo(),
   turnosConEscasez: enteroNoNegativo(),
   turnosDeDespensaEstable: enteroNoNegativo(),
+  contratosCumplidos: opcional(enteroNoNegativo()),
   conocidasAlEmpezar: lista(identificador<IdComarca>()),
 });
 
@@ -247,6 +260,7 @@ const validarObra: Validador<Obra> = objeto<Obra>({
   entregado: recursos(),
   costeTotal: recursos(),
   abandonada: booleano(),
+  porContrato: opcional(identificador<IdJugador>()),
 });
 
 const validarMercado: Validador<EstadoMercado> = objeto<EstadoMercado>({
@@ -286,6 +300,66 @@ const validarOrdenGuardada: Validador<Orden> = (dato, ruta) => {
 const validarTramo: Validador<EstadoTramo> = objeto<EstadoTramo>({
   calidad: unoDe(CALIDADES_CAMINO),
   puente: booleano(),
+  duenyo: opcional(identificador<IdJugador>()),
+  portazgo: opcional(enteroNoNegativo(1000)),
+});
+
+// ——— Contratos (T-103) ———————————————————————————————————————————————————————
+
+const baseDeContrato = {
+  id: identificador<IdContrato>(),
+  propone: identificador<IdJugador>(),
+  recibe: identificador<IdJugador>(),
+  estado: unoDe(ESTADOS_DE_CONTRATO),
+  propuestoEn: entero({ minimo: 1 }),
+  plazo: entero({ minimo: 1 }),
+  penalizacion: enteroNoNegativo(),
+  motivo: oNulo(texto({ minimo: 1, maximo: 80 })),
+  fallo: oNulo(identificador<IdJugador>()),
+};
+
+const validarContrato: Validador<Contrato> = porTipo<Contrato>({
+  entrega: objeto<ContratoEntrega>({
+    ...baseDeContrato,
+    tipo: unoDe(['entrega'] as const),
+    entrega: identificador<IdJugador>(),
+    recurso: unoDe(RECURSOS),
+    cantidad: entero({ minimo: 1 }),
+    comarca: identificador<IdComarca>(),
+    precio: enteroNoNegativo(),
+    depositado: enteroNoNegativo(),
+  }),
+  prestamo: objeto<ContratoPrestamo>({
+    ...baseDeContrato,
+    tipo: unoDe(['prestamo'] as const),
+    presta: identificador<IdJugador>(),
+    cantidad: entero({ minimo: 1 }),
+    devolver: enteroNoNegativo(),
+  }),
+  aperos: objeto<ContratoAperos>({
+    ...baseDeContrato,
+    tipo: unoDe(['aperos'] as const),
+    vende: identificador<IdJugador>(),
+    comarca: identificador<IdComarca>(),
+    niveles: entero({ minimo: 1, maximo: 10 }),
+    precio: enteroNoNegativo(),
+  }),
+  obra: objeto<ContratoObra>({
+    ...baseDeContrato,
+    tipo: unoDe(['obra'] as const),
+    construye: identificador<IdJugador>(),
+    comarca: identificador<IdComarca>(),
+    obra: unoDe(TIPOS_DE_OBRA_MAYOR),
+    hacia: oNulo(identificador<IdComarca>()),
+    precio: enteroNoNegativo(),
+    idObra: oNulo(identificador<IdObra>()),
+  }),
+  paso: objeto<ContratoPaso>({
+    ...baseDeContrato,
+    tipo: unoDe(['paso'] as const),
+    concede: identificador<IdJugador>(),
+    precio: enteroNoNegativo(),
+  }),
 });
 
 const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
@@ -306,6 +380,7 @@ const validarForma: Validador<EstadoPartida> = objeto<EstadoPartida>({
   siguienteId: enteroNoNegativo(),
   huellaTurnoAnterior: oNulo(texto({ minimo: 64, maximo: 64 })),
   primicias: registro(identificador<IdJugador>(), unoDe(HITOS)),
+  contratos: opcional(registro(validarContrato, identificador())),
   clasificacion: lista(validarPuesto),
 });
 

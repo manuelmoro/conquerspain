@@ -112,11 +112,15 @@ describe('validarIntencion: la forma', () => {
     }
   });
 
-  it('rechaza un tipo desconocido, las letras de cambio y los campos que fijan las reglas', () => {
+  it('rechaza un tipo desconocido y los campos que fijan las reglas; la letra de cambio ya vale (T-103)', () => {
     expect(validarIntencion({ ...CLAVE, tipo: 'saquear', comarca: 'prueba-llano' }).ok).toBe(false);
     expect(
       validarIntencion({ ...CLAVE, tipo: 'letra-de-cambio', recua: 'recua-1', cantidad: 5 }).ok,
-    ).toBe(false);
+    ).toBe(true);
+    expect(
+      construir({ ...CLAVE, tipo: 'letra-de-cambio', recua: 'recua-1', cantidad: 200 }, conRecua())
+        .coste.maravedis,
+    ).toBe(200);
     expect(
       validarIntencion({
         ...CLAVE,

@@ -21,6 +21,7 @@ import type {
   Recua,
   SituacionMovil,
 } from '../tipos/estado.ts';
+import type { Contrato } from '../tipos/contratos.ts';
 import type { IdComarca, IdJugador } from '../tipos/ids.ts';
 import type { Mundo } from '../tipos/mundo.ts';
 import type { Orden } from '../tipos/ordenes.ts';
@@ -76,6 +77,8 @@ export interface CasaPublica {
   readonly nombre: string;
   readonly casa: Casa;
   readonly prestigio: number;
+  /** Su credito, publico: con quien se firma importa (T-103). */
+  readonly credito: number;
 }
 
 export interface VistaJugador {
@@ -96,6 +99,8 @@ export interface VistaJugador {
   readonly caminos: Readonly<Record<string, EstadoTramo>>;
   /** Los acontecimientos anunciados, salvo los de comarcas que no conoce. */
   readonly acontecimientos: readonly Acontecimiento[];
+  /** Los contratos en los que es parte, propuestos o firmados (T-103). */
+  readonly contratos: readonly Contrato[];
 }
 
 /** El rumbo de una comarca a otra, en ocho puntos, por sus centros [longitud, latitud]. */
@@ -240,7 +245,13 @@ export function vistaDeJugador(
     jugador: { ...yo, conocimiento },
     casas: Object.values(estado.jugadores)
       .sort((a, b) => comparar(a.id, b.id))
-      .map((j) => ({ id: j.id, nombre: j.nombre, casa: j.casa, prestigio: j.prestigio })),
+      .map((j) => ({
+        id: j.id,
+        nombre: j.nombre,
+        casa: j.casa,
+        prestigio: j.prestigio,
+        credito: j.credito,
+      })),
     clasificacion: estado.clasificacion,
     comarcas,
     recuas,
@@ -250,5 +261,8 @@ export function vistaDeJugador(
     ajenas,
     caminos,
     acontecimientos: estado.acontecimientos.filter((a) => a.comarca === null || conoce(a.comarca)),
+    contratos: Object.values(estado.contratos ?? {})
+      .filter((c) => c.propone === jugador || c.recibe === jugador)
+      .sort((a, b) => comparar(a.id, b.id)),
   };
 }

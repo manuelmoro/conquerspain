@@ -51,6 +51,8 @@ import type { Recurso } from '../tipos/recursos.ts';
 import { RECURSOS, recursosSegun } from '../tipos/recursos.ts';
 import { idsEnOrden } from '../utiles/orden.ts';
 import { movimientoDeRebanyos } from './04-rebanyos.ts';
+import { cobrarPortazgos, maravedisLibres } from './04-portazgos.ts';
+import { mejorasDelViaje, puedeCobrarPortazgo } from '../reglas/portazgos.ts';
 
 export function faseMovimiento(ctx: Contexto): void {
   for (const orden of ordenesVivas(ctx, 'formar-recua')) formarRecua(ctx, orden);
@@ -413,18 +415,29 @@ function moverRecua(ctx: Contexto, id: string): void {
     recua.situacion.donde === 'comarca' ? recua.situacion.comarca : recua.situacion.desde;
   const idRecua = recua.id;
 
+  // Los portazgos que no le llegan los hace por el camino viejo, sin la mejora (T-103). La salida
+  // se guarda aparte: al moverla, el borrador de la recua ya dice donde ha llegado.
+  const salida = recua.situacion;
+  const mejoras = mejorasDelViaje(
+    ctx.estado,
+    recua.situacion,
+    recua.ruta,
+    jugador,
+    recua.carga.maravedis + maravedisLibres(jugador),
+    ctx.reglas,
+  );
   const primerTramo = tramo(ctx, donde, siguiente);
   const pasoMil = pasoDeRecua(
     recua,
     {
       barro: ctx.estacional.barro,
-      calzada: tieneCalzada(primerTramo, ctx.estado.caminos),
+      calzada: tieneCalzada(primerTramo, mejoras),
       pasoCasaMil: modificadoresDelJugador(jugador, ctx.reglas).pasoRecuaMil,
     },
     ctx.reglas,
   );
   const costeDe = (a: IdComarca, b: IdComarca) =>
-    costeDeTramoMil(tramo(ctx, a, b), ctx.estacional, ctx.reglas, ctx.estado.caminos);
+    costeDeTramoMil(tramo(ctx, a, b), ctx.estacional, ctx.reglas, mejoras);
 
   // Sin bastimento, el primer turno se para y avisa; despues malvive: anda al paso minimo sin
   // pagar y pierde una acemila por turno, para que siempre pueda volver a casa.
@@ -468,7 +481,7 @@ function moverRecua(ctx: Contexto, id: string): void {
       : null;
   const cuenta =
     venta === null ? null : costeEnLaVenta(bastimento, preciosDeLaVenta(ctx, venta), ctx.reglas);
-  const comeEnLaVenta = cuenta !== null && recua.carga.maravedis >= cuenta;
+  const comeEnLaVenta = venta !== null && cuenta !== null && recua.carga.maravedis >= cuenta;
   const puedePagar =
     casa !== null
       ? disponible(jugador, 'pan') >= bastimento.pan && disponible(jugador, 'sal') >= bastimento.sal
@@ -476,7 +489,7 @@ function moverRecua(ctx: Contexto, id: string): void {
 
   let avance = previsto;
   if (puedePagar) {
-    if (comeEnLaVenta) pagarLaVenta(ctx, recua, cuenta);
+    if (comeEnLaVenta) pagarLaVenta(ctx, recua, venta, cuenta);
     else pagarBastimento(ctx, recua, casa !== null, bastimento.pan, bastimento.sal);
     if (casa !== null && recua.rutaCircular) reponerBastimento(ctx, recua, jugador);
     if (hambrienta) aplicar(ctx, { tipo: 'recua-bastimento', recua: idRecua, avisada: false });
@@ -524,6 +537,8 @@ function moverRecua(ctx: Contexto, id: string): void {
     siguienteParada: avance.siguienteParada,
     enParada: avance.enParada,
   });
+  const lleva = ctx.estado.recuas[idRecua]?.carga.maravedis ?? 0;
+  cobrarPortazgos(ctx, { recua: idRecua, lleva }, jugador, salida, avance, mejoras);
   contarAvance(ctx, recua, avance);
 }
 
@@ -545,8 +560,11 @@ function preciosDeLaVenta(ctx: Contexto, comarca: IdComarca): Readonly<Record<Re
   );
 }
 
-/** El ventero no es de nadie hasta que haya portazgos (T-103): lo que cobra sale de la partida. */
-function pagarLaVenta(ctx: Contexto, recua: Recua, cuenta: number): void {
+/**
+ * Lo que cobra el ventero va a la casa duenya de la venta si puede cobrar portazgo (los arrieros,
+ * T-103) y la recua es de otra casa; si no, sale de la partida.
+ */
+function pagarLaVenta(ctx: Contexto, recua: Recua, venta: IdComarca, cuenta: number): void {
   if (cuenta <= 0) return;
   aplicar(ctx, {
     tipo: 'recua-carga',
@@ -555,6 +573,24 @@ function pagarLaVenta(ctx: Contexto, recua: Recua, cuenta: number): void {
     delta: -cuenta,
     motivo: 'bastimento en la venta',
   });
+  const comarca = ctx.estado.comarcas[venta];
+  const duenyo = comarca?.duenyo ?? comarca?.ventaDe ?? null;
+  if (duenyo === null || duenyo === recua.jugador) return;
+  if (!puedeCobrarPortazgo(ctx.estado, duenyo, ctx.reglas)) return;
+  aplicar(ctx, {
+    tipo: 'recurso',
+    jugador: duenyo,
+    recurso: 'maravedis',
+    delta: cuenta,
+    motivo: `venta de ${venta}`,
+  });
+  registrarSuceso(
+    ctx.sucesos,
+    ctx.fase,
+    'venta.cobrada',
+    { cantidad: cuenta, de: recua.jugador },
+    { jugador: duenyo, comarca: venta },
+  );
 }
 
 function pagarBastimento(

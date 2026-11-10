@@ -438,18 +438,18 @@ describe('tierra ajena', () => {
 
   it('entra en una comarca propia o neutral por cualquier camino', () => {
     for (const destino of [propia, neutral, undefined]) {
-      expect(puedeEntrar(camino(null), destino, jugador(UNO), conPasoFranco(false))).toBe(true);
+      expect(puedeEntrar(camino(null), destino, jugador(UNO), conPasoFranco(false), [])).toBe(true);
     }
   });
 
   it('en la de otro jugador solo por una cañada y solo con el paso franco de la Mesta', () => {
-    expect(puedeEntrar(camino('Cañada de Prueba'), ajena, jugador(UNO), conPasoFranco(true))).toBe(
-      true,
-    );
-    expect(puedeEntrar(camino('Cañada de Prueba'), ajena, jugador(UNO), conPasoFranco(false))).toBe(
-      false,
-    );
-    expect(puedeEntrar(camino(null), ajena, jugador(UNO), conPasoFranco(true))).toBe(false);
+    expect(
+      puedeEntrar(camino('Cañada de Prueba'), ajena, jugador(UNO), conPasoFranco(true), []),
+    ).toBe(true);
+    expect(
+      puedeEntrar(camino('Cañada de Prueba'), ajena, jugador(UNO), conPasoFranco(false), []),
+    ).toBe(false);
+    expect(puedeEntrar(camino(null), ajena, jugador(UNO), conPasoFranco(true), [])).toBe(false);
   });
 
   it('la ruta cruza el monte de otro por la cañada con el paso franco y no encuentra ruta sin él', () => {

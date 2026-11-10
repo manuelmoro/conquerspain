@@ -197,9 +197,9 @@ describe('la vista de un jugador, regla a regla', () => {
     expect(conPresencia.ajenas.some((a) => a.comarca === 'prueba-mina')).toBe(false);
   });
 
-  it('7. almacén ajeno: nunca', () => {
+  it('7. almacén ajeno: nunca (el crédito sí es público, T-103)', () => {
     for (const casa of vista.casas)
-      expect(Object.keys(casa).sort()).toEqual(['casa', 'id', 'nombre', 'prestigio']);
+      expect(Object.keys(casa).sort()).toEqual(['casa', 'credito', 'id', 'nombre', 'prestigio']);
     expect(JSON.stringify(vista)).not.toContain(String(SECRETO_ALMACEN));
   });
 

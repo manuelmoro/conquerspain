@@ -24,6 +24,7 @@ describe('armazon del resolutor', () => {
       'cometidos',
       'obras',
       'mercado',
+      'contratos',
       'territorio',
       'poblacion',
       'acontecimientos',

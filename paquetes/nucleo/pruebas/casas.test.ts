@@ -134,6 +134,7 @@ describe('la Mesta', () => {
         ajena(estado),
         { ...(estado.jugadores[UNO] as object), casa } as never,
         REAL,
+        [],
       );
       expect(entra, casa).toBe(casa === 'mesta');
     }
@@ -724,15 +725,14 @@ describe('lo que ninguna casa puede romper', () => {
     expect(infractores).toEqual([]);
   });
 
-  it('lo desactivado hasta T-103 tiene su permiso en la tabla y ninguna fase lo lee todavía', () => {
+  it('la carta puebla gratis tiene su permiso en la tabla y ninguna fase lo lee todavía', () => {
     const raiz = fileURLToPath(new URL('../src/', import.meta.url));
-    const desactivados = ['venderAperos', 'obraEnComarcaAjena', 'cartaPuebla'] as const;
-    // Y el portazgo, que es permiso de los arrieros y prohibición de los monjes.
+    // Los contratos de aperos y de obra y el portazgo ya los leen las fases (T-103).
     expect(CASAS_DE_OFICIO.ferrones.permisos.venderAperos).toBe(true);
     expect(CASAS_DE_OFICIO.canteros.permisos.obraEnComarcaAjena).toBe(true);
-    expect(CASAS_DE_OFICIO.monjes.permisos.cartaPuebla).toBe(true);
     expect(CASAS_DE_OFICIO.arrieros.permisos.cobrarPortazgo).toBe(true);
     expect(CASAS_DE_OFICIO.monjes.prohibiciones.cobrarPortazgo).toBe(true);
+    expect(CASAS_DE_OFICIO.monjes.permisos.cartaPuebla).toBe(true);
     const lectores: string[] = [];
     for (const carpeta of ['fases', 'reglas']) {
       const dir = join(raiz, carpeta);
@@ -741,9 +741,7 @@ describe('lo que ninguna casa puede romper', () => {
         const texto = readFileSync(join(dir, nombre), 'utf8')
           .replace(/\/\*[\s\S]*?\*\//g, '')
           .replace(/(^|[^:])\/\/.*$/gm, '$1');
-        if ([...desactivados, 'cobrarPortazgo'].some((permiso) => texto.includes(`.${permiso}`))) {
-          lectores.push(`${carpeta}/${nombre}`);
-        }
+        if (texto.includes('.cartaPuebla')) lectores.push(`${carpeta}/${nombre}`);
       }
     }
     expect(lectores).toEqual([]);

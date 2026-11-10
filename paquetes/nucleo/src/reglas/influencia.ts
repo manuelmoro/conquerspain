@@ -6,7 +6,8 @@ import type { Suceso } from '../tipos/cronica.ts';
 import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { Mundo } from '../tipos/mundo.ts';
 import type { TablasDeReglas } from '../tipos/reglas.ts';
-import { multiplicarFactores } from '../utiles/enteros.ts';
+import { MIL, multiplicarFactores } from '../utiles/enteros.ts';
+import { tienePocoCredito } from './contratos.ts';
 import { modificadoresDelJugador } from './casas/index.ts';
 import { claveDeTramo } from './ruta.ts';
 import { estaPresente } from './presencia.ts';
@@ -141,8 +142,12 @@ export function fuentesDeInfluencia(
   const desgaste = !presente && importe === 0 ? t.desgastePorTurno : 0;
   const escasez = actividad.vaciaronElPan.has(clave) ? t.desgastePorEscasez : 0;
   // La casa escala cada fuente por separado, para que el desglose siga sumando lo que se aporta.
+  // El concejo desconfia del mal pagador: con poco credito, todo vale menos (T-103).
   const casaMil = modificadoresDelJugador(jugador, reglas).influenciaMil;
-  const escalar = (puntos: number): number => multiplicarFactores(puntos, [casaMil]);
+  const creditoMil = tienePocoCredito(jugador, reglas)
+    ? reglas.contratos.influenciaConCreditoBajoMil
+    : MIL;
+  const escalar = (puntos: number): number => multiplicarFactores(puntos, [casaMil, creditoMil]);
   const fuentes = {
     presencia: escalar(presencia),
     vecinas: escalar(vecinas),

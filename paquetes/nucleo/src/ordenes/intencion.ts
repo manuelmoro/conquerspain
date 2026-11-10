@@ -14,10 +14,14 @@ import {
   costeDeRebanyo,
   costeDeRecua,
 } from '../reglas/casas/costes.ts';
-import { modificadoresDelJugador } from '../reglas/casas/index.ts';
+import {
+  modificadoresDelJugador,
+  permisosDelJugador,
+  prohibicionesDelJugador,
+} from '../reglas/casas/index.ts';
 import { costeDeObraMayor } from '../reglas/obras.ts';
 import { costeDeRoturar } from '../reglas/roturar.ts';
-import { comarcaConocida } from '../reglas/ruta.ts';
+import { claveDeTramo, comarcaConocida } from '../reglas/ruta.ts';
 import type { EstadoComarca, EstadoJugador, EstadoPartida } from '../tipos/estado.ts';
 import type { IdComarca, IdJugador, IdOrden } from '../tipos/ids.ts';
 import { ESTADOS_ANULABLES } from '../tipos/ordenes.ts';
@@ -95,11 +99,6 @@ export function validarIntencion(dato: unknown): Resultado<Intencion> {
   const tipo = dato['tipo'];
   if (typeof tipo !== 'string') {
     errores.push({ ruta: 'tipo', mensaje: 'falta el tipo de orden' });
-  } else if (tipo === 'letra-de-cambio') {
-    errores.push({
-      ruta: 'tipo',
-      mensaje: 'las letras de cambio aun no existen (llegan con T-103)',
-    });
   }
   for (const campo of Object.keys(CAMPOS_DERIVADOS[String(tipo)] ?? {})) {
     if (campo in dato) {
@@ -297,6 +296,46 @@ function comprobarPropiedad(
       }
       break;
     }
+    case 'contrato': {
+      // Lo que no cambia de aqui a la firma; fondos, permisos y comarcas se miran al firmar (T-103).
+      if (o.con === ctx.jugador) errores.push(error('con', 'un contrato es con otra casa'));
+      else if (estado.jugadores[o.con] === undefined)
+        errores.push(error('con', `no hay ninguna casa "${o.con}" en la partida`));
+      if (o.plazo <= estado.turno || o.plazo > estado.turno + reglas.contratos.plazoMaximo)
+        errores.push(
+          error(
+            'plazo',
+            `el plazo tiene que estar entre el turno ${String(estado.turno + 1)} y el ${String(estado.turno + reglas.contratos.plazoMaximo)}`,
+          ),
+        );
+      break;
+    }
+    case 'responder-contrato': {
+      const propuesto = estado.contratos?.[o.contrato];
+      if (propuesto?.recibe !== ctx.jugador)
+        errores.push(error('contrato', `no te han propuesto ningun contrato "${o.contrato}"`));
+      else if (propuesto.estado !== 'propuesto')
+        errores.push(error('contrato', 'ese contrato ya no espera respuesta'));
+      break;
+    }
+    case 'portazgo': {
+      const tramo = estado.caminos[claveDeTramo(o.desde, o.hasta)];
+      if (tramo?.duenyo !== ctx.jugador)
+        errores.push(error('desde', 'ese tramo no lo has mejorado tu: no puedes cobrar en el'));
+      if (
+        !permisosDelJugador(yo, reglas).cobrarPortazgo ||
+        prohibicionesDelJugador(yo, reglas).cobrarPortazgo
+      )
+        errores.push(error('tipo', 'tu casa no cobra portazgos'));
+      if (o.cantidad > reglas.contratos.portazgoMaximo)
+        errores.push(
+          error(
+            'cantidad',
+            `el portazgo va de 0 a ${String(reglas.contratos.portazgoMaximo)} maravedis`,
+          ),
+        );
+      break;
+    }
     case 'tradicion':
       break;
   }
@@ -334,6 +373,8 @@ export function costeDeIntencion(
       return reglas.influencia.costeIncorporar;
     case 'trasladar-corte':
       return reglas.territorio.costeTraslado;
+    case 'letra-de-cambio':
+      return { ...NADA, maravedis: Math.max(0, o.cantidad) };
     default:
       return NADA;
   }
@@ -456,7 +497,8 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
         turnosTotales: reglas.influencia.turnosIncorporar,
       });
     case 'letra-de-cambio':
-      return invalidos([error('tipo', 'las letras de cambio aun no existen (llegan con T-103)')]);
+      // Reserva justo lo que se cambia: la comision sale de lo que llega (fases/07-letras.ts).
+      return valido({ ...o, ...fijos, ...sinCola, coste });
     case 'trasladar-corte':
       return valido({ ...o, ...fijos, ...sinCola, coste });
     case 'politica':
@@ -464,6 +506,9 @@ export function construirOrden(intencion: Intencion, ctx: ContextoDeIntencion): 
     case 'mayordomo':
     case 'cola':
     case 'anular':
+    case 'contrato':
+    case 'responder-contrato':
+    case 'portazgo':
       return valido({ ...o, ...fijos, ...sinCola });
   }
 }

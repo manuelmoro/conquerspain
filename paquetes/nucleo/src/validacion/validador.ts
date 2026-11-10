@@ -245,6 +245,20 @@ export function registroCompleto<C extends string, T>(
 
 export type CamposDe<F> = { [K in keyof F]-?: Validador<F[K]> };
 
+/** Los validadores de campos que pueden faltar: se reconocen por identidad. */
+const OPCIONALES = new WeakSet<Validador<unknown>>();
+
+/**
+ * Un campo que puede faltar (T-103): si falta, se queda sin poner y no es un error. Asi un estado
+ * guardado antes de que existiera el campo sigue valiendo, con la misma huella.
+ */
+export function opcional<T>(validador: Validador<T>): Validador<T | undefined> {
+  const envuelto: Validador<T | undefined> = (dato, ruta) =>
+    dato === undefined ? valido(undefined) : validador(dato, ruta);
+  OPCIONALES.add(envuelto);
+  return envuelto;
+}
+
 export interface OpcionesObjeto {
   /** Si es true (lo normal), un campo desconocido es un error. */
   readonly estricto?: boolean;
@@ -290,7 +304,8 @@ function camposDe<F extends object, R>(
       const validador = validadorDe(nombre);
       if (validador === undefined) continue;
       if (!(nombre in dato)) {
-        if (!parcial) errores.push({ ruta: unir(ruta, nombre), mensaje: 'falta este campo' });
+        if (!parcial && !OPCIONALES.has(validador))
+          errores.push({ ruta: unir(ruta, nombre), mensaje: 'falta este campo' });
         continue;
       }
       const resultado = validador(dato[nombre], unir(ruta, nombre));

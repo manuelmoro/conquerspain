@@ -11,6 +11,8 @@ export interface Nombres {
   readonly unidad: (id: string) => string;
   /** La orden que se anula, para nombrarla. */
   readonly orden: (id: string) => Orden | undefined;
+  /** El nombre de otra casa (contratos, T-103). */
+  readonly jugador: (id: string) => string;
 }
 
 const ICONO: Readonly<Record<Orden['tipo'], string>> = {
@@ -34,6 +36,9 @@ const ICONO: Readonly<Record<Orden['tipo'], string>> = {
   'trasladar-corte': '👑',
   cola: '↕️',
   anular: '✖️',
+  contrato: '🤝',
+  'responder-contrato': '✍️',
+  portazgo: '🚧',
 };
 
 function plaza(mercado: string, n: Nombres): string {
@@ -89,7 +94,14 @@ export function fraseDeOrden(o: Orden, n: Nombres): string {
     case 'obra-mayor':
     case 'trasladar-corte':
       return `${NOMBRE_DE_ORDEN[o.tipo]} en ${n.comarca(o.comarca)}`;
+    case 'contrato':
+      return `Proponer un contrato de ${o.condiciones.tipo === 'prestamo' ? 'préstamo' : o.condiciones.tipo} a ${n.jugador(o.con)}`;
+    case 'responder-contrato':
+      return o.acepta ? 'Aceptar un contrato' : 'Rechazar un contrato';
+    case 'portazgo':
+      return `Portazgo de ${String(o.cantidad)} mrs entre ${n.comarca(o.desde)} y ${n.comarca(o.hasta)}`;
     case 'letra-de-cambio':
+      return `Letra de cambio: ${String(o.cantidad)} mrs para ${n.unidad(o.recua)}`;
     case 'tradicion':
     case 'mayordomo':
     case 'cola':

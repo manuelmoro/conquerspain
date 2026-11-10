@@ -279,11 +279,19 @@ describe('los doce hitos, ni antes ni después', () => {
     expect(nuevos(base, { mejorEsquileoMil: 0, prestigio: 1000 })).toEqual(['casa-conocida']);
   });
 
-  it('buen nombre está desactivado hasta los contratos (T-103)', () => {
-    expect(DATOS_DE_HITOS['buen-nombre'].desactivado).toBe(true);
-    expect(DATOS_DE_HITOS['buen-nombre'].pendienteDe).toBe('T-103');
-    const todo = conJugador(base, { credito: 100 });
-    expect(nuevos(todo)).not.toContain('buen-nombre');
+  it('buen nombre: crédito de 80 o más y tres contratos cumplidos (T-103)', () => {
+    expect(DATOS_DE_HITOS['buen-nombre'].desactivado).toBe(false);
+    const umbral = DATOS_DE_HITOS['buen-nombre'].umbral;
+    const conCredito = conJugador(base, { credito: umbral });
+    expect(nuevos(conCredito)).not.toContain('buen-nombre');
+    const registro = (cumplidos: number) => ({
+      ...jugadorDe(conCredito, UNO).registro,
+      contratosCumplidos: cumplidos,
+    });
+    expect(nuevos(conJugador(conCredito, { registro: registro(2) }))).not.toContain('buen-nombre');
+    expect(nuevos(conJugador(conCredito, { registro: registro(3) }))).toContain('buen-nombre');
+    const pocoCredito = conJugador(base, { credito: umbral - 1, registro: registro(3) });
+    expect(nuevos(pocoCredito)).not.toContain('buen-nombre');
   });
 
   it('un hito no se repite: el que ya se tiene no vuelve a salir, y el motor no lo deja apuntar', () => {

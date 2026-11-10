@@ -4,6 +4,7 @@
 // al concejo, la influencia de cada comarca neutral y las incorporaciones, que se resuelven con la
 // influencia ya actualizada. La influencia se calcula sobre una foto del estado, asi que ni el orden
 // de las comarcas ni el de los jugadores cambian nada.
+import { tienePocoCredito } from '../reglas/contratos.ts';
 import { aplicar } from '../cambios.ts';
 import type { Contexto } from '../contexto.ts';
 import {
@@ -61,9 +62,14 @@ function regalo(ctx: Contexto, orden: OrdenDe<'regalo'>): void {
   const dividido = hayOtraCasaPresente(ctx.estado, comarca, orden.jugador)
     ? t.concejoDivididoMil
     : MIL;
+  // Y el mal pagador tambien convence menos con regalos (T-103).
+  const credito = tienePocoCredito(jugador, ctx.reglas)
+    ? ctx.reglas.contratos.influenciaConCreditoBajoMil
+    : MIL;
   const delta = multiplicarFactores(t.porRegalo, [
     modificadoresDelJugador(jugador, ctx.reglas).influenciaMil,
     dividido,
+    credito,
   ]);
   aplicar(ctx, {
     tipo: 'influencia',

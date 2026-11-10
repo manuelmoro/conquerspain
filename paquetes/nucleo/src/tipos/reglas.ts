@@ -101,6 +101,7 @@ export const NOMBRES_DE_PERMISO = [
   'acequiaMenor',
   'cartaPuebla',
   'corresponsales',
+  'banca',
 ] as const;
 
 export interface Permisos {
@@ -115,6 +116,11 @@ export interface Permisos {
   readonly corresponsales: boolean;
   /** Empieza la partida conociendo la canyada real mas cercana y el camino hasta ella (T-058). */
   readonly conoceLasCanyadas: boolean;
+  /**
+   * Presta aunque quien pide tenga poco credito, y si no le devuelven al plazo cobra tambien de lo
+   * que lleven las recuas del deudor (la banca de los mercaderes, T-103).
+   */
+  readonly banca: boolean;
 }
 
 export interface Prohibiciones {
@@ -849,4 +855,17 @@ export interface TablasDeReglas {
   readonly arranque: DatosArranque;
   readonly acontecimientos: DatosAcontecimientos;
   readonly ganaderia: DatosGanaderia;
+  readonly contratos: DatosContratos;
+}
+
+/** Contratos, credito y portazgos (ficha T-103). */
+export interface DatosContratos {
+  readonly creditoPorCumplir: number;
+  readonly creditoPorIncumplir: number;
+  /** Por debajo de este credito: pago por adelantado, sin prestamos y menos influencia. */
+  readonly creditoBajo: number;
+  readonly influenciaConCreditoBajoMil: Milesimas;
+  readonly turnosParaResponder: number;
+  readonly plazoMaximo: number;
+  readonly portazgoMaximo: number;
 }

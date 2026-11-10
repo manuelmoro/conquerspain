@@ -137,7 +137,6 @@ describe('el catálogo de tradiciones', () => {
     expect(desactivadas.sort()).toEqual([
       ['arrieros-correo', 'T-102'],
       ['ferrones-armas', 'T-120'],
-      ['mercaderes-banca', 'T-103'],
       ['salineros-alfoli', 'T-102'],
     ]);
     // No cambian nada mientras tanto: si alguien las eligiera por error, no harian efecto.

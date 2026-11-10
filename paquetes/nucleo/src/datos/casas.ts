@@ -60,6 +60,7 @@ export const SIN_PERMISOS: Permisos = {
   cartaPuebla: false,
   corresponsales: false,
   conoceLasCanyadas: false,
+  banca: false,
 };
 
 export const SIN_PROHIBICIONES: Prohibiciones = {

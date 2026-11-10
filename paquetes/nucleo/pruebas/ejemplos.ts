@@ -8,6 +8,7 @@ import { ARRANQUE } from '../src/datos/arranque.ts';
 import { MODIFICADORES_NEUTROS } from '../src/datos/casas.ts';
 import { COMETIDOS_DE_RECUA } from '../src/datos/cometidos.ts';
 import { CONSUMO } from '../src/datos/consumo.ts';
+import { CONTRATOS } from '../src/datos/contratos.ts';
 import { EDIFICIOS } from '../src/datos/edificios.ts';
 import { ESTACIONES } from '../src/datos/estaciones.ts';
 import { GANADERIA } from '../src/datos/ganaderia.ts';
@@ -250,6 +251,7 @@ export function tablasDeEjemplo(): Registro {
         cartaPuebla: false,
         corresponsales: false,
         conoceLasCanyadas: false,
+        banca: false,
       },
       prohibiciones: {
         roturar: false,
@@ -289,5 +291,6 @@ export function tablasDeEjemplo(): Registro {
     arranque: JSON.parse(JSON.stringify(ARRANQUE)) as Registro,
     acontecimientos: JSON.parse(JSON.stringify(ACONTECIMIENTOS)) as Registro,
     ganaderia: JSON.parse(JSON.stringify(GANADERIA)) as Registro,
+    contratos: JSON.parse(JSON.stringify(CONTRATOS)) as Registro,
   };
 }

@@ -87,7 +87,6 @@ export const DATOS_DE_HITOS: Readonly<Record<Hito, DatosHito>> = {
     'Crédito de 80 o más con al menos tres contratos cumplidos',
     80,
     40,
-    'T-103',
   ),
   'senyor-de-ferias': hito(
     'Señor de ferias',

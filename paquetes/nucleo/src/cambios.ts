@@ -8,6 +8,7 @@ import { registrarSuceso } from './sucesos.ts';
 import type {
   IdAcontecimiento,
   IdComarca,
+  IdContrato,
   IdJugador,
   IdMercado,
   IdObra,
@@ -16,6 +17,7 @@ import type {
   IdRecua,
 } from './tipos/ids.ts';
 import type { EstadoDeOrden, Orden, ParadaDeRuta, ReglaDeMayordomo } from './tipos/ordenes.ts';
+import type { Contrato } from './tipos/contratos.ts';
 import type {
   Acontecimiento,
   Cometido,
@@ -49,6 +51,24 @@ import { limitar, multiplicarFactores } from './utiles/enteros.ts';
 import { comparar } from './utiles/orden.ts';
 
 export type Cambio =
+  | {
+      /** Un contrato entre jugadores, nuevo o con su estado al dia (T-103). */
+      readonly tipo: 'contrato';
+      readonly contrato: Contrato;
+    }
+  | {
+      /** Un contrato cerrado sale del estado: ya se vio un turno y queda en la cronica (T-103). */
+      readonly tipo: 'contrato-baja';
+      readonly contrato: IdContrato;
+    }
+  | {
+      /** El credito de un jugador sube o baja; cumplir suma uno a sus contratos cumplidos (T-103). */
+      readonly tipo: 'credito';
+      readonly jugador: IdJugador;
+      readonly delta: number;
+      readonly cumplido: boolean;
+      readonly motivo: string;
+    }
   | {
       readonly tipo: 'recurso';
       readonly jugador: IdJugador;
@@ -316,6 +336,17 @@ export type Cambio =
       readonly tipo: 'tramo';
       readonly clave: string;
       readonly tramo: EstadoTramo;
+    }
+  | {
+      /** El dueno de un tramo mejorado fija lo que cobra por pasar (T-103). */
+      readonly tipo: 'portazgo';
+      readonly clave: string;
+      readonly cantidad: number;
+    }
+  | {
+      /** La obra deja de levantarla otra casa por contrato: sigue como obra del dueno (T-103). */
+      readonly tipo: 'obra-sin-contratista';
+      readonly obra: IdObra;
     }
   | {
       readonly tipo: 'rebanyo-alta';
@@ -1617,6 +1648,62 @@ export function aplicar(ctx: Contexto, cambio: Cambio): void {
         });
       }
       comarca.obrasMayores = [...comarca.obrasMayores, cambio.obra];
+      return;
+    }
+
+    case 'contrato': {
+      const contratos = { ...(ctx.estado.contratos ?? {}) };
+      contratos[cambio.contrato.id] = cambio.contrato;
+      ctx.estado.contratos = contratos;
+      return;
+    }
+
+    case 'contrato-baja': {
+      const { [cambio.contrato]: _fuera, ...quedan } = ctx.estado.contratos ?? {};
+      ctx.estado.contratos = quedan;
+      return;
+    }
+
+    case 'credito': {
+      const jugador = jugadorDe(ctx, cambio.jugador);
+      const antes = jugador.credito;
+      jugador.credito = Math.min(100, Math.max(0, antes + cambio.delta));
+      if (cambio.cumplido) {
+        jugador.registro = {
+          ...jugador.registro,
+          contratosCumplidos: (jugador.registro.contratosCumplidos ?? 0) + 1,
+        };
+      }
+      if (jugador.credito !== antes) {
+        registrarSuceso(
+          ctx.sucesos,
+          ctx.fase,
+          'credito.cambio',
+          { delta: jugador.credito - antes, total: jugador.credito, motivo: cambio.motivo },
+          { jugador: cambio.jugador },
+        );
+      }
+      return;
+    }
+
+    case 'portazgo': {
+      const tramo = ctx.estado.caminos[cambio.clave];
+      if (tramo?.duenyo === undefined) {
+        throw new ErrorDeMotor(
+          'invariante-rota',
+          `El tramo "${cambio.clave}" no tiene dueno: no se le puede poner portazgo.`,
+          { tramo: cambio.clave },
+        );
+      }
+      ctx.estado.caminos[cambio.clave] = { ...tramo, portazgo: cambio.cantidad };
+      return;
+    }
+
+    case 'obra-sin-contratista': {
+      const obra = ctx.estado.obras[cambio.obra];
+      if (obra === undefined) return;
+      const { porContrato: _fuera, ...propia } = obra;
+      ctx.estado.obras[cambio.obra] = comoBorrador(propia);
       return;
     }
 
