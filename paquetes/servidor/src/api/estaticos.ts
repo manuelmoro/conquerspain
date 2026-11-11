@@ -34,7 +34,14 @@ export async function ficheroEstatico(carpeta: string, ruta: string): Promise<Fi
   const pedido = join(carpeta, limpia);
   const dentro =
     pedido === carpeta || pedido.startsWith(carpeta.endsWith(sep) ? carpeta : carpeta + sep);
-  const candidatos = dentro && limpia !== '' && extname(limpia) !== '' ? [pedido] : [];
+  // Una ruta sin extension es una pagina: la de su carpeta si la hay (la guia, T-127, en `/guia/`) o,
+  // si no, la del juego, que se encarga de sus rutas.
+  const candidatos =
+    !dentro || limpia === ''
+      ? []
+      : extname(limpia) !== ''
+        ? [pedido]
+        : [join(pedido, 'index.html')];
   for (const fichero of [...candidatos, join(carpeta, 'index.html')]) {
     try {
       const cuerpo = await readFile(fichero);

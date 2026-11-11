@@ -50,11 +50,14 @@ function cerrar(almacen: Almacen): void {
 /** La barra de arriba de la portada y de «Mis partidas». */
 export function barraDeCuenta(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const cuenta = estado.cuenta;
+  // La guia (T-127), a mano desde la portada y desde «Mis partidas».
+  const guia = el('a', { class: 'enlace-a-la-guia', href: '/guia/' }, '📖 Guía');
   const derecha =
     cuenta === null
       ? el(
           'div',
           { class: 'fila' },
+          guia,
           boton(
             'Entrar',
             () => {
@@ -69,6 +72,7 @@ export function barraDeCuenta(almacen: Almacen, estado: EstadoDelCliente): HTMLE
       : el(
           'div',
           { class: 'fila' },
+          guia,
           el('span', { class: 'suave' }, `Hola, ${cuenta.nombre}`),
           boton(
             'Salir',

@@ -4,7 +4,9 @@
 // jugados por el administrador, para que haya cronica e historico. Nada de esto toca la base de
 // desarrollo salvo que se le pida.
 //
-//   npm run partida:muestra -- base.sqlite [turnos]
+//   npm run partida:muestra -- base.sqlite [turnos] [--json]
+//
+// Con `--json`, la ultima linea es `{"partida": …, "codigo": …}`: la usa `npm run guia:capturas`.
 import { cargarMundo } from '@conquer/mundo';
 import { TABLAS_DEL_JUEGO, explicar, resolverTurno } from '@conquer/nucleo';
 import type { IdPartida } from '@conquer/nucleo';
@@ -100,7 +102,9 @@ export async function sembrarPartidaDeMuestra(
 }
 
 if (import.meta.url === `file://${process.argv[1] ?? ''}`) {
-  const [base, turnos = '3'] = process.argv.slice(2);
+  const argumentos = process.argv.slice(2).filter((a) => a !== '--json');
+  const enJson = process.argv.includes('--json');
+  const [base, turnos = '3'] = argumentos;
   if (base === undefined || base === 'desarrollo.sqlite') {
     console.error(
       'Uso: npm run partida:muestra -- base.sqlite [turnos] (una base aparte, no la de desarrollo).',
@@ -108,6 +112,10 @@ if (import.meta.url === `file://${process.argv[1] ?? ''}`) {
     process.exit(1);
   }
   const { partida, codigo } = await sembrarPartidaDeMuestra(base, Number(turnos));
+  if (enJson) {
+    console.log(JSON.stringify({ partida, codigo }));
+    process.exit(0);
+  }
   console.log(`Partida de muestra "${partida}" lista en ${base} (código de invitación ${codigo}).`);
   for (const c of CUENTAS_DE_MUESTRA) {
     console.log(`  ${c.nombre} (${c.casa}): ${c.correo} / ${CLAVE_DE_MUESTRA}`);

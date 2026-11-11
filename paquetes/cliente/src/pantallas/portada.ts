@@ -89,7 +89,22 @@ export function portada(accion: HTMLElement): HTMLElement {
         }),
       ),
     ),
-    el('section', { class: 'como-se-juega' }, el('h2', {}, 'Cómo se juega'), pasos),
+    el(
+      'section',
+      { class: 'como-se-juega' },
+      el('h2', {}, 'Cómo se juega'),
+      pasos,
+      // Todo lo demas, con imagenes, en la guia (T-127).
+      el(
+        'p',
+        {},
+        el(
+          'a',
+          { href: '/guia/' },
+          'Lee la guía completa: la partida paso a paso, estrategia y tus primeros turnos →',
+        ),
+      ),
+    ),
     el(
       'section',
       { class: 'casas-del-juego' },

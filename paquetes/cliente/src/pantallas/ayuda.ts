@@ -175,6 +175,16 @@ export function pantallaDeAyuda(almacen: Almacen): HTMLElement {
     'section',
     { class: 'ficha tarjeta hoja', 'data-conservar-scroll': 'ayuda' },
     el('h2', {}, 'Ayuda'),
+    // La guia entera, con imagenes, en otra pestanya para no salir de la partida (T-127).
+    el(
+      'p',
+      { class: 'enlace-a-la-guia-completa' },
+      el(
+        'a',
+        { href: '/guia/', target: '_blank', rel: 'noopener' },
+        '📖 La guía completa, con imágenes: estrategia y primeros turnos',
+      ),
+    ),
     boton(
       '✕',
       () => {

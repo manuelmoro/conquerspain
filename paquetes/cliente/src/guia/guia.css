@@ -1,0 +1,301 @@
+/* La guia (T-127): el mismo papel y la misma tinta que el juego, en una pagina de lectura larga con su
+   indice al lado en escritorio y arriba en el movil. */
+:root {
+  color-scheme: light;
+  --papel: #f4ecd8;
+  --papel-claro: #faf5e8;
+  --tinta: #2b2118;
+  --tinta-suave: #6b5d4a;
+  --cobalto: #1f4e9c;
+  --borde: #d6c7a6;
+  --verde: #2f7a3a;
+  --rojo: #a8322b;
+  --oro: #c9a227;
+  --sombra: 0 2px 8px #2b211822;
+  --radio: 14px;
+  --texto: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 1rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--texto);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+a {
+  color: var(--cobalto);
+}
+:focus-visible {
+  outline: 3px solid var(--cobalto);
+  outline-offset: 2px;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--borde);
+  background: var(--papel-claro);
+}
+.barra .logo {
+  width: 34px;
+  height: 34px;
+}
+.barra .nombre {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--tinta);
+  text-decoration: none;
+}
+.barra .nombre span {
+  color: var(--rojo);
+}
+.barra .jugar {
+  margin-left: auto;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: var(--cobalto);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.presentacion {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 0;
+}
+.presentacion .entradilla {
+  max-width: 50rem;
+}
+
+.pagina {
+  display: grid;
+  gap: 2rem;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0.5rem 1rem 4rem;
+}
+@media (min-width: 980px) {
+  .pagina {
+    grid-template-columns: 15rem minmax(0, 1fr);
+  }
+  nav.indice {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+}
+
+nav.indice {
+  font-size: 0.92rem;
+}
+nav.indice h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+nav.indice ol {
+  margin: 0;
+  padding-left: 1.9rem;
+}
+nav.indice li {
+  margin: 0.15rem 0;
+}
+nav.indice a {
+  color: var(--tinta);
+  text-decoration: none;
+}
+nav.indice a:hover,
+nav.indice a[aria-current='true'] {
+  color: var(--cobalto);
+  text-decoration: underline;
+}
+
+main {
+  min-width: 0;
+  max-width: 50rem;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  line-height: 1.2;
+}
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+}
+.entradilla {
+  font-size: 1.15rem;
+  color: var(--tinta-suave);
+}
+main > section {
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--borde);
+  margin-top: 2rem;
+}
+h2 {
+  font-size: 1.75rem;
+  margin: 0 0 0.75rem;
+}
+h3 {
+  font-size: 1.25rem;
+  margin: 1.5rem 0 0.4rem;
+}
+
+figure {
+  margin: 1.25rem 0;
+}
+figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  box-shadow: var(--sombra);
+  background: var(--papel-claro);
+}
+figure.estrecha img {
+  max-width: min(100%, 26rem);
+}
+figure.movil img {
+  max-width: min(100%, 18rem);
+}
+figcaption {
+  margin-top: 0.4rem;
+  font-size: 0.88rem;
+  color: var(--tinta-suave);
+}
+.dos-figuras {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 720px) {
+  .dos-figuras {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.consejo,
+.cuidado {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radio);
+  background: var(--papel-claro);
+  border-left: 4px solid var(--verde);
+}
+.cuidado {
+  border-left-color: var(--rojo);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.94rem;
+}
+th,
+td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--borde);
+}
+th {
+  font-weight: 700;
+}
+.tabla-ancha {
+  overflow-x: auto;
+}
+
+kbd,
+.boton-de-muestra {
+  display: inline-block;
+  padding: 0 0.45rem;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background: var(--papel-claro);
+  font-family: var(--texto);
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+ol.turnos > li {
+  margin-bottom: 0.6rem;
+}
+
+.casas-de-la-guia {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 720px) {
+  .casas-de-la-guia {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.casa-de-la-guia {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--papel-claro);
+  font-size: 0.94rem;
+}
+.casa-de-la-guia .cabeza {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.casa-de-la-guia h3 {
+  margin: 0;
+}
+.casa-de-la-guia p {
+  margin: 0.4rem 0;
+}
+.casa-de-la-guia .consejo {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--papel);
+}
+
+dl.glosario dt {
+  font-weight: 700;
+  margin-top: 0.75rem;
+}
+dl.glosario dd {
+  margin: 0.1rem 0 0;
+}
+
+.pie {
+  margin-top: 3rem;
+  font-size: 0.88rem;
+  color: var(--tinta-suave);
+}

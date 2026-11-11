@@ -17,6 +17,13 @@ export default defineConfig({
     outDir: 'dist-web',
     emptyOutDir: true,
     target: 'es2022',
+    // Dos paginas: el juego y la guia (T-127), que se sirve en /guia/ y no carga el juego.
+    rolldownOptions: {
+      input: {
+        juego: fileURLToPath(new URL('index.html', import.meta.url)),
+        guia: fileURLToPath(new URL('guia/index.html', import.meta.url)),
+      },
+    },
   },
   server: {
     proxy: {

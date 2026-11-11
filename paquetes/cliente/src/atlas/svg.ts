@@ -118,6 +118,8 @@ export function montarAtlas(
   let encuadre: Encuadre = { x: 0, y: 0, ancho: 1, alto: 1 };
   let limites: Limites = { caja: encuadre, anchoMinimo: 1 };
   let temporizador: ReturnType<typeof setTimeout> | null = null;
+  /** Si lo ultimo se pinto sin saber el tamanyo del mapa (aun fuera de la pagina). */
+  let sinMedir = false;
 
   const anchoEnPantalla = (): number => Math.max(1, svg.clientWidth);
   const aplicarEncuadre = (): void => {
@@ -260,8 +262,9 @@ export function montarAtlas(
       const primeraVez = dibujo === null;
       dibujo = nuevo;
       limites = { caja: nuevo.caja, anchoMinimo: nuevo.caja.ancho / 12 };
-      if (primeraVez)
+      if (primeraVez || sinMedir)
         encuadre = encuadreInicial(nuevo.caja, anchoEnPantalla() / Math.max(1, svg.clientHeight));
+      sinMedir = svg.clientWidth === 0;
       aplicarEncuadre();
       const escala = escalaDe(encuadre, anchoEnPantalla());
       for (const capa of CAPAS) {
@@ -284,8 +287,19 @@ export function montarAtlas(
     },
     destruir: () => {
       if (temporizador !== null) clearTimeout(temporizador);
+      observador?.disconnect();
       svg.replaceChildren();
     },
   };
+  // Las ferias, las torres y los rotulos se dibujan a la escala de la pantalla. Si el mapa se compone
+  // antes de estar en la pagina (al llegar un turno nuevo), su ancho es 0 y saldrian enormes y tapando
+  // los toques (T-127): se repinta en cuanto tiene tamanyo, y tambien si la ventana cambia de ancho.
+  const observador =
+    typeof ResizeObserver === 'undefined'
+      ? null
+      : new ResizeObserver(() => {
+          if (dibujo !== null && svg.clientWidth > 0) atlasMontado.pintar(dibujo);
+        });
+  observador?.observe(svg);
   return atlasMontado;
 }

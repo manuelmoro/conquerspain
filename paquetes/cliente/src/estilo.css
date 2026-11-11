@@ -1283,3 +1283,17 @@ button.chip.elegido {
   outline: 3px solid #c98a00;
   outline-offset: 2px;
 }
+
+/* Los enlaces a la guia (T-127). */
+a.enlace-a-la-guia {
+  color: var(--tinta);
+  font-weight: 600;
+  text-decoration: none;
+}
+a.enlace-a-la-guia:hover {
+  text-decoration: underline;
+}
+.enlace-a-la-guia-completa {
+  margin: 0.25rem 0 0.75rem;
+  font-weight: 600;
+}

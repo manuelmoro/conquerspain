@@ -109,6 +109,7 @@ npm run servidor       # Solo el servidor (PUERTO, BASE_DE_DATOS, CLAVE_DE_COOKI
 npm run cliente:tamano # Construye el cliente y comprueba su peso (<= 150 KB gzip; va en verificar)
 npm run partida:prueba -- correo [casa] # Deja lista una partida de prueba en la base de desarrollo
 npm run partida:muestra -- base.sqlite  # Partida entre varias cuentas con contrasena, en una base aparte
+npm run guia:capturas  # Rehace las capturas de la guia (/guia/) jugando con Chrome sobre una partida de muestra
 ```
 
 En desarrollo el correo va a la consola: el enlace para entrar sale en la salida de `npm run dev`.

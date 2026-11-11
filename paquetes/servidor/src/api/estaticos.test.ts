@@ -12,6 +12,8 @@ const carpeta = mkdtempSync(join(tmpdir(), 'cs-estaticos-'));
 mkdirSync(join(carpeta, 'assets'));
 writeFileSync(join(carpeta, 'index.html'), '<!doctype html><title>ConquerSpain</title>');
 writeFileSync(join(carpeta, 'assets', 'index-abc.js'), 'console.log(1)');
+mkdirSync(join(carpeta, 'guia'));
+writeFileSync(join(carpeta, 'guia', 'index.html'), '<!doctype html><title>Guía</title>');
 afterAll(() => {
   rmSync(carpeta, { recursive: true, force: true });
 });
@@ -29,6 +31,14 @@ describe('los ficheros del cliente', () => {
   it('una ruta de la aplicación, o un fichero que no está, da la página principal', async () => {
     expect((await ficheroEstatico(carpeta, '/partidas/p-1')).cuerpo.toString()).toMatch(/<title>/);
     expect((await ficheroEstatico(carpeta, '/no-esta.js')).cuerpo.toString()).toMatch(/<title>/);
+  });
+
+  it('una carpeta con su página la sirve: la guía en /guia/ y /guia (T-127)', async () => {
+    for (const ruta of ['/guia/', '/guia']) {
+      const guia = await ficheroEstatico(carpeta, ruta);
+      expect(guia.cuerpo.toString(), ruta).toMatch(/Guía/);
+      expect(guia.cabeceras['content-type']).toMatch(/text\/html/);
+    }
   });
 
   it('nada fuera de la carpeta', async () => {

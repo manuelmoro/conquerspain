@@ -133,6 +133,18 @@ por tus comarcas, lo demás (comida, obras, insumos, comercio), lo que tienes y 
 vecinos; y la crónica del turno por secciones, avisos primero, con qué hacer y un botón para ver la comarca.
 La bandeja conserva la fila del cambio y deja reabrir el resumen.
 
+### 8.2.9 Terminar el turno, invitar, el desglose y la guía (fase 7)
+
+- **Terminar el turno (T-124).** «✓ He terminado el turno» en la cabecera (con «n/m listos») y debajo de las
+  órdenes (con a quién se espera). Cuando todos lo han pulsado, el turno se resuelve en el acto.
+- **Invitar (T-125).** Quien convocó tiene «✉ Invitar» en la cabecera: enlace `?unirse=…` para copiar o
+  compartir. Quien lo abre ve la invitación aun sin cuenta y, al entrar, llega a «Unirse» con el código puesto.
+- **Desglose (T-126).** Al pulsar un recurso de «Tienes», «En qué se fue y de dónde vino», concepto por
+  concepto, del último turno, de otro o de los 24 juntos; debajo, el gráfico y la tabla.
+- **Guía (T-127).** Página aparte en `/guia/` (sin cargar el juego), enlazada desde la barra de la portada y de
+  «Mis partidas», desde «Cómo se juega» y desde la pestaña Ayuda. Las capturas salen de
+  `npm run guia:capturas`; las casas, de las tablas del juego.
+
 ## 8.3 Reglas de interfaz que no se rompen
 
 1. **Nunca un número sin su causa.** Todo valor importante se puede desplegar para ver de dónde sale
