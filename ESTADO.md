@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 11 de noviembre de 2026 (fase 7, peticiones del usuario tras jugar: T-124 y T-125 hechas; T-126 y T-127 por hacer)
+**Última actualización:** 11 de noviembre de 2026 (fase 7, peticiones del usuario tras jugar: T-124, T-125 y T-126 hechas; T-127 en curso)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -11,8 +11,8 @@
 ## Tarea en curso
 
 **Fase 7 · peticiones del usuario del 11-11-2026** (índice, «Fase 7»): terminar el turno (**T-124, hecha**),
-invitar con un enlace (**T-125, hecha**), desglose de recursos (**T-126, siguiente**) y la guía completa con capturas
-(T-127). Se hacen en ese orden, una detrás de otra.
+invitar con un enlace (**T-125, hecha**), desglose de recursos (**T-126, hecha**) y la guía completa con capturas
+(**T-127, siguiente**). Se hacen en ese orden, una detrás de otra.
 
 ### Lo que sigue abierto de antes
 
@@ -135,6 +135,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 11-11-2026 | **T-126 hecha: en qué se gasta cada recurso.** Al pulsar un recurso de «Tienes», el diálogo empieza por «En qué se fue y de dónde vino»: concepto por concepto (producción de cada comarca, lo que come la gente, administración, cada orden en su frase, cargas de recuas, portazgos…), del último turno, de cualquier otro o de los 24 juntos. El núcleo traduce cada motivo del almacén a uno de 30 conceptos (`conceptoDeMovimiento`), y una partida de 72 turnos de las ocho casas comprueba que ninguno se queda sin concepto. |
 | 11-11-2026 | **Logo del juego.** Un sello de lacre con la península, la Cañada Real Leonesa y un castillo dorado (`paquetes/cliente/src/arte/logo.svg`): va en la barra de arriba junto a «Conquer**Spain**» y es el icono del navegador (`index.html`). El título de la portada usa el mismo par de colores |
 | 11-11-2026 | **T-125 hecha: invitar con un enlace.** Quien convocó tiene «✉ Invitar» en la partida: un enlace `?unirse=…` para copiar o compartir. Quien lo abre ve, aun sin cuenta, quién le invita, a qué partida y qué casas juegan; al entrar o crear la cuenta llega a «Unirse» con el código puesto, las casas llenas descartadas y, si la partida ya empezó, las ofertas de origen. Ruta pública `GET /invitaciones/:codigo`. |
 | 11-11-2026 | **T-124 hecha: terminar el turno.** Cada jugador puede pulsar «✓ He terminado el turno» (y reabrirlo); cuando lo han hecho todos los que juegan, el turno se resuelve en el acto. El plazo ya no está anclado a la fundación: cada turno vence un intervalo después de resolverse el anterior, también tras un avance del administrador o una caída (que ya no encadena turnos atrasados). Los demás ven en vivo quién falta. Migración 8 (`turno_terminado`). |

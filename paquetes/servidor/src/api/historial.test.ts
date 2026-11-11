@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { RECURSOS } from '@conquer/nucleo';
 import type { IdPartida } from '@conquer/nucleo';
 
-import type { TurnoDelHistorial } from './historial.ts';
+import type { ReferenciasDelHistorial, TurnoDelHistorial } from './historial.ts';
 import { apiDePrueba, CUENTAS } from './prueba-comun.ts';
 
 describe('el histórico de recursos', () => {
@@ -27,6 +27,45 @@ describe('el histórico de recursos', () => {
     }
     // Ha habido movimiento de verdad: la gente come pan cada turno.
     expect(turnos.some((t) => t.recursos.pan.sale > 0)).toBe(true);
+    // El desglose (T-126) suma exactamente lo que entro y salio, y dice en que.
+    for (const t of turnos) {
+      for (const recurso of RECURSOS) {
+        const c = t.recursos[recurso];
+        const positivos = c.desglose.filter((p) => p.delta > 0).reduce((s, p) => s + p.delta, 0);
+        const negativos = c.desglose.filter((p) => p.delta < 0).reduce((s, p) => s - p.delta, 0);
+        expect(positivos - negativos, `${recurso} ${String(t.turno)}`).toBe(c.entra - c.sale);
+        expect(c.desglose.every((p) => p.clase !== 'otro')).toBe(true);
+      }
+    }
+    const pan = turnos.at(-1)?.recursos.pan.desglose ?? [];
+    expect(pan.find((p) => p.clase === 'comida')?.delta).toBeLessThan(0);
+    expect(pan.some((p) => p.clase === 'produccion' && p.ref !== null && p.delta > 0)).toBe(true);
+    // De lo que mas movio a lo que menos.
+    const magnitudes = pan.map((p) => Math.abs(p.delta));
+    expect(magnitudes).toEqual([...magnitudes].sort((a, b) => b - a));
+    await e.repo.cerrar();
+  }, 120_000);
+
+  it('las órdenes que pagan algo vienen con la orden, para nombrarlas', async () => {
+    const e = await apiDePrueba({ turnosJugados: 1 });
+    const mesta = CUENTAS['mesta'] ?? '';
+    const capital = (await e.repo.ultimoEstado('p1' as IdPartida))?.jugadores['mesta']?.capital;
+    const dada = await e.pedir(mesta, 'POST', '/partidas/p1/ordenes', {
+      idCliente: 'recua-1',
+      tipo: 'formar-recua',
+      comarca: capital,
+      vecinos: 0,
+    });
+    expect(dada.estado, JSON.stringify(dada.cuerpo)).toBe(201);
+    await e.resolver();
+    const r = await e.pedir(mesta, 'GET', '/partidas/p1/historial-de-recursos');
+    const { turnos, referencias } = r.cuerpo as {
+      turnos: TurnoDelHistorial[];
+      referencias: ReferenciasDelHistorial;
+    };
+    const pago = turnos.at(-1)?.recursos.maravedis.desglose.find((p) => p.clase === 'orden');
+    expect(pago?.delta).toBeLessThan(0);
+    expect(referencias.ordenes[pago?.ref ?? '']?.tipo).toBe('formar-recua');
     await e.repo.cerrar();
   }, 120_000);
 });

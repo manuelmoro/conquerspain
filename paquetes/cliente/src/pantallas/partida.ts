@@ -30,7 +30,7 @@ import { EMBLEMA_DE_CASA } from '../arte/index.ts';
 import { PASOS_DEL_TUTORIAL, terminado } from '../tutorial.ts';
 import { enfocar } from './foco.ts';
 
-import type { MercadoRecibido, ModoDeAviso, TurnoDelHistorial } from '../api.ts';
+import type { HistorialRecibido, MercadoRecibido, ModoDeAviso } from '../api.ts';
 import { pantallaDeAyuda } from './ayuda.ts';
 import { dialogoDeHistorial } from './historial.ts';
 import { pantallaDeCasa } from './casa.ts';
@@ -38,7 +38,7 @@ import { pantallaDeCronica } from './cronica.ts';
 import { pantallaDeFicha } from './ficha.ts';
 import { pantallaDePlano } from './plano.ts';
 import { hayQueCentrar, unidadDestacada } from '../destacada.ts';
-import { agruparOrdenes } from '../ordenes-en-palabras.ts';
+import { agruparOrdenes, fraseDeOrden } from '../ordenes-en-palabras.ts';
 import type { OrdenEnPalabras } from '../ordenes-en-palabras.ts';
 import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
@@ -732,7 +732,7 @@ function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElem
 
 /** El recurso cuyo historico se esta mirando (T-090), o null. */
 let recursoAbierto: Recurso | null = null;
-const historiales = new CacheDeServidor<readonly TurnoDelHistorial[]>();
+const historiales = new CacheDeServidor<HistorialRecibido>();
 
 /** Lo que tienes, como botones: al pulsar uno se abre su historico por turno. */
 function botonesDeRecursos(almacen: Almacen, disponible: Recursos): HTMLElement {
@@ -967,18 +967,47 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
     ),
   );
   if (recursoAbierto !== null) {
-    const turnos = historiales.leer(
+    const historial = historiales.leer(
       claveDeVista(estado),
       () => almacen.pedirHistorial(),
       () => {
         almacen.refrescar();
       },
     );
+    // Los nombres del desglose (T-126): las comarcas, las unidades y las ordenes, como en la bandeja.
+    const unidades = [...vista.recuas, ...vista.rebanyos, ...vista.mesnadas];
+    const nombresDeBandeja = {
+      comarca: nombre,
+      unidad: (id: string) => unidades.find((u) => u.id === id)?.nombre ?? 'una recua',
+      orden: (id: string) => vista.ordenes.find((o) => o.id === id),
+      jugador: (id: string) => vista.casas.find((c) => c.id === id)?.nombre ?? 'otra casa',
+    };
     partes.push(
-      dialogoDeHistorial(recursoAbierto, turnos, historiales.fallo(claveDeVista(estado)), () => {
-        recursoAbierto = null;
-        almacen.refrescar();
-      }),
+      dialogoDeHistorial(
+        recursoAbierto,
+        historial,
+        historiales.fallo(claveDeVista(estado)),
+        (h) => ({
+          comarca: nombre,
+          unidad: (id) =>
+            unidades.find((u) => u.id === id)?.nombre ??
+            (id.startsWith('rebanyo-')
+              ? 'un rebaño'
+              : id.startsWith('mesnada-')
+                ? 'una mesnada'
+                : 'una recua'),
+          orden: (id) => h.referencias.ordenes[id] ?? vista.ordenes.find((o) => o.id === id),
+          frase: (o) => fraseDeOrden(o, nombresDeBandeja),
+          obra: (id) => h.referencias.obras[id],
+        }),
+        () => {
+          recursoAbierto = null;
+          almacen.refrescar();
+        },
+        () => {
+          almacen.refrescar();
+        },
+      ),
     );
   }
   if (invitarAbierto && codigoDeInvitacion !== null) {

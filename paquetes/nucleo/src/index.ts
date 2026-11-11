@@ -93,6 +93,8 @@ export { atlasDeJugador } from './reglas/atlas.ts';
 export { fichaDeComarca } from './ficha.ts';
 export { comoGanarLa } from './reglas/ganar-comarca.ts';
 export { regaloYaPedido } from './reglas/regalo.ts';
+export { CLASES_DE_CONCEPTO, conceptoDeMovimiento } from './reglas/conceptos.ts';
+export type { ClaseDeConcepto, ConceptoDeMovimiento } from './reglas/conceptos.ts';
 export { LO_BASICO, comienzoDe, equidadDelReparto } from './partidas/equidad.ts';
 export type { Basico, Comienzo, EquidadDelReparto } from './partidas/equidad.ts';
 export { comarcasIncorporables } from './reglas/incorporar.ts';

@@ -3,6 +3,7 @@
 // que es la que decide si una orden se queda en la bandeja para reintentarla.
 import { VERSION_REGLAS } from '@conquer/nucleo';
 import type {
+  ClaseDeConcepto,
   ResumenParaLaLista,
   AtlasDeJugador,
   ClasificacionPublica,
@@ -104,12 +105,36 @@ export interface MercadoRecibido {
   >;
 }
 
-/** Un turno del historico de recursos (T-090): lo que entro, salio y quedo de cada uno. */
+/** Lo que movio un concepto en un turno (T-126): positivo si entro, negativo si salio. */
+export interface PartidaDelDesglose {
+  readonly clase: ClaseDeConcepto;
+  readonly ref: string | null;
+  readonly delta: number;
+}
+
+/** Un turno del historico de recursos (T-090): lo que entro, salio y quedo de cada uno, y en que. */
 export interface TurnoDelHistorial {
   readonly turno: number;
   readonly recursos: Readonly<
-    Record<Recurso, { readonly entra: number; readonly sale: number; readonly queda: number }>
+    Record<
+      Recurso,
+      {
+        readonly entra: number;
+        readonly sale: number;
+        readonly queda: number;
+        readonly desglose: readonly PartidaDelDesglose[];
+      }
+    >
   >;
+}
+
+/** El historico con lo que hace falta para nombrar las ordenes y obras que nombra (T-126). */
+export interface HistorialRecibido {
+  readonly turnos: readonly TurnoDelHistorial[];
+  readonly referencias: {
+    readonly ordenes: Readonly<Record<string, Orden>>;
+    readonly obras: Readonly<Record<string, { readonly que: string; readonly comarca: string }>>;
+  };
 }
 
 export interface OrdenEnviada {
@@ -290,7 +315,7 @@ export class ClienteApi {
   }
 
   historialDeRecursos(partida: string) {
-    return this.pedir<{ turnos: TurnoDelHistorial[] }>(
+    return this.pedir<HistorialRecibido>(
       'GET',
       `/partidas/${encodeURIComponent(partida)}/historial-de-recursos`,
     );

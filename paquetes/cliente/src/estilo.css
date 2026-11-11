@@ -1061,9 +1061,67 @@ button.boton-de-recurso:hover:not(:disabled) {
   background: #f6efdd;
   border-color: var(--cobalto);
 }
+/* En que se fue y de donde vino cada recurso (T-126). */
+.dialogo.dialogo-ancho {
+  max-width: 44rem;
+}
+.desgloses {
+  display: grid;
+  gap: 0.75rem;
+}
+@media (min-width: 640px) {
+  .desgloses {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.desglose h3 {
+  margin: 0.25rem 0 0.4rem;
+  font-size: 0.95rem;
+}
+.desglose ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.desglose li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.1rem 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #eee3cc;
+  font-size: 0.9rem;
+}
+.desglose .cantidad {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.desglose.sube .cantidad {
+  color: var(--verde);
+}
+.desglose.baja .cantidad {
+  color: var(--rojo);
+}
+.desglose .barra {
+  grid-column: 1 / -1;
+  height: 4px;
+  border-radius: 2px;
+  background: #8fbf96;
+}
+.desglose.baja .barra {
+  background: #d9958f;
+}
+.seccion-de-desglose select {
+  font: inherit;
+  max-width: 100%;
+}
+.tabla-historial tr.elegida td {
+  background: #f1e6c8;
+}
+
 svg.grafico-historial {
   width: 100%;
   height: auto;
+  max-height: 11rem;
   margin: 0.5rem 0;
 }
 .grafico-historial .eje {

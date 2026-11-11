@@ -15,8 +15,8 @@ import type {
   MercadoRecibido,
   ModoDeAviso,
   OrdenEnviada,
+  HistorialRecibido,
   QuienJuega,
-  TurnoDelHistorial,
 } from './api.ts';
 import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
 import { conPrevision, editorDe, intencionesDe, tocar } from './editor-de-ruta.ts';
@@ -666,7 +666,7 @@ export class Almacen {
   }
 
   /** El historico de recursos de la partida abierta (T-090), o null si no se pudo traer. */
-  async pedirHistorial(): Promise<readonly TurnoDelHistorial[] | null> {
+  async pedirHistorial(): Promise<HistorialRecibido | null> {
     const partida = this.estadoActual.partida;
     if (partida === null) return null;
     const r = await this.dep.api.historialDeRecursos(partida.id);
@@ -674,7 +674,7 @@ export class Almacen {
       this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
       return null;
     }
-    return r.datos.turnos;
+    return r.datos;
   }
 
   /** Los avisos por correo de la partida abierta (T-066), o null si no se pudo traer. */

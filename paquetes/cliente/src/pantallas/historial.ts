@@ -1,8 +1,11 @@
-// El historico de un recurso (T-090): al pulsar un recurso de «Tienes», lo que entro y salio cada turno
-// y lo que quedo, con un grafico pequenyo y la tabla. Es lo propio del jugador, de sus movimientos.
+// El historico de un recurso (T-090): al pulsar un recurso de «Tienes», en que se fue y de donde vino
+// (T-126), lo que entro y salio cada turno y lo que quedo, con un grafico pequenyo y la tabla. Es lo
+// propio del jugador, de sus movimientos.
 import type { Recurso } from '@conquer/nucleo';
 
-import type { TurnoDelHistorial } from '../api.ts';
+import type { HistorialRecibido, TurnoDelHistorial } from '../api.ts';
+import { desgloseDe } from '../desglose.ts';
+import type { LineaDelDesglose, NombresDelDesglose } from '../desglose.ts';
 import { MARCA_DE_RECURSO, NOMBRE_DE_RECURSO } from '../nombres.ts';
 import { boton, el } from './dom.ts';
 
@@ -76,17 +79,113 @@ function grafico(turnos: readonly TurnoDelHistorial[], recurso: Recurso): SVGSVG
   return svg;
 }
 
+/** El turno cuyo desglose se mira: null es el ultimo; 0, todos los del historico. */
+let turnoElegido: number | null = null;
+
+/** Una lista del desglose: cada concepto con su cantidad y una barra de lo que pesa. */
+function listaDeDesglose(
+  titulo: string,
+  lineas: readonly LineaDelDesglose[],
+  clase: 'sube' | 'baja',
+): HTMLElement {
+  const total = lineas.reduce((t, l) => t + Math.abs(l.delta), 0);
+  return el(
+    'div',
+    { class: `desglose ${clase}` },
+    el('h3', {}, titulo),
+    lineas.length === 0
+      ? el('p', { class: 'suave' }, 'Nada.')
+      : el(
+          'ul',
+          {},
+          ...lineas.map((l) => {
+            const peso = total === 0 ? 0 : Math.round((Math.abs(l.delta) * 100) / total);
+            return el(
+              'li',
+              {},
+              el('span', { class: 'concepto' }, l.texto),
+              el(
+                'span',
+                { class: 'cantidad' },
+                `${l.delta > 0 ? '+' : '−'}${String(Math.abs(l.delta))}`,
+              ),
+              el('span', {
+                class: 'barra',
+                style: `width: ${String(peso)}%`,
+                'aria-hidden': 'true',
+              }),
+            );
+          }),
+        ),
+  );
+}
+
+/** En que se fue y de donde vino el recurso: del turno elegido o de todos. */
+function seccionDeDesglose(
+  turnos: readonly TurnoDelHistorial[],
+  recurso: Recurso,
+  nombres: NombresDelDesglose,
+  repintar: () => void,
+): HTMLElement {
+  const ultimo = turnos.at(-1)?.turno ?? 0;
+  const elegido = turnoElegido ?? ultimo;
+  const mirados = elegido === 0 ? turnos : turnos.filter((t) => t.turno === elegido);
+  const { entra, sale } = desgloseDe(mirados, recurso, nombres);
+  const selector = el(
+    'select',
+    { 'aria-label': 'De qué turno es el desglose' },
+    ...[...turnos]
+      .reverse()
+      .map((t) =>
+        el(
+          'option',
+          { value: String(t.turno), ...(t.turno === elegido ? { selected: '' } : {}) },
+          t.turno === ultimo
+            ? `el último turno (${String(t.turno)})`
+            : `el turno ${String(t.turno)}`,
+        ),
+      ),
+    el(
+      'option',
+      { value: '0', ...(elegido === 0 ? { selected: '' } : {}) },
+      `los últimos ${String(turnos.length)} turnos`,
+    ),
+  );
+  selector.addEventListener('change', () => {
+    turnoElegido = Number(selector.value);
+    repintar();
+  });
+  return el(
+    'section',
+    { class: 'seccion-de-desglose' },
+    el('p', { class: 'fila' }, el('strong', {}, 'En qué se fue y de dónde vino, en'), selector),
+    el(
+      'div',
+      { class: 'desgloses' },
+      listaDeDesglose('De dónde vino', entra, 'sube'),
+      listaDeDesglose('En qué se fue', sale, 'baja'),
+    ),
+  );
+}
+
 export function dialogoDeHistorial(
   recurso: Recurso,
-  turnos: readonly TurnoDelHistorial[] | null,
+  historial: HistorialRecibido | null,
   fallo: boolean,
+  nombres: (h: HistorialRecibido) => NombresDelDesglose,
   cerrar: () => void,
+  repintar: () => void,
 ): HTMLElement {
+  const salir = (): void => {
+    turnoElegido = null;
+    cerrar();
+  };
   const partes: (Node | string)[] = [
-    boton('✕', cerrar, 'cerrar secundario icono'),
+    boton('✕', salir, 'cerrar secundario icono'),
     el('h2', {}, `${MARCA_DE_RECURSO[recurso]} ${NOMBRE_DE_RECURSO[recurso]}`),
   ];
-  if (turnos === null)
+  const turnos = historial?.turnos ?? null;
+  if (historial === null || turnos === null)
     partes.push(
       el('p', { class: 'suave' }, fallo ? 'No se pudo traer el histórico.' : 'Cargando…'),
     );
@@ -96,6 +195,8 @@ export function dialogoDeHistorial(
     const entra = turnos.reduce((t, x) => t + x.recursos[recurso].entra, 0);
     const sale = turnos.reduce((t, x) => t + x.recursos[recurso].sale, 0);
     partes.push(
+      seccionDeDesglose(turnos, recurso, nombres(historial), repintar),
+      el('h3', {}, 'Turno a turno'),
       el(
         'p',
         { class: 'fila' },
@@ -107,7 +208,7 @@ export function dialogoDeHistorial(
       el(
         'p',
         { class: 'leyenda-historial suave' },
-        '▮ verde: entró · ▮ rojo: salió · línea: lo que te quedó',
+        '▮ verde: entró · ▮ rojo: salió · línea: lo que te quedó. Toca un turno de la tabla para ver su desglose.',
       ),
     );
     const tabla = el(
@@ -127,10 +228,20 @@ export function dialogoDeHistorial(
         {},
         ...[...turnos].reverse().map((t) => {
           const c = t.recursos[recurso];
+          const elegida = (turnoElegido ?? turnos.at(-1)?.turno) === t.turno;
+          const ver = boton(
+            String(t.turno),
+            () => {
+              turnoElegido = t.turno;
+              repintar();
+            },
+            'enlace',
+          );
+          ver.setAttribute('aria-label', `Ver el desglose del turno ${String(t.turno)}`);
           return el(
             'tr',
-            {},
-            el('td', {}, String(t.turno)),
+            elegida ? { class: 'elegida' } : {},
+            el('td', {}, ver),
             el(
               'td',
               { class: c.entra > 0 ? 'sube' : '' },
@@ -150,7 +261,7 @@ export function dialogoDeHistorial(
     el(
       'div',
       {
-        class: 'dialogo',
+        class: 'dialogo dialogo-ancho',
         role: 'dialog',
         'aria-modal': 'true',
         'aria-label': `Histórico de ${NOMBRE_DE_RECURSO[recurso]}`,
@@ -159,7 +270,7 @@ export function dialogoDeHistorial(
     ),
   );
   fondo.addEventListener('click', (e) => {
-    if (e.target === fondo) cerrar();
+    if (e.target === fondo) salir();
   });
   return fondo;
 }

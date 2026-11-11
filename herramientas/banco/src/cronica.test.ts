@@ -1,9 +1,15 @@
 // La cronica de una partida larga de las ocho casas (ficha T-088 §2.8 y criterio 9): ningun texto
 // deja un hueco `{…}` sin rellenar, y toda accion sugerida es un tipo de orden que la interfaz sabe
-// contar en castellano.
+// contar en castellano. Y todo movimiento del almacen tiene su concepto para el desglose (T-126).
 import { describe, expect, it } from 'vitest';
 
-import { CASAS, TABLAS_DEL_JUEGO, TIPOS_DE_ORDEN, entradaDe } from '@conquer/nucleo';
+import {
+  CASAS,
+  TABLAS_DEL_JUEGO,
+  TIPOS_DE_ORDEN,
+  conceptoDeMovimiento,
+  entradaDe,
+} from '@conquer/nucleo';
 import type { EstadoPartida, FuentesDeCronica } from '@conquer/nucleo';
 
 import { jugarTurno } from './ejecutar.ts';
@@ -30,6 +36,7 @@ describe('la crónica de una partida larga de todas las casas', () => {
     let entradas = 0;
     let sinPastoConRebanyo = 0;
     const unidadesAjenas: string[] = [];
+    const sinConcepto = new Set<string>();
     for (let i = 0; i < TURNOS; i += 1) {
       const turno = jugarTurno(estado, robots, alta.mundo, reglas);
       const fuentes: FuentesDeCronica = {
@@ -40,6 +47,10 @@ describe('la crónica de una partida larga de todas las casas', () => {
         reglas,
       };
       for (const suceso of turno.sucesos) {
+        if (suceso.tipo === 'almacen.cambio') {
+          const motivo = String(suceso.datos['motivo']);
+          if (conceptoDeMovimiento(motivo).clase === 'otro') sinConcepto.add(motivo);
+        }
         for (const lector of Object.values(turno.estado.jugadores)) {
           const entrada = entradaDe(suceso, lector, fuentes);
           if (entrada === null) continue;
@@ -57,6 +68,7 @@ describe('la crónica de una partida larga de todas las casas', () => {
       estado = turno.estado;
     }
     expect([...faltan]).toEqual([]);
+    expect([...sinConcepto]).toEqual([]);
     expect([...acciones].filter((a) => !(TIPOS_DE_ORDEN as readonly string[]).includes(a))).toEqual(
       [],
     );

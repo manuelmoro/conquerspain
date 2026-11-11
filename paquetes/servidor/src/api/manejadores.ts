@@ -272,7 +272,7 @@ export function crearApi(
     const { id, jugador, estado } = await estadoYVista(ctx);
     return {
       estado: 200,
-      datos: { turnos: await historialDeRecursos(dep.repo, id, jugador, estado.turno) },
+      datos: { ...(await historialDeRecursos(dep.repo, id, jugador, estado)) },
     };
   };
 

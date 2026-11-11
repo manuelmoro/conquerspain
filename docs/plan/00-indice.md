@@ -154,7 +154,7 @@ mapa completo; ESTADO.md es la aguja.
 |---|---|---|---|
 | [T-124](T-124-terminar-el-turno.md) | Terminar el turno: avance cuando todos acaban y plazo reiniciado | **hecha** | T-061 |
 | [T-125](T-125-invitar-a-una-partida.md) | Invitar a una partida empezada con un enlace | **hecha** | T-107 |
-| [T-126](T-126-desglose-de-recursos.md) | Desglose de en qué se gasta y de dónde viene cada recurso | pendiente | T-090 |
+| [T-126](T-126-desglose-de-recursos.md) | Desglose de en qué se gasta y de dónde viene cada recurso | **hecha** | T-090 |
 | [T-127](T-127-guia-del-juego.md) | Guía del juego completa, con capturas, desde la portada y la partida | pendiente | T-124 |
 
 ---
