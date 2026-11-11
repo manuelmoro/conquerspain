@@ -16,7 +16,7 @@ import type {
 } from '../persistencia/repositorio.ts';
 import type { CanalDeAvisos } from '../avisos/canal.ts';
 import type { ProveedorDeMundo } from './mundoDeLaPartida.ts';
-import { proximaResolucion } from './calendario.ts';
+import { vencimientoDesde } from './calendario.ts';
 import type { Registro } from './registro.ts';
 
 export interface DependenciasDeResolucion {
@@ -113,13 +113,14 @@ export async function resolverUnTurno(
         versionReglas: VERSION_REGLAS,
         versionNucleo: VERSION_NUCLEO,
       },
-      proximaResolucion: proximaResolucion(fila.ancla, fila.intervaloSegundos, estado.turno + 1),
+      // El plazo del turno nuevo empieza ahora, se resuelva este a su hora o antes (T-124).
+      proximaResolucion: vencimientoDesde(dep.ahora(), fila.intervaloSegundos),
     };
     await repo.guardarResolucion(resolucion, dep.ahora());
     // Con la temporada cerrada, la partida queda como archivo: sin mas turnos (T-104).
     if (resultado.estado.cierre !== undefined) await repo.terminarPartida(id);
     // Solo se avisa de lo que ha quedado guardado.
-    dep.canal?.publicar({ partida: id, turno: estado.turno });
+    dep.canal?.publicar({ tipo: 'turno-resuelto', partida: id, turno: estado.turno });
     registro.anotar('info', 'turno-resuelto', {
       partida: id,
       turno: estado.turno,

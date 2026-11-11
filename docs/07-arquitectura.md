@@ -128,9 +128,11 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
     con `encadenado-roto` si el estado nuevo no encadena con el guardado.
   - Migraciones versionadas y reversibles; una base más nueva que el servidor no se abre.
   - **Tamaño medido:** 200 turnos con ocho casas, 5,09 MB; 12 jugadores y 240 turnos, unos 12 MB.
-- **Reloj de turnos** (T-061, `paquetes/servidor/src/reloj/`): calendario **anclado**
-  (`proximaResolucion = ancla + N·intervalo`), recuperación **en cadena** tras una caída (con tope por
-  pasada), concurrencia optimista (conflicto de turno = trabajo descartado, no error), detención de la
+- **Reloj de turnos** (T-061, `paquetes/servidor/src/reloj/`; plazo reiniciado desde T-124): cada turno
+  vence **un intervalo después de resolverse el anterior** (`proximaResolucion = resueltoEn + intervalo`),
+  se resuelva a su hora, porque **todos lo han dado por terminado** (`PUT /partidas/:id/fin-de-turno`,
+  tabla `turno_terminado`) o porque lo avanzó quien administra. Tras una caída no se encadenan turnos:
+  el atrasado se resuelve al despertar y el siguiente tiene su plazo entero. Concurrencia optimista (conflicto de turno = trabajo descartado, no error), detención de la
   partida si el motor falla y `reproducirTurno` para reproducir cualquier turno pasado contra su
   auditoría. Detalle en [T-061](plan/T-061-reloj-de-turnos.md). Descripción original:
   un proceso de resolución que despierta, busca partidas con

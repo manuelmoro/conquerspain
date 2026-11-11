@@ -32,7 +32,7 @@ export type { DependenciasDeApi } from './api/manejadores.ts';
 export { servirHttp } from './api/http.ts';
 export type { Autenticador, PeticionHttp, RespuestaHttp } from './api/tipos.ts';
 export { reproducirTurno } from './reloj/auditoria.ts';
-export { proximaResolucion, turnosDebidos } from './reloj/calendario.ts';
+export { vencimientoDesde } from './reloj/calendario.ts';
 export { proveedorDeRecorte } from './reloj/mundoDeLaPartida.ts';
 export type { ProveedorDeMundo } from './reloj/mundoDeLaPartida.ts';
 export { Reloj } from './reloj/reloj.ts';

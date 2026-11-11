@@ -34,7 +34,7 @@ import type {
 import type { RepositorioDeCuentas } from '../persistencia/cuentas.ts';
 import { ErrorDePersistencia } from '../persistencia/repositorio.ts';
 import type { Repositorio } from '../persistencia/repositorio.ts';
-import { proximaResolucion } from '../reloj/calendario.ts';
+import { vencimientoDesde } from '../reloj/calendario.ts';
 
 /** Ritmos de una partida normal (docs/02 §1): una hora, seis o un dia. */
 export const INTERVALOS_ADMITIDOS = [60, 360, 1440] as const;
@@ -430,7 +430,7 @@ export class ServicioDeAltas {
           huellaMundo: huella(preparada.mundo),
           intervaloSegundos,
           ancla: ahora,
-          proximaResolucion: proximaResolucion(ahora, intervaloSegundos, 1),
+          proximaResolucion: vencimientoDesde(ahora, intervaloSegundos),
           esDePrueba: c.esDePrueba,
           participantes: plazas.map((p) => ({
             jugador: p.jugador as IdJugador,

@@ -1,20 +1,10 @@
-// El calendario del reloj (ficha T-061 §4.1): anclado en el instante del turno 1, nunca en el
-// instante en que acabo el ultimo calculo. Funciones puras; el tiempo entra como parametro.
+// El calendario del reloj (fichas T-061 §4.1 y T-124 §2.3). El primer turno se resuelve un intervalo
+// despues de fundar la partida; cada turno siguiente, un intervalo despues de resolverse el anterior,
+// sea a su hora, porque todos lo dieron por terminado o porque lo avanzo quien administra: el plazo se
+// reinicia en cada avance, y nadie se encuentra con un turno recortado. Funciones puras; el tiempo
+// entra como parametro.
 
-/**
- * El instante (ms Unix) en que se resuelve el turno `turno`: el turno N transcurre en
- * `[ancla + (N-1)·I, ancla + N·I)` y se resuelve al acabar.
- */
-export function proximaResolucion(ancla: number, intervaloSegundos: number, turno: number): number {
-  return ancla + turno * intervaloSegundos * 1000;
-}
-
-/** Cuantos turnos estan ya debidos si la proxima resolucion era `proxima` y son las `ahora`. */
-export function turnosDebidos(
-  proxima: number | null,
-  intervaloSegundos: number,
-  ahora: number,
-): number {
-  if (proxima === null || proxima > ahora) return 0;
-  return Math.floor((ahora - proxima) / (intervaloSegundos * 1000)) + 1;
+/** El instante (ms Unix) en que vence el turno que empieza en `desde`: un intervalo despues. */
+export function vencimientoDesde(desde: number, intervaloSegundos: number): number {
+  return desde + intervaloSegundos * 1000;
 }

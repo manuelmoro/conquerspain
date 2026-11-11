@@ -27,6 +27,7 @@ import type { ServicioDeCuentas } from '../cuentas/servicio.ts';
 import { MODOS_DE_AVISO } from '../persistencia/avisos.ts';
 import type { RepositorioDeAvisos } from '../persistencia/avisos.ts';
 import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
+import { finDeTurno } from '../reloj/fin-de-turno.ts';
 import type { Registro } from '../reloj/registro.ts';
 import { ErrorDeApi } from './errores.ts';
 import { preverRutaPedida } from './prevision.ts';
@@ -65,6 +66,11 @@ export interface DependenciasDeApi {
     id: IdPartida,
     opciones: { readonly porElAdministrador: boolean },
   ) => Promise<{ readonly tipo: string }>;
+  /**
+   * Resuelve el turno si todos los que juegan lo han dado por terminado (T-124); si falta, la marca
+   * se guarda igual y el turno espera a su hora.
+   */
+  readonly alTerminarElTurno?: (id: IdPartida) => Promise<{ readonly tipo: string }>;
   /** Cada cuanto se manda un latido por el flujo de eventos; por defecto, 25 s. */
   readonly latidoMs?: number;
 }
@@ -245,6 +251,8 @@ export function crearApi(
         proximaResolucion: fila.proximaResolucion,
         // Quien administra ve el boton de avanzar el turno (T-090).
         esAdministrador: (await dep.repo.administradorDePartida(id)) === ctx.cuenta,
+        // Quien ha dado ya por terminado el turno (T-124): se ve en la cabecera.
+        finDeTurno: (await finDeTurno(dep.repo, id))?.quienes ?? [],
         vista,
       },
     };
@@ -322,6 +330,44 @@ export function crearApi(
     }
     const resultado = await avanzar(id, { porElAdministrador: administra });
     return { estado: 200, datos: { resultado: resultado.tipo } };
+  };
+
+  // Dar por terminado el turno (T-124): cuando lo han hecho todos los que juegan, se resuelve ya y el
+  // plazo del siguiente empieza a contar. Se puede deshacer mientras no se haya resuelto.
+  const terminarTurno: Manejador = async (ctx) => {
+    const { fila, jugador, id } = await estadoYVista(ctx);
+    if (fila.estado !== 'activa') {
+      throw new ErrorDeApi(
+        'partida-detenida',
+        `La partida "${id}" esta ${fila.estado}: ya no tiene turnos que terminar.`,
+      );
+    }
+    const pedido = objetoJson(ctx.peticion.cuerpo)['terminado'];
+    if (typeof pedido !== 'boolean') {
+      throw new ErrorDeApi(
+        'cuerpo-invalido',
+        'Manda {"terminado": true} para dar el turno por terminado, o false para seguir con él.',
+      );
+    }
+    try {
+      await dep.repo.marcarTurnoTerminado(id, jugador, fila.turnoActual, pedido, dep.ahora());
+    } catch (error) {
+      if (error instanceof ErrorDePersistencia && error.codigo === 'turno-cerrado') {
+        throw new ErrorDeApi('turno-cerrado', error.message);
+      }
+      throw error;
+    }
+    dep.canal?.publicar({ tipo: 'fin-de-turno', partida: id, turno: fila.turnoActual });
+    const resultado = pedido
+      ? ((await dep.alTerminarElTurno?.(id))?.tipo ?? 'no-debida')
+      : 'no-debida';
+    return {
+      estado: 200,
+      datos: {
+        resultado,
+        finDeTurno: (await finDeTurno(dep.repo, id))?.quienes ?? [],
+      },
+    };
   };
 
   const clasificacion: Manejador = async (ctx) => {
@@ -649,6 +695,14 @@ export function crearApi(
     const flujo: Flujo = (escribir) => {
       escribir(': conectado\n\n');
       const baja = canal.suscribir(id, (evento) => {
+        if (evento.tipo === 'fin-de-turno') {
+          void finDeTurno(dep.repo, id).then((fin) => {
+            if (fin === null || fin.turno !== evento.turno) return;
+            const datos = { turno: fin.turno, quienes: fin.quienes };
+            escribir(`event: fin-de-turno\ndata: ${JSON.stringify(datos)}\n\n`);
+          });
+          return;
+        }
         void dep.repo.cronica(id, evento.turno, jugador).then((cronica) => {
           const datos = { turno: evento.turno, avisos: cronica === null ? 0 : avisosDe(cronica) };
           escribir(`event: turno-resuelto\ndata: ${JSON.stringify(datos)}\n\n`);
@@ -803,6 +857,7 @@ export function crearApi(
     { metodo: 'GET', patron: '/partidas/:id/atlas', manejador: privada(verAtlas) },
     { metodo: 'GET', patron: '/partidas/:id/comarcas/:comarca', manejador: privada(verFicha) },
     { metodo: 'POST', patron: '/partidas/:id/avanzar', manejador: privada(avanzarTurno) },
+    { metodo: 'PUT', patron: '/partidas/:id/fin-de-turno', manejador: privada(terminarTurno) },
     { metodo: 'POST', patron: '/partidas/:id/prevision-de-ruta', manejador: privada(preverRuta) },
     { metodo: 'GET', patron: '/partidas/:id/mercado', manejador: privada(verMercado) },
     {

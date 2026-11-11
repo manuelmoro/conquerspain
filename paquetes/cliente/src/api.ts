@@ -56,7 +56,16 @@ export interface EstadoRecibido {
   readonly esAdministrador?: boolean;
   /** Las comarcas que ya puede incorporar, para resaltarlas en el mapa (T-092). */
   readonly incorporables?: readonly string[];
+  /** Quien ha dado ya por terminado este turno (T-124). */
+  readonly finDeTurno?: readonly QuienJuega[];
   readonly vista: VistaJugador;
+}
+
+/** Un jugador de la partida y si ha dado por terminado el turno (T-124). */
+export interface QuienJuega {
+  readonly jugador: string;
+  readonly nombre: string;
+  readonly terminado: boolean;
 }
 
 export interface OfertaRecibida {
@@ -317,6 +326,15 @@ export class ClienteApi {
     return this.pedir<{ resultado: string }>(
       'POST',
       `/partidas/${encodeURIComponent(partida)}/avanzar`,
+    );
+  }
+
+  /** Da el turno por terminado (o lo reabre); si era el ultimo en hacerlo, el turno se resuelve. */
+  terminarTurno(partida: string, terminado: boolean) {
+    return this.pedir<{ resultado: string; finDeTurno: QuienJuega[] }>(
+      'PUT',
+      `/partidas/${encodeURIComponent(partida)}/fin-de-turno`,
+      { terminado },
     );
   }
 

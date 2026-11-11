@@ -69,6 +69,7 @@ describe('las migraciones', () => {
       'restablecimiento',
       'sesion',
       'suceso_turno',
+      'turno_terminado',
     ]);
   });
 

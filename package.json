@@ -28,6 +28,7 @@
     "atlas:comprobar": "tsx herramientas/atlas/src/atlas.ts --comprobar",
     "servidor": "tsx paquetes/servidor/src/principal.ts",
     "partida:prueba": "tsx paquetes/servidor/herramientas/partida-de-prueba.ts",
+    "partida:muestra": "tsx paquetes/servidor/herramientas/partida-de-muestra.ts",
     "dev": "tsx paquetes/cliente/herramientas/dev.ts",
     "cliente:tamano": "tsx paquetes/cliente/herramientas/tamano.ts",
     "portada": "tsx paquetes/cliente/herramientas/portada.ts",

@@ -44,6 +44,7 @@ import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
 import { pantallaDeUnidades } from './unidades.ts';
 import { dialogoDeResumen } from './resumen.ts';
+import { resumenDelFinDeTurno } from '../fin-de-turno.ts';
 
 interface EstadoDelAtlas {
   svg: SVGSVGElement | null;
@@ -458,14 +459,62 @@ function botonesDeCola(
   return botones;
 }
 
+/**
+ * Dar el turno por terminado (T-124): el boton y quien falta. Compacto en la cabecera; entero al final
+ * de la bandeja, que es donde se acaba de dar las ordenes. Null si la partida ya no tiene turnos.
+ */
+function finDeTurnoDe(
+  almacen: Almacen,
+  estado: EstadoDelCliente,
+  compacto: boolean,
+): HTMLElement | null {
+  const partida = estado.partida;
+  if (partida === null || partida.desactualizada) return null;
+  const { vista, finDeTurno } = partida.recibido;
+  if (vista.cierre !== null || partida.recibido.estadoDeLaPartida !== 'activa') return null;
+  const r = resumenDelFinDeTurno(finDeTurno ?? [], vista.jugador.id);
+  const pulsar = boton(
+    r.yo ? (compacto ? '↺ Reabrir' : '↺ Reabrir mi turno') : '✓ He terminado el turno',
+    () => {
+      void almacen.terminarTurno(!r.yo);
+    },
+    r.yo ? 'secundario fin-de-turno' : 'fin-de-turno',
+  );
+  pulsar.setAttribute('aria-pressed', r.yo ? 'true' : 'false');
+  if (compacto) {
+    pulsar.setAttribute('title', `${r.linea} ${r.explicacion}`);
+    return el(
+      'span',
+      { class: 'fin-de-turno-compacto' },
+      pulsar,
+      r.total > 1
+        ? el(
+            'span',
+            { class: 'chip', title: r.linea },
+            `${String(r.terminados)}/${String(r.total)} listos`,
+          )
+        : '',
+    );
+  }
+  return el(
+    'div',
+    { class: `fin-de-turno-bloque${r.yo ? ' hecho' : ''}`, 'aria-live': 'polite' },
+    el('h3', {}, r.yo ? '✓ Turno terminado' : '¿Has acabado?'),
+    el('p', {}, r.linea),
+    el('p', { class: 'suave' }, r.explicacion),
+    pulsar,
+  );
+}
+
 function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const partida = estado.partida;
   if (partida === null) return el('div');
   const { vista } = partida.recibido;
   const nombre = nombreDeComarcaEn(estado);
   const resumen = resumenDeRecursos(vista);
+  const seccionDeRecursos = el('h2', {}, 'Tus recursos');
   const partes: (Node | string)[] = [
-    el('h2', {}, 'Tus recursos'),
+    seccionDeRecursos,
     el('p', { class: 'suave' }, 'Lo que tienes para gastar está arriba, siempre a la vista.'),
     el(
       'p',
@@ -626,6 +675,8 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
     ),
     ...seccion('🔨 En marcha', 'Nada en marcha.', 'Empezadas: siguen su curso solas.', enMarcha),
   );
+  const fin = finDeTurnoDe(almacen, estado, false);
+  if (fin !== null) partes.splice(partes.indexOf(seccionDeRecursos), 0, fin);
   return el('section', { class: 'bandeja tarjeta', id: 'bandeja' }, ...partes);
 }
 
@@ -812,6 +863,8 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         );
     titulo?.after(control);
   }
+  const finCompacto = finDeTurnoDe(almacen, estado, true);
+  if (finCompacto !== null) cabecera.append(finCompacto);
   // Lo que tienes para gastar, siempre a la vista arriba (J-01: costaba encontrarlo en el panel).
   const barra = el(
     'div',

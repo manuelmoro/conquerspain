@@ -148,6 +148,15 @@ mapa completo; ESTADO.md es la aguja.
 | [T-122](T-122-bandidaje.md) | Bandidaje y seguridad de caminos | **hecha** | T-120 |
 | [T-123](T-123-diplomacia.md) | Acuerdos, rupturas y reputación | **hecha** | T-121 |
 
+## Fase 7 · Tras jugar de verdad (peticiones del usuario, 11-11-2026)
+
+| Tarea | Título | Estado | Depende de |
+|---|---|---|---|
+| [T-124](T-124-terminar-el-turno.md) | Terminar el turno: avance cuando todos acaban y plazo reiniciado | **hecha** | T-061 |
+| [T-125](T-125-invitar-a-una-partida.md) | Invitar a una partida empezada con un enlace | pendiente | T-107 |
+| [T-126](T-126-desglose-de-recursos.md) | Desglose de en qué se gasta y de dónde viene cada recurso | pendiente | T-090 |
+| [T-127](T-127-guia-del-juego.md) | Guía del juego completa, con capturas, desde la portada y la partida | pendiente | T-124 |
+
 ---
 
 ## Checkpoints de jugabilidad

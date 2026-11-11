@@ -438,6 +438,54 @@ export class RepositorioSqlite
     });
   }
 
+  // ---------------------------------------------------------------- fin de turno (T-124)
+
+  async marcarTurnoTerminado(
+    id: IdPartida,
+    jugador: IdJugador,
+    turno: number,
+    terminado: boolean,
+    ahora: number,
+  ): Promise<void> {
+    this.transaccion(() => {
+      const partida = this.uno('SELECT turno_actual FROM partida WHERE id = ?', id);
+      if (partida === null) throw this.desconocida(id);
+      const actual = entero(partida, 'turno_actual');
+      if (actual !== turno) {
+        throw new ErrorDePersistencia(
+          'turno-cerrado',
+          `Quieres terminar el turno ${String(turno)} y la partida "${id}" ya esta en el ${String(actual)}: ese turno se ha resuelto. Vuelve a leer el estado.`,
+          { partida: id, esperado: turno, actual },
+        );
+      }
+      if (terminado) {
+        this.ejecutar(
+          'INSERT OR IGNORE INTO turno_terminado (partida, turno, jugador, marcado_en) VALUES (?, ?, ?, ?)',
+          id,
+          turno,
+          jugador,
+          ahora,
+        );
+      } else {
+        this.ejecutar(
+          'DELETE FROM turno_terminado WHERE partida = ? AND turno = ? AND jugador = ?',
+          id,
+          turno,
+          jugador,
+        );
+      }
+    });
+    return;
+  }
+
+  async turnoTerminadoPor(id: IdPartida, turno: number): Promise<readonly IdJugador[]> {
+    return this.todos(
+      'SELECT jugador FROM turno_terminado WHERE partida = ? AND turno = ? ORDER BY jugador',
+      id,
+      turno,
+    ).map((f) => texto(f, 'jugador') as IdJugador);
+  }
+
   // ---------------------------------------------------------------- ordenes
 
   async guardarOrden(

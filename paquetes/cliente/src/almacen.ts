@@ -15,6 +15,7 @@ import type {
   MercadoRecibido,
   ModoDeAviso,
   OrdenEnviada,
+  QuienJuega,
   TurnoDelHistorial,
 } from './api.ts';
 import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
@@ -458,6 +459,44 @@ export class Almacen {
       return;
     }
     await this.recargar();
+  }
+
+  /**
+   * Da el turno por terminado o lo reabre (T-124). Antes manda lo que quede en la bandeja: terminar
+   * con ordenes sin enviar seria perderlas. Si era el ultimo en terminar, trae el turno nuevo.
+   */
+  async terminarTurno(terminado: boolean): Promise<void> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    if (terminado) {
+      await this.sincronizar();
+      if (this.estadoActual.pendientes.some((p) => p.error === null)) {
+        this.anotarError(
+          'sin-red',
+          'Quedan órdenes sin enviar: cuando vuelva la conexión se mandarán y podrás terminar el turno.',
+        );
+        return;
+      }
+    }
+    const r = await this.dep.api.terminarTurno(partida.id, terminado);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return;
+    }
+    if (r.datos.resultado === 'resuelto') {
+      await this.recargar();
+      return;
+    }
+    this.alFinDeTurno(partida.recibido.turno, r.datos.finDeTurno);
+  }
+
+  /** Alguien ha terminado (o reabierto) su turno: se pone al dia la lista, sin mas. */
+  alFinDeTurno(turno: number, quienes: readonly QuienJuega[]): void {
+    const partida = this.estadoActual.partida;
+    if (partida?.recibido.turno !== turno) return;
+    this.cambiar({
+      partida: { ...partida, recibido: { ...partida.recibido, finDeTurno: quienes } },
+    });
   }
 
   /** Llego un turno nuevo: se avisa, no se cambia la pantalla (ficha T-080 §4.4). */

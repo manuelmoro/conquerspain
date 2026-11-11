@@ -981,6 +981,33 @@ button.avanzar {
   font-size: 0.85rem;
 }
 
+/* Dar el turno por terminado (T-124): compacto en la cabecera y entero al final de la bandeja. */
+.fin-de-turno-compacto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+.fin-de-turno-compacto button {
+  min-height: 2rem;
+  padding: 0.15rem 0.8rem;
+  font-size: 0.85rem;
+}
+.fin-de-turno-bloque {
+  margin: 0.5rem 0 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--borde);
+  border-left: 4px solid var(--cobalto);
+  border-radius: var(--radio);
+  background: var(--papel-claro);
+}
+.fin-de-turno-bloque.hecho {
+  border-left-color: var(--verde);
+}
+.fin-de-turno-bloque h3 {
+  margin-top: 0;
+}
+
 /* Los recursos de «Tienes» como botones, y su historico (T-090). */
 button.boton-de-recurso {
   min-height: auto;

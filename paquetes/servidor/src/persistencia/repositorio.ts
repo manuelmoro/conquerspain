@@ -182,6 +182,19 @@ export interface Repositorio {
 
   /** Las ordenes que entraron al motor en ese turno, en el orden en que se le dieron. */
   ordenesDelTurno(id: IdPartida, turno: number): Promise<readonly OrdenGuardada[]>;
+  /**
+   * Marca (o desmarca) que un jugador da por terminado el turno `turno` (T-124). La comprobacion de
+   * que la partida sigue en ese turno va dentro de la transaccion: falla con `turno-cerrado` si no.
+   */
+  marcarTurnoTerminado(
+    id: IdPartida,
+    jugador: IdJugador,
+    turno: number,
+    terminado: boolean,
+    ahora: number,
+  ): Promise<void>;
+  /** Los jugadores que han dado por terminado ese turno, en orden de identificador. */
+  turnoTerminadoPor(id: IdPartida, turno: number): Promise<readonly IdJugador[]>;
   /** El instante de la proxima resolucion mas cercana de cualquier partida activa, si hay. */
   proximaHora(): Promise<number | null>;
 

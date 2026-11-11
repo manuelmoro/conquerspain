@@ -3,12 +3,18 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 10 de noviembre de 2026 (**plan terminado**: de T-001 a T-123, salvo T-066 y T-108, que esperan al usuario)
+**Última actualización:** 11 de noviembre de 2026 (fase 7, peticiones del usuario tras jugar: T-124 hecha; T-125, T-126 y T-127 por hacer)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
 
 ## Tarea en curso
+
+**Fase 7 · peticiones del usuario del 11-11-2026** (índice, «Fase 7»): terminar el turno (**T-124, hecha**),
+invitar con un enlace (**T-125, siguiente**), desglose de recursos (T-126) y la guía completa con capturas
+(T-127). Se hacen en ese orden, una detrás de otra.
+
+### Lo que sigue abierto de antes
 
 **T-088 · Arreglos de J-01** ([ficha](docs/plan/T-088-arreglos-de-j01.md)). **Todo el trabajo está hecho y
 verificado**, también lo de la segunda sesión de J-01 (puntos 6 a 9, el 09-11-2026): tu influencia en las
@@ -122,12 +128,14 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 | Siete recursos: pan, madera, piedra, maravedís, sal, hierro, lana | 17-09-2026 |
 | Node 22, npm workspaces, TypeScript 6 estricto, Vitest, ESLint 10 y Prettier | 17-09-2026 |
 | Cuentas con contraseña (scrypt) además del enlace mágico: revisa T-063 a petición del usuario | 09-11-2026 |
+| El plazo de un turno se cuenta desde que se resolvió el anterior, y se resuelve antes si todos lo terminan (T-124) | 11-11-2026 |
 | Solo se emiten declaraciones; el código se ejecuta desde las fuentes y los imports llevan `.ts` | 17-09-2026 |
 
 ## Bitácora
 
 | Fecha | Qué pasó |
 |---|---|
+| 11-11-2026 | **T-124 hecha: terminar el turno.** Cada jugador puede pulsar «✓ He terminado el turno» (y reabrirlo); cuando lo han hecho todos los que juegan, el turno se resuelve en el acto. El plazo ya no está anclado a la fundación: cada turno vence un intervalo después de resolverse el anterior, también tras un avance del administrador o una caída (que ya no encadena turnos atrasados). Los demás ven en vivo quién falta. Migración 8 (`turno_terminado`). |
 | 10-11-2026 | **Desplegado en https://conquerspain.com.** Servidor Hetzner CX23 (7,25 €/mes), túnel de Cloudflare sin puertos abiertos, SQLite en un volumen con copia diaria, y despliegue automático de cada commit de `main` que pase la verificación de GitHub. Correo real por Brevo con el dominio autenticado: el primer enlace salió hacia el buzón del usuario; **T-066 se cierra cuando confirme que le llegó**. Arreglado de paso que la primera copia corría antes de que existiera la base. Detalle en [despliegue/LEEME.md](despliegue/LEEME.md). |
 | 10-11-2026 | **T-123 hecha: acuerdos, rupturas y reputación. Plan terminado.** Sobre los contratos de T-103, tres acuerdos nuevos con efecto y plazo: **no agresión** (retira la hostilidad y la impide; como mucho tres por casa), **no cortejar** hasta tres comarcas y **exclusiva de venta** de un recurso. Romper un acuerdo se anuncia a todos y cuesta 25 de crédito y 30 de prestigio para siempre. Con esto están hechas todas las tareas del plan salvo T-066 (correo real) y T-108 (equilibrio con partidas reales), que esperan al usuario. |
 | 10-11-2026 | **T-122 hecha: bandidaje.** Cada tramo tiene un riesgo de asalto pequeño (de 0 a 10 %) que sube en puertos, sierras, tierra de nadie y comarcas desleales, y baja con ventas, lealtad y calzada; una mesnada propia de escolta lo anula. Un asalto se lleva la cuarta parte de la carga y la recua sigue su camino. El mapa de caminos marca con «⚠» los tramos peligrosos, con lo que el jugador sabe. |

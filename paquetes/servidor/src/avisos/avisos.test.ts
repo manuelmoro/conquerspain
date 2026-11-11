@@ -23,7 +23,7 @@ import {
   resolverParaGuardar,
 } from '../persistencia/prueba-comun.ts';
 import { RepositorioSqlite } from '../persistencia/sqlite.ts';
-import { proximaResolucion } from '../reloj/calendario.ts';
+import { vencimientoDesde } from '../reloj/calendario.ts';
 import { proveedorDeRecorte } from '../reloj/mundoDeLaPartida.ts';
 import { RegistroEnMemoria } from '../reloj/registro.ts';
 import { Reloj } from '../reloj/reloj.ts';
@@ -351,7 +351,7 @@ describe('en vivo (criterio 1)', () => {
     const parar = r.flujo?.((t) => escrito.push(t));
     expect(e.canal.escuchando(P)).toBe(1);
     const nuevo = await e.resolver();
-    e.canal.publicar({ partida: P, turno: nuevo.turno - 1 });
+    e.canal.publicar({ tipo: 'turno-resuelto', partida: P, turno: nuevo.turno - 1 });
     await new Promise((listo) => setTimeout(listo, 120));
     const evento = escrito.find((t) => t.startsWith('event: turno-resuelto'));
     expect(evento).toMatch(/data: \{"turno":1,"avisos":\d+\}/);
@@ -374,7 +374,7 @@ describe('en vivo (criterio 1)', () => {
         ...datosDePartida(estado, mundo),
         ancla,
         intervaloSegundos: 1,
-        proximaResolucion: proximaResolucion(ancla, 1, 1),
+        proximaResolucion: vencimientoDesde(ancla, 1),
       },
       estado,
       ancla,
@@ -431,7 +431,7 @@ describe('en vivo (criterio 1)', () => {
       const auditoria = await repo.auditoria(P, 1);
       expect(texto).toContain('event: turno-resuelto');
       expect(llegada - (auditoria?.resueltaEn ?? 0)).toBeLessThan(3000);
-      expect(llegada - proximaResolucion(ancla, 1, 1)).toBeLessThan(3000);
+      expect(llegada - vencimientoDesde(ancla, 1)).toBeLessThan(3000);
     } finally {
       abortar.abort();
       await reloj.parar();

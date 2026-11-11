@@ -1,5 +1,7 @@
-// El canal de eventos en vivo (ficha T-080 §4.4, T-064): escucha `turno-resuelto` y, si se corta,
-// reintenta con espera creciente (1, 2, 4… hasta 30 s).
+// El canal de eventos en vivo (ficha T-080 §4.4, T-064): escucha `turno-resuelto` y `fin-de-turno`
+// (T-124) y, si se corta, reintenta con espera creciente (1, 2, 4… hasta 30 s).
+import type { QuienJuega } from './api.ts';
+
 /** Lo que hace falta de un `EventSource`; en el navegador se adapta uno de verdad. */
 export interface FuenteDeEventos {
   alMensaje(tipo: string, oyente: (datos: string) => void): void;
@@ -11,6 +13,8 @@ export interface OpcionesDeEventos {
   readonly url: string;
   readonly crear: (url: string) => FuenteDeEventos;
   readonly alTurno: (turno: number) => void;
+  /** Alguien ha terminado o reabierto su turno (T-124). */
+  readonly alFinDeTurno?: (turno: number, quienes: readonly QuienJuega[]) => void;
   /** setTimeout inyectable para las pruebas. */
   readonly programar?: (hacer: () => void, ms: number) => unknown;
 }
@@ -41,6 +45,10 @@ export function escucharEventos(opciones: OpcionesDeEventos): () => void {
         // Un evento mal formado se ignora: el siguiente traera el turno.
       }
     });
+    fuente.alMensaje('fin-de-turno', (texto) => {
+      const fin = leerFinDeTurno(texto);
+      if (fin !== null) opciones.alFinDeTurno?.(fin.turno, fin.quienes);
+    });
     fuente.alError(() => {
       fuente?.cerrar();
       fuente = null;
@@ -54,4 +62,35 @@ export function escucharEventos(opciones: OpcionesDeEventos): () => void {
     parado = true;
     fuente?.cerrar();
   };
+}
+
+function esQuienJuega(dato: unknown): dato is QuienJuega {
+  return (
+    typeof dato === 'object' &&
+    dato !== null &&
+    'jugador' in dato &&
+    typeof dato.jugador === 'string' &&
+    'nombre' in dato &&
+    typeof dato.nombre === 'string' &&
+    'terminado' in dato &&
+    typeof dato.terminado === 'boolean'
+  );
+}
+
+/** El evento `fin-de-turno` leido con cuidado: si viene mal formado, null y se ignora. */
+export function leerFinDeTurno(
+  texto: string,
+): { readonly turno: number; readonly quienes: readonly QuienJuega[] } | null {
+  let datos: unknown;
+  try {
+    datos = JSON.parse(texto);
+  } catch {
+    return null;
+  }
+  if (typeof datos !== 'object' || datos === null) return null;
+  const turno = 'turno' in datos ? datos.turno : null;
+  const quienes = 'quienes' in datos ? datos.quienes : null;
+  if (typeof turno !== 'number' || !Array.isArray(quienes)) return null;
+  const lista: readonly unknown[] = quienes;
+  return lista.every(esQuienJuega) ? { turno, quienes: lista.filter(esQuienJuega) } : null;
 }

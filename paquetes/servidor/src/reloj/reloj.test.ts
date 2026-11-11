@@ -1,5 +1,5 @@
-// El reloj (ficha T-061 §6): a su hora, sin deriva, en cadena tras una caida, sin doble resolucion,
-// con el motor que falla y con la auditoria reproducible.
+// El reloj (fichas T-061 §6 y T-124): a su hora, con el plazo contado desde el ultimo avance, tras una
+// caida, sin doble resolucion, con el motor que falla y con la auditoria reproducible.
 import { DatabaseSync } from 'node:sqlite';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -22,7 +22,7 @@ import { RepositorioSqlite } from '../persistencia/sqlite.ts';
 import type { Repositorio } from '../persistencia/repositorio.ts';
 import { reproducirTurno } from './auditoria.ts';
 import { proveedorDeRecorte } from './mundoDeLaPartida.ts';
-import { proximaResolucion } from './calendario.ts';
+import { vencimientoDesde } from './calendario.ts';
 import { Reloj } from './reloj.ts';
 import { resolverUnTurno } from './resolucion.ts';
 import { RegistroEnMemoria } from './registro.ts';
@@ -49,7 +49,6 @@ function entorno(
   opciones: {
     ruta?: string;
     resolver?: typeof resolverTurno;
-    maximo?: number;
     repo?: RepositorioSqlite;
   } = {},
 ): Entorno & { ahora: { valor: number } } {
@@ -64,10 +63,7 @@ function entorno(
     registro,
     ahora: () => ahora.valor,
   };
-  const reloj = new Reloj(
-    dep,
-    opciones.maximo === undefined ? {} : { maximoDeTurnosPorPasada: opciones.maximo },
-  );
+  const reloj = new Reloj(dep);
   return {
     repo,
     registro,
@@ -89,7 +85,7 @@ async function crearPartida(
   const datos = {
     ...datosDePartida(estado, mundo),
     intervaloSegundos: HORA,
-    proximaResolucion: proximaResolucion(ANCLA, HORA, 1),
+    proximaResolucion: vencimientoDesde(ANCLA, HORA),
     esDePrueba: extra.esDePrueba ?? true,
   };
   await repo.migrar(ANCLA);
@@ -105,32 +101,33 @@ function enlazar(objetivo: object, propiedad: string | symbol): unknown {
   return atada;
 }
 
+/** El instante en que vence el primer turno de las partidas de `crearPartida`. */
+const HORA_1 = vencimientoDesde(ANCLA, HORA);
+
 describe('a su hora', () => {
-  it('antes de la hora no hace nada; en punto resuelve el turno y programa el siguiente desde el ancla', async () => {
+  it('antes de la hora no hace nada; en punto resuelve el turno y da al siguiente un intervalo', async () => {
     const e = entorno();
     const estado = await crearPartida(e.repo, 'p1');
-    const hora1 = proximaResolucion(ANCLA, HORA, 1);
 
-    e.reloj_a(hora1 - 1);
+    e.reloj_a(HORA_1 - 1);
     expect((await e.reloj.pasada()).resueltos).toBe(0);
 
-    e.reloj_a(hora1);
+    e.reloj_a(HORA_1);
     expect((await e.reloj.pasada()).resueltos).toBe(1);
     const fila = await e.repo.partida(estado.id);
     expect(fila?.turnoActual).toBe(2);
-    expect(fila?.proximaResolucion).toBe(proximaResolucion(ANCLA, HORA, 2));
+    expect(fila?.proximaResolucion).toBe(HORA_1 + HORA * MS);
     await e.repo.cerrar();
   }, 60_000);
 
-  it('sin deriva: resolver tarde no desplaza el calendario', async () => {
+  it('el plazo se cuenta desde que se resolvio: resolver tarde no recorta el turno siguiente', async () => {
     const e = entorno();
     const estado = await crearPartida(e.repo, 'p1');
-    // Se despierta con 40 minutos de retraso: el turno siguiente sigue siendo el del ancla.
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 1) + 40 * 60 * MS);
+    // Se despierta con 40 minutos de retraso: el turno siguiente tiene su hora entera desde ahi.
+    const tarde = HORA_1 + 40 * 60 * MS;
+    e.reloj_a(tarde);
     await e.reloj.pasada();
-    expect((await e.repo.partida(estado.id))?.proximaResolucion).toBe(
-      proximaResolucion(ANCLA, HORA, 2),
-    );
+    expect((await e.repo.partida(estado.id))?.proximaResolucion).toBe(tarde + HORA * MS);
     await e.repo.cerrar();
   }, 60_000);
 
@@ -144,7 +141,7 @@ describe('a su hora', () => {
         ...datosDePartida(estado, mundo),
         ancla,
         intervaloSegundos: 1,
-        proximaResolucion: proximaResolucion(ancla, 1, 1),
+        proximaResolucion: vencimientoDesde(ancla, 1),
       },
       estado,
       ancla,
@@ -155,18 +152,22 @@ describe('a su hora', () => {
     await real.parar();
     const resueltos = ((await e.repo.partida(estado.id))?.turnoActual ?? 1) - 1;
     expect(resueltos).toBeGreaterThanOrEqual(2);
+    // Cada turno vence un segundo despues de resolverse el anterior (el primero, de la fundacion).
+    let desde = ancla;
     for (let turno = 1; turno <= resueltos; turno += 1) {
       const auditoria = await e.repo.auditoria(estado.id, turno);
-      const desviacion = (auditoria?.resueltaEn ?? 0) - proximaResolucion(ancla, 1, turno);
+      const resuelto = auditoria?.resueltaEn ?? 0;
+      const desviacion = resuelto - vencimientoDesde(desde, 1);
       expect(desviacion).toBeGreaterThanOrEqual(0);
       expect(desviacion).toBeLessThan(2000);
+      desde = resuelto;
     }
     await e.repo.cerrar();
   }, 30_000);
 });
 
 describe('tras una caida', () => {
-  it('resuelve en cadena, con las ordenes pendientes solo en el primer turno', async () => {
+  it('resuelve una vez el turno atrasado, con sus ordenes, y da al siguiente su plazo entero', async () => {
     const e = entorno();
     const estado = await crearPartida(e.repo, 'p1');
     const comarca = Object.keys(estado.comarcas)[0] ?? '';
@@ -176,29 +177,15 @@ describe('tras una caida', () => {
       ANCLA,
     );
 
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 3) + 5);
-    const informe = await e.reloj.pasada();
-    expect(informe.resueltos).toBe(3);
-    expect(informe.porPartida[estado.id]).toBe(3);
-    expect((await e.repo.partida(estado.id))?.turnoActual).toBe(4);
-    expect(await e.repo.ordenesDelTurno(estado.id, 1)).toHaveLength(1);
-    expect(await e.repo.ordenesDelTurno(estado.id, 2)).toHaveLength(0);
-    expect(await e.repo.ordenesDelTurno(estado.id, 3)).toHaveLength(0);
-    // En orden: cada auditoria encadena con la anterior.
-    const a1 = await e.repo.auditoria(estado.id, 1);
-    const a2 = await e.repo.auditoria(estado.id, 2);
-    expect(a2?.huellaEntrada).toBe(a1?.huellaSalida);
-    await e.repo.cerrar();
-  }, 60_000);
-
-  it('con un tope por pasada, la siguiente sigue donde quedo', async () => {
-    const e = entorno({ maximo: 2 });
-    const estado = await crearPartida(e.repo, 'p1');
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 3) + 5);
-    expect((await e.reloj.pasada()).resueltos).toBe(2);
+    // Tres horas caido: no se encadenan tres turnos que nadie ha podido jugar.
+    const despierta = HORA_1 + 3 * HORA * MS;
+    e.reloj_a(despierta);
     expect((await e.reloj.pasada()).resueltos).toBe(1);
     expect((await e.reloj.pasada()).resueltos).toBe(0);
-    expect((await e.repo.partida(estado.id))?.turnoActual).toBe(4);
+    const fila = await e.repo.partida(estado.id);
+    expect(fila?.turnoActual).toBe(2);
+    expect(fila?.proximaResolucion).toBe(despierta + HORA * MS);
+    expect(await e.repo.ordenesDelTurno(estado.id, 1)).toHaveLength(1);
     await e.repo.cerrar();
   }, 60_000);
 });
@@ -218,7 +205,7 @@ describe('un turno se resuelve una sola vez', () => {
       },
     });
     const primero = entorno({ repo: colgado });
-    primero.reloj_a(proximaResolucion(ANCLA, HORA, 1));
+    primero.reloj_a(HORA_1);
     void primero.reloj.pasada();
     await new Promise((seguir) => setTimeout(seguir, 300));
     expect((await repo.partida(estado.id))?.turnoActual).toBe(1);
@@ -226,7 +213,7 @@ describe('un turno se resuelve una sola vez', () => {
 
     // El proceso nuevo, sobre la misma base, lo resuelve una sola vez.
     const segundo = entorno({ repo });
-    segundo.reloj_a(proximaResolucion(ANCLA, HORA, 1));
+    segundo.reloj_a(HORA_1);
     expect((await segundo.reloj.pasada()).resueltos).toBe(1);
     expect((await segundo.reloj.pasada()).resueltos).toBe(0);
     expect((await repo.partida(estado.id))?.turnoActual).toBe(2);
@@ -250,7 +237,7 @@ describe('un turno se resuelve una sola vez', () => {
       },
     });
     const primero = entorno({ repo: cuandoGuarda });
-    const hora = proximaResolucion(ANCLA, HORA, 1);
+    const hora = HORA_1;
     primero.reloj_a(hora);
     segundo.reloj_a(hora);
 
@@ -275,7 +262,7 @@ describe('el motor que falla', () => {
     });
     const mala = await crearPartida(e.repo, 'mala');
     const buena = await crearPartida(e.repo, 'buena');
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 1));
+    e.reloj_a(HORA_1);
     const informe = await e.reloj.pasada();
     expect(informe.detenidas).toEqual(['mala']);
     expect(informe.resueltos).toBe(1);
@@ -288,7 +275,7 @@ describe('el motor que falla', () => {
     expect(e.registro.eventos('error')).toContain('partida-detenida');
 
     // Una detenida no vuelve a resolverse.
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 5));
+    e.reloj_a(HORA_1 + 5 * HORA * MS);
     expect((await e.reloj.pasada()).detenidas).toEqual([]);
     await e.repo.cerrar();
   }, 60_000);
@@ -309,7 +296,7 @@ describe('el motor que falla', () => {
       },
     });
     const otroReloj = new Reloj({ ...e.dep, repo: conVersion });
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 1));
+    e.reloj_a(HORA_1);
     expect((await otroReloj.pasada()).detenidas).toEqual([estado.id]);
     await e.repo.cerrar();
   }, 60_000);
@@ -330,7 +317,7 @@ describe('las ordenes al entrar', () => {
       ordenDeEjemplo('mala', 'mesta' as IdJugador, 'comarca-fantasma' as never),
       ANCLA,
     );
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 1));
+    e.reloj_a(HORA_1);
     await e.reloj.pasada();
     expect((await e.repo.ordenesDelTurno(estado.id, 1)).map((o) => o.id)).toEqual(['buena']);
     expect(await e.repo.ordenesPendientes(estado.id)).toHaveLength(0);
@@ -346,7 +333,7 @@ describe('una orden que llega sellada con un turno cerrado', () => {
     const e = entorno();
     const estado = await crearPartida(e.repo, 'p1');
     const comarca = Object.keys(estado.comarcas)[0] ?? '';
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 1));
+    e.reloj_a(HORA_1);
     await e.reloj.pasada();
     // Se cuela sin comprobar el turno (como una carrera): lleva el 1 y la partida esta en el 2.
     await e.repo.guardarOrden(
@@ -354,7 +341,7 @@ describe('una orden que llega sellada con un turno cerrado', () => {
       ordenDeEjemplo('vieja', 'mesta' as IdJugador, comarca as never, 1),
       ANCLA,
     );
-    e.reloj_a(proximaResolucion(ANCLA, HORA, 2));
+    e.reloj_a(HORA_1 + HORA * MS);
     const informe = await e.reloj.pasada();
     expect(informe).toMatchObject({ resueltos: 1, detenidas: [] });
     expect((await e.repo.partida(estado.id))?.estado).toBe('activa');
@@ -365,14 +352,15 @@ describe('una orden que llega sellada con un turno cerrado', () => {
 });
 
 describe('el avance manual', () => {
-  it('solo en partidas de prueba, y sin mover el calendario', async () => {
+  it('solo en partidas de prueba (o por quien administra), y el plazo empieza de nuevo', async () => {
     const e = entorno();
     const prueba = await crearPartida(e.repo, 'de-prueba', { esDePrueba: true });
     const real = await crearPartida(e.repo, 'de-verdad', { esDePrueba: false });
+    e.reloj_a(ANCLA + 5 * 60 * MS);
     const resultado = await e.reloj.avanzarManual(prueba.id);
     expect(resultado).toMatchObject({ tipo: 'resuelto', turno: 1 });
     expect((await e.repo.partida(prueba.id))?.proximaResolucion).toBe(
-      proximaResolucion(ANCLA, HORA, 2),
+      ANCLA + 5 * 60 * MS + HORA * MS,
     );
     await expect(e.reloj.avanzarManual(real.id)).rejects.toThrow(/no es de prueba/);
     // Quien administra la partida (la API lo comprueba) si puede avanzarla (T-090).
@@ -452,7 +440,7 @@ describe('la temporada que se cierra (T-104)', () => {
     };
     await e.repo.migrar(ANCLA);
     await e.repo.crearPartida(
-      { ...datosDePartida(estado, mundo), proximaResolucion: proximaResolucion(ANCLA, HORA, 1) },
+      { ...datosDePartida(estado, mundo), proximaResolucion: HORA_1 },
       estado,
       ANCLA,
     );

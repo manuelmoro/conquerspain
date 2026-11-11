@@ -81,6 +81,10 @@ const api = crearApi({
     if (relojListo === null) throw new Error('El reloj aun no ha arrancado.');
     return relojListo.avanzarManual(id, opciones);
   },
+  alTerminarElTurno: (id) => {
+    if (relojListo === null) throw new Error('El reloj aun no ha arrancado.');
+    return relojListo.resolverSiTodosHanTerminado(id);
+  },
 });
 // El reloj se crea despues de la API: la ruta de avance manual lo llama por esta referencia.
 let relojListo: Reloj | null = null;
