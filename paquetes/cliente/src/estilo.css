@@ -984,22 +984,6 @@ button.enlace:hover:not(:disabled) {
 .titulo-de-partida > p {
   flex-basis: 100%;
 }
-button.avanzar {
-  min-height: 2rem;
-  padding: 0.15rem 0.8rem;
-  font-size: 0.85rem;
-}
-.avanzar.confirmando {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.avanzar.confirmando button {
-  min-height: 2rem;
-  padding: 0.15rem 0.8rem;
-  font-size: 0.85rem;
-}
-
 /* Dar el turno por terminado (T-124): compacto en la cabecera y entero al final de la bandeja. */
 .fin-de-turno-compacto {
   display: inline-flex;
@@ -1435,4 +1419,19 @@ button.pestanya {
 .charla form.escribir .fila {
   align-items: center;
   font-size: 0.8rem;
+}
+
+/* Resolver el turno para todos (T-130): al pie de la lista de quien falta, solo para quien convoco. */
+.lista-de-listos .forzar-el-turno {
+  margin-top: 0.4rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--borde);
+}
+.lista-de-listos .forzar-el-turno p {
+  margin: 0 0 0.4rem;
+}
+.lista-de-listos .forzar-el-turno button {
+  min-height: 2rem;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.85rem;
 }

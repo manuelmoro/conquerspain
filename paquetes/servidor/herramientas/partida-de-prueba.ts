@@ -52,5 +52,5 @@ console.log(
   'Ahora: npm run dev, entra con ese correo (el enlace sale en la consola) y abre la partida.',
 );
 console.log(
-  'El turno se resuelve con el boton «Resolver el turno ya» (solo en partidas de prueba).',
+  'El turno se resuelve con «He terminado el turno»: juegas solo, asi que se resuelve en el acto.',
 );

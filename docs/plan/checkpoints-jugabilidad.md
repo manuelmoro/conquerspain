@@ -27,7 +27,7 @@ npm run dev                                         # servidor y cliente
 ```
 
 Abrir `http://localhost:5173`, escribir el correo, copiar el enlace que sale en la consola y abrir la
-partida. El turno se resuelve con «Resolver el turno ya» (solo en partidas de prueba).
+partida. El turno se resuelve con «He terminado el turno» (jugando solo, en el acto; desde T-130 ya no hay botón de avanzar en la cabecera).
 
 ## Puntos de control
 

@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 11 de noviembre de 2026 (fase 7 terminada: T-124 a T-129, peticiones del usuario tras jugar)
+**Última actualización:** 11 de noviembre de 2026 (fase 7 terminada: T-124 a T-130, peticiones del usuario tras jugar)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -136,6 +136,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 11-11-2026 | **T-130 hecha: resolver para todos, aparte.** El «⏭ Avanzar turno» de la cabecera parecía la versión individual de «He terminado el turno». Se va de la cabecera: quien convocó lo tiene al pie de la lista «n/m listos», como «Resolver el turno ahora para todos», siempre con confirmación que dice a cuántas casas se les corta el turno. Y los enlaces del índice de la guía ya llevan a su sección: las capturas declaran su tamaño (lo escribe `guia:capturas`) y no empujan la página al cargar. |
 | 11-11-2026 | **T-128 y T-129 hechas: quién ha terminado y la charla.** El contador «n/m listos» se despliega con cada jugador, su casa, si ha terminado y cuántos turnos lleva sin dar órdenes. Y una sexta pestaña, «💬 Charla», para toda la partida: mensajes por turno, en vivo, con lo no leído en un numerito (guardado en el servidor, vale en cualquier dispositivo). Migración 9 (`mensaje`, `mensaje_leido`). La guía lo explica con capturas nuevas. |
 | 11-11-2026 | **T-127 hecha: la guía del juego.** Página aparte en `/guia/` con diecinueve secciones (la dinámica de una partida, el mapa, los recursos, las comarcas, las recuas, ganar tierra, comerciar, tu casa, los demás jugadores, el prestigio, las ocho casas con su consejo, los primeros turnos, estrategia, errores típicos y glosario) y 27 capturas del juego real que rehace `npm run guia:capturas` con Chrome sobre una partida de muestra. Enlazada desde la portada, «Mis partidas» y la pestaña Ayuda. Al sacar las capturas apareció y se arregló un fallo del mapa: recompuesto fuera de la página, pintaba ferias y torres enormes que tapaban los toques. |
 | 11-11-2026 | **T-126 hecha: en qué se gasta cada recurso.** Al pulsar un recurso de «Tienes», el diálogo empieza por «En qué se fue y de dónde vino»: concepto por concepto (producción de cada comarca, lo que come la gente, administración, cada orden en su frase, cargas de recuas, portazgos…), del último turno, de cualquier otro o de los 24 juntos. El núcleo traduce cada motivo del almacén a uno de 30 conceptos (`conceptoDeMovimiento`), y una partida de 72 turnos de las ocho casas comprueba que ninguno se queda sin concepto. |

@@ -77,8 +77,8 @@ export const PASOS_DEL_TUTORIAL: readonly PasoDelTutorial[] = [
     id: 'turno',
     titulo: () => 'El turno se resuelve a su hora',
     texto: () =>
-      'Cuando llegue el corte, se resuelven las órdenes de todos a la vez y te llega la crónica de lo que ha pasado. No hace falta estar conectado.',
-    objetivo: () => ['.cabecera button.empuje', '.titulo-de-partida'],
+      'Cuando llegue el corte, o antes si todos pulsáis «He terminado el turno», se resuelven las órdenes de todos a la vez y te llega la crónica de lo que ha pasado. No hace falta estar conectado.',
+    objetivo: () => ['.fin-de-turno-compacto', '.titulo-de-partida'],
     hecho: (s, alEmpezar) => s.turno > alEmpezar,
   },
   {

@@ -11,7 +11,7 @@
 //   CHROME=/ruta/a/chrome npm run guia:capturas   (si Chrome no esta donde Playwright lo busca)
 import { spawn, spawnSync } from 'node:child_process';
 import type { ChildProcess } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,8 +19,12 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import type { Browser, BrowserContext, Locator, Page } from 'playwright-core';
 
+import { dimensionesDeJpeg, ponerDimensiones } from './jpeg.ts';
+import type { Dimensiones } from './jpeg.ts';
+
 const RAIZ = fileURLToPath(new URL('../../..', import.meta.url));
 const SALIDA = fileURLToPath(new URL('../public/guia', import.meta.url));
+const PAGINA = fileURLToPath(new URL('../guia/index.html', import.meta.url));
 const PUERTO_API = process.env['PUERTO_GUIA'] ?? '8491';
 const PUERTO_WEB = process.env['PUERTO_CLIENTE_GUIA'] ?? '5193';
 const WEB = `http://localhost:${PUERTO_WEB}`;
@@ -354,6 +358,13 @@ try {
   } finally {
     await navegador.close();
   }
+  // Cada imagen de la guia con el tamano de su captura nueva: reserva su hueco antes de cargar.
+  const tamanos: Record<string, Dimensiones> = {};
+  for (const f of readdirSync(SALIDA).filter((x) => x.endsWith('.jpg'))) {
+    tamanos[f] = dimensionesDeJpeg(readFileSync(join(SALIDA, f)));
+  }
+  writeFileSync(PAGINA, ponerDimensiones(readFileSync(PAGINA, 'utf8'), tamanos));
+  console.log('Tamaños puestos en guia/index.html.');
 } finally {
   parar();
 }

@@ -468,7 +468,12 @@ function botonesDeCola(
 function contadorDeListos(
   almacen: Almacen,
   estado: EstadoDelCliente,
-  r: { readonly terminados: number; readonly total: number; readonly linea: string },
+  r: {
+    readonly terminados: number;
+    readonly total: number;
+    readonly linea: string;
+    readonly yo: boolean;
+  },
 ): HTMLElement {
   const partida = estado.partida;
   const contador = boton(
@@ -483,6 +488,8 @@ function contadorDeListos(
   contador.setAttribute('title', r.linea);
   if (!listaDeListos || partida === null) return contador;
   const { vista, finDeTurno } = partida.recibido;
+  // Los demas que aun no han terminado: a quien se le corta el turno.
+  const faltan = r.total - r.terminados - (r.yo ? 0 : 1);
   const filas = filasDeQuienJuega(
     finDeTurno ?? [],
     vista.casas.map((c) => ({
@@ -523,7 +530,72 @@ function contadorDeListos(
           ),
         ),
       ),
+      forzarElTurno(
+        almacen,
+        vista.configuracion.esDePrueba,
+        partida.recibido.esAdministrador === true,
+        faltan,
+      ),
     ),
+  );
+}
+
+/**
+ * Resolver el turno ya para todas las casas (T-090, movido aqui en T-130): solo quien convoco la partida
+ * (o cualquiera en una de prueba). Va al pie de la lista de quien falta, y no en la cabecera junto a
+ * «He terminado el turno», porque alli parecia la version individual de ese boton. Pide confirmarlo
+ * diciendo a cuantos se les corta el turno.
+ */
+function forzarElTurno(
+  almacen: Almacen,
+  esDePrueba: boolean,
+  administra: boolean,
+  faltan: number,
+): HTMLElement | string {
+  if (!esDePrueba && !administra) return '';
+  const aQuien =
+    faltan <= 0
+      ? 'Los demás ya han terminado.'
+      : `Se corta el turno a ${faltan === 1 ? 'la otra casa que no ha terminado' : `las ${String(faltan)} casas que no han terminado`}: lo que no hayan ordenado se queda sin hacer.`;
+  return el(
+    'div',
+    { class: 'forzar-el-turno' },
+    el(
+      'p',
+      { class: 'suave' },
+      administra ? 'Como convocaste la partida, puedes no esperar a nadie.' : 'Partida de prueba.',
+    ),
+    confirmandoAvance
+      ? el(
+          'div',
+          {},
+          el('p', {}, `¿Resolver el turno ahora para todas las casas? ${aQuien}`),
+          el(
+            'p',
+            { class: 'fila' },
+            boton('Sí, resolverlo para todos', () => {
+              confirmandoAvance = false;
+              listaDeListos = false;
+              void almacen.avanzar();
+            }),
+            boton(
+              'No',
+              () => {
+                confirmandoAvance = false;
+                almacen.refrescar();
+              },
+              'secundario',
+            ),
+          ),
+        )
+      : boton(
+          '⏭ Resolver el turno ahora para todos',
+          () => {
+            confirmandoAvance = true;
+            almacen.refrescar();
+          },
+          'secundario',
+        ),
   );
 }
 
@@ -842,7 +914,7 @@ let listaDeListos = false;
 /** Si esta abierto el dialogo de invitar (T-125). */
 let invitarAbierto = false;
 
-/** Si el administrador esta confirmando el avance del turno: sobrevive a las repintadas. */
+/** Si quien convoco esta confirmando que resuelve el turno para todos: sobrevive a las repintadas. */
 let confirmandoAvance = false;
 
 /** La tarjeta del tutorial, abajo y sin tapar el mapa (T-090 §2.6). */
@@ -917,42 +989,6 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       ),
     ),
   );
-  // Avanzar el turno a mano (T-090): en partidas de prueba, o quien administra la partida. Corta el
-  // tiempo de las demas casas, asi que pide confirmarlo.
-  if (vista.configuracion.esDePrueba || partida.recibido.esAdministrador === true) {
-    const titulo = cabecera.querySelector('.titulo-de-partida h1');
-    const avanzarYa = (): void => {
-      confirmandoAvance = false;
-      void almacen.avanzar();
-    };
-    const control = confirmandoAvance
-      ? el(
-          'span',
-          { class: 'avanzar confirmando' },
-          el('span', { class: 'suave' }, '¿Resolver ya para todas las casas?'),
-          boton('Sí, avanzar', avanzarYa),
-          boton(
-            'No',
-            () => {
-              confirmandoAvance = false;
-              almacen.refrescar();
-            },
-            'secundario',
-          ),
-        )
-      : boton(
-          '⏭ Avanzar turno',
-          () => {
-            if (vista.configuracion.esDePrueba) avanzarYa();
-            else {
-              confirmandoAvance = true;
-              almacen.refrescar();
-            }
-          },
-          'secundario avanzar',
-        );
-    titulo?.after(control);
-  }
   // Quien convoco invita a mas gente con un enlace (T-125).
   const codigoDeInvitacion = partida.recibido.codigoDeInvitacion ?? null;
   if (codigoDeInvitacion !== null) {
