@@ -43,3 +43,43 @@ export function resumenDelFinDeTurno(
       : 'Cuando lo hayan terminado todos, el turno se resuelve sin esperar al corte.';
   return { yo: mio, terminados, total, linea, explicacion };
 }
+
+/** Una fila de la lista de quien ha terminado (T-128). */
+export interface FilaDeQuienJuega {
+  readonly nombre: string;
+  /** El nombre de su casa, si se sabe. */
+  readonly casa: string | null;
+  readonly terminado: boolean;
+  readonly soyYo: boolean;
+  /** «3 turnos sin dar órdenes», si lleva dos o mas: para saber a quien escribir. */
+  readonly ausencia: string | null;
+}
+
+/**
+ * Quien juega, para la lista que se despliega desde «n/m listos» (T-128): primero quien falta, para
+ * saber a quien decirle algo; dentro de cada grupo, en el orden en que llegan (el de su identificador).
+ */
+export function filasDeQuienJuega(
+  quienes: readonly QuienJuega[],
+  casas: readonly {
+    readonly id: string;
+    readonly nombre: string;
+    readonly turnosSinOrdenes: number;
+  }[],
+  yo: string,
+): readonly FilaDeQuienJuega[] {
+  const filas = quienes.map((q) => {
+    const casa = casas.find((c) => c.id === q.jugador);
+    const sinOrdenes = casa?.turnosSinOrdenes ?? 0;
+    return {
+      nombre: q.nombre,
+      casa: casa?.nombre ?? null,
+      terminado: q.terminado,
+      soyYo: q.jugador === yo,
+      // Lo de uno mismo ya se sabe: solo se dice de los demas.
+      ausencia:
+        sinOrdenes >= 2 && q.jugador !== yo ? `${String(sinOrdenes)} turnos sin dar órdenes` : null,
+    };
+  });
+  return [...filas.filter((f) => !f.terminado), ...filas.filter((f) => f.terminado)];
+}

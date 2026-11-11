@@ -76,6 +76,7 @@ const api = crearApi({
   cuentas,
   canal,
   avisos: repo,
+  charla: repo,
   altas: new ServicioDeAltas({ repo, mundoCompleto: mundo, reglas: TABLAS_DEL_JUEGO, ahora }),
   avanzar: (id, opciones) => {
     if (relojListo === null) throw new Error('El reloj aun no ha arrancado.');

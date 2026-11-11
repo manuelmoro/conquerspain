@@ -74,6 +74,7 @@ export async function apiDePrueba(
     autenticador: autenticadorDePrueba,
     registro,
     ahora: () => ahora.valor,
+    charla: repo,
     ...(opciones.cubo === undefined ? {} : { cubo: opciones.cubo }),
   };
   const api = crearApi(dep);

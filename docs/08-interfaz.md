@@ -141,6 +141,10 @@ La bandeja conserva la fila del cambio y deja reabrir el resumen.
   compartir. Quien lo abre ve la invitación aun sin cuenta y, al entrar, llega a «Unirse» con el código puesto.
 - **Desglose (T-126).** Al pulsar un recurso de «Tienes», «En qué se fue y de dónde vino», concepto por
   concepto, del último turno, de otro o de los 24 juntos; debajo, el gráfico y la tabla.
+- **Quién ha terminado (T-128).** «n/m listos ▾» despliega cada jugador, su casa, si ha terminado y sus turnos
+  sin órdenes; plegado no ocupa más.
+- **Charla (T-129).** Sexta pestaña, «💬 Charla», con un numerito de no leídos (también en la barra del móvil).
+  Mensajes por turno, en vivo, los nuevos marcados; no obliga a nada: los pactos son los contratos.
 - **Guía (T-127).** Página aparte en `/guia/` (sin cargar el juego), enlazada desde la barra de la portada y de
   «Mis partidas», desde «Cómo se juega» y desde la pestaña Ayuda. Las capturas salen de
   `npm run guia:capturas`; las casas, de las tablas del juego.

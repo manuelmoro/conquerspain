@@ -269,7 +269,20 @@ async function recorrer(navegador: Browser, partida: string, codigo: string): Pr
   await juego.locator('.fin-de-turno-compacto button').first().click();
   await juego.waitForTimeout(1000);
   await captura(juego, 'fin-de-turno', juego.locator('.fin-de-turno-compacto'));
+  // Quien ha terminado y quien no, desplegado desde «n/m listos».
+  await juego.locator('button.contador-de-listos').click();
+  await juego.waitForSelector('.lista-de-listos');
+  await captura(juego, 'lista-de-listos', juego.locator('.lista-de-listos'));
+  await juego.locator('button.contador-de-listos').click();
   const bruno = await sesion(navegador, 'bruno@muestra.conquerspain', { sinTutorial: partida });
+  // Un poco de charla entre los dos, antes de que Bruno termine.
+  for (const [contexto, texto] of [
+    [ana, 'Bruno, ¿vas a la feria de Medina este año? Te compro la lana si me llevas sal.'],
+    [bruno, 'Allí estaré con dos recuas. La lana a 4 maravedís la saca, y la sal te la pongo yo.'],
+    [bruno, 'Termino el turno ya, que me queda poco pan.'],
+  ] as const) {
+    await contexto.request.post(`${WEB}/api/partidas/${partida}/charla`, { data: { texto } });
+  }
   const deBruno = await abrirPartida(bruno, partida);
   await deBruno.locator('.fin-de-turno-bloque').scrollIntoViewIfNeeded();
   await captura(deBruno, 'fin-de-turno-falta', deBruno.locator('.fin-de-turno-bloque'));
@@ -283,9 +296,11 @@ async function recorrer(navegador: Browser, partida: string, codigo: string): Pr
   await juego.keyboard.press('Escape');
   const cerrar = juego.locator('.dialogo button.cerrar');
   if ((await cerrar.count()) > 0) await cerrar.first().click();
+  await captura(juego, 'charla-aviso', juego.locator('nav.pestanyas'));
 
   // Las pestanyas del panel.
   for (const [texto, nombre] of [
+    ['Charla', 'charla'],
     ['Crónica', 'cronica'],
     ['Mercado', 'mercado'],
     ['Tu casa', 'casa'],

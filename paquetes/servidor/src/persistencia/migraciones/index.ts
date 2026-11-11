@@ -7,6 +7,7 @@ import { MIGRACION_DE_CONTRASENYAS } from './0005-contrasenyas.ts';
 import { MIGRACION_DE_CASAS_REPETIDAS } from './0006-casas-repetidas.ts';
 import { MIGRACION_DE_TEMPORADAS } from './0007-temporadas.ts';
 import { MIGRACION_DE_FIN_DE_TURNO } from './0008-fin-de-turno.ts';
+import { MIGRACION_DE_CHARLA } from './0009-charla.ts';
 import type { Migracion } from './tipos.ts';
 
 export type { Migracion } from './tipos.ts';
@@ -20,6 +21,7 @@ export const MIGRACIONES: readonly Migracion[] = [
   MIGRACION_DE_CASAS_REPETIDAS,
   MIGRACION_DE_TEMPORADAS,
   MIGRACION_DE_FIN_DE_TURNO,
+  MIGRACION_DE_CHARLA,
 ];
 
 /** Las versiones son consecutivas desde 1: si no, alguien ha editado la lista a mano. */

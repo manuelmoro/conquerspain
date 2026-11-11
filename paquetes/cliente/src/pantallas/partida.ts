@@ -32,6 +32,7 @@ import { enfocar } from './foco.ts';
 
 import type { HistorialRecibido, MercadoRecibido, ModoDeAviso } from '../api.ts';
 import { pantallaDeAyuda } from './ayuda.ts';
+import { pantallaDeCharla } from './charla.ts';
 import { dialogoDeHistorial } from './historial.ts';
 import { pantallaDeCasa } from './casa.ts';
 import { pantallaDeCronica } from './cronica.ts';
@@ -44,7 +45,7 @@ import { pantallaDeMercado } from './mercado.ts';
 import { pantallaDeRuta } from './ruta.ts';
 import { pantallaDeUnidades } from './unidades.ts';
 import { dialogoDeResumen } from './resumen.ts';
-import { resumenDelFinDeTurno } from '../fin-de-turno.ts';
+import { filasDeQuienJuega, resumenDelFinDeTurno } from '../fin-de-turno.ts';
 import { dialogoDeInvitar } from './invitacion.ts';
 
 interface EstadoDelAtlas {
@@ -461,6 +462,72 @@ function botonesDeCola(
 }
 
 /**
+ * «n/m listos» (T-128): discreto en la cabecera; al pulsarlo despliega quien ha terminado y quien no,
+ * con su casa y si lleva turnos sin dar ordenes, para saber a quien decirle algo.
+ */
+function contadorDeListos(
+  almacen: Almacen,
+  estado: EstadoDelCliente,
+  r: { readonly terminados: number; readonly total: number; readonly linea: string },
+): HTMLElement {
+  const partida = estado.partida;
+  const contador = boton(
+    `${String(r.terminados)}/${String(r.total)} listos ${listaDeListos ? '▴' : '▾'}`,
+    () => {
+      listaDeListos = !listaDeListos;
+      almacen.refrescar();
+    },
+    'chip contador-de-listos',
+  );
+  contador.setAttribute('aria-expanded', listaDeListos ? 'true' : 'false');
+  contador.setAttribute('title', r.linea);
+  if (!listaDeListos || partida === null) return contador;
+  const { vista, finDeTurno } = partida.recibido;
+  const filas = filasDeQuienJuega(
+    finDeTurno ?? [],
+    vista.casas.map((c) => ({
+      id: c.id,
+      nombre: TABLAS_DEL_JUEGO.casas[c.casa].nombre,
+      turnosSinOrdenes: c.turnosSinOrdenes,
+    })),
+    vista.jugador.id,
+  );
+  return el(
+    'span',
+    { class: 'listos' },
+    contador,
+    el(
+      'div',
+      { class: 'lista-de-listos', role: 'region', 'aria-label': 'Quién ha terminado el turno' },
+      el(
+        'ul',
+        {},
+        ...filas.map((f) =>
+          el(
+            'li',
+            { class: f.terminado ? 'terminado' : 'falta' },
+            el('span', { class: 'senyal', 'aria-hidden': 'true' }, f.terminado ? '✓' : '○'),
+            el(
+              'span',
+              {},
+              el('strong', {}, f.soyYo ? `${f.nombre} (tú)` : f.nombre),
+              f.casa === null ? '' : el('span', { class: 'suave' }, ` · ${f.casa}`),
+              el('br'),
+              el(
+                'span',
+                { class: 'suave' },
+                f.terminado ? 'ha terminado' : 'aún no ha terminado',
+                f.ausencia === null ? '' : ` · ${f.ausencia}`,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/**
  * Dar el turno por terminado (T-124): el boton y quien falta. Compacto en la cabecera; entero al final
  * de la bandeja, que es donde se acaba de dar las ordenes. Null si la partida ya no tiene turnos.
  */
@@ -488,13 +555,7 @@ function finDeTurnoDe(
       'span',
       { class: 'fin-de-turno-compacto' },
       pulsar,
-      r.total > 1
-        ? el(
-            'span',
-            { class: 'chip', title: r.linea },
-            `${String(r.terminados)}/${String(r.total)} listos`,
-          )
-        : '',
+      r.total > 1 ? contadorDeListos(almacen, estado, r) : '',
     );
   }
   return el(
@@ -681,17 +742,32 @@ function bandejaDe(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   return el('section', { class: 'bandeja tarjeta', id: 'bandeja' }, ...partes);
 }
 
+/** La pestanya de la charla con el numerito de lo no leido (T-129): discreto, sin mas avisos. */
+function pestanyaDeCharla(estado: EstadoDelCliente, b: HTMLButtonElement): HTMLButtonElement {
+  const sinLeer = estado.charlaAbierta ? 0 : estado.charlaSinLeer;
+  if (sinLeer > 0) {
+    b.append(el('span', { class: 'insignia', 'aria-hidden': 'true' }, String(sinLeer)));
+    b.setAttribute(
+      'aria-label',
+      `Charla: ${String(sinLeer)} ${sinLeer === 1 ? 'mensaje sin leer' : 'mensajes sin leer'}`,
+    );
+  }
+  return b;
+}
+
 /** Las pestanyas del panel (T-090): lo que se ve al lado del mapa, con icono y texto. */
 function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElement {
   const activa = estado.ayuda
     ? 'ayuda'
-    : estado.casa
-      ? 'casa'
-      : estado.cronica !== null
-        ? 'cronica'
-        : estado.mercado !== null
-          ? 'mercado'
-          : 'ordenes';
+    : estado.charlaAbierta
+      ? 'charla'
+      : estado.casa
+        ? 'casa'
+        : estado.cronica !== null
+          ? 'cronica'
+          : estado.mercado !== null
+            ? 'mercado'
+            : 'ordenes';
   const pestanya = (
     id: string,
     icono: string,
@@ -709,6 +785,7 @@ function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElem
     { class: 'pestanyas', 'aria-label': 'Secciones del panel' },
     pestanya('ordenes', '📋', 'Órdenes', () => {
       almacen.cerrarAyuda();
+      almacen.cerrarCharla();
       almacen.cerrarCasa();
       almacen.cerrarCronica();
       almacen.cerrarMercado();
@@ -724,6 +801,12 @@ function pestanyasDelPanel(almacen: Almacen, estado: EstadoDelCliente): HTMLElem
     pestanya('casa', '🏰', 'Tu casa', () => {
       almacen.abrirCasa();
     }),
+    pestanyaDeCharla(
+      estado,
+      pestanya('charla', '💬', 'Charla', () => {
+        void almacen.abrirCharla();
+      }),
+    ),
     pestanya('ayuda', '❓', 'Ayuda', () => {
       almacen.abrirAyuda();
     }),
@@ -752,6 +835,9 @@ function botonesDeRecursos(almacen: Almacen, disponible: Recursos): HTMLElement 
   }
   return caja;
 }
+
+/** Si esta desplegada la lista de quien ha terminado el turno (T-128). */
+let listaDeListos = false;
 
 /** Si esta abierto el dialogo de invitar (T-125). */
 let invitarAbierto = false;
@@ -938,10 +1024,12 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       ? pantallaDeRuta(almacen, editor, nombreDeUnidad, nombre)
       : estado.ayuda
         ? pantallaDeAyuda(almacen)
-        : (mercadoDe(almacen, estado) ??
-          cronicaDe(almacen, estado) ??
-          casaDe(almacen, estado) ??
-          fichaDe(almacen, estado));
+        : estado.charlaAbierta
+          ? pantallaDeCharla(almacen, vista.jugador.id, Date.now())
+          : (mercadoDe(almacen, estado) ??
+            cronicaDe(almacen, estado) ??
+            casaDe(almacen, estado) ??
+            fichaDe(almacen, estado));
   partes.push(
     el(
       'div',
@@ -964,6 +1052,10 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
       'a',
       { class: 'barra-inferior', href: '#bandeja' },
       textoDeLaBarra(dadas, tiempoHastaElCorte(partida.recibido.proximaResolucion, Date.now())),
+      // En el movil las pestanyas quedan lejos: lo no leido de la charla tambien va aqui (T-129).
+      estado.charlaSinLeer > 0 && !estado.charlaAbierta
+        ? ` · 💬 ${String(estado.charlaSinLeer)}`
+        : '',
     ),
   );
   if (recursoAbierto !== null) {

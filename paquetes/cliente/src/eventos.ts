@@ -1,6 +1,6 @@
 // El canal de eventos en vivo (ficha T-080 §4.4, T-064): escucha `turno-resuelto` y `fin-de-turno`
 // (T-124) y, si se corta, reintenta con espera creciente (1, 2, 4… hasta 30 s).
-import type { QuienJuega } from './api.ts';
+import type { MensajeRecibido, QuienJuega } from './api.ts';
 
 /** Lo que hace falta de un `EventSource`; en el navegador se adapta uno de verdad. */
 export interface FuenteDeEventos {
@@ -15,6 +15,8 @@ export interface OpcionesDeEventos {
   readonly alTurno: (turno: number) => void;
   /** Alguien ha terminado o reabierto su turno (T-124). */
   readonly alFinDeTurno?: (turno: number, quienes: readonly QuienJuega[]) => void;
+  /** Un mensaje nuevo en la charla (T-129). */
+  readonly alMensaje?: (mensaje: MensajeRecibido) => void;
   /** setTimeout inyectable para las pruebas. */
   readonly programar?: (hacer: () => void, ms: number) => unknown;
 }
@@ -48,6 +50,10 @@ export function escucharEventos(opciones: OpcionesDeEventos): () => void {
     fuente.alMensaje('fin-de-turno', (texto) => {
       const fin = leerFinDeTurno(texto);
       if (fin !== null) opciones.alFinDeTurno?.(fin.turno, fin.quienes);
+    });
+    fuente.alMensaje('mensaje', (texto) => {
+      const mensaje = leerMensaje(texto);
+      if (mensaje !== null) opciones.alMensaje?.(mensaje);
     });
     fuente.alError(() => {
       fuente?.cerrar();
@@ -93,4 +99,36 @@ export function leerFinDeTurno(
   if (typeof turno !== 'number' || !Array.isArray(quienes)) return null;
   const lista: readonly unknown[] = quienes;
   return lista.every(esQuienJuega) ? { turno, quienes: lista.filter(esQuienJuega) } : null;
+}
+
+/** El evento `mensaje` leido con cuidado: si viene mal formado, null y se ignora. */
+export function leerMensaje(texto: string): MensajeRecibido | null {
+  let d: unknown;
+  try {
+    d = JSON.parse(texto);
+  } catch {
+    return null;
+  }
+  if (
+    typeof d !== 'object' ||
+    d === null ||
+    !('id' in d && typeof d.id === 'number') ||
+    !('jugador' in d && typeof d.jugador === 'string') ||
+    !('nombre' in d && typeof d.nombre === 'string') ||
+    !('casa' in d && (typeof d.casa === 'string' || d.casa === null)) ||
+    !('turno' in d && typeof d.turno === 'number') ||
+    !('texto' in d && typeof d.texto === 'string') ||
+    !('enviadoEn' in d && typeof d.enviadoEn === 'number')
+  ) {
+    return null;
+  }
+  return {
+    id: d.id,
+    jugador: d.jugador,
+    nombre: d.nombre,
+    casa: d.casa,
+    turno: d.turno,
+    texto: d.texto,
+    enviadoEn: d.enviadoEn,
+  };
 }

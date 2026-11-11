@@ -26,6 +26,8 @@ import type { ServicioDeAltas } from '../altas/servicio.ts';
 import type { ServicioDeCuentas } from '../cuentas/servicio.ts';
 import { MODOS_DE_AVISO } from '../persistencia/avisos.ts';
 import type { RepositorioDeAvisos } from '../persistencia/avisos.ts';
+import type { RepositorioDeCharla } from '../persistencia/charla.ts';
+import { MENSAJES_POR_PAGINA, conAutor, textoDeMensaje } from './charla.ts';
 import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
 import { finDeTurno } from '../reloj/fin-de-turno.ts';
 import type { Registro } from '../reloj/registro.ts';
@@ -59,6 +61,8 @@ export interface DependenciasDeApi {
   /** Avisos (T-064): el canal en vivo y las preferencias. Sin ellos, no hay esas rutas. */
   readonly canal?: CanalDeAvisos;
   readonly avisos?: RepositorioDeAvisos;
+  /** La charla de cada partida (T-129); si falta, no hay esas rutas. */
+  readonly charla?: RepositorioDeCharla;
   /** Alta de partidas (T-065): convocar, unirse, sortear y elegir. */
   readonly altas?: ServicioDeAltas;
   /** Resuelve un turno ya, solo en partidas de prueba (T-061 §4.7); si falta, no hay esa ruta. */
@@ -253,6 +257,8 @@ export function crearApi(
         esAdministrador: (await dep.repo.administradorDePartida(id)) === ctx.cuenta,
         // Quien convoco puede invitar a mas gente con un enlace (T-125).
         codigoDeInvitacion: (await dep.altas?.codigoParaInvitar(ctx.cuenta, id)) ?? null,
+        // Mensajes de la charla que aun no ha leido (T-129): el numerito de la pestanya.
+        charlaSinLeer: (await dep.charla?.sinLeer(id, jugador)) ?? 0,
         // Quien ha dado ya por terminado el turno (T-124): se ve en la cabecera.
         finDeTurno: (await finDeTurno(dep.repo, id))?.quienes ?? [],
         vista,
@@ -370,6 +376,54 @@ export function crearApi(
         finDeTurno: (await finDeTurno(dep.repo, id))?.quienes ?? [],
       },
     };
+  };
+
+  // La charla (T-129): leer, escribir y dar por leido. Solo quien juega; quien espera a entrar, no.
+  const repoDeCharla = dep.charla;
+  const verCharla =
+    (antesDe: (ctx: Contexto) => number | null): Manejador =>
+    async (ctx) => {
+      if (repoDeCharla === undefined)
+        throw new ErrorDeApi('ruta-desconocida', 'Este servidor no tiene charla.');
+      const { id, jugador, estado } = await estadoYVista(ctx);
+      const mensajes = await repoDeCharla.mensajes(id, antesDe(ctx), MENSAJES_POR_PAGINA);
+      return {
+        estado: 200,
+        datos: {
+          mensajes: mensajes.map((m) => conAutor(m, estado)),
+          hayMas: mensajes.length === MENSAJES_POR_PAGINA,
+          ultimoLeido: await repoDeCharla.ultimoLeido(id, jugador),
+          sinLeer: await repoDeCharla.sinLeer(id, jugador),
+        },
+      };
+    };
+
+  const escribirEnLaCharla: Manejador = async (ctx) => {
+    if (repoDeCharla === undefined)
+      throw new ErrorDeApi('ruta-desconocida', 'Este servidor no tiene charla.');
+    const { id, jugador, estado } = await estadoYVista(ctx);
+    const texto = textoDeMensaje(objetoJson(ctx.peticion.cuerpo)['texto']);
+    const guardado = await repoDeCharla.guardarMensaje(id, jugador, texto, dep.ahora());
+    // Lo propio esta leido: no cuenta como pendiente para quien lo escribe.
+    await repoDeCharla.marcarLeidos(id, jugador, guardado.id);
+    const mensaje = conAutor(guardado, estado);
+    dep.canal?.publicar({ tipo: 'mensaje', partida: id, mensaje });
+    return { estado: 201, datos: { mensaje } };
+  };
+
+  const leerLaCharla: Manejador = async (ctx) => {
+    if (repoDeCharla === undefined)
+      throw new ErrorDeApi('ruta-desconocida', 'Este servidor no tiene charla.');
+    const { id, jugador } = await estadoYVista(ctx);
+    const hasta = objetoJson(ctx.peticion.cuerpo)['hasta'];
+    if (typeof hasta !== 'number' || !Number.isSafeInteger(hasta) || hasta < 0) {
+      throw new ErrorDeApi(
+        'cuerpo-invalido',
+        'Manda {"hasta": n} con el identificador del último mensaje que has leído.',
+      );
+    }
+    await repoDeCharla.marcarLeidos(id, jugador, hasta);
+    return { estado: 200, datos: { sinLeer: await repoDeCharla.sinLeer(id, jugador) } };
   };
 
   const clasificacion: Manejador = async (ctx) => {
@@ -697,6 +751,10 @@ export function crearApi(
     const flujo: Flujo = (escribir) => {
       escribir(': conectado\n\n');
       const baja = canal.suscribir(id, (evento) => {
+        if (evento.tipo === 'mensaje') {
+          escribir(`event: mensaje\ndata: ${JSON.stringify(evento.mensaje)}\n\n`);
+          return;
+        }
         if (evento.tipo === 'fin-de-turno') {
           void finDeTurno(dep.repo, id).then((fin) => {
             if (fin === null || fin.turno !== evento.turno) return;
@@ -869,6 +927,35 @@ export function crearApi(
     { metodo: 'GET', patron: '/partidas/:id/comarcas/:comarca', manejador: privada(verFicha) },
     { metodo: 'POST', patron: '/partidas/:id/avanzar', manejador: privada(avanzarTurno) },
     { metodo: 'PUT', patron: '/partidas/:id/fin-de-turno', manejador: privada(terminarTurno) },
+    ...(repoDeCharla === undefined
+      ? []
+      : [
+          {
+            metodo: 'GET',
+            patron: '/partidas/:id/charla',
+            manejador: privada(verCharla(() => null)),
+          },
+          {
+            metodo: 'GET',
+            patron: '/partidas/:id/charla/antes/:mensaje',
+            manejador: privada(
+              verCharla((ctx) => {
+                const n = Number(ctx.parametros['mensaje']);
+                return Number.isSafeInteger(n) && n > 0 ? n : null;
+              }),
+            ),
+          },
+          {
+            metodo: 'POST',
+            patron: '/partidas/:id/charla',
+            manejador: privada(escribirEnLaCharla),
+          },
+          {
+            metodo: 'PUT',
+            patron: '/partidas/:id/charla/leidos',
+            manejador: privada(leerLaCharla),
+          },
+        ]),
     { metodo: 'POST', patron: '/partidas/:id/prevision-de-ruta', manejador: privada(preverRuta) },
     { metodo: 'GET', patron: '/partidas/:id/mercado', manejador: privada(verMercado) },
     {

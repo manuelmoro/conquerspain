@@ -16,6 +16,7 @@ import type {
   ModoDeAviso,
   OrdenEnviada,
   HistorialRecibido,
+  MensajeRecibido,
   QuienJuega,
 } from './api.ts';
 import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
@@ -80,6 +81,20 @@ export interface EstadoDelCliente {
   readonly ayuda: boolean;
   /** La cronica abierta en el panel (T-085): el turno del archivo o la clasificacion. */
   readonly cronica: { readonly turno: number; readonly vista: 'cronica' | 'clasificacion' } | null;
+  /** La charla abierta en el panel (T-129). */
+  readonly charlaAbierta: boolean;
+  /** Los mensajes traidos de la charla, o null si aun no se han pedido. */
+  readonly charla: CharlaDelCliente | null;
+  /** Mensajes de otros sin leer: el numerito de la pestanya. */
+  readonly charlaSinLeer: number;
+}
+
+export interface CharlaDelCliente {
+  readonly mensajes: readonly MensajeRecibido[];
+  /** Si hay mensajes mas viejos que los traidos. */
+  readonly hayMas: boolean;
+  /** El ultimo que el jugador habia leido al abrirla: de ahi en adelante se marcan como nuevos. */
+  readonly leidoAlAbrir: number;
 }
 
 export interface DependenciasDelAlmacen {
@@ -108,6 +123,9 @@ const INICIAL: EstadoDelCliente = {
   casa: false,
   ayuda: false,
   tutorial: null,
+  charlaAbierta: false,
+  charla: null,
+  charlaSinLeer: 0,
 };
 
 function claveDeVista(partida: string): string {
@@ -331,6 +349,9 @@ export class Almacen {
         conexion: 'conectado',
         turnoNuevo: null,
         tutorial,
+        // La charla es de cada partida: la de otra no vale aqui.
+        ...(this.estadoActual.partida?.id === id ? {} : { charla: null, charlaAbierta: false }),
+        charlaSinLeer: r.datos.charlaSinLeer ?? 0,
       });
       await this.cargarEnviadas();
       return;
@@ -463,7 +484,9 @@ export class Almacen {
 
   abrirComarca(comarca: string | null): void {
     this.cambiar(
-      comarca === null ? { comarcaAbierta: null } : { comarcaAbierta: comarca, mercado: null },
+      comarca === null
+        ? { comarcaAbierta: null }
+        : { comarcaAbierta: comarca, mercado: null, charlaAbierta: false },
     );
   }
 
@@ -577,6 +600,7 @@ export class Almacen {
   abrirCasa(): void {
     this.cambiar({
       casa: true,
+      charlaAbierta: false,
       ayuda: false,
       comarcaAbierta: null,
       editor: null,
@@ -588,6 +612,7 @@ export class Almacen {
   abrirAyuda(): void {
     this.cambiar({
       ayuda: true,
+      charlaAbierta: false,
       casa: false,
       comarcaAbierta: null,
       editor: null,
@@ -604,6 +629,105 @@ export class Almacen {
     this.cambiar({ casa: false, ayuda: false });
   }
 
+  // ——— La charla (T-129) ———————————————————————————————————————————————————————
+
+  /** Abre la charla: trae los ultimos mensajes si hace falta y da por leido lo que hay. */
+  async abrirCharla(): Promise<void> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    this.cambiar({
+      charlaAbierta: true,
+      comarcaAbierta: null,
+      editor: null,
+      mercado: null,
+      cronica: null,
+      casa: false,
+      ayuda: false,
+    });
+    const r = await this.dep.api.charla(partida.id);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return;
+    }
+    this.cambiar({
+      charla: {
+        mensajes: r.datos.mensajes,
+        hayMas: r.datos.hayMas,
+        leidoAlAbrir: r.datos.ultimoLeido,
+      },
+    });
+    await this.leerHastaElFinal();
+  }
+
+  cerrarCharla(): void {
+    this.cambiar({ charlaAbierta: false });
+  }
+
+  /** Trae los mensajes anteriores a los que hay. */
+  async charlaAnterior(): Promise<void> {
+    const partida = this.estadoActual.partida;
+    const charla = this.estadoActual.charla;
+    const primero = charla?.mensajes[0];
+    if (partida === null || charla === null || primero === undefined) return;
+    const r = await this.dep.api.charlaAntes(partida.id, primero.id);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return;
+    }
+    this.cambiar({
+      charla: {
+        ...charla,
+        mensajes: [...r.datos.mensajes, ...charla.mensajes],
+        hayMas: r.datos.hayMas,
+      },
+    });
+  }
+
+  /** Manda un mensaje; true si quedo guardado (la pantalla vacia entonces el campo). */
+  async escribirEnLaCharla(texto: string): Promise<boolean> {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return false;
+    const r = await this.dep.api.escribirEnLaCharla(partida.id, texto);
+    if (!r.ok) {
+      this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+      return false;
+    }
+    this.alMensaje(r.datos.mensaje);
+    return true;
+  }
+
+  /** Llega un mensaje (el propio al enviarlo, o cualquiera por el canal en vivo). */
+  alMensaje(mensaje: MensajeRecibido): void {
+    const partida = this.estadoActual.partida;
+    if (partida === null) return;
+    const charla = this.estadoActual.charla;
+    // El mismo mensaje puede llegar dos veces: por la respuesta y por el canal.
+    if (charla?.mensajes.some((m) => m.id === mensaje.id) === true) return;
+    const propio = mensaje.jugador === partida.recibido.vista.jugador.id;
+    this.cambiar({
+      ...(charla === null
+        ? {}
+        : { charla: { ...charla, mensajes: [...charla.mensajes, mensaje] } }),
+      ...(this.estadoActual.charlaAbierta || propio
+        ? {}
+        : { charlaSinLeer: this.estadoActual.charlaSinLeer + 1 }),
+    });
+    if (this.estadoActual.charlaAbierta && !propio) void this.leerHastaElFinal();
+  }
+
+  /** Da por leido hasta el ultimo mensaje traido. */
+  private async leerHastaElFinal(): Promise<void> {
+    const partida = this.estadoActual.partida;
+    const ultimo = this.estadoActual.charla?.mensajes.at(-1);
+    if (partida === null) return;
+    if (ultimo === undefined) {
+      this.cambiar({ charlaSinLeer: 0 });
+      return;
+    }
+    const r = await this.dep.api.leerLaCharla(partida.id, ultimo.id);
+    this.cambiar({ charlaSinLeer: r.ok ? r.datos.sinLeer : 0 });
+  }
+
   // ——— La cronica y la clasificacion (T-085 §4.3) ————————————————————————————————
 
   /** Abre el archivo en un turno (por defecto, el ultimo resuelto) o la clasificacion. */
@@ -612,6 +736,7 @@ export class Almacen {
     if (partida === null) return;
     const elegido = turno ?? Math.max(1, partida.recibido.vista.turno - 1);
     this.cambiar({
+      charlaAbierta: false,
       cronica: { turno: elegido, vista },
       comarcaAbierta: null,
       editor: null,
@@ -653,6 +778,7 @@ export class Almacen {
   abrirMercado(plaza: string | null = null): void {
     this.cambiar({
       mercado: { plaza },
+      charlaAbierta: false,
       comarcaAbierta: null,
       editor: null,
       cronica: null,

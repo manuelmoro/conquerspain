@@ -22,6 +22,7 @@ import type {
   RepositorioDeConvocatorias,
 } from './convocatorias.ts';
 import { ESTADOS_DE_CONVOCATORIA } from './convocatorias.ts';
+import type { MensajeGuardado, RepositorioDeCharla } from './charla.ts';
 import type { AvisoPendiente, ClaveDeAviso, ModoDeAviso, RepositorioDeAvisos } from './avisos.ts';
 import type {
   Cuenta,
@@ -112,7 +113,12 @@ function estadoDeOrden(valor: string): EstadoDeOrdenGuardada {
 const JUGADORES_POR_CASA = 2;
 
 export class RepositorioSqlite
-  implements Repositorio, RepositorioDeCuentas, RepositorioDeAvisos, RepositorioDeConvocatorias
+  implements
+    Repositorio,
+    RepositorioDeCuentas,
+    RepositorioDeAvisos,
+    RepositorioDeConvocatorias,
+    RepositorioDeCharla
 {
   private readonly bd: DatabaseSync;
 
@@ -436,6 +442,87 @@ export class RepositorioSqlite
       huellaEsperada: texto(fila, 'huella'),
       mundo: opciones.mundo,
     });
+  }
+
+  // ---------------------------------------------------------------- charla (T-129)
+
+  private filaDeMensaje(f: Fila): MensajeGuardado {
+    return {
+      id: entero(f, 'id'),
+      jugador: texto(f, 'jugador') as IdJugador,
+      turno: entero(f, 'turno'),
+      texto: texto(f, 'texto'),
+      enviadoEn: entero(f, 'enviado_en'),
+    };
+  }
+
+  async guardarMensaje(
+    partida: IdPartida,
+    jugador: IdJugador,
+    textoDelMensaje: string,
+    ahora: number,
+  ): Promise<MensajeGuardado> {
+    return this.transaccion(() => {
+      const fila = this.uno('SELECT turno_actual FROM partida WHERE id = ?', partida);
+      if (fila === null) throw this.desconocida(partida);
+      const turno = entero(fila, 'turno_actual');
+      this.ejecutar(
+        'INSERT INTO mensaje (partida, jugador, turno, texto, enviado_en) VALUES (?, ?, ?, ?, ?)',
+        partida,
+        jugador,
+        turno,
+        textoDelMensaje,
+        ahora,
+      );
+      const id = entero(this.uno('SELECT last_insert_rowid() AS id') ?? {}, 'id');
+      return { id, jugador, turno, texto: textoDelMensaje, enviadoEn: ahora };
+    });
+  }
+
+  async mensajes(
+    partida: IdPartida,
+    antesDe: number | null,
+    limite: number,
+  ): Promise<readonly MensajeGuardado[]> {
+    const filas = this.todos(
+      'SELECT * FROM mensaje WHERE partida = ? AND id < ? ORDER BY id DESC LIMIT ?',
+      partida,
+      antesDe ?? Number.MAX_SAFE_INTEGER,
+      limite,
+    );
+    return filas.map((f) => this.filaDeMensaje(f)).reverse();
+  }
+
+  async ultimoLeido(partida: IdPartida, jugador: IdJugador): Promise<number> {
+    const f = this.uno(
+      'SELECT ultimo FROM mensaje_leido WHERE partida = ? AND jugador = ?',
+      partida,
+      jugador,
+    );
+    return f === null ? 0 : entero(f, 'ultimo');
+  }
+
+  async marcarLeidos(partida: IdPartida, jugador: IdJugador, hasta: number): Promise<void> {
+    this.ejecutar(
+      `INSERT INTO mensaje_leido (partida, jugador, ultimo) VALUES (?, ?, ?)
+       ON CONFLICT (partida, jugador) DO UPDATE SET ultimo = MAX(ultimo, excluded.ultimo)`,
+      partida,
+      jugador,
+      hasta,
+    );
+  }
+
+  async sinLeer(partida: IdPartida, jugador: IdJugador): Promise<number> {
+    const f = this.uno(
+      `SELECT COUNT(*) AS n FROM mensaje
+        WHERE partida = ? AND jugador <> ?
+          AND id > COALESCE((SELECT ultimo FROM mensaje_leido WHERE partida = ? AND jugador = ?), 0)`,
+      partida,
+      jugador,
+      partida,
+      jugador,
+    );
+    return f === null ? 0 : entero(f, 'n');
   }
 
   // ---------------------------------------------------------------- fin de turno (T-124)

@@ -156,6 +156,8 @@ mapa completo; ESTADO.md es la aguja.
 | [T-125](T-125-invitar-a-una-partida.md) | Invitar a una partida empezada con un enlace | **hecha** | T-107 |
 | [T-126](T-126-desglose-de-recursos.md) | Desglose de en qué se gasta y de dónde viene cada recurso | **hecha** | T-090 |
 | [T-127](T-127-guia-del-juego.md) | Guía del juego completa, con capturas, desde la portada y la partida | **hecha** | T-124 |
+| [T-128](T-128-quien-ha-terminado.md) | Quién ha terminado el turno, desplegable y discreto | **hecha** | T-124 |
+| [T-129](T-129-charla.md) | La charla de la partida | **hecha** | T-124 |
 
 ---
 

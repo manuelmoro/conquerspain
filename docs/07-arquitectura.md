@@ -132,7 +132,8 @@ mecánica nueva es añadir una regla y engancharla en su fase, nunca tocar el or
   vence **un intervalo después de resolverse el anterior** (`proximaResolucion = resueltoEn + intervalo`),
   se resuelva a su hora, porque **todos lo han dado por terminado** (`PUT /partidas/:id/fin-de-turno`,
   tabla `turno_terminado`) o porque lo avanzó quien administra. Tras una caída no se encadenan turnos:
-  el atrasado se resuelve al despertar y el siguiente tiene su plazo entero. Concurrencia optimista (conflicto de turno = trabajo descartado, no error), detención de la
+  el atrasado se resuelve al despertar y el siguiente tiene su plazo entero. El mismo canal en vivo lleva
+  la charla de cada partida (T-129: tablas `mensaje` y `mensaje_leido`, `/partidas/:id/charla`). Concurrencia optimista (conflicto de turno = trabajo descartado, no error), detención de la
   partida si el motor falla y `reproducirTurno` para reproducir cualquier turno pasado contra su
   auditoría. Detalle en [T-061](plan/T-061-reloj-de-turnos.md). Descripción original:
   un proceso de resolución que despierta, busca partidas con

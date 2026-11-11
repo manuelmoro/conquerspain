@@ -1,6 +1,7 @@
 // El canal en vivo (ficha T-064 §4.2): publicar/suscribir en memoria por partida. El reloj publica
 // despues de guardar; las conexiones SSE se suscriben. Con varias instancias habria que compartirlo.
-// Desde T-124 lleva tambien el aviso de que alguien ha terminado (o reabierto) su turno.
+// Desde T-124 lleva tambien el aviso de que alguien ha terminado (o reabierto) su turno, y desde
+// T-129 los mensajes de la charla.
 import type { IdPartida } from '@conquer/nucleo';
 
 export interface TurnoResuelto {
@@ -15,7 +16,22 @@ export interface TurnoTerminado {
   readonly turno: number;
 }
 
-export type EventoDePartida = TurnoResuelto | TurnoTerminado;
+/** Un mensaje nuevo en la charla de la partida (T-129), ya con su autor. */
+export interface MensajeNuevo {
+  readonly tipo: 'mensaje';
+  readonly partida: IdPartida;
+  readonly mensaje: {
+    readonly id: number;
+    readonly jugador: string;
+    readonly nombre: string;
+    readonly casa: string | null;
+    readonly turno: number;
+    readonly texto: string;
+    readonly enviadoEn: number;
+  };
+}
+
+export type EventoDePartida = TurnoResuelto | TurnoTerminado | MensajeNuevo;
 
 type Oyente = (evento: EventoDePartida) => void;
 

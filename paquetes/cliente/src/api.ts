@@ -59,6 +59,8 @@ export interface EstadoRecibido {
   readonly incorporables?: readonly string[];
   /** El codigo para invitar a mas gente, solo para quien convoco la partida (T-125). */
   readonly codigoDeInvitacion?: string | null;
+  /** Mensajes de la charla que aun no ha leido (T-129). */
+  readonly charlaSinLeer?: number;
   /** Quien ha dado ya por terminado este turno (T-124). */
   readonly finDeTurno?: readonly QuienJuega[];
   readonly vista: VistaJugador;
@@ -78,6 +80,18 @@ export interface InvitacionRecibida {
   }[];
   readonly casasLlenas: readonly string[];
   readonly plazasLibres: number;
+}
+
+/** Un mensaje de la charla de la partida (T-129). */
+export interface MensajeRecibido {
+  readonly id: number;
+  readonly jugador: string;
+  readonly nombre: string;
+  /** La casa de quien escribe, o null si ya no esta en la partida. */
+  readonly casa: string | null;
+  readonly turno: number;
+  readonly texto: string;
+  readonly enviadoEn: number;
 }
 
 /** Un jugador de la partida y si ha dado por terminado el turno (T-124). */
@@ -378,6 +392,39 @@ export class ClienteApi {
       'PUT',
       `/partidas/${encodeURIComponent(partida)}/fin-de-turno`,
       { terminado },
+    );
+  }
+
+  /** Los ultimos mensajes de la charla, con lo ultimo que leyo y cuantos no (T-129). */
+  charla(partida: string) {
+    return this.pedir<{
+      mensajes: MensajeRecibido[];
+      hayMas: boolean;
+      ultimoLeido: number;
+      sinLeer: number;
+    }>('GET', `/partidas/${encodeURIComponent(partida)}/charla`);
+  }
+
+  charlaAntes(partida: string, mensaje: number) {
+    return this.pedir<{ mensajes: MensajeRecibido[]; hayMas: boolean }>(
+      'GET',
+      `/partidas/${encodeURIComponent(partida)}/charla/antes/${String(mensaje)}`,
+    );
+  }
+
+  escribirEnLaCharla(partida: string, texto: string) {
+    return this.pedir<{ mensaje: MensajeRecibido }>(
+      'POST',
+      `/partidas/${encodeURIComponent(partida)}/charla`,
+      { texto },
+    );
+  }
+
+  leerLaCharla(partida: string, hasta: number) {
+    return this.pedir<{ sinLeer: number }>(
+      'PUT',
+      `/partidas/${encodeURIComponent(partida)}/charla/leidos`,
+      { hasta },
     );
   }
 

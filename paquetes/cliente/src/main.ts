@@ -61,6 +61,9 @@ function abrir(id: string): void {
     alFinDeTurno: (turno, quienes) => {
       almacen.alFinDeTurno(turno, quienes);
     },
+    alMensaje: (mensaje) => {
+      almacen.alMensaje(mensaje);
+    },
   });
 }
 

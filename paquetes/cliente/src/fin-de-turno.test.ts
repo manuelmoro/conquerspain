@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { resumenDelFinDeTurno } from './fin-de-turno.ts';
+import { filasDeQuienJuega, resumenDelFinDeTurno } from './fin-de-turno.ts';
 
 const q = (jugador: string, nombre: string, terminado: boolean) => ({ jugador, nombre, terminado });
 
@@ -37,5 +37,36 @@ describe('resumenDelFinDeTurno', () => {
 
   it('jugando solo, terminar resuelve en el acto', () => {
     expect(resumenDelFinDeTurno([q('mesta', 'Ana', false)], 'mesta').linea).toMatch(/solo/);
+  });
+});
+
+describe('filasDeQuienJuega', () => {
+  it('pone primero a quien falta, con su casa y si lleva turnos sin órdenes', () => {
+    const filas = filasDeQuienJuega(
+      [q('mesta', 'Ana', true), q('monjes', 'Luis', false), q('canteros', 'Eva', false)],
+      [
+        { id: 'mesta', nombre: 'La Mesta', turnosSinOrdenes: 0 },
+        { id: 'monjes', nombre: 'Monjes repobladores', turnosSinOrdenes: 3 },
+        { id: 'canteros', nombre: 'Canteros trasmeranos', turnosSinOrdenes: 1 },
+      ],
+      'canteros',
+    );
+    expect(filas.map((f) => [f.nombre, f.terminado, f.soyYo])).toEqual([
+      ['Luis', false, false],
+      ['Eva', false, true],
+      ['Ana', true, false],
+    ]);
+    expect(filas[0]).toMatchObject({
+      casa: 'Monjes repobladores',
+      ausencia: '3 turnos sin dar órdenes',
+    });
+    expect(filas[1]?.ausencia).toBeNull();
+    // Tampoco se dice de uno mismo, aunque lleve turnos sin ordenes.
+    const mias = filasDeQuienJuega(
+      [q('mesta', 'Ana', false)],
+      [{ id: 'mesta', nombre: 'La Mesta', turnosSinOrdenes: 5 }],
+      'mesta',
+    );
+    expect(mias[0]?.ausencia).toBeNull();
   });
 });

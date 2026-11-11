@@ -443,7 +443,9 @@ describe('en vivo (criterio 1)', () => {
   it('el reloj solo publica lo que ha guardado', async () => {
     const e = await entorno();
     const publicados: number[] = [];
-    e.canal.suscribir(P, (ev) => publicados.push(ev.turno));
+    e.canal.suscribir(P, (ev) => {
+      if (ev.tipo === 'turno-resuelto') publicados.push(ev.turno);
+    });
     const dep = {
       repo: e.repo,
       reglas: TABLAS_DEL_JUEGO,

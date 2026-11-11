@@ -694,7 +694,7 @@ svg.serie polyline {
 }
 .pestanyas {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.25rem;
   padding: 0.25rem;
   margin-bottom: 0.5rem;
@@ -1296,4 +1296,143 @@ a.enlace-a-la-guia:hover {
 .enlace-a-la-guia-completa {
   margin: 0.25rem 0 0.75rem;
   font-weight: 600;
+}
+
+/* Quien ha terminado el turno (T-128): se despliega desde «n/m listos» sin mover la cabecera. */
+.listos {
+  position: relative;
+  display: inline-block;
+}
+button.contador-de-listos {
+  min-height: 2rem;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.85rem;
+}
+.lista-de-listos {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.3rem);
+  z-index: 20;
+  min-width: 16rem;
+  max-width: min(22rem, 90vw);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: var(--papel-claro);
+  box-shadow: var(--sombra-alta);
+  font-size: 0.88rem;
+}
+.lista-de-listos ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lista-de-listos li {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #eee3cc;
+}
+.lista-de-listos li:last-child {
+  border-bottom: none;
+}
+.lista-de-listos .senyal {
+  flex: none;
+  width: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.lista-de-listos .terminado .senyal {
+  color: var(--verde);
+}
+.lista-de-listos .falta .senyal {
+  color: var(--tinta-suave);
+}
+
+/* La charla (T-129): una pestanya mas, con su numerito de no leidos; los mensajes por turno. */
+button.pestanya {
+  position: relative;
+}
+.insignia {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.35rem;
+  min-width: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--rojo);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.15rem;
+  text-align: center;
+}
+.charla .caja-de-mensajes {
+  max-height: min(55vh, 34rem);
+  overflow-y: auto;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: var(--papel);
+}
+.charla ol.mensajes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.charla .mensaje {
+  margin: 0.4rem 0;
+  padding: 0.4rem 0.65rem;
+  max-width: 88%;
+  border-radius: 10px;
+  background: var(--papel-claro);
+  border: 1px solid #eee3cc;
+}
+.charla .mensaje.propio {
+  margin-left: auto;
+  background: #e6ecf6;
+  border-color: #cdd8ea;
+}
+.charla .mensaje p {
+  margin: 0;
+}
+.charla .mensaje .autor {
+  font-size: 0.8rem;
+}
+.charla .mensaje .hora {
+  margin-left: 0.4rem;
+}
+.charla .mensaje .texto {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.charla .separador {
+  margin: 0.6rem 0 0.2rem;
+  text-align: center;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+.charla .separador.nuevos {
+  color: var(--rojo);
+  font-weight: 700;
+}
+.charla .vacia {
+  padding: 0.75rem 0;
+  text-align: center;
+}
+.charla form.escribir textarea {
+  width: 100%;
+  font: inherit;
+  resize: vertical;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: #fff;
+}
+.charla form.escribir .fila {
+  align-items: center;
+  font-size: 0.8rem;
 }

@@ -60,6 +60,8 @@ describe('las migraciones', () => {
       'cuenta',
       'enlace_de_acceso',
       'estado_turno',
+      'mensaje',
+      'mensaje_leido',
       'migracion',
       'orden',
       'participante',
