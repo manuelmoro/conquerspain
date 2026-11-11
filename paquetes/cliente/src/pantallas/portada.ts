@@ -72,7 +72,7 @@ export function portada(accion: HTMLElement): HTMLElement {
           { class: 'antetitulo' },
           'Estrategia por turnos · Península ibérica, siglos XIII–XVI',
         ),
-        el('h1', { class: 'marca' }, 'ConquerSpain'),
+        el('h1', { class: 'marca' }, 'Conquer', el('span', { class: 'marca-spain' }, 'Spain')),
         el(
           'p',
           { class: 'entradilla' },

@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { CASAS, POTENCIALES } from '@conquer/nucleo';
 
-import { EMBLEMA_DE_CASA, VINYETA_DE_PERFIL } from './index.ts';
+import { EMBLEMA_DE_CASA, LOGO, VINYETA_DE_PERFIL } from './index.ts';
 import { componerPeninsula } from './peninsula.ts';
 import type { MundoParaLaPortada } from './peninsula.ts';
 
@@ -14,6 +14,13 @@ describe('el arte', () => {
   it('cada casa tiene su emblema y cada perfil de origen su vinyeta', () => {
     for (const casa of CASAS) expect(EMBLEMA_DE_CASA[casa], casa).toMatch(/svg/);
     for (const p of POTENCIALES) expect(VINYETA_DE_PERFIL[p], p).toMatch(/svg/);
+  });
+
+  it('el sello del juego es un SVG y es el icono del navegador', () => {
+    expect(LOGO).toMatch(/svg/);
+    expect(readFileSync(new URL('../../index.html', import.meta.url), 'utf8')).toContain(
+      '<link rel="icon" type="image/svg+xml" href="/src/arte/logo.svg" />',
+    );
   });
 
   it('la peninsula se compone igual desde el mundo, con sus 403 comarcas y recuas que se paran con «menos movimiento»', () => {

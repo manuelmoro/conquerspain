@@ -2,6 +2,7 @@
 // nombre y «Salir»), y un dialogo con los formularios de entrar, crear cuenta, olvido de la contrasenya,
 // restablecerla y entrar con un enlace. Las reglas de la contrasenya se ven antes de enviar.
 import type { Almacen, EstadoDelCliente, Resultado } from '../almacen.ts';
+import { LOGO } from '../arte/index.ts';
 import { boton, el } from './dom.ts';
 import { olvidarPartidas } from './partidas.ts';
 
@@ -81,7 +82,12 @@ export function barraDeCuenta(almacen: Almacen, estado: EstadoDelCliente): HTMLE
   return el(
     'header',
     { class: 'barra-de-cuenta' },
-    el('a', { class: 'logo', href: './' }, 'ConquerSpain'),
+    el(
+      'a',
+      { class: 'logo', href: './' },
+      el('img', { src: LOGO, alt: '', width: '40', height: '40' }),
+      el('span', {}, 'Conquer', el('span', { class: 'marca-spain' }, 'Spain')),
+    ),
     derecha,
   );
 }

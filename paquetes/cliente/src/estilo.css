@@ -805,12 +805,31 @@ button.pestanya.activa {
   border-bottom: 1px solid var(--borde);
 }
 .barra-de-cuenta .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   font-family: var(--display);
   font-weight: 700;
   font-size: 1.3rem;
   color: var(--tinta);
   text-decoration: none;
   letter-spacing: -0.02em;
+}
+.barra-de-cuenta .logo img {
+  flex: none;
+  filter: drop-shadow(0 1px 1.5px #2b211840);
+  transition: transform 0.25s ease;
+}
+.barra-de-cuenta .logo:hover img {
+  transform: rotate(-8deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .barra-de-cuenta .logo img {
+    transition: none;
+  }
+}
+.marca-spain {
+  color: var(--rojo);
 }
 .llamada .fila {
   gap: 0.75rem;
