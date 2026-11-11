@@ -1,6 +1,8 @@
 // El alta de partidas (ficha T-065 §4.1 y §4.2): convocar, unirse, sortear, elegir y fundar, sobre
 // el preparador y el fundador puros de T-049. Aqui solo se decide quien puede que y se guarda.
 import { entrarEnPartida, ofertasParaEntrar } from './entrada.ts';
+import { codigoParaInvitar, verInvitacion } from './invitacion.ts';
+import type { VistaDeInvitacion } from './invitacion.ts';
 import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
 import { randomBytes } from 'node:crypto';
 
@@ -269,6 +271,16 @@ export class ServicioDeAltas {
       avisos: c.avisos,
       partida: c.partida,
     };
+  }
+
+  /** Lo que ensenya el enlace de invitacion (T-125): publico, basta con el codigo. */
+  invitacion(codigo: unknown): Promise<VistaDeInvitacion> {
+    return verInvitacion(this.dep.repo, codigo);
+  }
+
+  /** El codigo para invitar a una partida en marcha, si quien pregunta la convoco (T-125). */
+  codigoParaInvitar(cuenta: string, partida: string): Promise<string | null> {
+    return codigoParaInvitar(this.dep.repo, cuenta, partida);
   }
 
   async mias(cuenta: string): Promise<readonly VistaDeConvocatoria[]> {

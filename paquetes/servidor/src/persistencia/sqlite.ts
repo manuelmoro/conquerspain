@@ -1192,6 +1192,11 @@ export class RepositorioSqlite
     return f === null ? null : this.filaDeConvocatoria(f);
   }
 
+  async convocatoriaDePartida(partida: string): Promise<Convocatoria | null> {
+    const f = this.uno('SELECT * FROM convocatoria WHERE partida = ?', partida);
+    return f === null ? null : this.filaDeConvocatoria(f);
+  }
+
   async convocatoriasDeCuenta(cuenta: string): Promise<readonly Convocatoria[]> {
     return this.todos(
       `SELECT c.* FROM convocatoria c JOIN plaza_convocatoria p ON p.convocatoria = c.id

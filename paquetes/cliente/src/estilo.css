@@ -1008,6 +1008,26 @@ button.avanzar {
   margin-top: 0;
 }
 
+/* Invitar con un enlace (T-125). */
+.cabecera button.invitar {
+  min-height: 2rem;
+  padding: 0.15rem 0.8rem;
+  font-size: 0.85rem;
+}
+input.enlace-de-invitacion {
+  width: 100%;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.85rem;
+}
+.invitacion {
+  margin: 1rem auto;
+  max-width: 46rem;
+  border-left: 4px solid var(--oro);
+}
+.invitacion h2 {
+  margin-top: 0.2rem;
+}
+
 /* Los recursos de «Tienes» como botones, y su historico (T-090). */
 button.boton-de-recurso {
   min-height: auto;

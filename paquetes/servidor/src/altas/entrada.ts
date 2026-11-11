@@ -20,7 +20,7 @@ import type { Repositorio } from '../persistencia/repositorio.ts';
 import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
 
 /** Como en la convocatoria: hasta doce, y cada casa como mucho dos veces (T-100). */
-const PLAZAS_MAXIMAS = 12;
+export const PLAZAS_MAXIMAS = 12;
 
 export interface DependenciasDeEntrada {
   readonly repo: Repositorio & RepositorioDeConvocatorias & RepositorioDeCuentas;

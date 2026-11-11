@@ -42,6 +42,8 @@ export interface RepositorioDeConvocatorias {
   crearConvocatoria(datos: ConvocatoriaNueva, casa: string, nombre: string): Promise<void>;
   convocatoria(id: string): Promise<Convocatoria | null>;
   convocatoriaPorCodigo(codigo: string): Promise<Convocatoria | null>;
+  /** La convocatoria de la que salio una partida (T-125), o null si no salio de ninguna. */
+  convocatoriaDePartida(partida: string): Promise<Convocatoria | null>;
   convocatoriasDeCuenta(cuenta: string): Promise<readonly Convocatoria[]>;
   plazas(id: string): Promise<readonly PlazaDeConvocatoria[]>;
   /** Anyade una plaza en una transaccion; devuelve null si entro o por que no. */

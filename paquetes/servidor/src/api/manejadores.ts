@@ -251,6 +251,8 @@ export function crearApi(
         proximaResolucion: fila.proximaResolucion,
         // Quien administra ve el boton de avanzar el turno (T-090).
         esAdministrador: (await dep.repo.administradorDePartida(id)) === ctx.cuenta,
+        // Quien convoco puede invitar a mas gente con un enlace (T-125).
+        codigoDeInvitacion: (await dep.altas?.codigoParaInvitar(ctx.cuenta, id)) ?? null,
         // Quien ha dado ya por terminado el turno (T-124): se ve en la cabecera.
         finDeTurno: (await finDeTurno(dep.repo, id))?.quienes ?? [],
         vista,
@@ -768,6 +770,15 @@ export function crearApi(
             manejador: privada(async (ctx) => ({
               estado: 201,
               datos: await altas.convocar(ctx.cuenta, objetoJson(ctx.peticion.cuerpo)),
+            })),
+          },
+          {
+            // Publica (T-125): quien abre un enlace de invitacion aun puede no tener cuenta.
+            metodo: 'GET',
+            patron: '/invitaciones/:codigo',
+            manejador: publica(async (base) => ({
+              estado: 200,
+              datos: { invitacion: await altas.invitacion(base.parametros['codigo'] ?? '') },
             })),
           },
           {

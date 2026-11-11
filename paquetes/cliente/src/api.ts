@@ -56,9 +56,27 @@ export interface EstadoRecibido {
   readonly esAdministrador?: boolean;
   /** Las comarcas que ya puede incorporar, para resaltarlas en el mapa (T-092). */
   readonly incorporables?: readonly string[];
+  /** El codigo para invitar a mas gente, solo para quien convoco la partida (T-125). */
+  readonly codigoDeInvitacion?: string | null;
   /** Quien ha dado ya por terminado este turno (T-124). */
   readonly finDeTurno?: readonly QuienJuega[];
   readonly vista: VistaJugador;
+}
+
+/** Lo que ensenya un enlace de invitacion, aun sin cuenta (T-125). */
+export interface InvitacionRecibida {
+  readonly nombre: string;
+  readonly convoca: string;
+  readonly momento: 'apuntandose' | 'sorteando' | 'empezada' | 'cerrada';
+  readonly turno: number | null;
+  readonly intervaloMinutos: number;
+  readonly casas: readonly {
+    readonly casa: string;
+    readonly nombre: string;
+    readonly veces: number;
+  }[];
+  readonly casasLlenas: readonly string[];
+  readonly plazasLibres: number;
 }
 
 /** Un jugador de la partida y si ha dado por terminado el turno (T-124). */
@@ -369,6 +387,14 @@ export class ClienteApi {
     temporada?: boolean;
   }) {
     return this.pedir<{ id: string; codigo: string }>('POST', '/convocatorias', datos);
+  }
+
+  /** Lo que dice un enlace de invitacion; no pide sesion (T-125). */
+  invitacion(codigo: string) {
+    return this.pedir<{ invitacion: InvitacionRecibida }>(
+      'GET',
+      `/invitaciones/${encodeURIComponent(codigo)}`,
+    );
   }
 
   unirse(codigo: string, casa: string) {

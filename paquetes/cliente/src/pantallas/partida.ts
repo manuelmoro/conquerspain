@@ -45,6 +45,7 @@ import { pantallaDeRuta } from './ruta.ts';
 import { pantallaDeUnidades } from './unidades.ts';
 import { dialogoDeResumen } from './resumen.ts';
 import { resumenDelFinDeTurno } from '../fin-de-turno.ts';
+import { dialogoDeInvitar } from './invitacion.ts';
 
 interface EstadoDelAtlas {
   svg: SVGSVGElement | null;
@@ -752,6 +753,9 @@ function botonesDeRecursos(almacen: Almacen, disponible: Recursos): HTMLElement 
   return caja;
 }
 
+/** Si esta abierto el dialogo de invitar (T-125). */
+let invitarAbierto = false;
+
 /** Si el administrador esta confirmando el avance del turno: sobrevive a las repintadas. */
 let confirmandoAvance = false;
 
@@ -863,6 +867,20 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         );
     titulo?.after(control);
   }
+  // Quien convoco invita a mas gente con un enlace (T-125).
+  const codigoDeInvitacion = partida.recibido.codigoDeInvitacion ?? null;
+  if (codigoDeInvitacion !== null) {
+    cabecera.append(
+      boton(
+        '✉ Invitar',
+        () => {
+          invitarAbierto = true;
+          almacen.refrescar();
+        },
+        'secundario invitar',
+      ),
+    );
+  }
   const finCompacto = finDeTurnoDe(almacen, estado, true);
   if (finCompacto !== null) cabecera.append(finCompacto);
   // Lo que tienes para gastar, siempre a la vista arriba (J-01: costaba encontrarlo en el panel).
@@ -961,6 +979,21 @@ export function pantallaDePartida(almacen: Almacen, estado: EstadoDelCliente): H
         recursoAbierto = null;
         almacen.refrescar();
       }),
+    );
+  }
+  if (invitarAbierto && codigoDeInvitacion !== null) {
+    partes.push(
+      dialogoDeInvitar(
+        vista.configuracion.nombre,
+        codigoDeInvitacion,
+        () => {
+          invitarAbierto = false;
+          almacen.refrescar();
+        },
+        () => {
+          almacen.refrescar();
+        },
+      ),
     );
   }
   const tutorial = tarjetaDelTutorial(almacen, estado);

@@ -10,6 +10,8 @@ import { RITMOS, abastecimiento, esperaOrdenes, pasoDe, ritmoEnPalabras } from '
 import { NOMBRE_DE_POTENCIAL } from '../nombres.ts';
 import { EMBLEMA_DE_CASA, VINYETA_DE_PERFIL } from '../arte/index.ts';
 import { boton, el } from './dom.ts';
+import { invitacionDe, tarjetaDeInvitacion } from './invitacion.ts';
+import { enlaceDeInvitacion } from '../invitacion.ts';
 
 type Modo = 'lista' | 'convocar' | 'unirse';
 
@@ -152,10 +154,18 @@ function tarjetaDeConvocatoria(
       partes.push(
         el(
           'p',
-          {},
+          { class: 'fila' },
           `Código para invitar: `,
           el('strong', {}, paso.codigo),
           paso.faltan > 0 ? ` (quedan ${String(paso.faltan)} plazas)` : '',
+          // Mas facil que dictar el codigo: el enlace lleva derecho a unirse (T-125).
+          boton(
+            'Copiar el enlace',
+            () => {
+              void navigator.clipboard.writeText(enlaceDeInvitacion(location.origin, paso.codigo));
+            },
+            'secundario icono',
+          ),
         ),
         boton('Cerrar la lista y sortear los orígenes', () => {
           void api.sortear(c.id).then((r) => {
@@ -247,11 +257,16 @@ function tarjetaDeConvocatoria(
 }
 
 /** La eleccion de casa: privilegio, herramienta y limite, los tres con el mismo peso. */
-function eleccionDeCasa(almacen: Almacen): HTMLElement {
+/** Las casas para elegir; las `llenas` (dos veces cogidas en esa partida, T-125) no se ofrecen. */
+function eleccionDeCasa(almacen: Almacen, llenas: readonly string[] = []): HTMLElement {
   const lista = el('ul', { class: 'lista casas' });
+  if (llenas.includes(estado.casa)) {
+    estado.casa = CASAS.find((c) => !llenas.includes(c)) ?? estado.casa;
+  }
   for (const casa of CASAS) {
     const d = TABLAS_DEL_JUEGO.casas[casa];
     const elegida = casa === estado.casa;
+    const llena = llenas.includes(casa);
     const tarjeta = el(
       'li',
       { class: elegida ? 'casa elegida con-emblema' : 'casa con-emblema' },
@@ -261,11 +276,12 @@ function eleccionDeCasa(almacen: Almacen): HTMLElement {
         { class: 'fila' },
         el('strong', {}, d.nombre),
         elegida ? el('span', { class: 'etiqueta' }, 'elegida') : '',
+        llena ? el('span', { class: 'etiqueta' }, 'ya la llevan dos') : '',
       ),
       el('p', {}, el('strong', {}, 'Privilegio: '), d.privilegio),
       el('p', {}, el('strong', {}, 'Herramienta: '), d.herramienta),
       el('p', {}, el('strong', {}, 'Límite: '), d.limite),
-      elegida
+      elegida || llena
         ? ''
         : boton(
             `Jugar con ${d.nombre}`,
@@ -350,18 +366,27 @@ function convocar(almacen: Almacen, api: ClienteApi): HTMLElement {
 }
 
 function unirse(almacen: Almacen, api: ClienteApi): HTMLElement {
+  // Si llega por un enlace de invitacion (T-125), el codigo ya va puesto y se dice a que partida.
+  const invitado = almacen.invitacionPendiente();
+  const repintar = (): void => {
+    almacen.refrescar();
+  };
+  const invitacion = invitado === null ? null : invitacionDe(api, invitado, repintar);
+  const llenas =
+    invitacion !== null && typeof invitacion !== 'string' ? invitacion.casasLlenas : [];
   const codigo = el('input', {
     type: 'text',
     required: '',
     'aria-label': 'Código de invitación',
     autocapitalize: 'none',
+    ...(invitado === null ? {} : { value: invitado }),
   });
   const formulario = el(
     'form',
     {},
-    el('label', {}, 'Código de invitación', codigo),
+    invitado === null ? el('label', {}, 'Código de invitación', codigo) : '',
     el('h3', {}, 'Tu casa'),
-    eleccionDeCasa(almacen),
+    eleccionDeCasa(almacen, llenas),
     el(
       'p',
       {},
@@ -371,15 +396,20 @@ function unirse(almacen: Almacen, api: ClienteApi): HTMLElement {
         'Volver',
         () => {
           estado.modo = 'lista';
-          almacen.refrescar();
+          estado.entrada = null;
+          almacen.olvidarInvitacion();
         },
         'secundario',
       ),
     ),
   );
+  const alEntrar = (r: { ok: boolean; mensaje?: string }): void => {
+    if (r.ok) almacen.olvidarInvitacion();
+    despues(almacen, api, r);
+  };
   formulario.addEventListener('submit', (e) => {
     e.preventDefault();
-    const elCodigo = codigo.value.trim();
+    const elCodigo = invitado ?? codigo.value.trim();
     void api.unirse(elCodigo, estado.casa).then(async (r) => {
       // Si la partida ya empezo, se entra igual: con un origen libre y amparo (T-107).
       if (!r.ok && r.tipo === 'error' && r.codigo === 'convocatoria-cerrada') {
@@ -393,19 +423,23 @@ function unirse(almacen: Almacen, api: ClienteApi): HTMLElement {
         despues(almacen, api, ofertas);
         return;
       }
-      despues(almacen, api, r);
+      alEntrar(r);
     });
   });
-  const partes: (Node | string)[] = [el('h2', {}, 'Unirse a una partida'), formulario];
-  if (estado.entrada !== null) partes.push(entradaTardia(almacen, api, estado.entrada));
+  const partes: (Node | string)[] = [
+    el('h2', {}, 'Unirse a una partida'),
+    ...(invitado === null ? [] : [tarjetaDeInvitacion(api, invitado, repintar)]),
+    formulario,
+  ];
+  if (estado.entrada !== null) partes.push(entradaTardia(api, estado.entrada, alEntrar));
   return el('section', { class: 'tarjeta' }, ...partes);
 }
 
 /** La partida ya empezo: se elige un origen libre y se entra al resolverse el turno (T-107). */
 function entradaTardia(
-  almacen: Almacen,
   api: ClienteApi,
   entrada: { readonly codigo: string; readonly ofertas: readonly OfertaDeOrigen[] },
+  alEntrar: (r: { ok: boolean; mensaje?: string }) => void,
 ): HTMLElement {
   const lista = el('ul', { class: 'lista ofertas' });
   for (const o of entrada.ofertas) {
@@ -424,7 +458,7 @@ function entradaTardia(
         boton(`Entrar en ${o.nombre}`, () => {
           void api.entrarEnPartida(entrada.codigo, estado.casa, o.comarca).then((r) => {
             if (r.ok) estado.entrada = null;
-            despues(almacen, api, r);
+            alEntrar(r);
           });
         }),
       ),
@@ -449,6 +483,8 @@ export function pantallaDePartidas(
   abrir: (id: string) => void,
 ): HTMLElement {
   if (estado.partidas === null) recargar(almacen, api);
+  // Quien llega por un enlace de invitacion va derecho a unirse (T-125).
+  if (almacen.invitacionPendiente() !== null) estado.modo = 'unirse';
   const partes: (Node | string)[] = [el('h1', {}, 'Mis partidas')];
   if (estado.error !== null)
     partes.push(el('p', { class: 'mensaje-error', role: 'alert' }, estado.error));

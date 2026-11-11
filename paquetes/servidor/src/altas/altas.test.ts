@@ -510,3 +510,68 @@ describe('entrar en una partida empezada (T-107)', () => {
     expect((await e.pedir(nueva, 'GET', `/partidas/${id}/estado`)).estado).toBe(200);
   });
 });
+
+describe('invitar con un enlace (T-125)', () => {
+  it('el enlace dice, sin cuenta, a qué partida se invita, de quién y qué casas hay cogidas', async () => {
+    const e = await entorno();
+    const { id, codigo, cuentas } = await convocar(e, ['mesta', 'monjes'], { plazas: 3 });
+    const sinCuenta = await e.pedir('', 'GET', `/invitaciones/${codigo}`);
+    expect(sinCuenta.estado).toBe(200);
+    expect(sinCuenta.cuerpo).toMatchObject({
+      invitacion: {
+        nombre: 'Partida de amigos',
+        momento: 'apuntandose',
+        turno: null,
+        plazasLibres: 1,
+        casasLlenas: [],
+        casas: [
+          { casa: 'mesta', veces: 1 },
+          { casa: 'monjes', veces: 1 },
+        ],
+      },
+    });
+    expect(JSON.stringify(sinCuenta.cuerpo)).not.toContain('semilla');
+    expect(codigoDe(await e.pedir('', 'GET', '/invitaciones/no-existe'))).toBe(
+      'convocatoria-desconocida',
+    );
+
+    // Empezada: la vista lo dice, con su turno, y solo quien convocó recibe el código en el estado.
+    const creador = cuentas['mesta'] ?? '';
+    const otro = cuentas['monjes'] ?? '';
+    await e.pedir(creador, 'POST', `/convocatorias/${id}/sortear`);
+    for (const cuenta of [creador, otro]) {
+      const v = vista(await e.pedir(cuenta, 'GET', `/convocatorias/${id}`));
+      await e.pedir(cuenta, 'POST', `/convocatorias/${id}/eleccion`, {
+        comarca: v.misOfertas[0]?.comarca,
+      });
+    }
+    expect((await e.pedir('', 'GET', `/invitaciones/${codigo}`)).cuerpo).toMatchObject({
+      invitacion: { momento: 'empezada', turno: 1, plazasLibres: 10 },
+    });
+    expect((await e.pedir(creador, 'GET', `/partidas/${id}/estado`)).cuerpo).toMatchObject({
+      codigoDeInvitacion: codigo,
+    });
+    expect((await e.pedir(otro, 'GET', `/partidas/${id}/estado`)).cuerpo).toMatchObject({
+      codigoDeInvitacion: null,
+    });
+
+    // Terminada: ya no se invita.
+    await e.repo.terminarPartida(id as IdPartida);
+    expect((await e.pedir('', 'GET', `/invitaciones/${codigo}`)).cuerpo).toMatchObject({
+      invitacion: { momento: 'cerrada', plazasLibres: 0 },
+    });
+    expect(await e.altas.codigoParaInvitar(creador, id)).toBeNull();
+    await e.repo.cerrar();
+  });
+
+  it('una casa cogida dos veces sale como llena', async () => {
+    const e = await entorno();
+    const { codigo } = await convocar(e, ['mesta'], { plazas: 3 });
+    const segunda = await e.cuenta('segunda-mesta');
+    await e.pedir(segunda, 'POST', '/convocatorias/unirse', { codigo, casa: 'mesta' });
+    expect((await e.pedir('', 'GET', `/invitaciones/${codigo}`)).cuerpo).toMatchObject({
+      invitacion: { casasLlenas: ['mesta'], casas: [{ casa: 'mesta', veces: 2 }] },
+    });
+    await e.repo.cerrar();
+  });
+});

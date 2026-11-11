@@ -11,6 +11,7 @@ import { Almacen, claveOrdenada } from './almacen.ts';
 import { ClienteApi } from './api.ts';
 import { escucharEventos } from './eventos.ts';
 import { guardadoDelNavegador } from './guardado.ts';
+import { codigoDeLaDireccion } from './invitacion.ts';
 import { pantallaDeEntrada } from './pantallas/entrar.ts';
 import { pantallaDePartida } from './pantallas/partida.ts';
 import { pantallaDePartidas } from './pantallas/partidas.ts';
@@ -78,7 +79,7 @@ function pintar(): void {
   const antes = desplazamientos();
   const pantalla =
     estado.cuenta === null
-      ? pantallaDeEntrada(almacen, estado)
+      ? pantallaDeEntrada(almacen, api, estado)
       : estado.partida === null
         ? el('div', {}, barraDeCuenta(almacen, estado), pantallaDePartidas(almacen, api, abrir))
         : pantallaDePartida(almacen, estado);
@@ -96,6 +97,12 @@ addEventListener('online', () => {
 
 async function arrancar(): Promise<void> {
   const parametros = new URLSearchParams(location.search);
+  // Un enlace de invitacion (T-125): se recuerda el codigo mientras crea su cuenta o entra.
+  const invitacion = codigoDeLaDireccion(location.search);
+  if (invitacion !== null) {
+    almacen.recordarInvitacion(invitacion);
+    history.replaceState(null, '', location.pathname);
+  }
   // El enlace de restablecer la contrasenya abre su formulario (T-091).
   const restablecer = parametros.get('restablecer');
   if (restablecer !== null) abrirRestablecer(restablecer);

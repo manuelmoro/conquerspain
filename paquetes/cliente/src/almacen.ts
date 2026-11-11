@@ -21,6 +21,7 @@ import type {
 import type { EditorDeRuta, UnidadEditada } from './editor-de-ruta.ts';
 import { conPrevision, editorDe, intencionesDe, tocar } from './editor-de-ruta.ts';
 import type { Guardado } from './guardado.ts';
+import { CLAVE_DE_INVITACION } from './invitacion.ts';
 import { alDia, leerProgreso, saltar, siguiente } from './tutorial.ts';
 import type { ProgresoDelTutorial, SituacionDelTutorial } from './tutorial.ts';
 import { preverBandeja } from './prevision.ts';
@@ -278,6 +279,23 @@ export class Almacen {
       cuenta: r.ok ? r.datos.cuenta : null,
       conexion: r.ok || r.tipo === 'error' ? 'conectado' : 'sin-conexion',
     });
+  }
+
+  // ---------------------------------------------------------------- invitacion (T-125)
+
+  /** El codigo del enlace de invitacion que abrio, mientras no entre en la partida o lo deje. */
+  invitacionPendiente(): string | null {
+    return this.dep.guardado.leer(CLAVE_DE_INVITACION);
+  }
+
+  recordarInvitacion(codigo: string): void {
+    this.dep.guardado.escribir(CLAVE_DE_INVITACION, codigo);
+    this.cambiar({});
+  }
+
+  olvidarInvitacion(): void {
+    this.dep.guardado.borrar(CLAVE_DE_INVITACION);
+    this.cambiar({});
   }
 
   // ---------------------------------------------------------------- partida
