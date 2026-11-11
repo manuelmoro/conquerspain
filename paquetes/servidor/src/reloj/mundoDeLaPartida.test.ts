@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { TABLAS_DEL_JUEGO, huella } from '@conquer/nucleo';
+import type { EstadoJugador, EstadoPartida, IdJugador } from '@conquer/nucleo';
 
 import type { FilaDePartida } from '../persistencia/repositorio.ts';
 import {
@@ -41,6 +42,27 @@ describe('proveedorDeRecorte', () => {
     expect(huella(reconstruido)).toBe(huella(mundo));
     // La segunda vez sale de la cache: es el mismo objeto.
     expect(proveedor(fila(estado, huella(mundo)), estado)).toBe(reconstruido);
+  });
+
+  it('quien entro con la partida empezada no cambia el recorte, tambien tras reiniciar el servidor', () => {
+    const { estado, mundo } = partidaDePrueba(['mesta', 'monjes']);
+    const fundador = estado.jugadores['mesta'];
+    if (fundador === undefined) throw new Error('la partida de prueba no trae a la Mesta');
+    // Asi queda el estado cuando la fase de entradas da de alta a quien llega tarde (T-107).
+    const llegado: EstadoJugador = {
+      ...fundador,
+      id: 'arrieros' as IdJugador,
+      casa: 'arrieros',
+      amparoHasta: estado.turno + 6,
+    };
+    const conEntrada: EstadoPartida = {
+      ...estado,
+      jugadores: { ...estado.jugadores, arrieros: llegado },
+    };
+    // Un proveedor nuevo, con la cache vacia: lo que pasa tras cada despliegue.
+    const proveedor = proveedorDeRecorte(mundoPeninsula(), TABLAS_DEL_JUEGO);
+    const reconstruido = proveedor(fila(conEntrada, huella(mundo)), conEntrada);
+    expect(huella(reconstruido)).toBe(huella(mundo));
   });
 
   it('si el mapa ya no es el de entonces, se niega y dice por que', () => {

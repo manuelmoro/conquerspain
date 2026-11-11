@@ -20,11 +20,12 @@ export function proveedorDeRecorte(mundoCompleto: Mundo, reglas: TablasDeReglas)
   return (fila, estado) => {
     const guardado = cache.get(fila.id);
     if (guardado !== undefined) return guardado;
-    const participantes: Participante[] = Object.values(estado.jugadores).map((j) => ({
-      id: j.id,
-      nombre: j.nombre,
-      casa: j.casa,
-    }));
+    // El recorte depende de las casas que fundaron la partida. Quien entra con ella empezada (T-107)
+    // juega en ese mismo mapa y es el unico que lleva `amparoHasta`: contarlo daria otro recorte, y la
+    // partida dejaria de abrirse en cuanto el servidor se reiniciara y se vaciara la cache.
+    const participantes: Participante[] = Object.values(estado.jugadores)
+      .filter((j) => j.amparoHasta === undefined)
+      .map((j) => ({ id: j.id, nombre: j.nombre, casa: j.casa }));
     const preparada = prepararPartida({
       mundo: mundoCompleto,
       reglas,
