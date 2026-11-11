@@ -1,7 +1,7 @@
 // Invitar con un enlace (ficha T-125 §2.3): la tarjeta que ve quien abre el enlace (con o sin cuenta)
 // y el dialogo con el que quien convoco reparte el enlace desde la partida.
 import type { ClienteApi, InvitacionRecibida } from '../api.ts';
-import { enlaceDeInvitacion, textoDeInvitacion } from '../invitacion.ts';
+import { codigoLegible, enlaceDeInvitacion, textoDeInvitacion } from '../invitacion.ts';
 import { boton, el } from './dom.ts';
 
 /** Lo traido por codigo: la invitacion, el mensaje de error o null mientras llega. */
@@ -120,7 +120,7 @@ export function dialogoDeInvitar(
         'p',
         { class: 'suave' },
         'También puede escribir el código a mano en «Unirme con un código»: ',
-        el('strong', {}, codigo),
+        el('strong', { class: 'codigo' }, codigoLegible(codigo)),
       ),
     ),
   );

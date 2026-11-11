@@ -1435,3 +1435,16 @@ button.pestanya {
   padding: 0.15rem 0.7rem;
   font-size: 0.85rem;
 }
+
+/* Quien espera a entrar con la partida empezada (T-131). */
+.lista-de-listos .esperan-a-entrar {
+  margin: 0.4rem 0 0;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--borde);
+}
+
+/* Los codigos de invitacion se leen y se dictan (T-131): letra de ancho fijo y algo de aire. */
+strong.codigo {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  letter-spacing: 0.04em;
+}

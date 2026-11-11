@@ -1,7 +1,7 @@
 // La partida (T-081, T-082, T-088): cabecera con el turno y el corte; el mapa con su conmutador, su
 // explicacion y su leyenda; y el panel con la ficha de la comarca tocada y la bandeja. En escritorio el
 // panel va al lado y fijo; en movil, debajo, y la ficha sube como hoja sobre el mapa.
-import { RECURSOS, TABLAS_DEL_JUEGO, estacionDe } from '@conquer/nucleo';
+import { CASAS, RECURSOS, TABLAS_DEL_JUEGO, estacionDe } from '@conquer/nucleo';
 import type { FichaDeComarca, VistaJugador } from '@conquer/nucleo';
 
 import type { Almacen, EstadoDelCliente } from '../almacen.ts';
@@ -530,6 +530,7 @@ function contadorDeListos(
           ),
         ),
       ),
+      esperanAEntrar(partida.recibido.entrando ?? []),
       forzarElTurno(
         almacen,
         vista.configuracion.esDePrueba,
@@ -537,6 +538,22 @@ function contadorDeListos(
         faltan,
       ),
     ),
+  );
+}
+
+/** Quien entra con la partida empezada (T-131): no frena el turno, pero entra cuando se resuelva. */
+function esperanAEntrar(
+  entrando: readonly { readonly nombre: string; readonly casa: string }[],
+): HTMLElement | string {
+  if (entrando.length === 0) return '';
+  const nombres = entrando.map((e) => {
+    const casa = CASAS.find((c) => c === e.casa);
+    return casa === undefined ? e.nombre : `${e.nombre} (${TABLAS_DEL_JUEGO.casas[casa].nombre})`;
+  });
+  return el(
+    'p',
+    { class: 'esperan-a-entrar' },
+    `⏳ ${entrando.length === 1 ? 'Espera' : 'Esperan'} a entrar: ${nombres.join(', ')}. ${entrando.length === 1 ? 'Entra' : 'Entran'} en la partida al resolverse este turno.`,
   );
 }
 

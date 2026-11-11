@@ -14,6 +14,7 @@ import type {
 } from '@conquer/nucleo';
 
 import { ErrorDeApi } from '../api/errores.ts';
+import { convocatoriaDelCodigo } from './codigos.ts';
 import type { RepositorioDeConvocatorias } from '../persistencia/convocatorias.ts';
 import type { RepositorioDeCuentas } from '../persistencia/cuentas.ts';
 import type { Repositorio } from '../persistencia/repositorio.ts';
@@ -46,8 +47,7 @@ async function preparar(
   cuenta: string,
   cuerpo: Record<string, unknown>,
 ) {
-  const codigo = typeof cuerpo['codigo'] === 'string' ? cuerpo['codigo'] : '';
-  const convocatoria = codigo === '' ? null : await dep.repo.convocatoriaPorCodigo(codigo);
+  const convocatoria = await convocatoriaDelCodigo(dep.repo, cuerpo['codigo']);
   if (convocatoria !== null && convocatoria.partida === null) {
     throw new ErrorDeApi(
       'convocatoria-cerrada',
@@ -59,19 +59,19 @@ async function preparar(
   if (convocatoria === null || id === null || fila === null) {
     throw new ErrorDeApi(
       'convocatoria-desconocida',
-      'Ese codigo no es de ninguna partida empezada: revisalo.',
+      'Ese código no es de ninguna partida empezada: revísalo, o pide que te manden el enlace.',
     );
   }
   if (fila.estado !== 'activa') {
     throw new ErrorDeApi(
       'convocatoria-cerrada',
-      'Esa partida ya no admite a nadie: esta terminada o detenida.',
+      'Esa partida ya no admite a nadie: está terminada o detenida.',
     );
   }
   const casa = casaDe(cuerpo['casa']);
   const participantes = await dep.repo.participantes(fila.id);
   if (participantes.some((p) => p.cuenta === cuenta)) {
-    throw new ErrorDeApi('ya-dentro', 'Ya estas en esta partida.');
+    throw new ErrorDeApi('ya-dentro', 'Ya estás en esta partida: la tienes en «Mis partidas».');
   }
   if (participantes.length >= PLAZAS_MAXIMAS) {
     throw new ErrorDeApi('convocatoria-llena', 'La partida ya tiene doce jugadores.');
@@ -102,7 +102,7 @@ export async function ofertasParaEntrar(
   if (ofertas.length === 0) {
     throw new ErrorDeApi(
       'sin-sitio',
-      'No queda ninguna comarca libre y lejos de los demas para tu casa: prueba con otra casa.',
+      'No queda ninguna comarca libre y lejos de los demás para tu casa: prueba con otra casa.',
     );
   }
   return { partida: fila.id, ofertas };
@@ -120,7 +120,7 @@ export async function entrarEnPartida(
   if (impedimento !== null) {
     throw new ErrorDeApi(
       'eleccion-invalida',
-      'Ese origen no esta entre tus ofertas: vuelve a pedirlas.',
+      'Ese origen no está entre tus ofertas: vuelve a pedirlas.',
     );
   }
   // Dos que entran el mismo turno no se pisan la comarca: la primera orden se la queda.

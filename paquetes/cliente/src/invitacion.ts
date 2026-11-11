@@ -13,6 +13,11 @@ export function enlaceDeInvitacion(origen: string, codigo: string): string {
   return `${origen}/?${PARAMETRO_DE_INVITACION}=${encodeURIComponent(codigo)}`;
 }
 
+/** El codigo para leerlo o dictarlo: los nuevos (T-131), en tres grupos de cuatro; los antiguos, tal cual. */
+export function codigoLegible(codigo: string): string {
+  return /^[0-9A-Z]{12}$/.test(codigo) ? (codigo.match(/.{4}/g) ?? [codigo]).join('-') : codigo;
+}
+
 /** El codigo de una direccion como `?unirse=…`, o null. */
 export function codigoDeLaDireccion(busqueda: string): string | null {
   const codigo = new URLSearchParams(busqueda).get(PARAMETRO_DE_INVITACION)?.trim() ?? '';

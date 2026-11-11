@@ -2,6 +2,7 @@
 // el preparador y el fundador puros de T-049. Aqui solo se decide quien puede que y se guarda.
 import { entrarEnPartida, ofertasParaEntrar } from './entrada.ts';
 import { codigoParaInvitar, verInvitacion } from './invitacion.ts';
+import { codigoNuevo, convocatoriaDelCodigo } from './codigos.ts';
 import type { VistaDeInvitacion } from './invitacion.ts';
 import type { ProveedorDeMundo } from '../reloj/mundoDeLaPartida.ts';
 import { randomBytes } from 'node:crypto';
@@ -156,7 +157,7 @@ export class ServicioDeAltas {
     const turnosDeTemporada =
       cuerpo['temporada'] === true ? this.dep.reglas.prestigio.turnosDeTemporada : null;
     const id = `p-${randomBytes(6).toString('hex')}`;
-    const codigo = this.aleatorio(16);
+    const codigo = codigoNuevo();
     await this.dep.repo.crearConvocatoria(
       {
         id,
@@ -195,12 +196,11 @@ export class ServicioDeAltas {
   }
 
   async unirse(cuenta: string, cuerpo: Record<string, unknown>): Promise<{ id: string }> {
-    const codigo = typeof cuerpo['codigo'] === 'string' ? cuerpo['codigo'] : '';
-    const convocatoria = codigo === '' ? null : await this.dep.repo.convocatoriaPorCodigo(codigo);
+    const convocatoria = await convocatoriaDelCodigo(this.dep.repo, cuerpo['codigo']);
     if (convocatoria === null) {
       throw new ErrorDeApi(
         'convocatoria-desconocida',
-        'Ese codigo de invitacion no es de ninguna partida: revisalo.',
+        'Ese código de invitación no es de ninguna partida: revísalo, o pide que te manden el enlace.',
       );
     }
     const casa = this.casaPedida(cuerpo['casa']);
@@ -214,7 +214,7 @@ export class ServicioDeAltas {
       case null:
         return { id: convocatoria.id };
       case 'ya-dentro':
-        throw new ErrorDeApi('ya-dentro', 'Ya estas en esta partida.');
+        throw new ErrorDeApi('ya-dentro', 'Ya estás en esta partida: la tienes en «Mis partidas».');
       case 'casa-ocupada':
         throw new ErrorDeApi(
           'casa-ocupada',
@@ -225,7 +225,7 @@ export class ServicioDeAltas {
       case 'cerrada':
         throw new ErrorDeApi(
           'convocatoria-cerrada',
-          'La partida ya se ha sorteado: no admite mas jugadores.',
+          'La partida ya se ha sorteado: podrás entrar en cuanto empiece.',
         );
     }
   }
@@ -324,7 +324,7 @@ export class ServicioDeAltas {
     if (c.estado !== 'abierta') {
       throw new ErrorDeApi(
         'convocatoria-cerrada',
-        'La partida ya esta sorteada: el sorteo no se repite.',
+        'La partida ya está sorteada: el sorteo no se repite.',
       );
     }
     const preparada = this.preparar(c, plazas);
@@ -348,7 +348,7 @@ export class ServicioDeAltas {
         'convocatoria-cerrada',
         c.estado === 'abierta'
           ? 'Aun no se ha sorteado: espera a que quien convoco cierre la lista.'
-          : 'La partida ya esta fundada.',
+          : 'La partida ya está fundada.',
       );
     }
     const comarca = cuerpo['comarca'];
@@ -379,7 +379,7 @@ export class ServicioDeAltas {
         'convocatoria-cerrada',
         c.estado === 'abierta'
           ? 'Aun no se ha sorteado: cierra la lista primero.'
-          : 'La partida ya esta fundada.',
+          : 'La partida ya está fundada.',
       );
     }
     const ofertas = leerOfertas(c.ofertas);

@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import type { InvitacionRecibida } from './api.ts';
-import { codigoDeLaDireccion, enlaceDeInvitacion, textoDeInvitacion } from './invitacion.ts';
+import {
+  codigoDeLaDireccion,
+  codigoLegible,
+  enlaceDeInvitacion,
+  textoDeInvitacion,
+} from './invitacion.ts';
 
 const base: InvitacionRecibida = {
   nombre: 'La Meseta',
@@ -49,5 +54,12 @@ describe('textoDeInvitacion', () => {
       'en cuanto empiece',
     );
     expect(textoDeInvitacion({ ...base, momento: 'cerrada' }).detalle).toContain('terminado');
+  });
+});
+
+describe('codigoLegible', () => {
+  it('parte los códigos nuevos en tres grupos y deja los antiguos como están', () => {
+    expect(codigoLegible('K7QD3MX9P2RT')).toBe('K7QD-3MX9-P2RT');
+    expect(codigoLegible('G_VuKtIFiG91cfUpVB48vA')).toBe('G_VuKtIFiG91cfUpVB48vA');
   });
 });

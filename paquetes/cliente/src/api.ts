@@ -44,6 +44,8 @@ export interface PartidaDeLaLista {
   readonly resumen: ResumenParaLaLista | null;
   /** Ordenes suyas recibidas este turno y aun sin resolver. */
   readonly ordenesDadas: number;
+  /** Pidio entrar con la partida empezada y entra al resolverse el turno: aun no se abre (T-131). */
+  readonly enEspera?: boolean;
 }
 
 /** Cada cuanto llega el aviso por correo de una partida (T-064). */
@@ -63,6 +65,8 @@ export interface EstadoRecibido {
   readonly charlaSinLeer?: number;
   /** Quien ha dado ya por terminado este turno (T-124). */
   readonly finDeTurno?: readonly QuienJuega[];
+  /** Quien entra con la partida empezada al resolverse este turno (T-131). */
+  readonly entrando?: readonly { readonly nombre: string; readonly casa: string }[];
   readonly vista: VistaJugador;
 }
 

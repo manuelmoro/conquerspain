@@ -11,15 +11,26 @@ export interface QuienJuega {
   readonly terminado: boolean;
 }
 
+/** Quien ha pedido entrar con la partida empezada y entra al resolverse este turno (T-131). */
+export interface QuienEntra {
+  readonly nombre: string;
+  readonly casa: string;
+}
+
 export interface FinDeTurno {
   readonly turno: number;
   readonly quienes: readonly QuienJuega[];
+  /** No frenan el turno (aun no tienen casa que mandar), pero quien convoca debe saber que esperan. */
+  readonly entrando: readonly QuienEntra[];
   /** true si hay alguien que cuente y todos lo han terminado. */
   readonly todos: boolean;
 }
 
 export async function finDeTurno(
-  repo: Pick<Repositorio, 'partida' | 'participantes' | 'ultimoEstado' | 'turnoTerminadoPor'>,
+  repo: Pick<
+    Repositorio,
+    'partida' | 'participantes' | 'ultimoEstado' | 'turnoTerminadoPor' | 'ordenesPendientes'
+  >,
   id: IdPartida,
 ): Promise<FinDeTurno | null> {
   const fila = await repo.partida(id);
@@ -31,9 +42,13 @@ export async function finDeTurno(
     if (p.cuenta === null || jugador === undefined) return [];
     return [{ jugador: p.jugador, nombre: jugador.nombre, terminado: terminados.has(p.jugador) }];
   });
+  const entrando = (await repo.ordenesPendientes(id)).flatMap((o) =>
+    o.orden.tipo === 'entrar' ? [{ nombre: o.orden.nombre, casa: o.orden.casa }] : [],
+  );
   return {
     turno: fila.turnoActual,
     quienes,
+    entrando,
     todos: quienes.length > 0 && quienes.every((q) => q.terminado),
   };
 }

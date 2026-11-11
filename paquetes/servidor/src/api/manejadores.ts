@@ -236,6 +236,8 @@ export function crearApi(
           proximaResolucion: p.partida.proximaResolucion,
           esDePrueba: p.partida.esDePrueba,
           resumen,
+          // Pidio entrar con la partida empezada: aun no tiene casa que abrir (T-131).
+          enEspera: estado !== null && estado.jugadores[p.jugador] === undefined,
           ordenesDadas: pendientes.filter((o) => o.orden.jugador === p.jugador).length,
         };
       }),
@@ -245,6 +247,7 @@ export function crearApi(
 
   const verEstado: Manejador = async (ctx) => {
     const { fila, estado, vista, id, jugador, mundo } = await estadoYVista(ctx);
+    const fin = await finDeTurno(dep.repo, id);
     return {
       estado: 200,
       datos: {
@@ -260,7 +263,9 @@ export function crearApi(
         // Mensajes de la charla que aun no ha leido (T-129): el numerito de la pestanya.
         charlaSinLeer: (await dep.charla?.sinLeer(id, jugador)) ?? 0,
         // Quien ha dado ya por terminado el turno (T-124): se ve en la cabecera.
-        finDeTurno: (await finDeTurno(dep.repo, id))?.quienes ?? [],
+        finDeTurno: fin?.quienes ?? [],
+        // Quien entra con la partida empezada y espera a que se resuelva el turno (T-131).
+        entrando: fin?.entrando ?? [],
         vista,
       },
     };

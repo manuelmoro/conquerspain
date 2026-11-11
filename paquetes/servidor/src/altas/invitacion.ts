@@ -9,6 +9,7 @@ import type { RepositorioDeConvocatorias } from '../persistencia/convocatorias.t
 import type { RepositorioDeCuentas } from '../persistencia/cuentas.ts';
 import type { Repositorio } from '../persistencia/repositorio.ts';
 import { PLAZAS_MAXIMAS } from './entrada.ts';
+import { convocatoriaDelCodigo } from './codigos.ts';
 
 /** En que punto esta la partida a la que se invita. */
 export type MomentoDeLaPartida = 'apuntandose' | 'sorteando' | 'empezada' | 'cerrada';
@@ -48,8 +49,7 @@ export async function verInvitacion(
   repo: RepoDeInvitacion,
   codigoPedido: unknown,
 ): Promise<VistaDeInvitacion> {
-  const codigo = typeof codigoPedido === 'string' ? codigoPedido.trim() : '';
-  const c = codigo === '' ? null : await repo.convocatoriaPorCodigo(codigo);
+  const c = await convocatoriaDelCodigo(repo, codigoPedido);
   if (c === null) {
     throw new ErrorDeApi(
       'convocatoria-desconocida',

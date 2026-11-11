@@ -11,7 +11,7 @@ import { NOMBRE_DE_POTENCIAL } from '../nombres.ts';
 import { EMBLEMA_DE_CASA, VINYETA_DE_PERFIL } from '../arte/index.ts';
 import { boton, el } from './dom.ts';
 import { invitacionDe, tarjetaDeInvitacion } from './invitacion.ts';
-import { enlaceDeInvitacion } from '../invitacion.ts';
+import { codigoLegible, enlaceDeInvitacion } from '../invitacion.ts';
 
 type Modo = 'lista' | 'convocar' | 'unirse';
 
@@ -49,6 +49,13 @@ const estado: {
   casa: Casa;
   /** Las ofertas para entrar en una partida ya empezada, si el codigo era de una (T-107). */
   entrada: { readonly codigo: string; readonly ofertas: readonly OfertaDeOrigen[] } | null;
+  /**
+   * El codigo que se esta escribiendo (T-131): sobrevive a las repintadas. Antes, elegir casa despues de
+   * escribirlo lo borraba, y «Unirme» no hacia nada visible con el campo vacio.
+   */
+  codigoEscrito: string;
+  /** Mientras se pide unirse: el boton lo dice y no se pulsa dos veces. */
+  uniendose: boolean;
 } = {
   modo: 'lista',
   partidas: null,
@@ -57,6 +64,8 @@ const estado: {
   error: null,
   casa: 'hortelanos',
   entrada: null,
+  codigoEscrito: '',
+  uniendose: false,
 };
 
 /** Al salir de la cuenta: la lista era de quien ha salido (T-091). */
@@ -74,7 +83,9 @@ function recargar(almacen: Almacen, api: ClienteApi): void {
     estado.cargando = false;
     estado.partidas = p.ok ? p.datos.partidas : [];
     estado.convocatorias = c.ok ? c.datos.convocatorias.filter((x) => x.partida === null) : [];
-    estado.error = p.ok ? null : p.mensaje;
+    // Solo se pone el error de la carga; no se borra el de la accion que la provoco (T-131: borrarlo
+    // aqui hacia desaparecer, a los pocos milisegundos, el «ese codigo no es de ninguna partida»).
+    if (!p.ok) estado.error = p.mensaje;
     almacen.refrescar();
   });
 }
@@ -123,9 +134,17 @@ function tarjetaDePartida(p: PartidaDeLaLista, abrir: (id: string) => void): HTM
         ? el('span', { class: 'chip baja' }, 'Sin órdenes este turno')
         : '',
     ),
-    boton('Abrir', () => {
-      abrir(p.id);
-    }),
+    // Quien entro con la partida empezada no tiene casa hasta que se resuelve el turno (T-131): sin
+    // «Abrir», que no llevaria a ningun sitio, y con lo que pasa y cuando.
+    p.enEspera === true
+      ? el(
+          'p',
+          { class: 'consejo' },
+          `⏳ Entras en la partida al resolverse este turno (${tiempoHastaElCorte(p.proximaResolucion, Date.now())}). Si no quieres esperar tanto, pide a quien la convocó que resuelva el turno ahora.`,
+        )
+      : boton('Abrir', () => {
+          abrir(p.id);
+        }),
   );
 }
 
@@ -156,7 +175,7 @@ function tarjetaDeConvocatoria(
           'p',
           { class: 'fila' },
           `Código para invitar: `,
-          el('strong', {}, paso.codigo),
+          el('strong', { class: 'codigo' }, codigoLegible(paso.codigo)),
           paso.faltan > 0 ? ` (quedan ${String(paso.faltan)} plazas)` : '',
           // Mas facil que dictar el codigo: el enlace lleva derecho a unirse (T-125).
           boton(
@@ -172,6 +191,14 @@ function tarjetaDeConvocatoria(
             despues(almacen, api, r);
           });
         }),
+        // ¿Hay que esperar a todos? No (T-131): quien no haya llegado entra luego con el mismo enlace.
+        el(
+          'p',
+          { class: 'suave' },
+          paso.faltan > 0
+            ? 'No hace falta esperar a todos: si cierras ahora, quien falte podrá entrar después con el mismo enlace o código, ya con la partida empezada, en una comarca libre y con veinte turnos de amparo. Quien está dentro elige origen entre tres; quien llega tarde, entre lo que quede libre.'
+            : 'Ya están todas las plazas: cierra la lista cuando quieras.',
+        ),
       );
       break;
     case 'esperar-jugadores':
@@ -378,25 +405,51 @@ function unirse(almacen: Almacen, api: ClienteApi): HTMLElement {
     type: 'text',
     required: '',
     'aria-label': 'Código de invitación',
+    // El teclado del movil no debe tocar el codigo: ni mayusculas, ni autocorreccion, ni sugerencias.
     autocapitalize: 'none',
-    ...(invitado === null ? {} : { value: invitado }),
+    autocorrect: 'off',
+    autocomplete: 'off',
+    spellcheck: 'false',
+    placeholder: 'K7QD-3MX9-P2RT',
   });
+  codigo.value = invitado ?? estado.codigoEscrito;
+  codigo.addEventListener('input', () => {
+    estado.codigoEscrito = codigo.value;
+  });
+  // El error se ve junto al boton: en el movil, lo de arriba del todo queda fuera de la pantalla (T-131).
+  const error =
+    estado.error === null ? '' : el('p', { class: 'mensaje-error', role: 'alert' }, estado.error);
   const formulario = el(
     'form',
     {},
-    invitado === null ? el('label', {}, 'Código de invitación', codigo) : '',
+    invitado === null
+      ? el(
+          'label',
+          {},
+          'Código de invitación',
+          codigo,
+          el('span', { class: 'suave' }, 'Mejor si te mandan el enlace: no hay que escribir nada.'),
+        )
+      : '',
     el('h3', {}, 'Tu casa'),
     eleccionDeCasa(almacen, llenas),
+    error,
     el(
       'p',
       {},
-      el('button', { type: 'submit' }, 'Unirme'),
+      el(
+        'button',
+        { type: 'submit', ...(estado.uniendose ? { disabled: '' } : {}) },
+        estado.uniendose ? 'Uniéndote…' : 'Unirme',
+      ),
       ' ',
       boton(
         'Volver',
         () => {
           estado.modo = 'lista';
           estado.entrada = null;
+          estado.error = null;
+          estado.codigoEscrito = '';
           almacen.olvidarInvitacion();
         },
         'secundario',
@@ -404,16 +457,29 @@ function unirse(almacen: Almacen, api: ClienteApi): HTMLElement {
     ),
   );
   const alEntrar = (r: { ok: boolean; mensaje?: string }): void => {
-    if (r.ok) almacen.olvidarInvitacion();
+    estado.uniendose = false;
+    if (r.ok) {
+      almacen.olvidarInvitacion();
+      estado.codigoEscrito = '';
+    }
     despues(almacen, api, r);
   };
   formulario.addEventListener('submit', (e) => {
     e.preventDefault();
-    const elCodigo = invitado ?? codigo.value.trim();
+    const elCodigo = (invitado ?? estado.codigoEscrito).trim();
+    if (elCodigo === '') {
+      estado.error = 'Escribe el código de invitación que te han pasado (o abre su enlace).';
+      almacen.refrescar();
+      return;
+    }
+    estado.uniendose = true;
+    estado.error = null;
+    almacen.refrescar();
     void api.unirse(elCodigo, estado.casa).then(async (r) => {
       // Si la partida ya empezo, se entra igual: con un origen libre y amparo (T-107).
       if (!r.ok && r.tipo === 'error' && r.codigo === 'convocatoria-cerrada') {
         const ofertas = await api.ofertasParaEntrar(elCodigo, estado.casa);
+        estado.uniendose = false;
         if (ofertas.ok) {
           estado.entrada = { codigo: elCodigo, ofertas: ofertas.datos.ofertas };
           estado.error = null;
@@ -486,8 +552,27 @@ export function pantallaDePartidas(
   // Quien llega por un enlace de invitacion va derecho a unirse (T-125).
   if (almacen.invitacionPendiente() !== null) estado.modo = 'unirse';
   const partes: (Node | string)[] = [el('h1', {}, 'Mis partidas')];
-  if (estado.error !== null)
+  // Uniendose, el error va junto a su boton (T-131).
+  if (estado.error !== null && estado.modo !== 'unirse')
     partes.push(el('p', { class: 'mensaje-error', role: 'alert' }, estado.error));
+  // Lo que fallo al abrir una partida (T-131: antes no se veia aqui y parecia que el boton no hacia nada).
+  const errores = almacen.estado.errores;
+  if (errores.length > 0) {
+    partes.push(
+      el(
+        'div',
+        { class: 'mensaje-error fila', role: 'alert' },
+        el('div', {}, ...errores.map((e) => el('p', {}, e.mensaje))),
+        boton(
+          '✕',
+          () => {
+            almacen.limpiarErrores();
+          },
+          'secundario icono empuje',
+        ),
+      ),
+    );
+  }
   if (estado.modo === 'convocar') return el('section', {}, ...partes, convocar(almacen, api));
   if (estado.modo === 'unirse') return el('section', {}, ...partes, unirse(almacen, api));
 

@@ -159,6 +159,7 @@ mapa completo; ESTADO.md es la aguja.
 | [T-128](T-128-quien-ha-terminado.md) | Quién ha terminado el turno, desplegable y discreto | **hecha** | T-124 |
 | [T-129](T-129-charla.md) | La charla de la partida | **hecha** | T-124 |
 | [T-130](T-130-resolver-para-todos.md) | Resolver el turno para todos, separado de terminar el tuyo; enlaces de la guía | **hecha** | T-128 |
+| [T-131](T-131-unirse-sin-tropiezos.md) | Unirse sin tropiezos: códigos legibles, errores a la vista y quien entra tarde | **hecha** | T-125 |
 
 ---
 
