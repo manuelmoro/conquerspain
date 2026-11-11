@@ -148,6 +148,51 @@ function tarjetaDePartida(p: PartidaDeLaLista, abrir: (id: string) => void): HTM
   );
 }
 
+/** La convocatoria cuyo nombre se esta cambiando, con lo escrito: sobrevive a las repintadas. */
+let renombrando: { readonly id: string; nombre: string } | null = null;
+
+function formularioDeNombre(
+  almacen: Almacen,
+  api: ClienteApi,
+  c: ConvocatoriaRecibida,
+): HTMLElement {
+  const campo = el('input', {
+    type: 'text',
+    required: '',
+    maxlength: '60',
+    'aria-label': 'Nombre de la partida',
+  });
+  campo.value = renombrando?.nombre ?? c.nombre;
+  campo.addEventListener('input', () => {
+    if (renombrando !== null) renombrando.nombre = campo.value;
+  });
+  const formulario = el(
+    'form',
+    { class: 'fila renombrar' },
+    campo,
+    el('button', { type: 'submit' }, 'Guardar'),
+    boton(
+      'Cancelar',
+      () => {
+        renombrando = null;
+        almacen.refrescar();
+      },
+      'secundario',
+    ),
+  );
+  formulario.addEventListener('submit', (e) => {
+    e.preventDefault();
+    void api.renombrarConvocatoria(c.id, campo.value).then((r) => {
+      if (r.ok) renombrando = null;
+      despues(almacen, api, r);
+    });
+  });
+  setTimeout(() => {
+    campo.focus();
+  }, 0);
+  return formulario;
+}
+
 function tarjetaDeConvocatoria(
   almacen: Almacen,
   api: ClienteApi,
@@ -156,12 +201,25 @@ function tarjetaDeConvocatoria(
 ): HTMLElement {
   const paso = pasoDe(c);
   const partes: (Node | string)[] = [
-    el(
-      'div',
-      { class: 'fila' },
-      el('strong', {}, c.nombre),
-      el('span', { class: 'etiqueta' }, ritmoEnPalabras(c.intervaloMinutos)),
-    ),
+    renombrando?.id === c.id
+      ? formularioDeNombre(almacen, api, c)
+      : el(
+          'div',
+          { class: 'fila' },
+          el('strong', {}, c.nombre),
+          el('span', { class: 'etiqueta' }, ritmoEnPalabras(c.intervaloMinutos)),
+          // Quien convoca puede cambiar el nombre mientras la partida no haya empezado (T-133).
+          c.esQuienConvoca === true && c.partida === null
+            ? boton(
+                '✎ Cambiar el nombre',
+                () => {
+                  renombrando = { id: c.id, nombre: c.nombre };
+                  almacen.refrescar();
+                },
+                'secundario icono empuje',
+              )
+            : '',
+        ),
     el(
       'p',
       { class: 'suave' },

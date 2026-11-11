@@ -113,17 +113,22 @@ export class ServicioDeAltas {
     return dato;
   }
 
-  async convocar(
-    cuenta: string,
-    cuerpo: Record<string, unknown>,
-  ): Promise<{ id: string; codigo: string }> {
-    const nombre = typeof cuerpo['nombre'] === 'string' ? cuerpo['nombre'].trim() : '';
+  private nombrePedido(dato: unknown): string {
+    const nombre = typeof dato === 'string' ? dato.trim() : '';
     if (nombre.length === 0 || nombre.length > NOMBRE_MAXIMO) {
       throw new ErrorDeApi(
         'configuracion-invalida',
         `La partida necesita un nombre de 1 a ${String(NOMBRE_MAXIMO)} caracteres.`,
       );
     }
+    return nombre;
+  }
+
+  async convocar(
+    cuenta: string,
+    cuerpo: Record<string, unknown>,
+  ): Promise<{ id: string; codigo: string }> {
+    const nombre = this.nombrePedido(cuerpo['nombre']);
     const casa = this.casaPedida(cuerpo['casa']);
     const esDePrueba = cuerpo['esDePrueba'] === true;
     const intervalo = cuerpo['intervaloMinutos'];
@@ -311,6 +316,33 @@ export class ServicioDeAltas {
       );
     }
     return preparada.valor;
+  }
+
+  /**
+   * Cambia el nombre de la partida antes de que empiece (T-133): solo quien la convoco. Al fundarla, el
+   * nombre se lee de la convocatoria, asi que llega igual a la partida, a su estado y a la cronica. Una
+   * partida ya empezada no se renombra: su nombre esta en el estado de cada turno.
+   */
+  async renombrar(
+    cuenta: string,
+    id: string,
+    cuerpo: Record<string, unknown>,
+  ): Promise<VistaDeConvocatoria> {
+    const { convocatoria: c } = await this.miConvocatoria(cuenta, id);
+    if (c.creador !== cuenta) {
+      throw new ErrorDeApi(
+        'solo-quien-convoca',
+        'Solo quien convocó la partida puede cambiarle el nombre.',
+      );
+    }
+    const nombre = this.nombrePedido(cuerpo['nombre']);
+    if (!(await this.dep.repo.renombrarConvocatoria(id, nombre))) {
+      throw new ErrorDeApi(
+        'convocatoria-cerrada',
+        'La partida ya ha empezado: su nombre ya no se puede cambiar.',
+      );
+    }
+    return this.ver(cuenta, id);
   }
 
   async sortear(cuenta: string, id: string): Promise<VistaDeConvocatoria> {

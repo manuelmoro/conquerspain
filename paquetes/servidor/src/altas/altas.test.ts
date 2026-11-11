@@ -575,3 +575,41 @@ describe('invitar con un enlace (T-125)', () => {
     await e.repo.cerrar();
   });
 });
+
+describe('cambiar el nombre antes de empezar (T-133)', () => {
+  it('solo quien convoca, con un nombre válido, y el nombre nuevo llega a la partida fundada', async () => {
+    const e = await entorno();
+    const { id, cuentas } = await convocar(e, ['mesta', 'monjes']);
+    const creador = cuentas['mesta'] ?? '';
+    const otro = cuentas['monjes'] ?? '';
+    const nuevo = 'Prueba con Rodri, Mike y Jorge';
+    expect(
+      codigoDe(await e.pedir(otro, 'PUT', `/convocatorias/${id}/nombre`, { nombre: nuevo })),
+    ).toBe('solo-quien-convoca');
+    expect(
+      codigoDe(await e.pedir(creador, 'PUT', `/convocatorias/${id}/nombre`, { nombre: '  ' })),
+    ).toBe('configuracion-invalida');
+    const r = await e.pedir(creador, 'PUT', `/convocatorias/${id}/nombre`, {
+      nombre: `  ${nuevo} `,
+    });
+    expect(vista(r).nombre).toBe(nuevo);
+    // Tambien sorteada (aun sin fundar) se puede.
+    await e.pedir(creador, 'POST', `/convocatorias/${id}/sortear`);
+    expect(
+      vista(await e.pedir(creador, 'PUT', `/convocatorias/${id}/nombre`, { nombre: nuevo })).nombre,
+    ).toBe(nuevo);
+    for (const cuenta of [creador, otro]) {
+      const v = vista(await e.pedir(cuenta, 'GET', `/convocatorias/${id}`));
+      await e.pedir(cuenta, 'POST', `/convocatorias/${id}/eleccion`, {
+        comarca: v.misOfertas[0]?.comarca,
+      });
+    }
+    expect((await e.repo.partida(id as IdPartida))?.nombre).toBe(nuevo);
+    expect((await e.repo.ultimoEstado(id as IdPartida))?.configuracion.nombre).toBe(nuevo);
+    // Empezada, ya no.
+    expect(
+      codigoDe(await e.pedir(creador, 'PUT', `/convocatorias/${id}/nombre`, { nombre: 'Otro' })),
+    ).toBe('convocatoria-cerrada');
+    await e.repo.cerrar();
+  });
+});

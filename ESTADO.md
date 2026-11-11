@@ -3,7 +3,7 @@
 > Este archivo es la aguja del proyecto: dice exactamente dónde estamos y qué toca ahora.
 > Se actualiza **al cerrar cada tarea**, y también si una tarea queda a medias.
 
-**Última actualización:** 11 de noviembre de 2026 (fase 7 terminada: T-124 a T-132, peticiones del usuario tras jugar)
+**Última actualización:** 11 de noviembre de 2026 (fase 7 terminada: T-124 a T-133, peticiones del usuario tras jugar)
 **Fase actual:** Fase 4 · Cliente (Fase 3 completa salvo T-066)
 
 ---
@@ -136,6 +136,7 @@ La maqueta publicada está en https://claude.ai/artifact/8JC7wCp9LtAFDs6Sg8jhaN
 
 | Fecha | Qué pasó |
 |---|---|
+| 11-11-2026 | **T-133 hecha: cambiar el nombre antes de empezar.** Quien convoca tiene «✎ Cambiar el nombre» en la tarjeta de la convocatoria mientras la partida no esté fundada; el nombre nuevo llega a la partida y a su estado al fundarla. |
 | 11-11-2026 | **T-132 hecha: un arranque más generoso.** De 80 de pan, 60 de madera, 20 de piedra y 60 maravedís a 150, 150, 80 y 200, más 10 de sal. Medido en el banco (ocho casas, tres semillas, 72 turnos): +19 % de prestigio y la distancia entre casas algo menor. Solo afecta a las partidas nuevas y a quien entre en una empezada; las de producción siguen igual. El hambre de ferrones y salineros no es del arranque: queda para T-108. |
 | 11-11-2026 | **T-131 hecha: unirse sin tropiezos**, tras los avisos de la primera partida real. El error de «Mis partidas» se borraba solo a los milisegundos (y con un código mal escrito no pasaba nada visible); el código escrito se perdía al elegir casa; los códigos eran fáciles de copiar mal; y quien entraba tarde veía un «Abrir» que no hacía nada. Ahora: códigos legibles («K7QD-3MX9-P2RT», tolerantes a minúsculas, guiones y O/0, I/1; los antiguos siguen valiendo), el error junto al botón, la espera de quien entra tarde explicada en su lista y visible para quien convocó, y la tarjeta de la convocatoria dice que no hace falta esperar a todos. Probado con WebKit 26 en un iPhone emulado. |
 | 11-11-2026 | **T-130 hecha: resolver para todos, aparte.** El «⏭ Avanzar turno» de la cabecera parecía la versión individual de «He terminado el turno». Se va de la cabecera: quien convocó lo tiene al pie de la lista «n/m listos», como «Resolver el turno ahora para todos», siempre con confirmación que dice a cuántas casas se les corta el turno. Y los enlaces del índice de la guía ya llevan a su sección: las capturas declaran su tamaño (lo escribe `guia:capturas`) y no empujan la página al cargar. |

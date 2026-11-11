@@ -1369,6 +1369,16 @@ export class RepositorioSqlite
     });
   }
 
+  async renombrarConvocatoria(id: string, nombre: string): Promise<boolean> {
+    return (
+      this.ejecutar(
+        "UPDATE convocatoria SET nombre = ? WHERE id = ? AND estado != 'fundada' AND partida IS NULL",
+        nombre,
+        id,
+      ) > 0
+    );
+  }
+
   async marcarFundada(id: string, partida: string): Promise<void> {
     this.ejecutar(
       "UPDATE convocatoria SET estado = 'fundada', partida = ? WHERE id = ? AND estado != 'fundada'",

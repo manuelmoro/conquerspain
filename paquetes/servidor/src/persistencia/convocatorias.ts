@@ -62,6 +62,8 @@ export interface RepositorioDeConvocatorias {
   ): Promise<boolean>;
   /** Anota la eleccion, solo si esta `eligiendo`. */
   elegir(id: string, cuenta: string, comarca: string): Promise<boolean>;
+  /** Cambia el nombre, solo si aun no se ha fundado la partida (T-133); false si ya no se podia. */
+  renombrarConvocatoria(id: string, nombre: string): Promise<boolean>;
   /** Pasa a `fundada` con su partida (idempotente). */
   marcarFundada(id: string, partida: string): Promise<void>;
 }

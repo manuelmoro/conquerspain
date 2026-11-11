@@ -893,6 +893,20 @@ export function crearApi(
             })),
           },
           {
+            metodo: 'PUT',
+            patron: '/convocatorias/:id/nombre',
+            manejador: privada(async (ctx) => ({
+              estado: 200,
+              datos: {
+                convocatoria: await altas.renombrar(
+                  ctx.cuenta,
+                  ctx.parametros['id'] ?? '',
+                  objetoJson(ctx.peticion.cuerpo),
+                ),
+              },
+            })),
+          },
+          {
             metodo: 'POST',
             patron: '/convocatorias/:id/sortear',
             manejador: privada(async (ctx) => ({

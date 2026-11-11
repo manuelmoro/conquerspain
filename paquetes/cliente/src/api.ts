@@ -473,6 +473,15 @@ export class ClienteApi {
     );
   }
 
+  /** Cambia el nombre de la partida antes de que empiece; solo quien la convoco (T-133). */
+  renombrarConvocatoria(id: string, nombre: string) {
+    return this.pedir<{ convocatoria: ConvocatoriaRecibida }>(
+      'PUT',
+      `/convocatorias/${encodeURIComponent(id)}/nombre`,
+      { nombre },
+    );
+  }
+
   unirse(codigo: string, casa: string) {
     return this.pedir<{ id: string }>('POST', '/convocatorias/unirse', { codigo, casa });
   }

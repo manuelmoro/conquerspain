@@ -1448,3 +1448,9 @@ strong.codigo {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   letter-spacing: 0.04em;
 }
+
+/* Cambiar el nombre de una convocatoria (T-133). */
+form.renombrar input {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
