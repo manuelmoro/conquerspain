@@ -44,6 +44,8 @@ En Cloudflare: Networking › Tunnels (o Zero Trust › Networks › Tunnels) �
 
 - Máquina `conquerspain` en Hetzner, IP 2.31.182.183, acceso SSH solo con clave; el cortafuegos (ufw)
   solo deja entrar SSH.
+- Solo HTTPS: en Cloudflare › SSL/TLS › Edge Certificates están activos «Always Use HTTPS» (http
+  redirige con 301) y HSTS de seis meses, sin subdominios ni preload.
 - Túnel `conquerspain` con la ruta `conquerspain.com` → `http://juego:8471`.
 - Correo por Brevo (`smtp-relay.brevo.com:587`), dominio autenticado con DKIM y DMARC; la clave SMTP
   no caduca (Brevo la retira tras 90 días sin uso).
