@@ -7,7 +7,12 @@
 import type { DatosArranque } from '../tipos/reglas.ts';
 
 export const ARRANQUE: DatosArranque = {
-  almacen: { pan: 80, madera: 60, piedra: 20, maravedis: 60, sal: 0, hierro: 0, lana: 0 },
+  // T-132: el arranque de antes (80 de pan, 60 de madera, 20 de piedra y 60 maravedis) daba para una
+  // recua y una incorporacion el primer turno y poco mas, y cuatro casas seguian con una sola comarca a
+  // los tres anyos. Con esto se puede abrir con varias cosas a la vez (recua, alfoz, mercado, casas) y la
+  // sal deja ver desde el principio para que sirve. Medido en el banco: +19 % de prestigio a los 72
+  // turnos y la distancia entre la casa mas fuerte y la mas debil algo menor (ficha T-132 §1).
+  almacen: { pan: 150, madera: 150, piedra: 80, maravedis: 200, sal: 10, hierro: 0, lana: 0 },
   edificiosDeOrigen: { granja: 1 },
   ajuste: {
     activo: true,

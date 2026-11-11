@@ -208,10 +208,13 @@ Monte, piedra, hierro y sal se agotan si se explotan a tope:
   excedente que la sostiene en los malos meses. Con un pan entero por vecino, un origen típico
   (labor 3, 75 vecinos) no se alimentaba ni con todos sus solares en granjas. Las recuas y
   cuadrillas consumen aparte (§3.7): 2 pan por cuadrilla en obra y turno.
-- **Economía de arranque**: la comarca de origen empieza con dos niveles de granja y 80 de pan,
-  60 de madera, 20 de piedra y 60 maravedís. En un origen típico eso da la curva buscada: la
-  reserva baja en invierno y primavera, se llena en verano y no llega a la escasez en el primer
-  año si no se hace nada.
+- **Economía de arranque** (T-132): en el almacén, 150 de pan, 150 de madera, 80 de piedra, 200
+  maravedís y 10 de sal; en la comarca, las granjas que el ajuste de §3.1.1 levante. Da para abrir la
+  partida con varias cosas a la vez —una recua, la primera comarca del alfoz, un mercado o unas casas—
+  en vez de con una sola. Antes eran 80 de pan, 60 de madera, 20 de piedra y 60 maravedís: medido en
+  el banco, el arranque nuevo sube un 19 % el prestigio a los tres años y acorta algo la distancia
+  entre la casa más fuerte y la más débil. Solo vale para las partidas que se funden desde entonces y
+  para quien entre en una empezada.
 - **Crecimiento**: en la fase 9, una comarca gana vecinos si se cumple todo:
   1. hay abastecimiento (no hubo escasez este turno);
   2. hay capacidad libre;
