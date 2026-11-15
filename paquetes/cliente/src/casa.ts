@@ -69,12 +69,13 @@ export function rondasPorElegir(
  * segunda pulsacion daba dos elecciones para la misma ronda, que la fase 11 cancela a la vez.
  */
 export interface EleccionEnCurso {
-  readonly tradicion: Tradicion;
-  /** Ya en el servidor (se retira) o aun en la bandeja del navegador (se quita). */
-  readonly donde: 'enviada' | 'bandeja';
-  /** El id de la orden enviada o la clave de la bandeja: lo que hay que retirar para cambiar de idea. */
-  readonly clave: string;
-  /** Por que la rechazo el servidor, si la rechazo. */
+  /** Las cartas pedidas, sin repetir y en el orden en que se dieron; mas de una se anulan entre si. */
+  readonly tradiciones: readonly Tradicion[];
+  /** Los ids de las ordenes ya en el servidor: se retiran para cambiar de idea. */
+  readonly enviadas: readonly string[];
+  /** Las claves de las que aun esperan en la bandeja del navegador: se quitan. */
+  readonly bandeja: readonly string[];
+  /** Por que rechazo el servidor alguna, si la rechazo. */
   readonly error: string | null;
 }
 
@@ -86,21 +87,24 @@ export function eleccionEnCurso(
 ): EleccionEnCurso | null {
   const deLaRonda = (t: unknown): t is Tradicion =>
     typeof t === 'string' && reglas.tradiciones[t]?.ronda === ronda;
+  const tradiciones: Tradicion[] = [];
+  const ids: string[] = [];
+  const claves: string[] = [];
+  let error: string | null = null;
   for (const { orden } of enviadas) {
-    if (orden.tipo === 'tradicion' && deLaRonda(orden.tradicion))
-      return { tradicion: orden.tradicion, donde: 'enviada', clave: orden.id, error: null };
+    if (orden.tipo !== 'tradicion' || !deLaRonda(orden.tradicion)) continue;
+    tradiciones.push(orden.tradicion);
+    ids.push(orden.id);
   }
   for (const p of bandeja) {
     const t = p.intencion['tradicion'];
-    if (p.intencion['tipo'] === 'tradicion' && deLaRonda(t))
-      return {
-        tradicion: t,
-        donde: 'bandeja',
-        clave: p.idCliente,
-        error: p.error?.mensaje ?? null,
-      };
+    if (p.intencion['tipo'] !== 'tradicion' || !deLaRonda(t)) continue;
+    tradiciones.push(t);
+    claves.push(p.idCliente);
+    error ??= p.error?.mensaje ?? null;
   }
-  return null;
+  if (tradiciones.length === 0) return null;
+  return { tradiciones: [...new Set(tradiciones)], enviadas: ids, bandeja: claves, error };
 }
 
 /** Cuantas reglas atiende el mayordomo: 3 y una mas por nivel de mercado en la capital, hasta 6. */

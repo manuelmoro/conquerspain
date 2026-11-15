@@ -299,22 +299,24 @@ function eleccionDada(
   enCurso: EleccionEnCurso,
   cartas: readonly CartaDeTradicion[],
 ): (Node | string)[] {
-  const carta = cartas.find((c) => c.id === enCurso.tradicion);
-  const nombre = carta?.nombre ?? TABLAS_DEL_JUEGO.tradiciones[enCurso.tradicion]?.nombre ?? '';
+  const nombre = (id: string): string =>
+    cartas.find((c) => c.id === id)?.nombre ?? TABLAS_DEL_JUEGO.tradiciones[id]?.nombre ?? id;
+  const unica = enCurso.tradiciones.length === 1 ? enCurso.tradiciones[0] : undefined;
+  const carta = cartas.find((c) => c.id === unica);
   const cambiar = boton(
     'Cambiar de idea',
     () => {
-      if (enCurso.donde === 'enviada') void almacen.retirar(enCurso.clave);
-      else almacen.quitar(enCurso.clave);
+      for (const clave of enCurso.bandeja) almacen.quitar(clave);
+      void almacen.retirarVarias(enCurso.enviadas);
     },
     'secundario',
   );
+  const texto =
+    unica === undefined
+      ? `Ronda de ${NOMBRE_DE_RONDA[ronda]}: has pedido varias cartas (${enCurso.tradiciones.map((t) => `«${nombre(t)}»`).join(', ')}) y así se anularían todas. Cambia de idea y elige solo una.`
+      : `Ronda de ${NOMBRE_DE_RONDA[ronda]}: has elegido «${nombre(unica)}». Será tuya para siempre al resolverse este turno; hasta entonces puedes cambiar de idea.`;
   return [
-    el(
-      'p',
-      { class: 'consejo' },
-      `Ronda de ${NOMBRE_DE_RONDA[ronda]}: has elegido «${nombre}». Será tuya para siempre al resolverse este turno; hasta entonces puedes cambiar de idea.`,
-    ),
+    el('p', { class: unica === undefined ? 'error' : 'consejo' }, texto),
     carta === undefined ? '' : el('p', { class: 'suave' }, carta.descripcion),
     enCurso.error === null ? '' : el('p', { class: 'error' }, enCurso.error),
     el('p', {}, cambiar),

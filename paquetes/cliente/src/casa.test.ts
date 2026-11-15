@@ -107,9 +107,9 @@ describe('la tradición ya elegida y aún sin resolver', () => {
     const ronda = TABLAS_DEL_JUEGO.tradiciones['canteros-cimborrio']?.ronda;
     if (ronda === undefined) throw new Error('falta canteros-cimborrio');
     expect(eleccionEnCurso(ronda, [], bandeja, TABLAS_DEL_JUEGO)).toEqual({
-      tradicion: 'canteros-cimborrio',
-      donde: 'bandeja',
-      clave: 'k1',
+      tradiciones: ['canteros-cimborrio'],
+      enviadas: [],
+      bandeja: ['k1'],
       error: null,
     });
     const otra = ronda === 'renombre' ? 'fama' : 'renombre';
@@ -123,5 +123,22 @@ describe('la tradición ya elegida y aún sin resolver', () => {
     expect(eleccionEnCurso(ronda, [], bandeja, TABLAS_DEL_JUEGO)?.error).toBe(
       'La ronda está cerrada.',
     );
+  });
+
+  it('las pulsaciones repetidas se juntan, para retirarlas todas de una vez', () => {
+    const ronda = TABLAS_DEL_JUEGO.tradiciones['canteros-cimborrio']?.ronda ?? 'renombre';
+    const otra = Object.entries(TABLAS_DEL_JUEGO.tradiciones).find(
+      ([id, t]) => id !== 'canteros-cimborrio' && t.casa === 'canteros' && t.ronda === ronda,
+    )?.[0];
+    if (otra === undefined) throw new Error('falta otra carta de la ronda');
+    const bandeja = [
+      enBandeja('k1', 'canteros-cimborrio'),
+      enBandeja('k2', 'canteros-cimborrio'),
+      enBandeja('k3', otra),
+    ];
+    expect(eleccionEnCurso(ronda, [], bandeja, TABLAS_DEL_JUEGO)).toMatchObject({
+      tradiciones: ['canteros-cimborrio', otra],
+      bandeja: ['k1', 'k2', 'k3'],
+    });
   });
 });

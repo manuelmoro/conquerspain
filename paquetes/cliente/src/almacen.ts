@@ -470,6 +470,17 @@ export class Almacen {
     await this.cargarEnviadas();
   }
 
+  /** Retira varias ordenes enviadas de una vez (todas las de una misma decision) y recarga una vez. */
+  async retirarVarias(ordenes: readonly string[]): Promise<void> {
+    const partida = this.estadoActual.partida;
+    if (partida === null || ordenes.length === 0) return;
+    for (const orden of ordenes) {
+      const r = await this.dep.api.retirarOrden(partida.id, orden);
+      if (!r.ok) this.anotarError(r.tipo === 'error' ? r.codigo : 'sin-red', r.mensaje);
+    }
+    await this.cargarEnviadas();
+  }
+
   /** La ficha de una comarca de la partida abierta, o null si no se pudo traer. */
   async pedirFicha(comarca: string): Promise<FichaDeComarca | null> {
     const partida = this.estadoActual.partida;
