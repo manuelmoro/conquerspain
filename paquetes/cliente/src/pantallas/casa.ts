@@ -8,7 +8,12 @@ import {
   RECURSOS_DE_MERCADO,
   TABLAS_DEL_JUEGO,
 } from '@conquer/nucleo';
-import type { AccionDeMayordomo, CondicionDeMayordomo, VistaJugador } from '@conquer/nucleo';
+import type {
+  AccionDeMayordomo,
+  CondicionDeMayordomo,
+  RondaDeTradicion,
+  VistaJugador,
+} from '@conquer/nucleo';
 
 import type { Almacen } from '../almacen.ts';
 import type { ModoDeAviso } from '../api.ts';
@@ -25,10 +30,11 @@ import {
   conservarConSal,
   describirRegla,
   elegirTradicion,
+  eleccionEnCurso,
   limiteDelMayordomo,
   rondasPorElegir,
 } from '../casa.ts';
-import type { Campo, Nombres } from '../casa.ts';
+import type { Campo, CartaDeTradicion, EleccionEnCurso, Nombres } from '../casa.ts';
 import { NOMBRE_DE_RECURSO } from '../nombres.ts';
 import { seccionDeContratos } from './contratos.ts';
 import { seccionDeMilicia } from './milicia.ts';
@@ -286,6 +292,35 @@ function mayordomo(
   ];
 }
 
+/** La carta ya pedida de una ronda: que rige al resolverse el turno y como cambiar de idea. */
+function eleccionDada(
+  almacen: Almacen,
+  ronda: RondaDeTradicion,
+  enCurso: EleccionEnCurso,
+  cartas: readonly CartaDeTradicion[],
+): (Node | string)[] {
+  const carta = cartas.find((c) => c.id === enCurso.tradicion);
+  const nombre = carta?.nombre ?? TABLAS_DEL_JUEGO.tradiciones[enCurso.tradicion]?.nombre ?? '';
+  const cambiar = boton(
+    'Cambiar de idea',
+    () => {
+      if (enCurso.donde === 'enviada') void almacen.retirar(enCurso.clave);
+      else almacen.quitar(enCurso.clave);
+    },
+    'secundario',
+  );
+  return [
+    el(
+      'p',
+      { class: 'consejo' },
+      `Ronda de ${NOMBRE_DE_RONDA[ronda]}: has elegido «${nombre}». Será tuya para siempre al resolverse este turno; hasta entonces puedes cambiar de idea.`,
+    ),
+    carta === undefined ? '' : el('p', { class: 'suave' }, carta.descripcion),
+    enCurso.error === null ? '' : el('p', { class: 'error' }, enCurso.error),
+    el('p', {}, cambiar),
+  ];
+}
+
 export function pantallaDeCasa(
   almacen: Almacen,
   vista: VistaJugador,
@@ -314,6 +349,16 @@ export function pantallaDeCasa(
     );
   }
   for (const { ronda, cartas } of rondas) {
+    const enCurso = eleccionEnCurso(
+      ronda,
+      almacen.estado.enviadas,
+      almacen.estado.pendientes,
+      TABLAS_DEL_JUEGO,
+    );
+    if (enCurso !== null) {
+      partes.push(...eleccionDada(almacen, ronda, enCurso, cartas));
+      continue;
+    }
     const lista = el('ul', { class: 'lista' });
     for (const carta of cartas) {
       lista.append(

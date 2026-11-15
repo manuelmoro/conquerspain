@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ACCIONES_DE_MAYORDOMO,
   CONDICIONES_DE_MAYORDOMO,
+  TABLAS_DEL_JUEGO,
   TIPOS_DE_ORDEN,
   validarIntencion,
 } from '@conquer/nucleo';
@@ -18,6 +19,8 @@ import {
   componerCondicion,
   conservarConSal,
   describirRegla,
+  eleccionEnCurso,
+  elegirTradicion,
 } from './casa.ts';
 import type { Campo } from './casa.ts';
 import { QUE_HACER } from './nombres.ts';
@@ -89,5 +92,36 @@ describe('cada orden tiene su sitio (criterio 4)', () => {
       if (tipo === 'letra-de-cambio') expect(q.llega).toMatch(/contratos/);
       else expect(q.donde, tipo).not.toBeNull();
     }
+  });
+});
+
+describe('la tradición ya elegida y aún sin resolver', () => {
+  const enBandeja = (idCliente: string, tradicion: string, error: string | null = null) => ({
+    idCliente,
+    intencion: { ...elegirTradicion(tradicion), idCliente },
+    error: error === null ? null : { codigo: 'x', mensaje: error },
+  });
+
+  it('se reconoce en la bandeja y solo en su ronda', () => {
+    const bandeja = [enBandeja('k1', 'canteros-cimborrio')];
+    const ronda = TABLAS_DEL_JUEGO.tradiciones['canteros-cimborrio']?.ronda;
+    if (ronda === undefined) throw new Error('falta canteros-cimborrio');
+    expect(eleccionEnCurso(ronda, [], bandeja, TABLAS_DEL_JUEGO)).toEqual({
+      tradicion: 'canteros-cimborrio',
+      donde: 'bandeja',
+      clave: 'k1',
+      error: null,
+    });
+    const otra = ronda === 'renombre' ? 'fama' : 'renombre';
+    expect(eleccionEnCurso(otra, [], bandeja, TABLAS_DEL_JUEGO)).toBeNull();
+    expect(eleccionEnCurso(ronda, [], [], TABLAS_DEL_JUEGO)).toBeNull();
+  });
+
+  it('una rechazada por el servidor trae su motivo', () => {
+    const ronda = TABLAS_DEL_JUEGO.tradiciones['canteros-cimborrio']?.ronda ?? 'renombre';
+    const bandeja = [enBandeja('k2', 'canteros-cimborrio', 'La ronda está cerrada.')];
+    expect(eleccionEnCurso(ronda, [], bandeja, TABLAS_DEL_JUEGO)?.error).toBe(
+      'La ronda está cerrada.',
+    );
   });
 });

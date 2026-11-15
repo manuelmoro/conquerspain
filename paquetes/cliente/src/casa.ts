@@ -15,6 +15,7 @@ import type {
   IdMercado,
   IdRebanyo,
   IdRecua,
+  Orden,
   Recurso,
   ReglaDeMayordomo,
   RondaDeTradicion,
@@ -23,6 +24,7 @@ import type {
   VistaJugador,
 } from '@conquer/nucleo';
 
+import type { IntencionLocal } from './almacen.ts';
 import { enMaravedis } from './mercado.ts';
 import { NOMBRE_DE_RECURSO } from './nombres.ts';
 
@@ -59,6 +61,46 @@ export function rondasPorElegir(
       };
     }),
   }));
+}
+
+/**
+ * La tradicion ya pedida para una ronda y aun sin resolver. La eleccion rige al resolverse el turno,
+ * asi que hasta entonces la vista no la trae: sin esto la pantalla seguia igual tras pulsar, y una
+ * segunda pulsacion daba dos elecciones para la misma ronda, que la fase 11 cancela a la vez.
+ */
+export interface EleccionEnCurso {
+  readonly tradicion: Tradicion;
+  /** Ya en el servidor (se retira) o aun en la bandeja del navegador (se quita). */
+  readonly donde: 'enviada' | 'bandeja';
+  /** El id de la orden enviada o la clave de la bandeja: lo que hay que retirar para cambiar de idea. */
+  readonly clave: string;
+  /** Por que la rechazo el servidor, si la rechazo. */
+  readonly error: string | null;
+}
+
+export function eleccionEnCurso(
+  ronda: RondaDeTradicion,
+  enviadas: readonly { readonly orden: Orden }[],
+  bandeja: readonly IntencionLocal[],
+  reglas: TablasDeReglas,
+): EleccionEnCurso | null {
+  const deLaRonda = (t: unknown): t is Tradicion =>
+    typeof t === 'string' && reglas.tradiciones[t]?.ronda === ronda;
+  for (const { orden } of enviadas) {
+    if (orden.tipo === 'tradicion' && deLaRonda(orden.tradicion))
+      return { tradicion: orden.tradicion, donde: 'enviada', clave: orden.id, error: null };
+  }
+  for (const p of bandeja) {
+    const t = p.intencion['tradicion'];
+    if (p.intencion['tipo'] === 'tradicion' && deLaRonda(t))
+      return {
+        tradicion: t,
+        donde: 'bandeja',
+        clave: p.idCliente,
+        error: p.error?.mensaje ?? null,
+      };
+  }
+  return null;
 }
 
 /** Cuantas reglas atiende el mayordomo: 3 y una mas por nivel de mercado en la capital, hasta 6. */
